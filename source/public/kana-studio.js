@@ -40,10 +40,18 @@
   wa:['3c','Japanese_wa.ogg'],wo:['41','Japanese_wo.ogg'],n:['fd','Japanese_N.ogg']
  };
  const commonsUrl=(key,format='mp3')=>{const spec=kanaClips[key];if(!spec)return null;const [hash,file]=spec,base='https://upload.wikimedia.org/wikipedia/commons/';return format==='mp3'?base+'transcoded/'+hash[0]+'/'+hash+'/'+encodeURIComponent(file)+'/'+encodeURIComponent(file)+'.mp3':base+hash[0]+'/'+hash+'/'+encodeURIComponent(file);};
- let kanaMedia=null;
+ let kanaMedia=null,kanaLocalPackReady=false;
+ // Use same-origin recordings once all 46 licensed MP3 assets are available.
+ // Do not activate partially downloaded packs.
+ if(typeof fetch==='function'){
+   fetch('assets/kana-audio/pack.json',{cache:'no-store'})
+     .then(r=>r.ok?r.json():null)
+     .then(info=>{kanaLocalPackReady=!!(info&&info.schemaVersion===1&&info.sounds===46&&info.audioFormat==='mp3');})
+     .catch(()=>{kanaLocalPackReady=false;});
+ }
  function playKana(record){
    if(!record)return false;
-   const url=commonsUrl(record.romaji);
+   const url=kanaLocalPackReady?('assets/kana-audio/'+record.romaji+'.mp3'):commonsUrl(record.romaji);
    if(!url||typeof Audio!=='function')return sayKana(record);
    stopAudio();
    const token=++audioToken;
@@ -54,7 +62,7 @@
      audio.setAttribute('aria-hidden','true');
      const setError=()=>{
        if(token!==audioToken)return;
-       audioStatus(tr('Không tải được ghi âm. Kiểm tra Internet trên Wi-Fi, hoặc thử mở nguồn âm trong mục Thông tin.','Recording could not load. Check Internet access and try the source link under Information.','音声を読み込めません。通信を確認してください。'));
+       audioStatus(tr('Không phát được ghi âm (lỗi media '+(audio.error?.code||'network')+'). Hãy kiểm tra kết nối hoặc file MP3, rồi nhấn lại.','Recording failed (media '+(audio.error?.code||'network')+'). Check the connection or MP3 file and retry.','録音を再生できません。通信または音声ファイルを確認してください。'));
      };
      audio.onerror=setError;
      audio.onplaying=()=>{if(token===audioToken)audioStatus('');};
