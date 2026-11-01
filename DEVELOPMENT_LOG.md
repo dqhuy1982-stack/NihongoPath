@@ -1,5 +1,18 @@
 # Nihongo Path — Development log
 
+## 2026-11-02 — Revert Kana viewport layout regression (develop)
+
+User reported and showed screenshot of v4 layout regression: Hiragana glyph panel has an unexpected internal scrollbar and the stroke-order SVG shrinks to an unusably small strip.
+
+**Resolution (safe rollback):** restored `source/public/kana-studio.css` **byte-for-byte** to the previously working v2 CSS blob `3d32f054f8f13632a55b42888e1f123459cea843` (commit `de910266b0b54a2088b735b63b95867de7c69072`). Removed the `ks-page-focus` viewport-forcing body class toggle from `kana-studio.js`. Replaced the previous viewport workbench assertion in the Kana regression test with checks for the original five-column glyph grid, natural 1:1 stroke SVG size and the absence of viewport forcing.
+
+This intentionally returns to **normal page scrolling**. Compact v3/v4 height constraints are rejected; do not reintroduce them without a design review and tested viewport constraints. Do not optimize for zero page scroll at the cost of the learning surface.
+
+Preserved: v2 stroke controls / numbered steps; v3 collapsible information; current licensed audio downloader and same-origin media code; mobile three-step flow; learner progress/storage; original `main` and ChatGPT Site unchanged.
+
+Verification: exact restored CSS SHA matched historical blob; JavaScript syntax checked; browser visual testing on PC/iPhone still required. No public demo deployed and no learner data migrated.
+
+
 ## 2026-11-01 — Audio acquisition blocker / safe source change (develop)
 
 **Evidence from user's Windows PowerShell:** `scripts/Download-Kana-Audio.ps1` failed with `HTTP 429 Too many requests` and `Your request does not comply with our robot policy`. **0 of 46 MP3 files downloaded**, so `pack.json` was not created and audio was not activated. No progress or database files were modified.
