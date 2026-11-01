@@ -1,5 +1,20 @@
 # Nihongo Path — Development log
 
+## 2026-11-01 — Audio acquisition blocker / safe source change (develop)
+
+**Evidence from user's Windows PowerShell:** `scripts/Download-Kana-Audio.ps1` failed with `HTTP 429 Too many requests` and `Your request does not comply with our robot policy`. **0 of 46 MP3 files downloaded**, so `pack.json` was not created and audio was not activated. No progress or database files were modified.
+
+### Resolution prepared
+- Replaced the old Wikimedia download URLs with 46 basic seion MP3 files from **Kana Sounds** (https://huggingface.co/datasets/arsalan-anwari/kana-sounds). Dataset credits original recordings to **FUN Japanese Learning**, curated/distributed by **Arsalan Anwari**, with **CC BY 4.0** license.
+- The new downloader validates audio signatures and **stops on the first download rejection**. It never attempts to bypass rate limits or robot-policy restrictions.
+- Studio now attempts same-origin audio only when the complete `pack.json` is present, with existing device-TTS as the temporary fallback; it no longer sends blocked audio requests to Wikimedia.
+- Added `assets/kana-audio/ATTRIBUTION.txt` (published preview asset), refreshed README, deployment runbook and source-level regression tests.
+- No binary audio assets have yet been downloaded or committed by this assistant. Neither GitHub Pages nor Cloudflare Pages has been deployed.
+- **Pending device QA:** Pull `develop`, run updated downloader from the user's Windows PC; confirm `46/46` and physical iPhone sound before public preview.
+
+No changes to original `main`, ChatGPT Site, backend, stored drafts, profiles or learner progress.
+
+
 ## 2026-11-01 — Public Demo export + local Kana audio preparation (develop)
 
 User requested access from iPhone outside the LAN. Current screenshot still showed the pre-v3 header and expanded notes, so the device was likely using an earlier JS/CSS revision; confirm local Pull before concluding v4 layout is broken.
