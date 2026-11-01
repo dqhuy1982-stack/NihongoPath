@@ -33,3 +33,42 @@
  .ks-write-title .ks-speak{width:44px;padding:8px}
 }
 @media(prefers-reduced-motion:reduce){.ks-auto-audio,.ks-speak{transition:none}}
+
+/* Kana Studio — stroke toolbar v2; scoped, theme-aware and mobile-safe. */
+.ks-stroke-sequence{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0;margin:2px 0 12px}
+.ks-seq-title{font-size:11px;color:var(--muted);white-space:nowrap}
+.ks-seq-steps{display:flex;gap:6px;overflow-x:auto;min-width:0;scrollbar-width:thin}
+.ks-seq-step{appearance:none;display:grid;place-items:center;flex:0 0 auto;min-width:34px;height:34px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--muted);font:600 12px var(--sans);cursor:pointer}
+.ks-seq-step.completed{background:var(--lesson-soft);border-color:var(--green);color:var(--green)}
+.ks-seq-step.active{background:var(--navy);border-color:var(--navy);color:white}
+.ks-stroke-pin{pointer-events:none;opacity:.78;transition:opacity .15s}
+.ks-stroke-pin circle{fill:#f9fbfc;stroke:#9eabb5;stroke-width:5}
+.ks-stroke-pin text{fill:#49606a;font:600 30px var(--sans)}
+.ks-stroke-pin.is-complete circle{fill:#e4f0eb;stroke:#318677}
+.ks-stroke-pin.is-complete text{fill:#276b60}
+.ks-stroke-pin.is-active{opacity:1}
+.ks-stroke-pin.is-active circle{fill:#b17b2c;stroke:#fff9ec;stroke-width:7}
+.ks-stroke-pin.is-active text{fill:#fff}
+.ks-studio .ks-controls{display:grid;gap:10px;margin-top:10px}
+.ks-playback-bar{display:grid;grid-template-columns:minmax(0,1fr) repeat(3,44px);gap:7px;min-width:0}
+.ks-play-primary,.ks-control-icon{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:44px;min-width:0;border-radius:11px;border:1px solid var(--line);background:var(--surface);color:var(--text);font:500 12px/1.2 var(--sans);white-space:nowrap;cursor:pointer}
+.ks-play-primary{padding:0 10px;background:var(--navy);border-color:var(--navy);color:#fff}
+.ks-play-primary svg,.ks-control-icon svg{width:18px;height:18px;flex:none}
+.ks-play-primary svg:nth-child(2){display:none}
+.ks-play-primary[data-playing="true"] svg:first-child{display:none}
+.ks-play-primary[data-playing="true"] svg:nth-child(2){display:block}
+.ks-control-icon:hover{border-color:var(--green);background:var(--lesson-soft)}
+.ks-play-primary:hover{filter:brightness(1.06)}
+.ks-playback-settings{display:flex;justify-content:flex-start;align-items:center;min-width:0}
+.ks-studio .ks-speed{display:flex;gap:8px;align-items:center;min-height:40px;font-size:11px}
+.ks-studio .ks-speed select{min-height:40px;border-radius:9px;font-size:11px}
+.ks-writing-tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.ks-writing-tools .ks-write-tool{min-width:0;display:flex;align-items:center;justify-content:center;gap:6px}
+.ks-writing-tools .ks-write-tool svg{width:17px;height:17px;flex:none}
+.ks-writing-tools .ks-write-tool.primary{grid-column:1/-1;width:100%}
+.ks-thumbnails button.completed{border-color:var(--green);background:var(--lesson-soft)}
+.ks-thumbnails button.active{background:var(--lesson-soft);border-color:var(--green)}
+.ks-studio .ks-seq-step:focus-visible,.ks-studio .ks-control-icon:focus-visible,.ks-studio .ks-play-primary:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+@media(max-width:767px){.ks-playback-bar{grid-template-columns:minmax(0,1fr) repeat(3,44px)}.ks-playback-bar button{min-height:44px}.ks-writing-tools .ks-write-tool:not(.primary){width:100%}}
+@media(max-width:355px){.ks-playback-bar{grid-template-columns:minmax(0,1fr) repeat(3,40px);gap:5px}.ks-play-primary{font-size:11px;padding:0 5px}}
+@media(prefers-reduced-motion:reduce){.ks-stroke-pin,.ks-control-icon,.ks-play-primary{transition:none}}
