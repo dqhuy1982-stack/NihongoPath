@@ -1,5 +1,30 @@
 # Nihongo Path — Development log
 
+## 2026-11-01 — Kana v4: viewport workspace + recorded pronunciation (develop)
+
+User QA for v3: **desktop still scrolls too much; iPhone Safari produces no sound**. v3 was not accepted.
+
+### Changes
+- `source/public/kana-studio.css`: implement real single-viewport workbench on desktop >=1024 px wide and >=680 px tall. Route-scoped main frame and shell use viewport height; three equal-height panels keep internal scrolling for long grids/notes. Hide only decorative footer and redundant three-step desktop tab while preserving all essential controls. Smaller or short viewports fall back to normal scrolling rather than clipping.
+- `source/public/kana-studio.js`: toggle `ks-page-focus` only for the active Studio route. On mobile, replace primary `speechSynthesis` with direct-click `HTMLAudioElement.play()` of public-domain Japanese syllable recordings from Wikimedia Commons. Keep TTS fallback for unavailable Audio API/unknown kana and show an actionable error if remote MP3 cannot play.
+- `source/public/assets/kana-audio/README.md`: document creators, PD-self status, Wikimedia MP3 transcode URLs and limitations.
+- `tests/kana-v4-layout-audio.test.cjs`: checks all 92 Kana mappings to 46 unique sounds, Wikimedia filename hashes, direct play wiring, route scoping and progress-flow markers.
+
+### Verification
+- GitHub read-back: `develop` JS parses and 46/46 Kana sounds are mapped.
+- HTMLAudio playback is triggered within the same user gesture; no promise/await precedes `audio.play()`.
+- **Physical iPhone and desktop visual QA still pending**; access to remote MP3 transcodes is not guaranteed without testing actual network.
+- Added test file has **not been executed by this assistant**. User may run `node --test tests/kana-v4-layout-audio.test.cjs` after pulling to local, and report any failure.
+- Do not merge to main or original ChatGPT Site until layout and audio pass on PC and iPhone.
+
+### Acceptance
+1. Pull `develop`. PC at 100% zoom, 1366x768 or larger: full 3-panel studio fits page viewport without BODY scrolling. Kana grid may scroll *inside* its panel.
+2. iPhone Safari on LAN `http://192.168.1.187:8081/?mode=demo#kana` (assuming same home PC IP): tap speaker manually for `あ`, `か`, `し`, `ア`. A working Internet connection is required for this version.
+3. Test auto-pronunciation, player pauses, previous/next/replay, canvas touch drawing and learner progress/draft retention. Verify switching routes restores normal page scrolling.
+4. If audio fails, capture the warning shown in Studio; test the "Nguồn ghi âm" source link from the collapsed source note.
+5. No redeployment or database changes are part of this patch.
+
+
 ## 2026-11-01 — Kana Writing Studio Compact v3 + Mobile Audio Fix (develop)
 
 Scope: existing Foundation Kana Writing Studio only. No rebuild or site release.
