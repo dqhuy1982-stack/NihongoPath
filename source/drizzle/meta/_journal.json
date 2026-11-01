@@ -1,0 +1,20 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1793514350527,
+      "tag": "0000_tranquil_korg",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1793519182971,
+      "tag": "0001_many_blackheart",
+      "breakpoints": true
+    }
+  ]
+}

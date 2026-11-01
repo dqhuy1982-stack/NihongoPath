@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Đăng nhập · Trước / Sau · Nihongo Path</title>
+  <link rel="icon" href="assets/n-mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="atelier.css"><link rel="stylesheet" href="study.css">
+  <style>
+    body{margin:0;background:#f6f3eb;color:#263e35;font-family:Manrope,sans-serif}main{width:min(1500px,calc(100% - 48px));margin:0 auto;padding:30px 0 40px}.review-logo{display:inline-flex;gap:12px;align-items:center;color:inherit;text-decoration:none;font-family:Newsreader,serif;font-size:25px}.review-logo img{height:35px;width:35px}.compare-top{display:flex;align-items:center;justify-content:space-between;gap:20px}.compare-top>a:last-child{font-size:13px;color:inherit}h1{font-family:Newsreader,serif;font-weight:450;font-size:clamp(32px,4vw,46px);line-height:1.25;margin:34px 0 12px}p{font-size:14px;line-height:1.9;color:#5d6e5d;max-width:900px}.device-choices{display:flex;gap:8px;margin:22px 0 26px}.device-choices button{min-height:44px;border-radius:24px;border:1px solid #cad3c2;padding:10px 20px;background:transparent;font:inherit;font-size:13px;color:#263e35;cursor:pointer}.device-choices [aria-pressed=true]{background:#264638;color:#f7f4e8;border-color:#264638}.compare-pair{display:grid;grid-template-columns:1fr 1fr;gap:24px}.compare-card{background:#fffdf7;border:1px solid #d4dccb;border-radius:20px;overflow:hidden;min-width:0}.compare-card>header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:17px 20px;border-bottom:1px solid #d4dccb}.compare-card h2{font-family:Manrope,sans-serif;font-size:13px;font-weight:600;margin:0}.compare-card header a{color:#607553;font-size:11px;min-height:24px}.preview-stage{position:relative;overflow:hidden;background:#eaece3}.preview-stage iframe{border:0;position:absolute;top:0;left:50%;transform-origin:top left;box-shadow:0 0 15px #29433510}.compare-card footer{padding:17px 20px;font-size:12px;line-height:1.85;color:#5b6e58}.compare-card footer strong{display:block;color:#294333;margin-bottom:5px;font-weight:600}.compare-note{margin-top:24px;padding:18px 22px;border-left:3px solid #a88b53;background:#edf0e2;border-radius:0 12px 12px 0;font-size:13px;line-height:1.9;color:#405b42}.compare-note code{font-size:12px}.device-choices button:focus-visible,a:focus-visible{outline:3px solid #4d7963;outline-offset:4px}@media(max-width:850px){.compare-pair{grid-template-columns:1fr}main{width:calc(100% - 32px);padding-top:22px}.compare-top{align-items:flex-start}.compare-top>a:last-child{font-size:11px}.compare-card>header{padding:15px 17px}}
+  </style>
+</head>
+<body><main>
+  <div class="compare-top"><a class="review-logo" href="index.html#login"><img src="assets/n-mark.svg" alt="">Nihongo Path.</a><a href="index.html#login">Mở trang đăng nhập mới ↗</a></div>
+  <h1>Một lần chạm.<br>Một khoảng học của riêng bạn.</h1>
+  <p>Cùng nhận diện, cùng dữ liệu hồ sơ. Bản trước giữ form mã trên trang; bản sau mở khung riêng khi chọn avatar và đặt con trỏ vào ô nhập ngay.</p>
+  <div class="device-choices" role="group" aria-label="Chọn kích thước so sánh"><button data-viewport="desktop" aria-pressed="true">PC</button><button data-viewport="tablet" aria-pressed="false">Tablet</button><button data-viewport="mobile" aria-pressed="false">Mobile</button></div>
+  <div class="compare-pair">
+    <section class="compare-card"><header><h2>TRƯỚC · FORM LUÔN HIỂN THỊ</h2><a href="index.html?login-view=before#login" target="_blank" rel="noopener">Mở toàn màn hình ↗</a></header><div class="preview-stage"><iframe id="before-preview" title="Trước: chọn avatar rồi tìm ô nhập mã" src="index.html?login-view=before#login"></iframe></div><footer><strong>Chọn avatar → tìm ô mã → bấm vào ô → nhập.</strong>Ảnh nhỏ trong một hàng; form chiếm vùng chọn người học.</footer></section>
+    <section class="compare-card"><header><h2>SAU · AVATAR MỞ KHÔNG GIAN RIÊNG</h2><a href="index.html#login" target="_blank" rel="noopener">Mở toàn màn hình ↗</a></header><div class="preview-stage"><iframe id="after-preview" title="Sau: avatar lớn, mở mã và nhập ngay" src="index.html#login"></iframe></div><footer><strong>Chạm avatar → nhập ngay → Enter để vào học.</strong>Chân dung lớn, lưới 2 × 2, khung nhập có focus sẵn. Escape hoặc đóng để quay lại avatar.</footer></section>
+  </div>
+  <div class="compare-note">Thử bấm avatar ở cột sau. Mã công khai của bản thử: <code>PATH-DEMO</code>. Chưa dùng mật khẩu thật. Avatar, tên và mục tiêu được nạp từ dữ liệu hồ sơ; không có nhánh giao diện riêng theo tên.</div>
+</main>
+<script>
+  const sizes={desktop:[1366,900],tablet:[768,1024],mobile:[390,844]};let selected='desktop';
+  function resize(){const [width,height]=sizes[selected];document.querySelectorAll('.preview-stage').forEach(stage=>{const scale=Math.min(1,stage.clientWidth/width),frame=stage.querySelector('iframe');frame.width=width;frame.height=height;frame.style.transform=`scale(${scale}) translateX(-50%)`;stage.style.height=`${Math.ceil(height*scale)}px`;});}
+  document.querySelectorAll('[data-viewport]').forEach(button=>button.addEventListener('click',()=>{selected=button.dataset.viewport;document.querySelectorAll('[data-viewport]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));resize();}));window.addEventListener('resize',resize);resize();
+</script></body></html>

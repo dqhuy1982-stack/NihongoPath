@@ -1,0 +1,27 @@
+-- Nihongo Path / disposable design fixture / schema v2
+PRAGMA foreign_keys = ON;
+CREATE TABLE metadata (key TEXT PRIMARY KEY, value TEXT NOT NULL);
+CREATE TABLE families (id TEXT PRIMARY KEY, name TEXT NOT NULL, fictional INTEGER NOT NULL CHECK(fictional=1));
+CREATE TABLE learners (id TEXT PRIMARY KEY, family_id TEXT NOT NULL REFERENCES families(id), name TEXT NOT NULL, target TEXT NOT NULL, age_band TEXT NOT NULL, payload TEXT NOT NULL CHECK(json_valid(payload)));
+CREATE TABLE goals (id TEXT PRIMARY KEY, learner_id TEXT NOT NULL REFERENCES learners(id), target TEXT NOT NULL, chosen_at TEXT NOT NULL, source TEXT NOT NULL);
+CREATE TABLE modules (id TEXT PRIMARY KEY, status TEXT NOT NULL CHECK(status IN ('demo','planned')), payload TEXT NOT NULL CHECK(json_valid(payload)));
+CREATE TABLE content (id TEXT NOT NULL, version INTEGER NOT NULL, module_id TEXT NOT NULL REFERENCES modules(id), level TEXT NOT NULL, kind TEXT NOT NULL, payload TEXT NOT NULL CHECK(json_valid(payload)), PRIMARY KEY(id,version));
+CREATE TABLE questions (id TEXT NOT NULL, content_id TEXT NOT NULL, content_version INTEGER NOT NULL, version INTEGER NOT NULL, skill TEXT NOT NULL, payload TEXT NOT NULL CHECK(json_valid(payload)), PRIMARY KEY(id,version,content_version,content_id), FOREIGN KEY(content_id,content_version) REFERENCES content(id,version));
+CREATE TABLE sessions (id TEXT PRIMARY KEY, learner_id TEXT NOT NULL REFERENCES learners(id), content_id TEXT NOT NULL, content_version INTEGER NOT NULL, status TEXT NOT NULL, payload TEXT NOT NULL CHECK(json_valid(payload)), UNIQUE(id,learner_id,content_id,content_version), FOREIGN KEY(content_id,content_version) REFERENCES content(id,version));
+CREATE TABLE attempts (id TEXT PRIMARY KEY, learner_id TEXT NOT NULL REFERENCES learners(id), question_id TEXT NOT NULL, question_version INTEGER NOT NULL, content_id TEXT NOT NULL, session_id TEXT, content_version INTEGER NOT NULL, correct INTEGER NOT NULL CHECK(correct IN(0,1)), at TEXT NOT NULL, payload TEXT NOT NULL CHECK(json_valid(payload)), FOREIGN KEY(session_id,learner_id,content_id,content_version) REFERENCES sessions(id,learner_id,content_id,content_version), FOREIGN KEY(question_id,question_version,content_version,content_id) REFERENCES questions(id,version,content_version,content_id));
+CREATE TABLE reviews (id TEXT PRIMARY KEY, learner_id TEXT NOT NULL REFERENCES learners(id), question_id TEXT NOT NULL, question_version INTEGER NOT NULL, content_id TEXT NOT NULL, content_version INTEGER NOT NULL, due_at TEXT NOT NULL, payload TEXT NOT NULL CHECK(json_valid(payload)), FOREIGN KEY(question_id,question_version,content_version,content_id) REFERENCES questions(id,version,content_version,content_id));
+CREATE TABLE scenarios (id TEXT PRIMARY KEY, learner_id TEXT NOT NULL REFERENCES learners(id), payload TEXT NOT NULL CHECK(json_valid(payload)));
+CREATE TABLE rules (id TEXT PRIMARY KEY, priority INTEGER NOT NULL, payload TEXT NOT NULL CHECK(json_valid(payload)));
+CREATE TABLE content_drafts (id TEXT PRIMARY KEY, content_id TEXT NOT NULL, base_version INTEGER, target_version INTEGER NOT NULL, revision INTEGER NOT NULL, status TEXT NOT NULL CHECK(status IN ('draft','published')), payload TEXT NOT NULL CHECK(json_valid(payload)), FOREIGN KEY(content_id,base_version) REFERENCES content(id,version));
+CREATE TABLE content_releases (content_id TEXT NOT NULL, version INTEGER NOT NULL, source TEXT NOT NULL, payload TEXT NOT NULL CHECK(json_valid(payload)), PRIMARY KEY(content_id,version), FOREIGN KEY(content_id,version) REFERENCES content(id,version));
+CREATE TABLE content_editor_events (id TEXT PRIMARY KEY, draft_id TEXT REFERENCES content_drafts(id), type TEXT NOT NULL, at TEXT NOT NULL, payload TEXT NOT NULL CHECK(json_valid(payload)));
+CREATE TRIGGER content_no_update BEFORE UPDATE ON content BEGIN SELECT RAISE(ABORT,'Content versions are immutable'); END;
+CREATE TRIGGER content_no_delete BEFORE DELETE ON content BEGIN SELECT RAISE(ABORT,'Content versions are immutable'); END;
+CREATE TRIGGER questions_no_update BEFORE UPDATE ON questions BEGIN SELECT RAISE(ABORT,'Question versions are immutable'); END;
+CREATE TRIGGER questions_no_delete BEFORE DELETE ON questions BEGIN SELECT RAISE(ABORT,'Question versions are immutable'); END;
+CREATE TRIGGER releases_no_update BEFORE UPDATE ON content_releases BEGIN SELECT RAISE(ABORT,'Content releases are immutable'); END;
+CREATE TRIGGER releases_no_delete BEFORE DELETE ON content_releases BEGIN SELECT RAISE(ABORT,'Content releases are immutable'); END;
+CREATE TRIGGER attempts_no_update BEFORE UPDATE ON attempts BEGIN SELECT RAISE(ABORT,'Recorded answers are immutable'); END;
+CREATE INDEX attempts_learner_time ON attempts(learner_id, at);
+CREATE INDEX reviews_learner_due ON reviews(learner_id, due_at);
+CREATE INDEX sessions_learner_status ON sessions(learner_id, status);

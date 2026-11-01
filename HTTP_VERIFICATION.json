@@ -1,0 +1,66 @@
+{
+  "date": "2026-11-01",
+  "scope": "Local built Worker and emulated D1 only; synthetic identity headers supplied by test client. Does not validate real ChatGPT login or external production deployment.",
+  "results": [
+    {
+      "path": "/",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "path": "/kana-studio.js",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/javascript; charset=utf-8"
+    },
+    {
+      "path": "/assets/fonts/Manrope-Variable.woff",
+      "method": "GET",
+      "status": 200,
+      "contentType": "font/woff"
+    },
+    {
+      "path": "/api/pilot/bootstrap",
+      "method": "GET",
+      "status": 401,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "path": "/api/pilot/bootstrap",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "path": "/api/pilot/setup",
+      "method": "POST",
+      "status": 201,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "path": "/api/pilot/bootstrap",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "path": "/api/pilot/learners/smoke-learner/state",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "path": "/api/pilot/learners/smoke-learner/kana",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "path": "/api/pilot/learners/smoke-learner/kana",
+      "method": "GET",
+      "status": 404,
+      "contentType": "application/json; charset=utf-8"
+    }
+  ]
+}
