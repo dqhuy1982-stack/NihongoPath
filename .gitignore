@@ -1,0 +1,7 @@
+# Private development repository generated files
+/dist/
+/node_modules/
+.env
+.env.*
+!.env.example
+.DS_Store
