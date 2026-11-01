@@ -1,22 +1,36 @@
-# Kana pronunciation source — development preview
+# Kana audio (development only until iPhone QA passes)
 
-Nihongo Path Kana Writing Studio v4 currently plays **remote Wikimedia Commons MP3 transcodes**, not browser-generated speech as its primary path.
+## Current primary source
 
-- 46 recorded syllables are mapped to 92 basic Hiragana/Katakana characters in `source/public/kana-studio.js`.
-- Primary recording collection: [Audio files of hiragana (set by Hakatanoshio117117)](https://commons.wikimedia.org/wiki/Category:Audio_files_of_hiragana_(set_by_Hakatanoshio117117)), author **Hakatanoshio117117**, public domain (PD-self).
-- The `ka` sample is [Ja-ka.ogg](https://commons.wikimedia.org/wiki/File:Ja-ka.ogg), author **Doughaque**, public domain (PD-self).
-- The `so` sample is [Ja-So.oga](https://commons.wikimedia.org/wiki/File:Ja-So.oga), author **Hakatanoshio117117**, public domain (PD-self).
-- Other sources from the same public-domain pronunciation collection, including the `ti` recording for `chi` and the `hu` recording for `fu`.
-- The source files are Ogg/OGA, but the app requests Wikimedia Commons' MP3 transcoding endpoint for Safari compatibility.
-- The `Audio` element is started directly from learner interaction. Existing Japanese `speechSynthesis` remains as fallback only if the romaji key is missing or the Audio API is unavailable.
-- Failure messages are surfaced in the Studio. A source link under **Hướng dẫn nét & nguồn** lets the learner inspect the recording origin.
+**Kana Sounds** dataset by Arsalan Anwari:
+https://huggingface.co/datasets/arsalan-anwari/kana-sounds
 
-## Known limitations before release
+- Original pronunciation recordings: **FUN Japanese Learning**.
+- Dataset curation/distribution: **Arsalan Anwari**.
+- License stated in dataset: **Creative Commons Attribution 4.0 (CC BY 4.0)**.
+- 46 MP3 files in `audio/seion/` correspond to the 46 basic sounds shared by Hiragana and Katakana (92 characters).
+- Short recordings from one reader, typically approximately 0.5–1.1 seconds each as documented by the dataset.
+- Original MP3 files are kept unchanged, with names such as `a.mp3`, `chi.mp3`, `n.mp3`.
+- See `ATTRIBUTION.txt` for a text notice included in the published static preview.
 
-- Clips are **not bundled** in the repo or offline; a working internet connection is required, even when the HTML site is served from the local PC over Wi-Fi.
-- Availability / rate limiting / hotlink policy of Wikimedia and actual iOS playback have not been verified from this environment; user device QA is required.
-- Audio files have varying lengths and voice quality, including older multi-second clips. Review pedagogy and audio consistency before final production bundling.
-- If reliability or consistency is inadequate, create/obtain a reviewed, licensed local MP3 pronunciation pack, retain attribution/metadata, and use local assets as the primary source. Do **not** download media with unverified redistribution rights.
-- This v4 change does not affect API contracts, account profiles, user progress or stored drafts.
+## Why it changed
 
-References: [Commons file types](https://commons.wikimedia.org/wiki/Commons:File_types) and [WebKit Safari audio format support](https://webkit.org/blog/15063/webkit-features-in-safari-17.4/).
+The previous attempt used Wikimedia Commons transcoded MP3 endpoints. A November 1, 2026 local Windows download returned **HTTP 429 / robot-policy rejection for all 46 requests**. That source is no longer requested by the running Studio audio path. Do not rerun the old downloader or attempt to circumvent the service's access policy.
+
+## Packaging and verification
+
+1. Pull the `develop` branch. The new `scripts/Download-Kana-Audio.ps1` uses Hugging Face `resolve/main/audio/seion/<romaji>.mp3`.
+2. Run it on the local Windows PC from the repository directory.
+3. The downloader stops on the first server rejection; it does not retry or bypass access controls.
+4. Check for 46 verified MP3 files; the `pack.json` manifest appears **only when all 46 exist**.
+5. The existing Studio reads `pack.json` at startup and then plays same-origin `assets/kana-audio/<romaji>.mp3`. Its fallback is the system Japanese voice if the local pack is absent.
+6. Test on Safari iPhone: `あ`, `か`, `し`, `ア`, selecting a new letter with auto-read on and with audio manually.
+
+**Not yet verified:** Hugging Face accessibility from the user's Windows network, full local download, actual iPhone audio playback, and external GitHub Pages deployment. Do not claim these work until device acceptance.
+
+## Separate rights
+
+Only the audio pack is licensed CC BY 4.0. Other `source/public` code, artwork and AnimCJK stroke SVGs retain their own notices and terms. Preserve all existing notices.
+
+Source project: https://github.com/arsalan-anwari/kana-trainer
+License description: https://creativecommons.org/licenses/by/4.0/
