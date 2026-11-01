@@ -39,13 +39,13 @@ test('direct user audio gesture prefers same-origin clips; uninstalled pack does
  assert.match(script,/No sound yet\?/);
  assert.match(script,/assets\/kana-audio\/ATTRIBUTION\.txt/);
 });
-test('viewport workbench is scoped to Kana Studio and has small-screen fallback',()=>{
- assert.match(script,/classList\.toggle\('ks-page-focus',active\(\)\)/);
- assert.match(styles,/@media\(min-width:1024px\) and \(min-height:680px\)/);
- assert.match(styles,/body\.ks-page-focus #main\{/);
- assert.match(styles,/body\.ks-page-focus \.ks-studio\.ks-compact \.ks-columns\{/);
- assert.match(styles,/body\.ks-page-focus #main>\.footnote\{display:none\}/);
- assert.match(styles,/@media\(max-height:679px\)/);
+test('restored stable Kana layout: 5 glyph columns, full-size stroke and no forced viewport',()=>{
+ assert.match(styles,/\.ks-glyph-grid\{display:grid;grid-template-columns:repeat\(5,minmax\(0,1fr\)\)/);
+ assert.match(styles,/\.ks-svg\{display:block;width:100%;height:auto;aspect-ratio:1/);
+ assert.match(styles,/\.ks-playback-bar\{/);
+ assert.doesNotMatch(styles,/body\.ks-page-focus/);
+ assert.doesNotMatch(styles,/real one-viewport desktop workspace/);
+ assert.doesNotMatch(script,/classList\.toggle\('ks-page-focus'/);
 });
 test('mobile step switching, writing and learner persistence remain intact',()=>{
  assert.match(script,/ks-mobile-\$\{w\.mobileStep\}/);
