@@ -11,11 +11,11 @@ Status: **Prepared on develop, NOT published.** Main branch and ChatGPT Site rem
 - The exporter excludes old design-comparison HTML pages and adds a preboot script forcing `?mode=demo` for the public preview.
 - A Pages URL is **public**, not password-protected. Do not enter real passwords or personal data in prototype forms.
 - Demo progress is stored in **localStorage per device/browser**, not synchronized between PC and iPhone. Cloud-hosted real learner profiles/progress will require a separately reviewed backend deployment.
-- The 46 recorded Kana sounds currently use remote Wikimedia MP3 transcodes; they require connectivity and device QA. Do not claim iPhone sound is fixed until physically tested.
+- The 46 Kana sounds use a same-origin MP3 pack when all 46 files are available; otherwise Studio attempts device speech. Confirm actual iPhone sound before publishing.
 
 ## Prepare same-origin Kana MP3 recordings (recommended before external publishing)
 
-Previous iPhone Safari QA reported silence. Direct cross-domain Wikimedia audio is not a reliable production dependency. The Studio now detects a complete local pack `source/public/assets/kana-audio/pack.json` and uses `assets/kana-audio/<romaji>.mp3` from its own host.
+Previous iPhone Safari QA reported silence. Wikimedia returned HTTP 429/robot-policy rejection for all 46 MP3 downloads. The old download source must not be retried or bypassed. The Studio now detects a complete local pack `source/public/assets/kana-audio/pack.json` and uses `assets/kana-audio/<romaji>.mp3` from its own host.
 
 After Fetch/Pull `develop`, on a PC with internet run:
 
@@ -24,12 +24,12 @@ cd C:\Dev\NihongoPath
 .\scripts\Download-Kana-Audio.ps1
 ```
 
-- The downloader checks all 46 audio paths against the Commons filename hashes, validates MP3 signatures and only writes the activating `pack.json` when all 46 files are present.
+- The downloader fetches **46 CC BY 4.0 MP3 clips from Kana Sounds on Hugging Face**, validates MP3 signatures, stops at the first access error, and writes the activating `pack.json` only when all 46 files are present.
 - Rerunning reuses existing audio files; it does not change the backend or any learner data.
-- Review the third-party provenance and public-domain claims in `source/public/assets/kana-audio/README.md` before shipping. Check the playback length and quality: some original recordings are long for flashcard use.
+- Review the **CC BY 4.0** license and attribution in `source/public/assets/kana-audio/README.md` and `ATTRIBUTION.txt` before shipping. Test the short clips for Japanese pronunciation accuracy.
 - Commit the downloaded `source/public/assets/kana-audio/*.mp3` and `pack.json` **only to develop** using GitHub Desktop, then Push origin.
 - Localhost and GitHub Pages/Cloudflare Pages will load sound from the **same origin** when the pack is present. Do not assume this works until physical iPhone playback is confirmed.
-- Never download third-party audio without license checking for new sources; this mapping is limited to the identified Commons files.
+- Source: https://huggingface.co/datasets/arsalan-anwari/kana-sounds ; recordings credited to FUN Japanese Learning, dataset managed by Arsalan Anwari. Retain attribution; comply with license before distributing.
 
 ## Option A — GitHub Pages on GitHub Free (separate **static-only public deployment** repo)
 
@@ -74,7 +74,7 @@ This is still a GitHub-source workflow; hosting is Cloudflare rather than GitHub
 1. Confirm local `source/public/kana-studio.js` has `playKana(glyph(w))` and `ks-page-focus`, and `kana-studio.css` has `body.ks-page-focus #main`. If not, local GitHub Desktop has not pulled v4.
 2. On iPhone use Safari and touch **Nghe âm** for `あ`; then try `し`, `か`, `ア`. Turn up volume and test with mobile data as well as Wi-Fi.
 3. If no sound, open the **Hướng dẫn nét & nguồn** details and test **Nguồn ghi âm** directly; compare source webpage playback with the Studio. This isolates whether it is a blocked/absent media file or site playback issue.
-4. If remote Wikimedia recordings remain unreliable, acquire and validate a complete licensed **local audio pack** for every one of the 46 sounds, host it as static assets, then remove cross-origin streaming. No new source/download should be represented as locally bundled until present and verified.
+4. If audio still fails with all 46 same-origin MP3 clips present, inspect the precise audio error in Safari and check that individual `assets/kana-audio/a.mp3` loads. No source is represented as bundled until present and verified.
 5. Visually check PC at 100% zoom. v4 uses one-viewport workspace only for widths >=1024 and viewport heights >=680; small screens scroll normally.
 6. Do not merge to original `main` or deploy the live Site until tests pass.
 
