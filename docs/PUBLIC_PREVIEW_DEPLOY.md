@@ -13,6 +13,24 @@ Status: **Prepared on develop, NOT published.** Main branch and ChatGPT Site rem
 - Demo progress is stored in **localStorage per device/browser**, not synchronized between PC and iPhone. Cloud-hosted real learner profiles/progress will require a separately reviewed backend deployment.
 - The 46 recorded Kana sounds currently use remote Wikimedia MP3 transcodes; they require connectivity and device QA. Do not claim iPhone sound is fixed until physically tested.
 
+## Prepare same-origin Kana MP3 recordings (recommended before external publishing)
+
+Previous iPhone Safari QA reported silence. Direct cross-domain Wikimedia audio is not a reliable production dependency. The Studio now detects a complete local pack `source/public/assets/kana-audio/pack.json` and uses `assets/kana-audio/<romaji>.mp3` from its own host.
+
+After Fetch/Pull `develop`, on a PC with internet run:
+
+```powershell
+cd C:\Dev\NihongoPath
+.\scripts\Download-Kana-Audio.ps1
+```
+
+- The downloader checks all 46 audio paths against the Commons filename hashes, validates MP3 signatures and only writes the activating `pack.json` when all 46 files are present.
+- Rerunning reuses existing audio files; it does not change the backend or any learner data.
+- Review the third-party provenance and public-domain claims in `source/public/assets/kana-audio/README.md` before shipping. Check the playback length and quality: some original recordings are long for flashcard use.
+- Commit the downloaded `source/public/assets/kana-audio/*.mp3` and `pack.json` **only to develop** using GitHub Desktop, then Push origin.
+- Localhost and GitHub Pages/Cloudflare Pages will load sound from the **same origin** when the pack is present. Do not assume this works until physical iPhone playback is confirmed.
+- Never download third-party audio without license checking for new sources; this mapping is limited to the identified Commons files.
+
 ## Option A — GitHub Pages on GitHub Free (separate **static-only public deployment** repo)
 
 This option works without GitHub Pro while keeping the original repo private.
