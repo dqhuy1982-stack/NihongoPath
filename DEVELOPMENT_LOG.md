@@ -1,5 +1,34 @@
 # Nihongo Path — Development log
 
+## 2026-11-01 — Kana Writing Studio Compact v3 + Mobile Audio Fix (develop)
+
+Scope: existing Foundation Kana Writing Studio only. No rebuild or site release.
+
+### Updated files
+- `source/public/kana-studio.js`: shortened the header description, added the `ks-compact` scope, moved detailed guidance and ungraded-practice explanation into accessible native `details` disclosures. Preserved attribution links and existing data contracts.
+- `source/public/kana-studio.js`: speech now attempts `ja-JP` with system voice on Apple touch devices when Safari's voice list is incomplete; keeps utterances referenced, retains direct touch/click speech activation, avoids unnecessary idle `cancel()`, reports delayed or failed speech clearly.
+- `source/public/kana-studio.css`: compact header/toolbar, contained-scroll Kana grid on wide desktop, smaller stroke sample, horizontally scrollable thumbnails, centered writing canvas, adaptive mobile spacing; preserves the three-step mobile workflow and theme variables.
+
+### Safety and boundaries
+- `main`, the published ChatGPT Site, server, D1 database, learner profiles and writing progress schemas were not modified.
+- The UI is more compact, but smaller/shorter viewports may still require internal scrolling. Do not force a 100%-no-scroll claim.
+- iOS sound depends on Safari voice availability and device audio policy; it is **not yet confirmed on a physical iPhone**. A real licensed audio pack is the planned fallback if iOS still fails.
+
+### Validation performed
+- Full JavaScript parsed successfully.
+- Source checks confirmed the existing stroke controls, audio direct-click handler, mobile layout, storage and API paths remain.
+- Simulated speech unit scenarios passed for iOS incomplete/empty voices, desktop absent Japanese voice and desktop present Japanese voice.
+- Compact CSS brace and selector checks passed.
+- Browser visual QA, physical iPhone pronunciation and full repository test suite are pending. Do not merge to `main` yet.
+
+### Local acceptance checklist
+1. GitHub Desktop: Fetch/Pull origin on `develop`; refresh local port 8081.
+2. PC at 100% zoom: Kana chooser scrolls inside its panel, playback controls fit, notes are collapsed but discoverable; no sideways overflow.
+3. Mobile Safari: select `あ` then tap **Nghe âm** manually. Check actual sound and no warning. Repeat with `か`, `し`, and Katakana `ア`. Try auto-read when selecting a new glyph.
+4. Verify three mobile steps, stroke badges, play/pause/replay, canvas writing, undo/clear and saved draft.
+5. If iOS remains silent, capture the warning shown below the toolbar; confirm iPhone volume, Japanese voice and Safari version. Do not publish until diagnosed.
+
+
 ## 2026-11-01 — Kana Writing Studio controls v2 (develop)
 
 This is a continuation of the existing Studio, not a redesign or a second module.
