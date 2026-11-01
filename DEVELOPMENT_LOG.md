@@ -1,5 +1,20 @@
 # Nihongo Path — Development log
 
+## 2026-11-01 — Public Demo export + local Kana audio preparation (develop)
+
+User requested access from iPhone outside the LAN. Current screenshot still showed the pre-v3 header and expanded notes, so the device was likely using an earlier JS/CSS revision; confirm local Pull before concluding v4 layout is broken.
+
+**Prepared, NOT published:** `scripts/build-public-preview.cjs`, `scripts/Prepare-GitHub-Pages.ps1` and `docs/PUBLIC_PREVIEW_DEPLOY.md`.
+- Export copies only static `source/public` assets, removes outdated compare pages, forces demo mode, adjusts PWA manifest for a GitHub Pages subpath, and writes a preview notice. Excludes server, D1 and infrastructure configuration.
+- Primary repo `NihongoPath` remains private on main/develop. GitHub Free requires a different PUBLIC static deployment repo for GitHub Pages; Cloudflare Pages may connect the private GitHub repo instead.
+- Site is not remotely deployed yet. Manual GitHub Desktop publish and Pages Settings, or Cloudflare connection, require user authorization/UI actions.
+- Export output `dist/public-preview` is ignored by git.
+
+**Audio improvement prepared, binary download still pending:** `scripts/Download-Kana-Audio.ps1` downloads 46 public-domain Wikimedia MP3 files with hash + MP3 signature checks and only emits `assets/kana-audio/pack.json` after all files are present. `kana-studio.js` automatically prefers local same-origin MP3 when this manifest is detected; otherwise it uses the existing Commons stream with TTS fallback. The user must run the downloader, commit reviewed MP3 files on develop and physically test iPhone audio.
+
+Acceptance before any real-site integration: successful local Pull, mobile listening of `あ`, `か`, `し`, `ア` over HTTPS, PC non-scrolling workspace with v4 header, clean route navigation and unchanged learner progress behavior. Do not merge to main or original ChatGPT Site.
+
+
 ## 2026-11-01 — Kana v4: viewport workspace + recorded pronunciation (develop)
 
 User QA for v3: **desktop still scrolls too much; iPhone Safari produces no sound**. v3 was not accepted.
