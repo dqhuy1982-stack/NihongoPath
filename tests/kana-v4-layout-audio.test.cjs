@@ -1,43 +1,45 @@
 'use strict';
-// Regression tests for Kana Studio v4. Run with: node --test tests/kana-v4-layout-audio.test.cjs
 const assert=require('node:assert/strict');
 const {test}=require('node:test');
 const {readFileSync}=require('node:fs');
 const {join}=require('node:path');
-const {createHash}=require('node:crypto');
 const root=join(__dirname,'..','source','public');
 const script=readFileSync(join(root,'kana-studio.js'),'utf8');
 const styles=readFileSync(join(root,'kana-studio.css'),'utf8');
+const downloader=readFileSync(join(__dirname,'..','scripts','Download-Kana-Audio.ps1'),'utf8');
 const source=readFileSync(join(root,'kana-data.js'),'utf8');
 const data=JSON.parse(source.slice(source.indexOf('={')+1,source.lastIndexOf(';')));
 const begin=script.indexOf(' const kanaClips={');
 const finish=script.indexOf(' const commonsUrl=',begin);
-if(begin<0||finish<0)throw Error('Missing audio manifest');
+if(begin<0||finish<0)throw Error('Missing base Kana mapping');
 const literal=script.slice(begin,finish).replace(' const kanaClips=','').trim().replace(/;$/,'');
 const clips=Function('return ('+literal+')')();
-test('all 92 Kana characters map to 46 distinct pronunciation clips',()=>{
+test('92 Kana characters share exactly 46 basic spoken sounds',()=>{
  assert.equal(data.characters.length,92);
  const values=new Set(data.characters.map(x=>x.romaji));
  assert.equal(values.size,46);
  assert.equal(Object.keys(clips).length,46);
  for(const k of values)assert.ok(clips[k], 'Missing pronunciation for '+k);
 });
-test('every media hash matches Wikimedia upload normalized filename',()=>{
- for(const [kana,[hash,file]] of Object.entries(clips)){
-  assert.match(file,/\.(?:oga|ogg)$/);
-  const md5=createHash('md5').update(file).digest('hex');
-  assert.equal(hash,md5.slice(0,2),kana+': wrong Commons file path');
- }
+test('download plan uses licensed Kana Sounds, stops on first failure and activates only complete pack',()=>{
+ assert.match(downloader,/huggingface\.co\/datasets\/arsalan-anwari\/kana-sounds\/resolve\/main\/audio\/seion/);
+ assert.match(downloader,/CC BY 4\.0/);
+ assert.match(downloader,/if \(\$success -ne 46\)/);
+ assert.match(downloader,/throw "Audio download stopped:/);
+ assert.match(downloader,/\$pack \| ConvertTo-Json/);
+ assert.doesNotMatch(downloader,/upload\.wikimedia\.org/);
 });
-test('audio is started within direct click/touch handler and reports failure',()=>{
+test('direct user audio gesture prefers same-origin clips; uninstalled pack does not contact Wikimedia',()=>{
  assert.match(script,/if\(action==='speak'\)\{playKana\(glyph\(w\)\);return;\}/);
  assert.match(script,/if\(action==='select'\).*?playKana\(records\.get\(b\.dataset\.char\)\)/);
- assert.match(script,/audio\.src=url;/);
+ assert.match(script,/const url='assets\/kana-audio\/'/);
  assert.match(script,/const attempt=audio\.play\(\)/);
  assert.match(script,/audio\.onerror=setError;/);
- assert.match(script,/source link under Information/);
+ assert.match(script,/if\(!kanaLocalPackReady\)/);
+ assert.match(script,/No sound yet\?/);
+ assert.match(script,/assets\/kana-audio\/ATTRIBUTION\.txt/);
 });
-test('viewport workbench is restricted to kana route and large screens',()=>{
+test('viewport workbench is scoped to Kana Studio and has small-screen fallback',()=>{
  assert.match(script,/classList\.toggle\('ks-page-focus',active\(\)\)/);
  assert.match(styles,/@media\(min-width:1024px\) and \(min-height:680px\)/);
  assert.match(styles,/body\.ks-page-focus #main\{/);
@@ -45,7 +47,7 @@ test('viewport workbench is restricted to kana route and large screens',()=>{
  assert.match(styles,/body\.ks-page-focus #main>\.footnote\{display:none\}/);
  assert.match(styles,/@media\(max-height:679px\)/);
 });
-test('mobile steps, drawing and learner persistence remain present',()=>{
+test('mobile step switching, writing and learner persistence remain intact',()=>{
  assert.match(script,/ks-mobile-\$\{w\.mobileStep\}/);
  assert.match(script,/function paint\(w,canvas\)/);
  assert.match(script,/function refreshControls\(w\)/);
