@@ -27,7 +27,7 @@ if(!studio.includes('playKana(glyph(w))')||!studio.includes('kanaLocalPackReady'
 const audioDir=path.join(source,'assets','kana-audio');
 const audioPackPath=path.join(audioDir,'pack.json');
 if(!fs.existsSync(audioPackPath))throw Error('Missing pack.json. Download all 46 Kana MP3s first.');
-const pack=JSON.parse(fs.readFileSync(audioPackPath,'utf8'));
+const pack=JSON.parse(fs.readFileSync(audioPackPath,'utf8').replace(/^\uFEFF/,''));
 if(pack.schemaVersion!==1||pack.audioFormat!=='mp3'||pack.sounds!==46||pack.license!=='CC BY 4.0')
   throw Error('Audio pack metadata is incomplete or license not verified.');
 const syllables=["a","i","u","e","o","ka","ki","ku","ke","ko","sa","shi","su","se","so","ta","chi","tsu","te","to","na","ni","nu","ne","no","ha","hi","fu","he","ho","ma","mi","mu","me","mo","ya","yu","yo","ra","ri","ru","re","ro","wa","wo","n"];
