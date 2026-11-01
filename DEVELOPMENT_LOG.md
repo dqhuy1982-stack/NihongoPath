@@ -1,5 +1,23 @@
 # Nihongo Path — Development log
 
+## 2026-11-01 — Kana Writing Studio controls v2 (develop)
+
+This is a continuation of the existing Studio, not a redesign or a second module.
+
+- `source/public/kana-studio.js`: playback uses compact, theme-colored line icons; stroke-step buttons show stroke order; numbered markers are positioned near the start of each stroke path; animation and thumbnails update their active stroke together; writing undo/clear buttons use concise icons.
+- `source/public/kana-studio.css`: scoped responsive toolbar with controlled single-row buttons, color variables, stroke states and keyboard-focus visibility.
+- Audio Integrated v1, local draft storage, profiles, lesson APIs, database schema and mobile three-step navigation are unchanged.
+- JavaScript syntax parsing and code-presence checks completed. **Browser, audio and real mobile QA are pending** and must be completed locally before considering this accepted.
+- Changes exist on `develop` only. The `main` branch and published ChatGPT Site remain unchanged.
+
+### Acceptance checks on localhost
+1. At `?mode=demo#kana`, use Hiragana and Katakana (try `あ` and `ア`).
+2. Test Play/Pause/Resume, Previous, Next, Replay, speed, clickable numbered stroke buttons and thumbnails.
+3. Verify the stroke-start badge and active number change together. Test the three mobile steps on a physical phone.
+4. Confirm audio, canvas undo/clear, local drafts and practice confirmation still work.
+5. Capture desktop/mobile screenshots before merging to `main` or the original Site.
+
+
 ## 2026-11-01 — Foundation → Kana Writing Studio entry (develop)
 
 Source: the existing Nihongo Path v15 handoff. This is a development-only update, not a Site release.
