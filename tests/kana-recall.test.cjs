@@ -23,7 +23,7 @@ test('provides voiced, semi-voiced and small-ya/yu/yo combination practice',()=>
 });
 
 test('picks up to 12 different questions and four unique answer options',()=>{
-  for(const group of ['hiragana','katakana','extended','all']){
+  for(const group of ['hiragana','katakana','confusing','extended','all']){
     const deck=M.session(group,{},fixed,NOW);
     assert.equal(deck.length,12);
     assert.equal(new Set(deck.map(x=>x.char)).size,12);
@@ -34,6 +34,17 @@ test('picks up to 12 different questions and four unique answer options',()=>{
       assert.ok(choices.includes(card.romaji));
     }
   }
+});
+
+test('targeted confusing Kana include the full Ha/Ma/Ra rows',()=>{
+  const cards=M.pool('confusing',{});
+  assert.ok(cards.length>=30);
+  for(const glyph of 'はひふへほまみむめもらりるれろハヒフヘホマミムメモラリルレロシツソン'){
+    assert.ok(cards.some(x=>x.char===glyph),'Missing focus Kana '+glyph);
+  }
+  const ha=M.CARDS.find(x=>x.char==='は');
+  const choices=M.options(ha,()=>0.57);
+  assert.ok(choices.includes('ma')&&choices.includes('ra'));
 });
 
 test('does not invent weak cards before there are attempts',()=>{
