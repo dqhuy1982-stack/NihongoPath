@@ -186,6 +186,8 @@ def remote_sync():
 
 def cycle(status_only=False):
     gitdir = validate_context()
+    if not status_only and (gitdir / "nihongo-autosync.conflict").exists():
+        raise RuntimeError("AutoSync paused by an earlier Git conflict. Review the log and resolve manually.")
     c = changes()
     local = c["unstaged"] + c["staged"]
     if status_only:
