@@ -72,3 +72,18 @@
 @media(max-width:767px){.ks-playback-bar{grid-template-columns:minmax(0,1fr) repeat(3,44px)}.ks-playback-bar button{min-height:44px}.ks-writing-tools .ks-write-tool:not(.primary){width:100%}}
 @media(max-width:355px){.ks-playback-bar{grid-template-columns:minmax(0,1fr) repeat(3,40px);gap:5px}.ks-play-primary{font-size:11px;padding:0 5px}}
 @media(prefers-reduced-motion:reduce){.ks-stroke-pin,.ks-control-icon,.ks-play-primary{transition:none}}
+
+/* Kana writing guide v3 — compact stroke selector, no clipping/forced scaling.
+   Keep the established 5-column character picker and square SVG baseline. */
+.ks-watch{min-width:0}
+.ks-watch #ks-guide-svg{min-width:0;max-width:100%;overflow:hidden;border-radius:14px}
+.ks-stroke-sequence{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;justify-content:stretch;margin:4px 0 12px}
+.ks-seq-title{display:block;line-height:1.4;white-space:normal}
+.ks-seq-steps{display:flex;flex-wrap:wrap;align-content:flex-start;gap:7px;overflow:visible;min-width:0;max-width:100%}
+.ks-seq-step{flex:0 0 36px;width:36px;height:36px;min-width:36px;border-radius:10px;line-height:1}
+.ks-watch .ks-svg{max-width:100%;overflow:hidden}
+.ks-watch .ks-glyph-outline{pointer-events:none}
+@media(max-width:767px){
+ .ks-seq-steps{gap:7px}
+ .ks-seq-step{flex-basis:40px;width:40px;height:40px;min-width:40px}
+}
