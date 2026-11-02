@@ -207,10 +207,16 @@ def cycle(status_only=False):
     try:
         with os.fdopen(fd, "w") as lock:
             lock.write(str(os.getpid()))
-        if c["untracked"]:
+        if c["untracked"] and local:
             raise RuntimeError(
-                f"{len(c['untracked'])} new untracked file(s): "
-                "review and manually git add/commit; auto-sync paused.")
+                f"{len(c['untracked'])} untracked file(s) alongside tracked edits: "
+                "manual review required before auto-commit.")
+        if c["untracked"] and not local:
+            # Untracked-only state is not a reason to block fetching safe
+            # remote updates. Git fast-forward refuses to overwrite an
+            # untracked collision, so user files remain protected.
+            log(f"{len(c['untracked'])} untracked file(s) ignored for auto-commit; "
+                "remote sync allowed if Git can fast-forward safely.")
         if c["deleted"]:
             raise RuntimeError(
                 f"{len(c['deleted'])} deleted file(s): manual review required; auto-sync paused.")
