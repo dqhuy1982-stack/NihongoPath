@@ -9,6 +9,7 @@
   const groups=[
     ['hiragana','Hiragana · 46','Hiragana · 46','ひらがな · 46'],
     ['katakana','Katakana · 46','Katakana · 46','カタカナ · 46'],
+    ['confusing','Dễ nhầm · Ha/Ma/Ra','Lookalikes · Ha/Ma/Ra','似た文字 · ハ/マ/ラ'],
     ['extended','Âm đục + âm ghép','Voiced + combined','濁音・拗音'],
     ['all','Trộn tất cả','All Kana mixed','すべて混合'],
     ['weak','Chữ cần ôn lại','Review weak Kana','苦手な文字']
