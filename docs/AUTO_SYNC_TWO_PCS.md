@@ -10,6 +10,7 @@ Status: scripts are in the private source repository on develop. They are NOT en
 - Delays after saving can be approximately 2–4 minutes; this is not live shared editing.
 - Offline or sleeping machines cannot sync until online and the scheduled task runs again.
 - AutoSync never force-pushes, resets files, commits deletions, auto-adds untracked files, changes source main or deploys the public website.
+- If only untracked files exist, AutoSync may still safely pull remote commits, but it never commits those files. If untracked files and tracked edits coexist, auto-commit pauses for manual review. Git refuses a Pull that would overwrite an untracked file.
 - On an automatic rebase conflict it aborts the rebase (retains local commits) and creates a marker in .git/nihongo-autosync.conflict. Further automatic commits/merges pause until the user resolves it.
 - JavaScript syntax, JSON syntax, staged whitespace and a few common secret patterns are checked. This is NOT a substitute for testing, review or secret scanning.
 - Progress saved in a browser's localStorage, databases, passwords and unsaved editor text are NOT synchronized through Git.
