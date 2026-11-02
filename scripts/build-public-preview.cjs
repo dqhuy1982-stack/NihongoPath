@@ -39,6 +39,14 @@ for(const name of syllables){
     (data[0]===255&&(data[1]&224)===224))))throw Error('Invalid MP3 file: '+name+'.mp3');
 }
 if(!html.includes('<script src="kana-studio.js"></script>'))throw Error('Cannot verify original asset entry point. Aborting.');
+if(!fs.existsSync(path.join(source,'kana-stroke-view.js'))||
+   !html.includes('<script src="kana-stroke-view.js"></script>')||
+   html.indexOf('src="kana-stroke-view.js"')>html.indexOf('src="kana-studio.js"'))
+  throw Error('Safe Kana stroke-view helper missing or script order invalid.');
+const strokeView=requireFile('kana-stroke-view.js');
+if(!strokeView.includes('displayPaths')||!strokeView.includes('glyphOutlines')||
+   !studio.includes('V.displayPaths(record)'))
+  throw Error('Kana guide overflow fix is missing. Aborting.');
 // Validate the opt-in Recall Lab is complete before exporting a public release.
 const recallAssets=['kana-recall-model.js','kana-recall.js','kana-recall.css'];
 if(!recallAssets.every(name=>fs.existsSync(path.join(source,name))))
