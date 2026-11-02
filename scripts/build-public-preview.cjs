@@ -39,6 +39,16 @@ for(const name of syllables){
     (data[0]===255&&(data[1]&224)===224))))throw Error('Invalid MP3 file: '+name+'.mp3');
 }
 if(!html.includes('<script src="kana-studio.js"></script>'))throw Error('Cannot verify original asset entry point. Aborting.');
+// Validate the opt-in Recall Lab is complete before exporting a public release.
+const recallAssets=['kana-recall-model.js','kana-recall.js','kana-recall.css'];
+if(!recallAssets.every(name=>fs.existsSync(path.join(source,name))))
+  throw Error('Kana Recall Lab missing an asset. Aborting.');
+if(!html.includes('<link rel="stylesheet" href="kana-recall.css">')||
+   !html.includes('<script src="kana-recall-model.js"></script>')||
+   !html.includes('<script src="kana-recall.js"></script>')||
+   html.indexOf('src="kana-recall-model.js"')>html.indexOf('src="kana-recall.js"')||
+   !studio.includes('data-npr="open"'))
+  throw Error('Kana Recall Lab entry point incomplete. Aborting.');
 if(fs.existsSync(target))fs.rmSync(target,{force:true,recursive:true});
 fs.mkdirSync(target,{recursive:true});
 const files=[];
