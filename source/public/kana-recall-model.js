@@ -44,9 +44,17 @@
     return cards;
   }
   const CARDS=Object.freeze(catalog());
+  const CONFUSABLE_SETS=Object.freeze([
+    'はまら','ひりい','ぬめねれわ','さきち','るろそ',
+    'ハマラ','シツソン','クケタ','スヌ','フワウ'
+  ]);
+  const CONFUSABLE=new Set([...CONFUSABLE_SETS.join('')]);
+  // Include the complete Ha/Ma/Ra rows in the focused deck, not just three glyphs.
+  for(const ch of 'はひふへほまみむめもらりるれろハヒフヘホマミムメモラリルレロ')CONFUSABLE.add(ch);
   const GROUPS=Object.freeze({
     hiragana:c=>c.script==='hiragana'&&c.kind==='basic',
     katakana:c=>c.script==='katakana'&&c.kind==='basic',
+    confusing:c=>c.kind==='basic'&&CONFUSABLE.has(c.char),
     extended:c=>c.kind!=='basic',
     all:()=>true
   });
@@ -93,7 +101,10 @@
   }
   function options(question,random=Math.random){
     const similar=CARDS.filter(c=>c!==question&&c.script===question.script&&c.kind===question.kind&&c.romaji!==question.romaji);
-    const alternatives=shuffle(similar,random).map(c=>c.romaji);
+    const cluster=CONFUSABLE_SETS.find(chars=>chars.includes(question.char))||'';
+    const grouped=similar.filter(c=>cluster.includes(c.char));
+    const other=similar.filter(c=>!cluster.includes(c.char));
+    const alternatives=[...shuffle(grouped,random),...shuffle(other,random)].map(c=>c.romaji);
     const chosen=[];
     for(const value of alternatives)if(!chosen.includes(value)&&chosen.length<3)chosen.push(value);
     if(chosen.length<3){
