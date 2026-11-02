@@ -121,7 +121,11 @@ def preflight_staged():
     )
     if SECRET_RE.search(additions):
         raise RuntimeError("Possible secret in staged changes. Manual review required.")
-    if run("diff", "--cached", "--check", check=False):
+    check = subprocess.run(
+        ["git", "diff", "--cached", "--check"], cwd=ROOT,
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=20
+    )
+    if check.returncode:
         raise RuntimeError("git diff --cached --check found whitespace errors.")
     for path in zfiles("diff", "--cached", "--name-only", "-z"):
         if path.suffix.lower() in (".js", ".cjs", ".mjs"):
@@ -139,6 +143,11 @@ def preflight_staged():
 
 
 def remote_sync():
+    gitdir = Path(run("rev-parse", "--absolute-git-dir").decode().strip())
+    blocked = gitdir / "nihongo-autosync.conflict"
+    if blocked.exists():
+        raise RuntimeError("Earlier sync detected a Git conflict. "
+                           "Review log and resolve manually before enabling automatic updates.")
     run("fetch", "--quiet", "origin", "develop", timeout=60)
     local = run("rev-parse", "HEAD").strip()
     remote = run("rev-parse", "origin/develop").strip()
@@ -156,10 +165,15 @@ def remote_sync():
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=60
         )
         if result.returncode:
-            subprocess.run(["git", "rebase", "--abort"], cwd=ROOT,
-                           stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=40)
+            abort = subprocess.run(["git", "rebase", "--abort"], cwd=ROOT,
+                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=40)
+            if abort.returncode:
+                raise RuntimeError("Git rebase abort failed. Inspect repository manually.")
+            blocked.write_text("A rebase conflict was aborted; local commits are preserved.\n"
+                               "Resolve divergence manually, then delete this marker.\n",
+                               encoding="utf-8")
             raise RuntimeError("Both PCs edited conflicting history; local commits preserved. "
-                               "Resolve manually, no force push.")
+                               "AutoSync now paused until conflict is resolved.")
     result = subprocess.run(
         ["git", "push", "origin", "develop"], cwd=ROOT,
         stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=60
