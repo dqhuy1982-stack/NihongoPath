@@ -9,6 +9,7 @@
  */
 const fs=require('node:fs');
 const path=require('node:path');
+const crypto=require('node:crypto');
 const root=path.resolve(__dirname,'..');
 const source=path.join(root,'source','public');
 const target=path.join(root,'dist','public-preview');
@@ -83,6 +84,24 @@ const previewGuard='<meta name="robots" content="noindex,nofollow">'+
  '<script>(function(){var u=new URL(location.href);if(u.searchParams.get("mode")!=="demo"){u.searchParams.set("mode","demo");history.replaceState(null,"",u.pathname+u.search+u.hash);}})();</script>';
 if(!page.includes('</head>'))throw Error('Missing </head> from index.html');
 page=page.replace('</head>',previewGuard+'</head>');
+// GitHub Pages/browser caches original script paths between releases.
+// Keep original filenames in the artifact, but fingerprint EVERY entrypoint
+// JS/CSS reference in index.html. A changed asset gets a new URL after release.
+let fingerprinted=0;
+page=page.replace(/((?:<script\b[^>]*?\bsrc|<link\b[^>]*?\bhref)=")([^"?]+?\.(?:js|css))(")/gi,(whole,prefix,relative,quote)=>{
+  // Only relative local references, never absolute or external URLs.
+  if(relative.startsWith('/')||relative.includes('..')||relative.includes(':'))return whole;
+  const candidate=path.resolve(target,relative);
+  if(!candidate.startsWith(target+path.sep)||!fs.statSync(candidate,{throwIfNoEntry:false})?.isFile())
+    throw Error('Missing local script/style during fingerprinting: '+relative);
+  const hash=crypto.createHash('sha256').update(fs.readFileSync(candidate)).digest('hex').slice(0,12);
+  fingerprinted++;
+  return prefix+relative+'?v='+hash+quote;
+});
+if(fingerprinted<20)throw Error('Unexpected number of JS/CSS entrypoints fingerprinted: '+fingerprinted);
+if(!page.includes('kana-studio.js?v=')||!page.includes('kana-stroke-view.js?v=')||
+   !page.includes('kana-recall.css?v='))
+  throw Error('Essential Kana assets were not versioned; refusing cached public build.');
 fs.writeFileSync(path.join(target,'index.html'),page,'utf8');
 const manifestPath=path.join(target,'manifest.webmanifest');
 if(fs.existsSync(manifestPath)){
