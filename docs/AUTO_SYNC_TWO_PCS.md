@@ -94,3 +94,16 @@ Uninstall scheduled automation (keeps all files and Git history):
     & .\scripts\Uninstall-Nihongo-Sync.cmd
 
 Never run git push --force, git reset --hard, or git clean to solve sync failures. The conflict marker is a deliberate stop condition and should only be removed after the conflict and Git history have been manually reconciled.
+
+## Optional: pause during complex development
+
+If you need more than a few minutes for a larger or sensitive edit, temporarily pause automation rather than risking an unfinished change being auto-committed:
+
+    New-Item -ItemType File -Path "C:\Dev\NihongoPath\.git\nihongo-autosync.pause" -Force | Out-Null
+
+When tests pass and you are ready to share saved changes, resume:
+
+    Remove-Item "C:\Dev\NihongoPath\.git\nihongo-autosync.pause"
+    py -3 "C:\Dev\NihongoPath\scripts\nihongo-autosync.py" --once
+
+This does not pause GitHub or the other PC. It pauses automation on the CURRENT PC only. Do not delete the separate conflict marker as a workaround.
