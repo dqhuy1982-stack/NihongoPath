@@ -1,7 +1,7 @@
 /* Atelier Kana studio: bundled reference paths, vector drafts, explicit self-practice. */
 (function(){
  'use strict';
- const D=window.NP_KANA_DATA,M=window.NPKanaModel,records=new Map(D.characters.map(c=>[c.char,c])),workspaces=new Map();
+ const D=window.NP_KANA_DATA,M=window.NPKanaModel,V=window.NPKanaStrokeView,records=new Map(D.characters.map(c=>[c.char,c])),workspaces=new Map();
  const tr=(vi,en,ja)=>typeof I==='function'?I(vi,en,ja):vi;
  const copy=v=>JSON.parse(JSON.stringify(v));
  /* Audio is a local preference only: it never updates writing evidence or learner progress. */
@@ -175,8 +175,15 @@
  function revealWorkspace(){if(!matchMedia('(max-width:767px)').matches)return;const content=document.querySelector('.ks-columns'),steps=document.querySelector('.ks-steps'),bar=document.querySelector('.reviewbar');if(content){const target=(bar?.getBoundingClientRect().height||0)+(steps?.getBoundingClientRect().height||0)+12;window.scrollBy({top:content.getBoundingClientRect().top-target,left:0,behavior:'instant'});}}
  function stop(){if(animation)cancelAnimationFrame(animation);animation=0;playState=null;ksPlaybackStatus('stopped');}
  function svg(record,upto,small=false){
-   const lines=record.strokes.map((paths,i)=>paths.map(d=>`<path d="${esc(d)}" class="ks-path" data-stroke="${i}" fill="none" stroke="${i<upto?'#318677':'#bc8234'}" stroke-width="${small?34:30}" stroke-linecap="round" stroke-linejoin="round" opacity="${i<=upto?1:0}"/>`).join('')).join('');
-   const ghost=record.strokes.flat().map(d=>`<path d="${esc(d)}" fill="none" stroke="#cdd6df" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>`).join('');
+   // Use ONE valid primary writing trajectory for each pen stroke. AnimCJK
+   // includes extended alternate branches for some glyphs (e.g. ぬ, め, ほ).
+   // Those branches must not be drawn: they extend beyond the 1024 canvas.
+   const lines=V.displayPaths(record).map((d,i)=>`<path d="${esc(d)}" class="ks-path" data-stroke="${i}" fill="none" stroke="${i<upto?'#318677':'#bc8234'}" stroke-width="${small?36:38}" stroke-linecap="round" stroke-linejoin="round" opacity="${i<=upto?1:0}"/>`).join('');
+   // Authentic glyph outlines are already curved. Show them as a faint guide
+   // instead of tracing every straight/auxiliary centerline as a ghost.
+   const shapes=V.glyphOutlines(record);
+   const ghost=shapes.length?shapes.map(d=>`<path d="${esc(d)}" class="ks-glyph-outline" fill="#dbe3e9"/>`).join(''):
+     V.displayPaths(record).map(d=>`<path d="${esc(d)}" fill="none" stroke="#cdd6df" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/>`).join('');
    return `<svg viewBox="0 0 1024 1024" role="img" aria-label="${esc(record.char)} · ${tr('nét','stroke','画')} ${upto+1}" class="ks-svg ${small?'ks-svg-small':''}"><rect width="1024" height="1024" rx="28" fill="#fafcff"/><path d="M512 24V1000M24 512H1000" stroke="#c8d5df" stroke-width="4" stroke-dasharray="14 16"/>${ghost}${lines}${small?'':'<circle class="ks-pen" r="20" fill="#fff7dc" stroke="#258473" stroke-width="8"/><circle class="ks-pen-tip" r="6" fill="#258473"/>'}</svg>`;
  }
  function pathProgress(record,phase,progress){
