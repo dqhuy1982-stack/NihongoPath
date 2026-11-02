@@ -186,6 +186,8 @@ def remote_sync():
 
 def cycle(status_only=False):
     gitdir = validate_context()
+    if not status_only and (gitdir / "nihongo-autosync.pause").exists():
+        raise RuntimeError("Paused intentionally for a larger edit; remove pause marker when ready.")
     if not status_only and (gitdir / "nihongo-autosync.conflict").exists():
         raise RuntimeError("AutoSync paused by an earlier Git conflict. Review the log and resolve manually.")
     c = changes()
