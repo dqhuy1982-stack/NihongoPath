@@ -1,0 +1,80 @@
+/* Standalone Kana recall dialog; does not alter Writing Studio grids or canvas. */
+.ks-recall-bar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:12px 0 4px;padding:13px 16px;background:var(--lesson-soft,#edf1e7);border:1px solid var(--line);border-radius:14px}
+.ks-recall-bar>div{min-width:0;display:flex;flex-direction:column;gap:2px}
+.ks-recall-bar strong{font-size:13px;color:var(--text)}
+.ks-recall-bar span{font-size:11px;color:var(--muted)}
+.ks-recall-launch{flex:none;min-height:42px;white-space:nowrap}
+.npr-dialog{box-sizing:border-box;width:min(600px,calc(100% - 24px));max-width:600px;max-height:min(92dvh,830px);margin:auto;padding:0;color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:0 28px 90px #0b1d3652;overflow-y:auto;overscroll-behavior:contain}
+.npr-dialog::backdrop{background:#08172ab5;backdrop-filter:blur(3px)}
+.npr-shell{padding:clamp(18px,4vw,28px);min-width:0}
+.npr-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.npr-header h2{font-size:clamp(22px,4vw,29px);margin:4px 0}
+.npr-header p{font-size:12px;color:var(--muted);margin:0}
+.npr-eyebrow{font-weight:700;color:var(--green);font-size:10px;letter-spacing:1.5px}
+.npr-close{flex:0 0 40px;width:40px;height:40px;display:grid;place-items:center;border:1px solid var(--line);border-radius:50%;background:var(--surface);color:var(--text);font-size:25px;line-height:1}
+.npr-close:hover{background:var(--lesson-soft,#edf1e7)}
+.npr-warning{border:1px solid #dfc28d;background:#fff8e7;padding:10px 12px;border-radius:10px;font-size:12px;margin:16px 0}
+.npr-intro{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:22px 0}
+.npr-stats{display:flex;flex-direction:column;gap:3px;padding:15px;background:var(--bg);border:1px solid var(--line);border-radius:13px}
+.npr-stats strong{font-size:27px;line-height:1.1;font-weight:700}
+.npr-stats span{font-size:11px;color:var(--muted)}
+.npr-section-title{font-family:var(--sans);font-size:13px;margin:18px 0 10px}
+.npr-decks{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.npr-deck{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:4px;min-height:74px;border:1px solid var(--line);border-radius:13px;padding:13px;text-align:left;background:var(--surface);color:var(--text);transition:border-color .15s,background .15s}
+.npr-deck:first-child{background:var(--lesson-soft,#edf1e7)}
+.npr-deck:hover:not(:disabled){border-color:var(--green);background:var(--lesson-soft,#edf1e7)}
+.npr-deck strong{font-size:13px}
+.npr-deck span{font-size:11px;color:var(--muted)}
+.npr-hint{font-size:12px;color:var(--muted);line-height:1.7;margin:16px 0 2px}
+.npr-foot{border-top:1px solid var(--line);padding-top:14px;margin-top:22px;font-size:11px;color:var(--muted);line-height:1.65}
+.npr-quiz-top{display:flex;justify-content:space-between;align-items:center;margin-top:24px;gap:8px;font-size:12px;color:var(--muted)}
+.npr-quiz-top strong{color:var(--text);font-variant-numeric:tabular-nums}
+.npr-progress{height:5px;background:var(--line);border-radius:50px;margin-top:10px;overflow:hidden}
+.npr-progress span{display:block;height:100%;background:var(--green);transition:width .2s}
+.npr-character{display:grid;place-items:center;min-height:148px;margin:16px 0 10px;background:var(--bg);border:1px solid var(--line);border-radius:16px;font-family:'Noto Sans JP','Yu Gothic',sans-serif;font-size:clamp(72px,16vw,108px);line-height:1.2;font-weight:450}
+.npr-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.npr-option{display:flex;gap:11px;align-items:center;justify-content:flex-start;min-height:58px;padding:10px 14px;color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:12px;text-align:left}
+.npr-option>span{display:grid;place-items:center;width:27px;height:27px;flex:none;border-radius:7px;background:var(--bg);font-size:12px;color:var(--muted)}
+.npr-option strong{font-size:17px;letter-spacing:.25px}
+.npr-option:hover:not(:disabled){border-color:var(--green);background:var(--lesson-soft,#edf1e7)}
+.npr-option.correct{background:#e3f3e9;border-color:#4c9a71;color:#225c3b}
+.npr-option.incorrect{background:#faeeee;border-color:#c68181;color:#8a3333}
+.npr-option:disabled{opacity:1;cursor:default}
+.npr-prompt{font-size:12px;color:var(--muted);margin:14px 0 0}
+.npr-feedback{display:flex;gap:4px;flex-direction:column;margin:13px 0 0;padding:12px 14px;border:1px solid var(--line);border-radius:12px}
+.npr-feedback.ok{background:#e8f6ed;border-color:#a8d6b6;color:#225c3b}
+.npr-feedback.miss{background:#fff2ea;border-color:#e5c2a2;color:#854b30}
+.npr-feedback strong{font-size:13px}
+.npr-feedback span{font-size:12px}
+.npr-actions{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-top:15px}
+.npr-link{border:0;background:transparent;color:var(--muted);text-decoration:underline;text-underline-offset:3px;padding:12px 2px;font-size:12px}
+.npr-next{background:var(--navy);color:#fff;border:1px solid var(--navy);border-radius:11px;padding:12px 18px;min-height:46px;font-weight:650;font-size:13px}
+.npr-next:hover{filter:brightness(1.15)}
+.npr-summary{margin:20px 0 0}
+.npr-summary h3{margin:5px 0 12px;font-family:var(--serif);font-size:23px}
+.npr-summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.npr-summary-grid>div{display:flex;flex-direction:column;gap:4px;padding:17px 14px;border-radius:12px;background:var(--bg);border:1px solid var(--line)}
+.npr-summary-grid strong{font-size:28px;font-variant-numeric:tabular-nums}
+.npr-summary-grid span{font-size:11px;color:var(--muted)}
+.npr-summary>p{margin:15px 0;color:var(--muted);font-size:12px;line-height:1.7}
+.npr-dialog button:focus-visible,.ks-recall-launch:focus-visible{outline:3px solid #3676ba;outline-offset:3px}
+@media(max-width:767px){
+  .ks-recall-bar{align-items:stretch;gap:9px}
+  .ks-recall-bar>div{justify-content:center}
+  .ks-recall-launch{white-space:normal;max-width:48%;line-height:1.4}
+  .npr-dialog{width:calc(100% - 16px);max-height:94dvh;border-radius:17px}
+  .npr-shell{padding:18px}
+  .npr-character{min-height:126px}
+  .npr-decks{grid-template-columns:1fr 1fr}
+}
+@media(max-width:390px){
+  .ks-recall-bar{flex-direction:column}
+  .ks-recall-launch{max-width:none;width:100%}
+  .npr-options{gap:7px}
+  .npr-option{min-height:54px;padding:8px;gap:8px}
+  .npr-character{min-height:112px}
+  .npr-deck{min-height:66px;padding:10px}
+}
+@media(prefers-reduced-motion:reduce){
+  .npr-dialog *{transition:none!important}
+}
