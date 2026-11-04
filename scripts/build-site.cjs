@@ -10,11 +10,15 @@
 const fs=require('node:fs');
 const path=require('node:path');
 const crypto=require('node:crypto');
+const cp=require('node:child_process');
 
 const root=path.resolve(__dirname,'..');
 const preview=path.join(root,'dist','public-preview');
 const dest=path.join(root,'dist','site');
 
+// Gate publication on the regression tests used by existing reviewed workflow.
+const tests=['tests/kana-recall.test.cjs','tests/kana-stroke-view.test.cjs','tests/kana-speed-control.test.cjs'];
+cp.execFileSync(process.execPath,['--test',...tests],{cwd:root,stdio:'inherit'});
 // Reuse the already validated, static-only export. Never expose backend source.
 require('./build-public-preview.cjs');
 if(!fs.existsSync(path.join(preview,'index.html')))throw Error('Missing validated static preview');
