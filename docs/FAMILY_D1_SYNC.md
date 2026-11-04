@@ -19,6 +19,15 @@
 Run from `C:\Dev\NihongoPath` after committing or backing up any uncommitted changes.
 Use only the reviewed branch; do not discard existing local work.
 
+**Easiest:** After switching and pulling this feature branch, run
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Start-Nihongo-Family-Sync.ps1
+```
+The launcher generates a local-only code if absent, builds sync assets, migrates local
+D1 and starts Wrangler on 127.0.0.1:8787. It never deploys a remote Worker.
+To get the code for pairing on the *local machine only*, read `.dev.vars`
+privately. Do not share its contents in chat or screenshots.
+
 ```powershell
 git fetch origin
 git switch feature/family-one-tap-entry
