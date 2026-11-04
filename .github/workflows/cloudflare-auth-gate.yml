@@ -3,7 +3,10 @@ name: Cloudflare backend security gate
 on:
   push:
     branches:
-      - feature/cloudflare-d1-auth-gate
+      - develop
+  pull_request:
+    branches:
+      - develop
   workflow_dispatch:
 
 permissions:
