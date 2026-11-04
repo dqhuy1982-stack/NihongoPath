@@ -9,6 +9,17 @@ if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
 if (-not (Get-Command npx -ErrorAction SilentlyContinue)) {
   throw 'npx is required. Install Node.js / npm before running.'
 }
+# Root package.json already declares jose; it must be installed for Wrangler's
+# static Worker bundle even when family-key authentication is used.
+Write-Host 'Checking local Worker dependencies...'
+& node --input-type=module -e "import('jose').catch(() => process.exit(1))"
+if ($LASTEXITCODE -ne 0) {
+  Write-Host 'Required jose package is missing. Installing declared dependencies locally...'
+  & npm install --no-audit --no-fund
+  if ($LASTEXITCODE -ne 0) { throw 'npm install failed; cannot start local Worker.' }
+  & node --input-type=module -e "import('jose').catch(() => process.exit(1))"
+  if ($LASTEXITCODE -ne 0) { throw 'jose dependency is still unavailable.' }
+}
 if (-not (Test-Path (Join-Path $root '.dev.vars'))) {
   $bytes = New-Object byte[] 32
   $generator = [System.Security.Cryptography.RandomNumberGenerator]::Create()
