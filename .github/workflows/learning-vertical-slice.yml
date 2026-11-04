@@ -3,7 +3,10 @@ name: Learning vertical slice QA
 on:
   push:
     branches:
-      - feature/learning-vertical-slice
+      - develop
+  pull_request:
+    branches:
+      - develop
   workflow_dispatch:
 
 permissions:
