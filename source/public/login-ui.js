@@ -14,6 +14,18 @@ window.NPLogin=(function(){
       <p class="portal-entry-hint">${icon('lock')} ${tr('Chọn ảnh để nhập mã truy cập.','Select a portrait to enter your code.','写真を選ぶと入力画面が開きます。')}</p>
       <div class="portal-guest-row">${button(icon('leaf')+`<span>${tr('Khám phá với tư cách khách','Explore as a guest','ゲストとして体験')}</span>`,'portal-guest','portal-guest')}${link(tr('Hồ sơ khác','Other profiles','ほかのプロフィール'),'profiles','textlink')}</div>
       <div class="atelier-access-links portal-access-links">${link(tr('Tôi có mã mời','I have an invitation','招待コードを持っています')+icon('arrow'),'invite','')}<span>${tr('Bản trải nghiệm · dùng mã mẫu','Prototype · sample access code','体験版・サンプルコード')}</span></div>`;
+    if(window.NP_STATIC_PUBLISH){
+      // The public static build is a local-only learning demo, never real auth.
+      // Remove demo password and invitation prompts from its avatar entry.
+      section.querySelector('.portal-guest-row')?.remove();
+      section.querySelector('.portal-access-links')?.remove();
+      const hint=section.querySelector('.portal-entry-hint');
+      if(hint)hint.textContent=tr('Chọn ảnh để vào học. Tiến độ chỉ lưu trên thiết bị này.','Choose your portrait to learn. Progress stays on this device.','写真を選んで学習を始めましょう。記録はこの端末のみ保存されます。');
+      section.querySelectorAll('[data-action="loginprofile"]').forEach(button=>{
+        button.removeAttribute('aria-haspopup');
+        button.setAttribute('aria-label',tr('Vào học ','Open learning space for ','学習を開く：')+(db.profiles.find(p=>p.id===button.dataset.id)?.name||''));
+      });
+    }
     return template.innerHTML;
   }
   function open(id,buttonElement){
@@ -38,6 +50,22 @@ window.NPLogin=(function(){
       if(dialog.open&&document.activeElement?.id==='demo-access-code')document.activeElement.scrollIntoView({block:'nearest',inline:'nearest',behavior:'instant'});
     });
   }
+  // A one-tap picker for static, browser-only family learning.
+  // Production/server-backed profiles use the independent verified API path.
+  document.addEventListener('click',event=>{
+    if(!window.NP_STATIC_PUBLISH||route()!=='login')return;
+    const button=event.target.closest('[data-action="loginprofile"]');
+    if(!button)return;
+    const p=db.profiles.find(p=>p.id===button.dataset.id&&!p.archived&&p.role!=='guest');
+    if(!p)return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    db.current=p.id;
+    loginSelected=p.id;
+    resetLearningView();
+    persist();
+    go(p.onboarded?'today':'onboarding');
+  },true);
   document.addEventListener('click',event=>{
     if(event.target.closest('[data-locale]')&&route()==='login')queueMicrotask(()=>{
       render(false);document.querySelector(`.atelier-header [data-locale="${Locale.code}"]`)?.focus({preventScroll:true});
