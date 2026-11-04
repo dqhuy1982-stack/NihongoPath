@@ -45,6 +45,14 @@ if(!/src="pilot-online\.js\?v=[a-f0-9]{12}"/.test(html))
 html=html.replace(/src="pilot-online\.js\?v=[a-f0-9]{12}"/,'src="pilot-online.js?v='+hash+'"');
 html=html.replace('<title>Nihongo Path · Review toàn bộ giao diện</title>','<title>Nihongo Path · Học tiếng Nhật</title>');
 html=html.replace('Design review · Prototype','Nihongo Path');
+// The shipped family screen must not expose developer device simulators,
+// scenario tools or the sitemap review bar. Keep source/public untouched.
+// Other app layouts use --review-height for fixed navigation offsets.
+const familyChrome='<style id="np-family-static-ui">:root{--review-height:0px}.reviewbar{display:none!important}</style>';
+if(!html.includes('<\/head>')||!html.includes('class="reviewbar"'))
+ throw Error('Static review chrome changed; review the family build before publishing');
+html=html.replace('<\/head>',familyChrome+'<\/head>');
+if(!html.includes(familyChrome))throw Error('Family static chrome cleanup missing');
 // No URL ?mode=demo is required in published site; the app remains client-only.
 if(html.includes('searchParams.set("mode","demo")'))throw Error('Demo URL rewrite remains');
 if(!html.includes('window.NP_STATIC_PUBLISH=true;'))throw Error('Static deployment guard missing');
