@@ -51,6 +51,29 @@ Open local Wrangler URL, normally `http://127.0.0.1:8787`. It should show the pu
 
 Local D1 uses Wrangler's separate emulation, not `nihongopath-dev` remote. Never copy `.dev.vars` into git, screenshots, or a public issue.
 
+## Remote D1 preflight — after local learning is confirmed
+
+Do not assume that local progress is in remote D1. The user has completed local
+practice and the current `.wrangler/state/v3/d1` data must be retained.
+
+Stop `wrangler dev` gracefully (`x`), then:
+
+```powershell
+cd C:\Dev\NihongoPath
+git pull --ff-only origin feature/family-one-tap-entry
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Prepare-Nihongo-Remote-Sync.ps1
+```
+
+This script creates separate local and remote D1 SQL backups under
+`.private-backups/`, checks remote D1 metadata and pending migrations, but
+**never** modifies remote D1, uploads local records, creates Workers or changes Access.
+
+Confirm whether remote `family:primary` records already exist before planning
+any selective transfer. Never import the complete local SQL dump over an existing
+remote schema without checking duplicate owners, migration tables and profile
+revision semantics. Import/sync of completed local learning remains a separate
+reviewed migration, not part of the preflight.
+
 ## Before any Internet-facing test
 1. Complete GitHub learning QA, family key tests and Worker dry-run build. Confirm all pass.
 2. Do not assume Cloudflare Access policies protect the public preview; they were removed at user request.
