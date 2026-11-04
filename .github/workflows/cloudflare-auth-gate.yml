@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - develop
+      - feature/d1-dev-binding
   pull_request:
     branches:
       - develop
@@ -31,6 +32,8 @@ jobs:
           node tools/audit-learning-data.mjs
       - name: Verified Access identity and real SQLite-backed API tests
         run: node --test tests/cloudflare-access-gateway.test.mjs source/tests/pilot-api.test.mjs
+      - name: Validate D1 development binding and family schema proposal
+        run: node --test tests/d1-dev-config.test.mjs
       - name: Static site regression build
         run: node scripts/build-site.cjs
       - name: Dry-run bundle only; no Cloudflare deploy
