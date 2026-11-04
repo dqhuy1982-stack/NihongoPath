@@ -5,3 +5,7 @@
 #np-family-connect-form{display:grid;gap:14px;margin-top:18px}
 #np-family-connect-error{min-height:1.5em;color:var(--error,#a13d3d)}
 @media(max-width:600px){#np-family-connect{right:12px;bottom:max(74px,calc(env(safe-area-inset-bottom) + 65px));font-size:12px;padding:10px 14px}}
+
+#np-family-sync-status{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:999px;padding:5px 10px;color:var(--green);font-size:11px;white-space:nowrap}
+#np-family-sync-status.error{color:var(--error,#a13d3d)}
+@media(max-width:600px){#np-family-sync-status{font-size:10px;padding:4px 7px}}
