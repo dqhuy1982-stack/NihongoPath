@@ -1,4 +1,4 @@
-# NIHONGO PATH — prepare a safe update for the EXISTING public demo repository.
+# NIHONGO PATH - prepare a safe update for the EXISTING public demo repository.
 # Use AFTER Pull develop and successful Prepare-GitHub-Pages.ps1 export.
 # It NEVER pushes or publishes automatically. Open result in GitHub Desktop to review.
 $ErrorActionPreference = "Stop"
@@ -53,7 +53,7 @@ $copied = @(Get-ChildItem -LiteralPath (Join-Path $dest "assets\kana-audio") -Fi
 if ($copied.Count -ne 46) { throw "Audio copy mismatch; no commit/push was performed." }
 
 Write-Host ""
-Write-Host "READY — new static files copied into EXISTING GitHub public repository clone:" -ForegroundColor Green
+Write-Host "READY - static files copied into the existing public demo clone:" -ForegroundColor Green
 Write-Host $dest
 Write-Host "Git remote: $actualRemote; branch: $currentBranch; audio: $($copied.Count)/46"
 Write-Host "No commit or push has been performed."
