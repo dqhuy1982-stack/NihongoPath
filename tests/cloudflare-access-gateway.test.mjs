@@ -79,7 +79,7 @@ test('Access verifier rejects wrong audience, issuer, expiry, email and forged t
     await token({issuer:'https://wrong.cloudflareaccess.com'}),
     await token({exp:'-10m'}),
     await token({email:'outsider@example.test'}),
-    (await token()).slice(0,-1)+'X',
+    await (async()=>{const parts=(await token()).split('.');parts[1]=parts[1].slice(0,10)+(parts[1][10]==='a'?'b':'a')+parts[1].slice(11);return parts.join('.');})(),
   ];
   const expected=[401,401,401,403,401];
   for(let i=0;i<invalid.length;i++){
