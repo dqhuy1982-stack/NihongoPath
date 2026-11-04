@@ -1,16 +1,24 @@
 {
-  // STAGING TEMPLATE ONLY: do not replace wrangler.jsonc until Access
-  // has been configured, a D1 database has been provisioned and checked,
-  // and production login/learner data migration has been reviewed.
-  "name": "nihongopath",
+  // DEVELOPMENT ONLY. Do NOT use this file to deploy the live "nihongopath"
+  // Worker. Production stays on unchanged root wrangler.jsonc.
+  // The ID below was provided for the separate Cloudflare D1 database.
+  "name": "nihongopath-d1-sandbox",
   "compatibility_date": "2026-11-03",
   "main": "./workers/nihongopath-api.mjs",
   "assets": {
     "directory": "./dist/site",
     "binding": "ASSETS",
     "run_worker_first": ["/api/*"]
-  }
-  // Add a real d1_databases entry only AFTER creating the database.
-  // Set ACCESS_TEAM_DOMAIN, ACCESS_AUD and ACCESS_ALLOWED_EMAILS in
-  // a reviewed deployment config; empty/missing settings fail closed.
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "nihongopath-dev",
+      "database_id": "8504e0d8-c7a5-490d-ab40-a7590cd9af9d",
+      "migrations_dir": "source/drizzle"
+    }
+  ]
+  // Cloudflare Access requires verified ACCESS_TEAM_DOMAIN,
+  // ACCESS_AUD and ACCESS_ALLOWED_EMAILS before any API can operate.
+  // Do not add secrets or tokens to source control.
 }
