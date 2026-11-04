@@ -54,6 +54,8 @@ window.NPLogin=(function(){
   // Production/server-backed profiles use the independent verified API path.
   document.addEventListener('click',event=>{
     if(!window.NP_STATIC_PUBLISH||route()!=='login')return;
+    // When paired, let the D1 adapter apply its save-before-switch guards.
+    if(window.NP_FAMILY_SYNC&&localStorage.getItem('np-family-sync-key-v1'))return;
     const button=event.target.closest('[data-action="loginprofile"]');
     if(!button)return;
     const p=db.profiles.find(p=>p.id===button.dataset.id&&!p.archived&&p.role!=='guest');
