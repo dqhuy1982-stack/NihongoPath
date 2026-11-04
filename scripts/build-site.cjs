@@ -1,0 +1,76 @@
+'use strict';
+/**
+ * Publishable, client-only Nihongo Path website from the single private source.
+ * This is a deployment artifact, NOT another repository or working copy.
+ * No real authentication or cross-device learner data sync is enabled.
+ *
+ * Cloudflare Pages: build command = node scripts/build-site.cjs
+ *                   output directory = dist/site
+ */
+const fs=require('node:fs');
+const path=require('node:path');
+const crypto=require('node:crypto');
+
+const root=path.resolve(__dirname,'..');
+const preview=path.join(root,'dist','public-preview');
+const dest=path.join(root,'dist','site');
+
+// Reuse the already validated, static-only export. Never expose backend source.
+require('./build-public-preview.cjs');
+if(!fs.existsSync(path.join(preview,'index.html')))throw Error('Missing validated static preview');
+fs.rmSync(dest,{recursive:true,force:true});
+fs.cpSync(preview,dest,{recursive:true});
+
+const indexPath=path.join(dest,'index.html');
+let html=fs.readFileSync(indexPath,'utf8');
+const guard='<meta name="robots" content="noindex,nofollow"><script>(function(){var u=new URL(location.href);if(u.searchParams.get("mode")!=="demo"){u.searchParams.set("mode","demo");history.replaceState(null,"",u.pathname+u.search+u.hash);}})();</script>';
+if(!html.includes(guard))throw Error('Unexpected static preview guard; no public site built');
+html=html.replace(guard,'<script>window.NP_STATIC_PUBLISH=true;</script>');
+// The current public release is static. Never try the server-only /api/pilot path.
+const pilotPath=path.join(dest,'pilot-online.js');
+let pilot=fs.readFileSync(pilotPath,'utf8');
+const marker=" 'use strict';\n";
+if(!pilot.includes(marker)||!pilot.includes("fetch('/api/pilot/"))
+ throw Error('Pilot server adapter changed; review before public release');
+pilot=pilot.replace(marker,marker+' if(window.NP_STATIC_PUBLISH)return;\n');
+fs.writeFileSync(pilotPath,pilot,'utf8');
+// Build-public-preview fingerprints every script and stylesheet; refresh only modified pilot.
+const hash=crypto.createHash('sha256').update(fs.readFileSync(pilotPath)).digest('hex').slice(0,12);
+if(!/src="pilot-online\.js\?v=[a-f0-9]{12}"/.test(html))
+ throw Error('Cannot find versioned pilot adapter');
+html=html.replace(/src="pilot-online\.js\?v=[a-f0-9]{12}"/,'src="pilot-online.js?v='+hash+'"');
+html=html.replace('<title>Nihongo Path · Review toàn bộ giao diện</title>','<title>Nihongo Path · Học tiếng Nhật</title>');
+html=html.replace('Design review · Prototype','Nihongo Path');
+// No URL ?mode=demo is required in published site; the app remains client-only.
+if(html.includes('searchParams.set("mode","demo")'))throw Error('Demo URL rewrite remains');
+if(!html.includes('window.NP_STATIC_PUBLISH=true;'))throw Error('Static deployment guard missing');
+fs.writeFileSync(indexPath,html,'utf8');
+
+const manifestPath=path.join(dest,'manifest.webmanifest');
+if(fs.existsSync(manifestPath)){
+ const manifest=JSON.parse(fs.readFileSync(manifestPath,'utf8'));
+ manifest.id='./';
+ manifest.start_url='./#login';
+ manifest.scope='./';
+ fs.writeFileSync(manifestPath,JSON.stringify(manifest,null,2)+'\n','utf8');
+}
+const notice=path.join(dest,'PREVIEW_NOTICE.txt');
+if(fs.existsSync(notice))fs.rmSync(notice);
+fs.writeFileSync(path.join(dest,'SITE_STATUS.txt'),[
+ 'NIHONGO PATH - PUBLIC WEBSITE',
+ 'Built directly from the single private NihongoPath/develop source.',
+ 'Current implementation is client-side only. No production authentication.',
+ 'Learner data stays in this browser; progress does NOT sync across devices.',
+ 'Demo access codes are samples only: do not enter real passwords or personal data.',
+ 'No backend, D1 database, server code, source secrets or private repo data is shipped.',
+ 'Kana audio: 46 locally bundled CC BY 4.0 recordings; see assets/kana-audio/ATTRIBUTION.txt.',
+ ''
+].join('\n'),'utf8');
+
+const clips=fs.readdirSync(path.join(dest,'assets','kana-audio')).filter(x=>x.endsWith('.mp3'));
+if(clips.length!==46||!fs.existsSync(path.join(dest,'kana-recall.js'))||
+ !fs.existsSync(path.join(dest,'kana-stroke-view.js'))||
+ !fs.existsSync(path.join(dest,'.nojekyll')))throw Error('Incomplete public site export');
+console.log(JSON.stringify({status:'ready',output:'dist/site',sourceBranch:'develop',
+ siteMode:'static-client-only',audioClips:clips.length,liveBackend:false,
+ published:false},null,2));
