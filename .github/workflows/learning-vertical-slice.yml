@@ -1,0 +1,31 @@
+name: Learning vertical slice QA
+
+on:
+  push:
+    branches:
+      - feature/learning-vertical-slice
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  learning-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Check edited JavaScript syntax
+        run: |
+          node --check source/public/app.js
+          node --check source/public/content-catalog.js
+          node --check source/public/lesson-ui.js
+      - name: Audit authored content and sample fixtures
+        run: node tools/audit-learning-data.mjs
+      - name: Run learning regression tests
+        run: node --test source/tests/learning-vertical-slice.test.cjs source/tests/lesson-engine.test.cjs source/tests/content-model.test.cjs
+      - name: Validate full static export without deploying
+        run: node scripts/build-site.cjs
