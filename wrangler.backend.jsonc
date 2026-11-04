@@ -20,7 +20,8 @@
       "migrations_dir": "source/drizzle"
     }
   ]
-  // Cloudflare Access requires verified ACCESS_TEAM_DOMAIN,
-  // ACCESS_AUD and ACCESS_ALLOWED_EMAILS before any API can operate.
-  // Do not add secrets or tokens to source control.
+  // Family sync mode: configure a 32+ character FAMILY_SYNC_KEY as a Worker
+  // secret before making this sandbox public. Never commit it or put it in vars.
+  // Without a family secret (or verified Cloudflare Access), the API fails closed.
+  // Keep workers_dev=false until security and data isolation are tested.
 }
