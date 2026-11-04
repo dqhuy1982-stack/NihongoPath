@@ -29,10 +29,10 @@ html=html.replace(guard,'<script>window.NP_STATIC_PUBLISH=true;</script>');
 // The current public release is static. Never try the server-only /api/pilot path.
 const pilotPath=path.join(dest,'pilot-online.js');
 let pilot=fs.readFileSync(pilotPath,'utf8');
-const marker=" 'use strict';\n";
-if(!pilot.includes(marker)||!pilot.includes("fetch('/api/pilot/"))
+const marker=/((?:\\(function\\(\\)\\{)\\r?\\n\\s*'use strict';\\r?\\n)/;
+if(!marker.test(pilot)||!pilot.includes("fetch('/api/pilot/"))
  throw Error('Pilot server adapter changed; review before public release');
-pilot=pilot.replace(marker,marker+' if(window.NP_STATIC_PUBLISH)return;\n');
+pilot=pilot.replace(marker,(match)=>match+' if(window.NP_STATIC_PUBLISH)return;\n');
 fs.writeFileSync(pilotPath,pilot,'utf8');
 // Build-public-preview fingerprints every script and stylesheet; refresh only modified pilot.
 const hash=crypto.createHash('sha256').update(fs.readFileSync(pilotPath)).digest('hex').slice(0,12);
