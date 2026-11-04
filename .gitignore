@@ -5,3 +5,7 @@
 .env.*
 !.env.example
 .DS_Store
+
+# Local Wrangler secrets and emulated D1 state
+.dev.vars*
+.wrangler/
