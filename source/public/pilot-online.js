@@ -2,6 +2,51 @@
 (function(){
  'use strict';
  if(new URLSearchParams(location.search).get('mode')==='demo'||location.pathname!=='/')return;
+ const familyMode=!!window.NP_FAMILY_SYNC;
+ const familyKeyName='np-family-sync-key-v1';
+ const familyKey=()=>localStorage.getItem(familyKeyName)||'';
+ // Unpaired devices open the existing local learning UI, not a login wall.
+ if(familyMode&&!familyKey()){
+   document.addEventListener('DOMContentLoaded',()=>{
+     const button=document.createElement('button');
+     button.type='button';button.id='np-family-connect';
+     button.className='btn primary';button.textContent='Bật đồng bộ gia đình';
+     document.body.append(button);
+     button.addEventListener('click',()=>{
+       modal('Đồng bộ tiến độ giữa PC và iPhone',
+         '<p>Nhập mã gia đình một lần trên thiết bị này. Mã không nằm trong link, và không cần nhập lại mỗi lần học.</p>'+
+         '<form id="np-family-connect-form" autocomplete="off">'+
+         '<label for="np-family-secret">Mã gia đình</label>'+
+         '<input id="np-family-secret" name="secret" type="password" minlength="32" maxlength="256" required autocomplete="off" spellcheck="false">'+
+         '<p id="np-family-connect-error" class="small" role="alert"></p>'+
+         '<div class="actions"><button type="submit" class="btn primary">Kết nối D1</button><button type="button" class="btn" data-close>Tiếp tục học trên thiết bị</button></div></form>'+
+         '<p class="small">Dữ liệu đang lưu trong trình duyệt sẽ không tự ghi đè dữ liệu trên D1.</p>');
+       document.querySelector('#np-family-secret')?.focus({preventScroll:true});
+     });
+     document.addEventListener('submit',async event=>{
+       if(event.target.id!=='np-family-connect-form')return;
+       event.preventDefault();event.stopImmediatePropagation();
+       const input=event.target.querySelector('[name="secret"]'),key=input.value.trim();
+       const errorEl=event.target.querySelector('#np-family-connect-error');
+       const submit=event.target.querySelector('[type="submit"]');
+       if(key.length<32){errorEl.textContent='Mã cần ít nhất 32 ký tự.';return;}
+       submit.disabled=true;errorEl.textContent='Đang kiểm tra kết nối…';
+       try{
+         const response=await fetch('/api/pilot/bootstrap',{
+           method:'GET',cache:'no-store',credentials:'same-origin',
+           headers:{'x-nihongo-family-key':key}
+         });
+         if(!response.ok)throw Error(response.status===403||response.status===401
+           ?'Mã gia đình chưa đúng.':'Backend D1 chưa sẵn sàng ('+response.status+').');
+         const result=await response.json();
+         if(!Array.isArray(result.profiles))throw Error('Phản hồi máy chủ chưa đúng.');
+         localStorage.setItem(familyKeyName,key);
+         location.reload();
+       }catch(error){errorEl.textContent=error.message;submit.disabled=false;}
+     },true);
+   });
+   return;
+ }
  const E=NPLessonEngine,baseCatalog=NPContentCatalog,localRead=NPLessonStore.read;
  const live={ready:false,busy:false,error:'',states:{},profiles:[],catalog:[],profileQueue:Promise.resolve(),pending:0};
  window.NPOnline=live;
@@ -9,7 +54,8 @@
  const encode=encodeURIComponent;
  function notify(message){if(typeof toast==='function')toast(message);}
  async function api(path,method='GET',body){
-   const r=await fetch('/api/pilot/'+path,{method,credentials:'same-origin',cache:'no-store',headers:body?{'content-type':'application/json'}:{},body:body?JSON.stringify(body):undefined});
+   const headers={...(body?{'content-type':'application/json'}:{}),...(familyMode?{'x-nihongo-family-key':familyKey()}:{})};
+   const r=await fetch('/api/pilot/'+path,{method,credentials:'same-origin',cache:'no-store',headers,body:body?JSON.stringify(body):undefined});
    const value=await r.json();if(!r.ok){const error=Object.assign(new Error(value.error||'Chưa kết nối được.'),{status:r.status,state:value.state});throw error;}return value;
  }
  live.request=api;
@@ -36,7 +82,19 @@
        return;
      }
      hydrate(data);
-   }catch(error){live.ready=false;overlay('Chưa mở được không gian học',error.status===401?'Cần đăng nhập vào không gian gia đình trước khi tải tiến độ.':error.message,'<button class="btn primary" onclick="location.reload()">Thử kết nối lại</button>');}
+   }catch(error){
+     live.ready=false;
+     if(familyMode){
+       overlay('Đồng bộ gia đình chưa kết nối',error.message,
+         '<button class="btn primary" id="np-family-retry">Thử lại</button>'+
+         '<button class="btn" id="np-family-disconnect">Dùng dữ liệu trên thiết bị</button>');
+       document.querySelector('#np-family-retry').onclick=()=>location.reload();
+       document.querySelector('#np-family-disconnect').onclick=()=>{
+         localStorage.removeItem(familyKeyName);location.reload();
+       };
+     }else overlay('Chưa mở được không gian học',error.message,
+       '<button class="btn primary" onclick="location.reload()">Thử kết nối lại</button>');
+   }
  }
  NPLessonStore.read=function(storage,id){if(!live.ready)return null;return live.states[id]||E.create(id);};
  NPLessonStore.write=function(){throw new Error('Thay đổi học tập cần được máy chủ xác nhận.');};
@@ -109,7 +167,7 @@
      document.querySelector('.portal-access-links')?.remove();
      const hint=document.querySelector('.portal-entry-hint');if(hint)hint.textContent='Chọn ảnh để học tiếp.';
      document.querySelector('.atelier-demo-note')?.replaceChildren(document.createTextNode('Nền tảng & N5 · Có lưu tiến độ'));
-     document.querySelectorAll('.login-note,.login-fineprint').forEach(el=>{el.textContent='Chọn hồ sơ trong không gian gia đình đang đăng nhập.';});
+     document.querySelectorAll('.login-note,.login-fineprint').forEach(el=>{el.textContent='Chọn hồ sơ học của bạn.';});
    }
    const replacements=[['Chạm vào ảnh. Bước vào nhịp học của bạn.','Chạm vào ảnh để mở hồ sơ học của bạn.'],['Chọn ảnh để nhập mã truy cập.','Chọn ảnh để vào không gian học.'],['Bản trải nghiệm · dùng mã mẫu','Nền tảng & N5 · Có lưu tiến độ'],['Dữ liệu thử lưu trên thiết bị · Chưa có xác thực thật','Tiến độ lưu theo tài khoản · Hồ sơ gia đình được quản lý'],['Tiến độ lưu theo hồ sơ trên trình duyệt. Đồng bộ giữa các thiết bị sẽ cần backend.','Tiến độ lưu riêng theo hồ sơ trên máy chủ.'],['Đồng bộ giữa các thiết bị sẽ cần backend.','Mở website trên thiết bị khác để học tiếp.'],['Đăng xuất demo','Đổi người học']];
    const walker=document.createTreeWalker(document.querySelector('#app'),NodeFilter.SHOW_TEXT);let node;while(node=walker.nextNode()){for(const [from,to] of replacements)if(node.textContent.includes(from))node.textContent=node.textContent.replace(from,to);}
