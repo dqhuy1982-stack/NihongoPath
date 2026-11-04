@@ -62,7 +62,7 @@ function finish(storage,id,{wrongFirst=false}={}){
 
 test('Foundation is discoverable while N5 authoring remains intact',()=>{
   const {api}=catalogue();
-  assert.deepEqual(api.list().map(c=>c.id),['foundation-vowels','n5-introduction']);
+  assert.deepEqual(Array.from(api.list(),c=>c.id),['foundation-vowels','n5-introduction']);
   assert.equal(api.get('foundation-vowels',1).questions.length,5);
   assert.equal(api.get('foundation-vowels',2),null);
   const edited=api.get('foundation-vowels');
@@ -74,9 +74,9 @@ test('Foundation is discoverable while N5 authoring remains intact',()=>{
 
 test('Foundation registration also works when its script loads after the catalog',()=>{
   const {api,window}=catalogue({lateFoundation:true});
-  assert.deepEqual(api.list().map(c=>c.id),['n5-introduction']);
+  assert.deepEqual(Array.from(api.list(),c=>c.id),['n5-introduction']);
   window.NP_FOUNDATION_CONTENT=foundation;
-  assert.deepEqual(api.list().map(c=>c.id),['foundation-vowels','n5-introduction']);
+  assert.deepEqual(Array.from(api.list(),c=>c.id),['foundation-vowels','n5-introduction']);
 });
 
 test('Foundation and N5 persist separate versioned sessions for one learner',()=>{
@@ -117,6 +117,6 @@ test('Reloaded review uses an immutable session snapshot when catalog version is
 test('Malformed authoring storage does not erase the bundled Foundation package',()=>{
   const {api,localStorage}=catalogue();
   localStorage.setItem('nihongo-content-workspace-v1','{invalid');
-  assert.deepEqual(api.list().map(c=>c.id),['foundation-vowels','n5-introduction']);
+  assert.deepEqual(Array.from(api.list(),c=>c.id),['foundation-vowels','n5-introduction']);
   assert.equal(api.get('foundation-vowels').id,'foundation-vowels');
 });
