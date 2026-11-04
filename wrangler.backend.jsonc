@@ -3,6 +3,8 @@
   // Worker. Production stays on unchanged root wrangler.jsonc.
   // The ID below was provided for the separate Cloudflare D1 database.
   "name": "nihongopath-d1-sandbox",
+  "workers_dev": false,
+  "preview_urls": false,
   "compatibility_date": "2026-11-03",
   "main": "./workers/nihongopath-api.mjs",
   "assets": {
