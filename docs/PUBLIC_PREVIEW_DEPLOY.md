@@ -44,6 +44,23 @@ The preview build now:
 
 Recommended sequence: **Pull develop → review and commit local 46 MP3 files and `pack.json` to develop → run `scripts/Prepare-GitHub-Pages.ps1` → review newly generated standalone public-demo repository → publish this separate repo → enable Pages → verify 4G/5G on iPhone.** Keep `NihongoPath` private and do not merge to main or live ChatGPT Site.
 
+## Updating an existing public demo repository
+
+If GitHub already has `dqhuy1982-stack/NihongoPath-Public-Demo` as a public repository, **do not publish another repository with the same name** and do not force-push a newly `git init`-ed folder with unrelated history.
+
+After completing `Prepare-GitHub-Pages.ps1`, run:
+
+```powershell
+cd C:\Dev\NihongoPath
+.\scripts\Prepare-Existing-Public-Demo.ps1
+```
+
+This checks the staged static preview, clones the existing public repository `main` into a new local `C:\Dev\NihongoPath-Public-Release` folder, preserves the existing Git history, replaces only that freshly cloned working tree's static files, and **does not commit or push**.
+
+Next, GitHub Desktop → File → Add local repository → `C:\Dev\NihongoPath-Public-Release` → inspect Changes → Commit to main → **Push origin**. Never press `Publish repository` for this existing remote. To check GitHub Pages: Settings → Pages → Deploy from a branch → `main` and root `/`.
+
+If `NihongoPath-Public-Release` already exists, stop and inspect the existing clone instead of deleting or overwriting it. Any previous public files remain accessible through Git history even if removed in a later release.
+
 ## Option A — GitHub Pages on GitHub Free (separate **static-only public deployment** repo)
 
 This option works without GitHub Pro while keeping the original repo private.
