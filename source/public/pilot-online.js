@@ -15,7 +15,7 @@
  live.request=api;
  function overlay(title,body,actions){
    let el=document.querySelector('#online-overlay');if(!el){el=document.createElement('div');el.id='online-overlay';document.body.append(el);}
-   el.innerHTML=`<section class="card online-welcome"><img src="assets/n-mark.svg" width="48" height="48" alt="Nihongo Path"><span class="eyebrow">NỀN TẢNG & N5 · HỌC THỬ</span><h1>${esc(title)}</h1><p>${esc(body)}</p><div class="actions">${actions||''}</div><p class="small"><a href="?mode=demo">Mở prototype cũ · dữ liệu trên trình duyệt</a></p></section>`;
+   el.innerHTML=`<section class="card online-welcome"><img src="assets/n-mark.svg" width="48" height="48" alt="Nihongo Path"><span class="eyebrow">NỀN TẢNG & N5 · HỌC THỬ</span><h1>${esc(title)}</h1><p>${esc(body)}</p><div class="actions">${actions||''}</div></section>`;
  }
  function hideOverlay(){document.querySelector('#online-overlay')?.remove();}
  function status(message,failed=false){live.error=failed?message:'';const el=document.querySelector('#online-status');if(el){el.textContent=message;el.classList.toggle('error',failed);}}
@@ -31,12 +31,12 @@
    try{
      const data=await api('bootstrap');
      if(!data.profiles.length){
-       overlay('Một không gian học thật, bắt đầu từ đây.','Khởi tạo hồ sơ gia đình với tiến độ trống. Kết quả học được lưu cho tài khoản ChatGPT đang đăng nhập; dữ liệu demo cũ được giữ riêng.',`<button class="btn primary" id="online-setup">Khởi tạo không gian học</button>`);
+       overlay('Không gian học của gia đình','Tạo bốn hồ sơ học với tiến độ riêng. Mỗi người có thể học tiếp trên PC hoặc iPhone sau khi kết nối máy chủ.',`<button class="btn primary" id="online-setup">Khởi tạo không gian học</button>`);
        document.querySelector('#online-setup').onclick=async e=>{e.target.disabled=true;try{await api('setup','POST',{profiles:initialProfiles.map(p=>({...structuredClone(p),notes:[],goal:p.id==='demo-a'?'N5':p.goal}))});await load();}catch(err){status(err.message,true);overlay('Chưa khởi tạo được',err.message,'<button class="btn primary" onclick="location.reload()">Thử lại</button>');}};
        return;
      }
      hydrate(data);
-   }catch(error){live.ready=false;overlay('Chưa mở được không gian học',error.message,error.status===401?'<a class="btn primary" href="/signin-with-chatgpt?return_to=/" target="_top">Đăng nhập ChatGPT</a>':'<button class="btn primary" onclick="location.reload()">Thử kết nối lại</button>');}
+   }catch(error){live.ready=false;overlay('Chưa mở được không gian học',error.status===401?'Cần đăng nhập vào không gian gia đình trước khi tải tiến độ.':error.message,'<button class="btn primary" onclick="location.reload()">Thử kết nối lại</button>');}
  }
  NPLessonStore.read=function(storage,id){if(!live.ready)return null;return live.states[id]||E.create(id);};
  NPLessonStore.write=function(){throw new Error('Thay đổi học tập cần được máy chủ xác nhận.');};
@@ -62,10 +62,26 @@
    }
    return true;
  };
- function showProfile(id){
-   const p=db.profiles.find(p=>p.id===id&&!p.archived);if(!p)return;
-   modal('Không gian của '+p.name,`<div class="online-avatar">${avatar(p,true)}</div><p>Hồ sơ thuộc không gian gia đình của tài khoản ChatGPT đang đăng nhập. Không cần nhập mã demo.</p><button class="btn primary wide" id="online-enter">Vào học ${icon('arrow')}</button><p class="small">Đợt thử đầu: hồ sơ do chủ tài khoản quản lý. Chưa có tài khoản riêng cho từng thành viên.</p>`);
-   document.querySelector('#online-enter').onclick=async()=>{if(live.busy)await live.commandWait;if(!await flushPersonal())return;if(window.NPKanaStudio&&!await NPKanaStudio.flush())return;await live.profileQueue;if(live.unsaved){notify('Lưu thay đổi hoặc xuất bản nháp trước khi đổi hồ sơ.');return;}current=id;sessionStorage.setItem('np-selected-learner',id);db.current=id;resetLearningView();closeModal();go(p.onboarded?'today':'onboarding');};
+ let profileSwitching=false;
+ async function showProfile(id){
+   const p=db.profiles.find(p=>p.id===id&&!p.archived&&p.role!=='guest');
+   if(!p||!live.ready||profileSwitching)return;
+   profileSwitching=true;
+   try{
+     // Profile changes must not abandon a pending lesson, drawing or note.
+     if(live.busy)await live.commandWait;
+     if(!await flushPersonal())return;
+     if(window.NPKanaStudio&&!await NPKanaStudio.flush())return;
+     await live.profileQueue;
+     if(live.unsaved){notify('Có thay đổi chưa lưu. Vui lòng thử lưu lại trước khi đổi người học.');return;}
+     current=id;
+     sessionStorage.setItem('np-selected-learner',id);
+     db.current=id;
+     resetLearningView();
+     go(p.onboarded?'today':'onboarding');
+   }catch(error){
+     notify(error?.message||'Chưa thể chuyển hồ sơ. Vui lòng thử lại.');
+   }finally{profileSwitching=false;}
  }
  function cards(){return live.catalog.map(c=>`<a class="card online-course" href="#lesson/${c.id}"><span class="eyebrow">${esc(c.level)} · GÓI HỌC THỬ</span><h2>${esc(c.title)}</h2><p>${esc(c.lead||c.scope)}</p><span class="textlink">Mở bài học ${icon('arrow')}</span></a>`).join('');}
  function pilotHome(){const state=live.states[P().id]||E.create(P().id),pending=E.pending(state)[0],due=E.due(state);return `${heading('Hôm nay, một bước vừa sức.','Bắt đầu với Nền tảng hoặc N5. Kết quả được lưu riêng theo hồ sơ.','KHÔNG GIAN CỦA '+esc(P().name))}<section class="mentor-card section"><span class="eyebrow">MICHI · GỢI Ý CÓ LÝ DO</span><h2>${pending?'Bạn còn một phiên đang dở.':due.length?'Một vài mẫu đã đến hạn ôn.':'Chọn một bài nhỏ để bắt đầu.'}</h2><p>${pending?'Tiếp tục đúng phiên bản, câu trả lời và gợi ý đã lưu.':due.length?'Thử nhớ lại trước khi mở lời giải.':'Chưa dùng mục tiêu để kết luận trình độ. Bạn có thể thử Kana hoặc bài nhập môn N5.'}</p><div class="actions">${pending?button('Học tiếp '+icon('arrow'),'online-resume','btn primary',`data-id="${esc(pending.id)}"`):due.length?link('Ôn một lượt','lesson/review','btn primary'):link('Làm quen năm chữ Kana','lesson/foundation-vowels','btn primary')}${link('Xem tiến độ','reports','btn')}</div></section><div class="grid two section">${cards()}</div><p class="article-note">${esc(P().goal)} là mục tiêu hồ sơ. Gói phát hành hiện tại chỉ gồm Nền tảng và N5; không ghi nhận N4–N1 là đã có nội dung đầy đủ.</p>`;}
@@ -77,7 +93,7 @@
    if(base==='today'){$('#app').innerHTML=shell(pilotHome());document.body.classList.remove('is-login');applyPrefs();Locale.translate(document);}
    else if(base==='guide'){$('#app').innerHTML=shell(heading('Bắt đầu một vòng học nhỏ.','Nền tảng và N5 là hai gói đầu tiên. Bạn có thể dừng rồi mở lại đúng hồ sơ để học tiếp.','HƯỚNG DẪN')+'<section class="card"><h2>Học thử theo nhịp của bạn</h2><ol><li>Chọn hồ sơ gia đình.</li><li>Mở Nền tảng hoặc N5 trong mục Học.</li><li>Chọn phiên ngắn, thử trả lời và xem giải thích.</li><li>Chờ xác nhận đã lưu trước khi đóng tab.</li><li>Xem tổng kết và lịch ôn trong mục Ôn hoặc Báo cáo.</li></ol><p>Mở cùng Site bằng cùng tài khoản ChatGPT trên thiết bị khác để tải lại tiến độ. Hồ sơ hiện do chủ tài khoản quản lý; chưa có đăng nhập riêng cho từng thành viên.</p><p>Chưa có audio, chấm nói/viết, thông báo nhắc học hoặc học offline hoàn chỉnh trong gói này.</p></section><div class="actions section">'+link('Mở bài học','learn','btn primary')+link('Về Hôm nay','today','btn')+'</div>');document.body.classList.remove('is-login');applyPrefs();}
    else if(['learn','library'].includes(base)||base==='course'&&['foundation','N5'].includes(route().split('/')[1])){$('#app').innerHTML=shell(heading('Nền tảng & N5','Hai gói đầu tiên để học thử. Các chặng N4–N1 tiếp tục giữ trong lộ trình.','HỌC')+`<div class="grid two">${cards()}</div>`+foundationStudioCard()+link('Xem toàn bộ hành trình','journey','textlink','map'));document.body.classList.remove('is-login');applyPrefs();}
-   else if(!allowed.has(base)||base==='settings'&&['account','data','reminders'].includes(route().split('/')[1])){$('#app').innerHTML=shell(heading('Phần này chưa mở trong đợt học thử.','Tiến độ thật hiện áp dụng cho hai bài Nền tảng/N5, ôn, sổ và báo cáo.','ĐANG PHÁT TRIỂN')+link('Về Hôm nay','today','btn primary')+'<p class="article-note"><a href="?mode=demo" target="_blank" rel="noopener">Xem chức năng trong prototype cũ ↗</a></p>');document.body.classList.remove('is-login');applyPrefs();}
+   else if(!allowed.has(base)||base==='settings'&&['account','data','reminders'].includes(route().split('/')[1])){$('#app').innerHTML=shell(heading('Phần này chưa mở trong đợt học thử.','Tiến độ thật hiện áp dụng cho hai bài Nền tảng/N5, ôn, sổ và báo cáo.','ĐANG PHÁT TRIỂN')+link('Về Hôm nay','today','btn primary')+'<p class="article-note">Nội dung đang được phát triển, không ảnh hưởng tiến độ đã lưu.</p>');document.body.classList.remove('is-login');applyPrefs();}
    else originalRender(scroll);
    document.title='Nihongo Path · '+(base==='login'?'Không gian gia đình':'Nền tảng & N5');
    document.querySelector('.review-label')?.replaceChildren(document.createTextNode('Nền tảng & N5 · Học thử'));
@@ -88,14 +104,17 @@
    document.querySelectorAll('.n5-entry .n5-time-options button[data-minutes="15"]').forEach(el=>{if(el.dataset.content==='foundation-vowels')el.hidden=true;});
    if(base==='login'){
      document.querySelectorAll('a[href="#invite"],a[href="#guest"]').forEach(a=>{a.href='?mode=demo';a.textContent='Khám phá prototype cũ';});
-     document.querySelectorAll('[data-action="loginprofile"]').forEach(el=>el.setAttribute('aria-label','Mở hồ sơ '+(db.profiles.find(p=>p.id===el.dataset.id)?.name||'')));
+     document.querySelectorAll('[data-action="loginprofile"]').forEach(el=>{el.removeAttribute('aria-haspopup');el.setAttribute('aria-label','Vào học '+(db.profiles.find(p=>p.id===el.dataset.id)?.name||''));});
+     document.querySelector('.portal-guest-row')?.remove();
+     document.querySelector('.portal-access-links')?.remove();
+     const hint=document.querySelector('.portal-entry-hint');if(hint)hint.textContent='Chọn ảnh để học tiếp.';
      document.querySelector('.atelier-demo-note')?.replaceChildren(document.createTextNode('Nền tảng & N5 · Có lưu tiến độ'));
      document.querySelectorAll('.login-note,.login-fineprint').forEach(el=>{el.textContent='Chọn hồ sơ trong không gian gia đình đang đăng nhập.';});
    }
-   const replacements=[['Chạm vào ảnh. Bước vào nhịp học của bạn.','Chạm vào ảnh để mở hồ sơ học của bạn.'],['Chọn ảnh để nhập mã truy cập.','Chọn ảnh để vào không gian học.'],['Bản trải nghiệm · dùng mã mẫu','Nền tảng & N5 · Có lưu tiến độ'],['Dữ liệu thử lưu trên thiết bị · Chưa có xác thực thật','Tiến độ lưu theo tài khoản · Hồ sơ gia đình được quản lý'],['Tiến độ lưu theo hồ sơ trên trình duyệt. Đồng bộ giữa các thiết bị sẽ cần backend.','Tiến độ được lưu theo hồ sơ trên tài khoản.'],['Đồng bộ giữa các thiết bị sẽ cần backend.','Mở cùng tài khoản để tải lại tiến độ.']];
+   const replacements=[['Chạm vào ảnh. Bước vào nhịp học của bạn.','Chạm vào ảnh để mở hồ sơ học của bạn.'],['Chọn ảnh để nhập mã truy cập.','Chọn ảnh để vào không gian học.'],['Bản trải nghiệm · dùng mã mẫu','Nền tảng & N5 · Có lưu tiến độ'],['Dữ liệu thử lưu trên thiết bị · Chưa có xác thực thật','Tiến độ lưu theo tài khoản · Hồ sơ gia đình được quản lý'],['Tiến độ lưu theo hồ sơ trên trình duyệt. Đồng bộ giữa các thiết bị sẽ cần backend.','Tiến độ lưu riêng theo hồ sơ trên máy chủ.'],['Đồng bộ giữa các thiết bị sẽ cần backend.','Mở website trên thiết bị khác để học tiếp.'],['Đăng xuất demo','Đổi người học']];
    const walker=document.createTreeWalker(document.querySelector('#app'),NodeFilter.SHOW_TEXT);let node;while(node=walker.nextNode()){for(const [from,to] of replacements)if(node.textContent.includes(from))node.textContent=node.textContent.replace(from,to);}
    document.querySelectorAll('.note-body').forEach(el=>el.setAttribute('data-no-translate',''));
-   if(base==='family'){const n=document.querySelector('.notice');if(n)n.innerHTML='<div>Hồ sơ do tài khoản ChatGPT hiện tại quản lý. Thêm, lưu trữ và khôi phục được lưu trên tài khoản. Chưa có lời mời hoặc tài khoản riêng cho từng thành viên.</div>';}
+   if(base==='family'){const n=document.querySelector('.notice');if(n)n.textContent='Bốn hồ sơ dùng chung một không gian gia đình. Tiến độ học và Kana lưu riêng theo từng người.';}
    if(base==='lesson'&&(route().includes('foundation-vowels')||E.active(live.states[P().id])?.contentId==='foundation-vowels')){const visual=document.querySelector('.n5-entry-visual');if(visual)visual.innerHTML='<span class="n5-disc"></span><span lang="ja">あ い う<br>え お</span><small>NHẬN MẶT · THỬ NHỚ · ÔN LẠI</small>';}
    if(live.busy)document.querySelectorAll('[data-action^="n5-"]').forEach(el=>el.disabled=true);
    window.NPLessonInteractions?.mount();
@@ -124,7 +143,7 @@
    if(!live.ready){event.preventDefault();event.stopImmediatePropagation();return;}
    if(action==='loginprofile'||action==='selectprofile'){event.preventDefault();event.stopImmediatePropagation();showProfile(el.dataset.id);return;}
    if(blocked.includes(action)){event.preventDefault();event.stopImmediatePropagation();notify('Chức năng này chỉ dùng trong prototype cũ; không đặt lại dữ liệu học thật.');return;}
-   if(hash==='#logout'){event.preventDefault();event.stopImmediatePropagation();if(live.pending||live.busy){notify('Chờ lưu xong trước khi đăng xuất.');return;}location.href='/signout-with-chatgpt?return_to=/';return;}
+   if(hash==='#logout'){event.preventDefault();event.stopImmediatePropagation();if(live.pending||live.busy||live.unsaved){notify('Lưu xong trước khi đổi người học.');return;}go('login');return;}
    if(action==='exportprofile'){event.preventDefault();event.stopImmediatePropagation();download({schemaVersion:1,profile:P(),learning:live.states[P().id]},'Nihongo_'+P().id+'.json');return;}
    if(action==='online-resume'){event.preventDefault();event.stopImmediatePropagation();const result=await command({action:'resume',sessionId:el.dataset.id});if(result)go('lesson/resume');else render(false);return;}
    if(!action.startsWith('n5-'))return;
@@ -157,6 +176,6 @@
  document.addEventListener('DOMContentLoaded',()=>{
    originalRender=render;render=redraw;
    const bar=document.querySelector('.review-actions');if(bar)bar.insertAdjacentHTML('afterbegin','<span id="online-status" role="status">Đang kết nối…</span>');
-   overlay('Đang mở không gian học…','Kiểm tra tài khoản và tiến độ đã lưu.');load();
+   overlay('Đang mở không gian học…','Đang tải tiến độ học của gia đình.');load();
  });
 })();
