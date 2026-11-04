@@ -20,7 +20,7 @@ $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
 $localBackup = Join-Path $folder ("nihongopath-local-" + $stamp + ".sql")
 $remoteBackup = Join-Path $folder ("nihongopath-remote-before-sync-" + $stamp + ".sql")
 
-Write-Host '1/4 Backing up local D1 learning data...'
+Write-Host '1/3 Backing up local D1 learning data...'
 & npx wrangler d1 export nihongopath-dev --local --config wrangler.backend.jsonc --output $localBackup
 if ($LASTEXITCODE -ne 0 -or -not (Test-Path $localBackup)) {
   throw 'Local backup failed. No remote changes were made.'
@@ -29,15 +29,14 @@ if ((Get-Item $localBackup).Length -lt 200) {
   throw 'Local backup is unexpectedly small. Inspect before continuing.'
 }
 
-Write-Host '2/4 Reading remote D1 database metadata (read-only)...'
-& npx wrangler d1 info nihongopath-dev --config wrangler.backend.jsonc
-if ($LASTEXITCODE -ne 0) { throw 'Cannot read remote D1 metadata. No remote changes were made.' }
+# Wrangler d1 info can fail with Cloudflare API authentication error 10000
+# even when D1 SQL execution works. Check remote schema through read-only SQL
+# and do not block the backup on the separate management API endpoint.
+Write-Host '2/3 Reading remote D1 table names (read-only SQL)...'
+& npx wrangler d1 execute nihongopath-dev --remote --config wrangler.backend.jsonc --command "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;"
+if ($LASTEXITCODE -ne 0) { throw 'Cannot inspect remote D1 schema. No remote changes were made.' }
 
-Write-Host '3/4 Checking pending remote migrations (read-only)...'
-& npx wrangler d1 migrations list nihongopath-dev --remote --config wrangler.backend.jsonc
-if ($LASTEXITCODE -ne 0) { throw 'Cannot inspect remote migrations. No remote changes were made.' }
-
-Write-Host '4/4 Backing up remote D1 before any future deployment...'
+Write-Host '3/3 Backing up remote D1 before any future deployment...'
 & npx wrangler d1 export nihongopath-dev --remote --config wrangler.backend.jsonc --output $remoteBackup
 if ($LASTEXITCODE -ne 0 -or -not (Test-Path $remoteBackup)) {
   throw 'Remote backup failed. No migration or Worker deployment was made.'
