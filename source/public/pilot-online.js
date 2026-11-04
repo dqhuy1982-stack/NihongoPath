@@ -64,7 +64,7 @@
    el.innerHTML=`<section class="card online-welcome"><img src="assets/n-mark.svg" width="48" height="48" alt="Nihongo Path"><span class="eyebrow">NỀN TẢNG & N5 · HỌC THỬ</span><h1>${esc(title)}</h1><p>${esc(body)}</p><div class="actions">${actions||''}</div></section>`;
  }
  function hideOverlay(){document.querySelector('#online-overlay')?.remove();}
- function status(message,failed=false){live.error=failed?message:'';const el=document.querySelector('#online-status');if(el){el.textContent=message;el.classList.toggle('error',failed);}}
+ function status(message,failed=false){live.error=failed?message:'';for(const el of document.querySelectorAll('#online-status,#np-family-sync-status')){el.textContent=message;el.classList.toggle('error',failed);}}
  function snapshotProfile(p){const clean=structuredClone(p);delete clean.serverRevision;return JSON.stringify(clean);}
  function hydrate(data){
    live.profiles=structuredClone(data.profiles);live.states=data.states;live.catalog=data.catalog;
@@ -154,6 +154,17 @@
    else if(!allowed.has(base)||base==='settings'&&['account','data','reminders'].includes(route().split('/')[1])){$('#app').innerHTML=shell(heading('Phần này chưa mở trong đợt học thử.','Tiến độ thật hiện áp dụng cho hai bài Nền tảng/N5, ôn, sổ và báo cáo.','ĐANG PHÁT TRIỂN')+link('Về Hôm nay','today','btn primary')+'<p class="article-note">Nội dung đang được phát triển, không ảnh hưởng tiến độ đã lưu.</p>');document.body.classList.remove('is-login');applyPrefs();}
    else originalRender(scroll);
    document.title='Nihongo Path · '+(base==='login'?'Không gian gia đình':'Nền tảng & N5');
+   if(familyMode&&live.ready){
+     const top=document.querySelector('.top-actions');
+     if(top){
+       const indicator=document.createElement('span');
+       indicator.id='np-family-sync-status';
+       indicator.textContent=live.pending?'Đang lưu…':'D1 đã kết nối';
+       indicator.setAttribute('role','status');
+       indicator.title='Tiến độ lưu trên Cloudflare D1';
+       top.prepend(indicator);
+     }
+   }
    document.querySelector('.review-label')?.replaceChildren(document.createTextNode('Nền tảng & N5 · Học thử'));
    const rb=document.querySelector('.review-actions');if(rb&&!document.querySelector('#online-status'))rb.insertAdjacentHTML('afterbegin','<span id="online-status" role="status">Đã kết nối tài khoản</span>');
    if(live.error){status(live.error,true);const statusEl=document.querySelector('#online-status');if(statusEl&&!document.querySelector('#online-retry'))statusEl.insertAdjacentHTML('afterend','<button class="btn sm" id="online-retry">Thử lưu lại</button>');document.querySelector('#online-retry')?.addEventListener('click',()=>{live.error='';live.unsaved=false;persist();render(false);});}else if(live.pending)status('Đang lưu thay đổi…');
