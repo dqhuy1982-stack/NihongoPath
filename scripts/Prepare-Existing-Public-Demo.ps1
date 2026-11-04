@@ -41,11 +41,30 @@ if ($currentBranch -ne "main") { throw "Expected main in public demo clone." }
 $dirty = @(& git -C $dest status --porcelain)
 if ($dirty.Count -gt 0) { throw "Cloned worktree is not clean; aborting." }
 
-# Fresh clone = safe to replace its tracked working files; .git history is preserved.
-Get-ChildItem -LiteralPath $dest -Force | Where-Object { $_.Name -ne ".git" } |
+# Fresh clone: replace STATIC site files only. Keep Git metadata AND existing workflows.
+# The public repository contains a manually approved publish workflow under .github.
+# Never remove or override deployment governance when refreshing preview assets.
+$workflow = Join-Path $dest ".github\workflows\publish-reviewed-demo.yml"
+if (-not (Test-Path -LiteralPath $workflow)) {
+ throw "Expected reviewed publish workflow is missing in public remote. Stop before modifying files."
+}
+Get-ChildItem -LiteralPath $dest -Force |
+ Where-Object { $_.Name -notin @(".git", ".github") } |
  ForEach-Object { Remove-Item -LiteralPath $_.FullName -Recurse -Force }
 Get-ChildItem -LiteralPath $build -Force |
- ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination $dest -Recurse -Force }
+ ForEach-Object {
+  if ($_.Name -eq ".github") {
+   throw "Preview contains a .github folder. Refuse to override public deployment workflows."
+  }
+  Copy-Item -LiteralPath $_.FullName -Destination $dest -Recurse -Force
+ }
+if (-not (Test-Path -LiteralPath $workflow)) {
+ throw "Reviewed publish workflow disappeared; do not commit or push."
+}
+$workflowDiff = @(& git -C $dest diff --name-only -- ".github")
+if ($workflowDiff.Count -gt 0) {
+ throw "Unexpected GitHub workflow changes: $($workflowDiff -join ', '). Do not commit."
+}
 
 if (-not (Test-Path (Join-Path $dest ".git"))) { throw "Git metadata missing: abort." }
 if (-not (Test-Path (Join-Path $dest "index.html"))) { throw "Missing published index: abort." }
