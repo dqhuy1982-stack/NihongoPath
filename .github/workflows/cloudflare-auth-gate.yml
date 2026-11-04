@@ -1,0 +1,34 @@
+name: Cloudflare backend security gate
+
+on:
+  push:
+    branches:
+      - feature/cloudflare-d1-auth-gate
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  security-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install worker security dependency
+        run: npm install --no-audit --no-fund
+      - name: JS syntax and data contract checks
+        run: |
+          node --check workers/access-identity.mjs
+          node --check workers/nihongopath-api.mjs
+          node --check tests/cloudflare-access-gateway.test.mjs
+          node tools/audit-learning-data.mjs
+      - name: Verified Access identity and real SQLite-backed API tests
+        run: node --test tests/cloudflare-access-gateway.test.mjs source/tests/pilot-api.test.mjs
+      - name: Static site regression build
+        run: node scripts/build-site.cjs
+      - name: Dry-run bundle only; no Cloudflare deploy
+        run: npx --yes wrangler@4.157.0 deploy --dry-run --config wrangler.backend.jsonc

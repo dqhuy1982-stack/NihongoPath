@@ -1,0 +1,16 @@
+{
+  // STAGING TEMPLATE ONLY: do not replace wrangler.jsonc until Access
+  // has been configured, a D1 database has been provisioned and checked,
+  // and production login/learner data migration has been reviewed.
+  "name": "nihongopath",
+  "compatibility_date": "2026-11-03",
+  "main": "./workers/nihongopath-api.mjs",
+  "assets": {
+    "directory": "./dist/site",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"]
+  }
+  // Add a real d1_databases entry only AFTER creating the database.
+  // Set ACCESS_TEAM_DOMAIN, ACCESS_AUD and ACCESS_ALLOWED_EMAILS in
+  // a reviewed deployment config; empty/missing settings fail closed.
+}
