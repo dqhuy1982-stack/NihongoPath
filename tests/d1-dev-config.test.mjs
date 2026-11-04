@@ -12,6 +12,8 @@ test('Dev D1 binding uses provided ID and cannot overwrite live Worker by defaul
   assert.equal(main.name,'nihongopath');
   assert.ok(!main.d1_databases?.length,'public static deploy must remain D1-free');
   assert.equal(dev.name,'nihongopath-d1-sandbox','development backend must have different Worker name');
+  assert.equal(dev.workers_dev,false,'never expose an unauthenticated sandbox workers.dev route');
+  assert.equal(dev.preview_urls,false,'preview URL must stay disabled until Access is configured');
   assert.equal(dev.main,'./workers/nihongopath-api.mjs');
   assert.equal(dev.d1_databases?.length,1);
   const binding=dev.d1_databases[0];
