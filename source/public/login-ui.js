@@ -24,9 +24,9 @@ window.NPLogin=(function(){
         home.querySelector('.home-guide')?.remove();
         home.querySelector('.atelier-footer')?.remove();
         const story=home.querySelector('.atelier-story');
-        story.innerHTML=`<div class="home-v2-eyebrow">${tr('NHỊP HỌC CỦA GIA ĐÌNH','OUR FAMILY LEARNING SPACE','家族の学び')}</div>
-          <h1>${tr('Hôm nay, ai sẽ học?','Who is learning today?','今日は、だれが学びますか。')}</h1>
-          <p class="home-v2-intro">${tr('Mỗi người một hành trình. Mỗi ngày một bước.','Your own journey. One small step every day.','自分のペースで、一歩ずつ。')}</p>`;
+        story.innerHTML=`<div class="home-v2-eyebrow">${tr('KHÔNG GIAN HỌC CỦA GIA ĐÌNH','A FAMILY LEARNING JOURNEY','家族の学び')}</div>
+          <h1><span>${tr('Hôm nay,','Today,','今日は、')}</span> <em>${tr('ai sẽ học?','who is learning?','だれが学ぶ？')}</em></h1>
+          <p class="home-v2-intro">${tr('Mỗi người một lộ trình. Chọn hồ sơ để tiếp tục bài học của bạn.','A learning path for each person. Choose a profile to continue.','一人ひとりの学習ルート。プロフィールを選んで続きを学びましょう。')}</p>`;
         // Four whole-card avatar buttons remain in the same order.
         // The heading above is the sole visual focus, not a second competing headline.
         section.querySelector('.access-heading')?.remove();
