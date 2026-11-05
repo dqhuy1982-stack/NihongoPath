@@ -31,6 +31,13 @@ Write-Host 'HOME LOCAL ROW COUNTS (for verification):'
 & npx.cmd wrangler d1 execute nihongopath-dev --local --config wrangler.backend.jsonc --command $sql
 if ($LASTEXITCODE -ne 0) { throw 'Local D1 count verification failed.' }
 Write-Host ''
+Write-Host 'HOME LOCAL OWNER CHECK (counts only):'
+$ownerSql = "SELECT COUNT(DISTINCT owner) AS owner_groups, COUNT(*) AS total_profiles, COALESCE(SUM(CASE WHEN owner='family:primary' THEN 1 ELSE 0 END),0) AS family_profiles FROM learners;"
+& npx.cmd wrangler d1 execute nihongopath-dev --local --config wrangler.backend.jsonc --command $ownerSql
+if ($LASTEXITCODE -ne 0) { throw 'Local owner verification failed.' }
+Write-Host 'Expected before transfer: owner_groups=1 and family_profiles=total_profiles.'
+Write-Host 'If owner_groups differs, DO NOT import any data before reviewing the identity mapping.'
+Write-Host ''
 Write-Host 'DATA-ONLY EXPORT COMPLETE. NO remote upload or writes.'
 Write-Host 'All SQL files remain in .private-backups and are ignored by Git.'
 Write-Host 'Do not send the SQL files, record contents, or family secret in chat.'
