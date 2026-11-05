@@ -1,0 +1,191 @@
+/* Nihongo Path / Readability 01
+   Clearer on low-contrast/older displays without replacing established layouts.
+   Loaded AFTER module CSS. Keep Japanese glyph stroke geometry untouched. */
+
+:root{
+  --text:#213d32;
+  --muted:#465b50;
+  --green:#315c43;
+  --navy:#1c4036;
+  --line:#c9d4c9;
+  --font-readable:'Be Vietnam Pro',Manrope,'Noto Sans CJK JP','Hiragino Kaku Gothic ProN','Yu Gothic',Arial,sans-serif;
+}
+
+body{
+  font-family:var(--font-readable);
+  font-size:15px;
+  font-weight:500;
+  line-height:1.68;
+  letter-spacing:0;
+  -webkit-font-smoothing:auto;
+  text-rendering:optimizeLegibility;
+}
+h1,h2,h3,.cardhead h2,.section-title h2,.pagehead h1{
+  font-family:var(--font-readable);
+  font-weight:600;
+  letter-spacing:-.025em;
+}
+h1,.pagehead h1{line-height:1.32}
+h2,.cardhead h2,.section-title h2{line-height:1.4}
+h3{line-height:1.5}
+p{line-height:1.72}
+strong,b{font-weight:600}
+small,.small{font-size:13px;line-height:1.6;color:var(--muted)}
+label{font-size:14px;font-weight:600}
+input,textarea,select{font-size:15px;font-weight:500;border-color:var(--line)}
+input::placeholder,textarea::placeholder{color:#65776c;opacity:1}
+a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,[role=button]:focus-visible{
+  outline:3px solid #266d54;
+  outline-offset:3px;
+}
+
+/* Navigation and action clarity */
+.sidebar .navlink,.sidebar .side-bottom .navlink{
+  font-size:14px;font-weight:500;color:#e4eee5;
+}
+.sidebar .navlink.active{font-weight:600;color:#fff0c9;border-left-color:#e6c878}
+.sidebar .nav-caption{color:#c4d1c9;font-size:11px;font-weight:600}
+.topbar .breadcrumb,.topbar .profile-button,.profile-name{font-size:13px;font-weight:600}
+.btn,.btn.primary,.btn.green{
+  font-size:14px;font-weight:600;
+}
+.btn.sm,.compact .btn.sm{font-size:13px}
+.textlink,.section-title .textlink{font-size:13px;font-weight:600;color:#285b45}
+.chip,.goal{font-size:13px;font-weight:600}
+.chip:not([aria-pressed=true]):not(.active){border-color:var(--line)}
+.pagehead .subtitle,.compact .pagehead .subtitle{font-size:14px;line-height:1.7;color:var(--muted)}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.12em;color:#315f45}
+.badge,.badge.sage,.badge.muted,.badge.amber,.compact .shortcut .badge{
+  font-size:11px;font-weight:600;letter-spacing:0;
+}
+.badge.sage{background:#e5eedf;color:#315c43}
+.badge.muted{color:#4d5d51;background:#eef0ec}
+.card{border-color:var(--line);box-shadow:0 4px 16px #183b2c0c}
+.card>p,.empty p,.step-copy p,.michi-card .michi-text,.shortcut small,
+.compact .shortcut small,.section.card.empty p{
+  font-size:13px;line-height:1.7;color:var(--muted);
+}
+.cardhead h2,.section-title h2,.ks-panel-title h2{font-weight:600}
+.notice,.notice.neutral{font-size:13px;line-height:1.65}
+.notice.neutral{color:var(--muted);border-color:var(--line)}
+.form-help,.article-note,.underbutton,.footnote{font-size:12px;color:var(--muted)}
+.card .small,.plan .cardhead>.small,.time-selector>.small{font-size:12px;color:var(--muted)}
+
+/* One-tap avatar entry: names and goals remain legible at 100% zoom */
+.portal-home .atelier-story h1,
+.compact .portal-home .atelier-story h1{
+  font-family:var(--display);font-weight:600;letter-spacing:-.03em;
+}
+.portal-home .atelier-story h1 em,
+.portal-home .atelier-story h1>em{font-weight:600;color:#4a654e}
+.portal-home .atelier-intro,.atelier-intro{
+  font-size:14px;line-height:1.75;color:#405b49;
+}
+.portal-home .access-heading h2,.compact .portal-home .access-heading h2{
+  font-family:var(--font-readable);font-weight:600;
+}
+.portal-home .access-heading>p,
+.compact .portal-home .access-heading>p{
+  font-size:13px;line-height:1.7;color:#425c4b;
+}
+.portal-home .portal-person{
+  background:#fcfcf7;
+  border-color:#d1dccc;
+  box-shadow:0 5px 18px #1c3f3010;
+}
+.portal-home .portal-person:hover,
+.portal-home .portal-person:focus-visible{
+  border-color:#769987;background:#f0f5ec;
+  box-shadow:0 8px 20px #1c3f301b;
+}
+.portal-home .portal-person .family-name,
+.compact .portal-home .portal-person .family-name{
+  font-size:15px;line-height:1.4;font-weight:700;color:#203d32;
+  letter-spacing:-.01em;white-space:normal;
+}
+.portal-home .portal-person-goal,.compact .portal-home .portal-person-goal{
+  font-size:12px;line-height:1.5;font-weight:500;color:#4b6152;
+  overflow-wrap:anywhere;
+}
+.portal-home .portal-person-arrow{opacity:1;transform:none;background:#dcebdc;color:#24533b}
+.portal-home .portal-entry-hint,.compact .portal-home .portal-entry-hint{
+  font-size:12px;line-height:1.55;color:#47614f;
+}
+.portal-home .portal-guest,.compact .portal-home .portal-guest{
+  font-size:13px;font-weight:600;color:var(--text);min-height:44px;
+}
+.atelier-values,.home-guide,.portal-home .atelier-kicker{
+  font-size:12px;font-weight:600;color:#48644f;
+}
+.portal-home .atelier-header .language-switch button{font-size:12px;font-weight:600}
+
+/* Learning content: annotations must not vanish into the paper */
+.ks-hero p{font-size:14px;color:var(--muted)}
+.ks-toolbar p,.ks-steps button,.ks-columns .small,.ks-current>span{
+  font-size:13px;font-weight:500;line-height:1.55;
+}
+.ks-glyph small{font-size:11px;font-weight:600;color:#4b6252}
+.ks-current small{font-size:11px;font-weight:600;color:#315c43}
+.ks-glyph.active{border-color:#356a4b}
+.npr-option,.npr-deck,.npr-summary>p{font-size:13px}
+.npr-summary-grid span{font-size:12px}
+.mentor-label,.context-summary small{font-size:11px;font-weight:600}
+.context-summary strong{font-size:14px;font-weight:600}
+
+/* Preserve actual text contrast when the user chooses dark theme */
+body.dark{
+  --text:#edf4eb;--muted:#c6d4c5;--green:#c9dfbc;
+  --line:#52685d;--navy:#e1eddf;
+}
+body.dark .portal-home .atelier-intro,
+body.dark .portal-home .access-heading>p,
+body.dark .portal-home .portal-entry-hint,
+body.dark .portal-home .portal-person-goal,
+body.dark .atelier-values,
+body.dark .home-guide{color:#d0ddc7}
+body.dark .portal-home .portal-person{
+  background:#243d35;border-color:#5c7767;box-shadow:0 4px 16px #0000001c;
+}
+body.dark .portal-home .portal-person:hover,
+body.dark .portal-home .portal-person:focus-visible{
+  background:#2b4a3f;border-color:#a1bea5;
+}
+body.dark .portal-home .portal-person .family-name{color:#f2f7ee}
+body.dark .portal-home .portal-person-arrow{background:#d5e8cf;color:#153c2b}
+body.dark .portal-home .atelier-story h1>em{color:#bfd4a9}
+body.dark .textlink,body.dark .section-title .textlink{color:#d3e9c4}
+body.dark .badge.sage{background:#375442;color:#e0eed4}
+body.dark .badge.muted{background:#314b40;color:#d3e1d3}
+body.dark .ks-glyph small{color:#d0ddc8}
+body.dark .ks-current small{color:#c4e0b8}
+body.dark input::placeholder,body.dark textarea::placeholder{color:#c2d0bf}
+body.dark a:focus-visible,body.dark button:focus-visible,
+body.dark input:focus-visible,body.dark select:focus-visible{outline-color:#d5edac}
+
+/* Existing compact login fits two columns on narrow phones. */
+@media(max-width:759px){
+  .compact .portal-home .portal-person{min-width:0;min-height:148px}
+  .compact .portal-home .portal-person .family-name{font-size:14px}
+  .compact .portal-home .portal-person-goal{font-size:12px}
+  .compact .portal-home .atelier-intro{font-size:13px}
+  .compact .portal-home .atelier-values{font-size:11px}
+  .compact .portal-home .portal-guest{font-size:13px}
+  .compact .portal-home .access-heading h2{line-height:1.32}
+  .compact .ks-columns .small,.compact .ks-steps button{font-size:12px}
+}
+@media(max-width:390px){
+  .compact .portal-home .portal-person .family-name{font-size:14px}
+  .compact .portal-home .portal-person-goal{font-size:12px}
+  .compact .portal-home .portal-people{column-gap:9px}
+}
+/* Honor accessibility preferences without imposing a harsh mode on everyone. */
+@media(prefers-contrast:more){
+  :root{--text:#102d20;--muted:#294433;--line:#9eb6a6}
+  body{font-weight:600}
+  .portal-home .portal-person{border-width:2px}
+  body.dark{--text:#fff;--muted:#e2f0e0;--line:#9db49e}
+}
+@media(forced-colors:active){
+  .portal-home .portal-person{border:1px solid CanvasText;box-shadow:none}
+  .portal-home .portal-person-arrow{outline:1px solid CanvasText}
+}
