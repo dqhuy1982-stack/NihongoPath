@@ -26,11 +26,15 @@ jobs:
           node --check source/public/app.js
           node --check source/public/pilot-online.js
           node --check source/public/login-ui.js
+          node --check source/public/family-demo-auth.js
+          node --check source/public/family-portraits.js
           node --check source/public/content-catalog.js
           node --check source/public/lesson-ui.js
       - name: Audit authored content and sample fixtures
         run: node tools/audit-learning-data.mjs
       - name: Run learning regression tests
         run: node --test source/tests/learning-vertical-slice.test.cjs source/tests/lesson-engine.test.cjs source/tests/content-model.test.cjs
+      - name: Test family profiles, PIN and Guest isolation
+        run: node --test tests/family-static-demo.test.mjs
       - name: Validate full static export without deploying
         run: node scripts/build-site.cjs
