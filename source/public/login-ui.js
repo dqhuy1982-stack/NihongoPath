@@ -1,4 +1,4 @@
-/* Avatar-first entry. Uses the existing dialog and demo login form contract. */
+/* Avatar-first entry. Static demo is one tap; legacy login dialog remains for backend/reference flows. */
 window.NPLogin=(function(){
   'use strict';
   const tr=(vi,en,ja)=>[vi,en,ja][{vi:0,en:1,ja:2}[Locale.code]||0];
@@ -15,15 +15,15 @@ window.NPLogin=(function(){
       <div class="portal-guest-row">${button(icon('leaf')+`<span>${tr('Khám phá với tư cách khách','Explore as a guest','ゲストとして体験')}</span>`,'portal-guest','portal-guest')}${link(tr('Hồ sơ khác','Other profiles','ほかのプロフィール'),'profiles','textlink')}</div>
       <div class="atelier-access-links portal-access-links">${link(tr('Tôi có mã mời','I have an invitation','招待コードを持っています')+icon('arrow'),'invite','')}<span>${tr('Bản trải nghiệm · dùng mã mẫu','Prototype · sample access code','体験版・サンプルコード')}</span></div>`;
     if(window.NP_STATIC_PUBLISH){
-      // Static GitHub Pages demo: per-device PIN is a UX gate, not real auth.
-      // Guest is visible and isolated from family profiles; no fake password hints.
+      // Public GitHub Pages demo: a tap selects the profile, no password or PIN.
+      // Guest is separate; this is not real authentication.
       section.querySelector('.portal-access-links')?.remove();
       section.querySelector('.portal-guest-row > a')?.remove();
       const hint=section.querySelector('.portal-entry-hint');
-      if(hint)hint.textContent=tr('Chọn avatar để nhập hoặc tạo PIN demo. Tiến độ chỉ lưu trên thiết bị này.','Select an avatar to enter or create a demo PIN. Progress stays on this device.','写真を選び、この端末でPINを設定または入力してください。');
+      if(hint)hint.textContent=tr('Chọn avatar để vào học ngay. Tiến độ chỉ lưu trên thiết bị này.','Tap an avatar to start learning. Progress stays on this device.','写真を選ぶとすぐに学習を開始します。記録はこの端末に保存されます。');
       section.querySelectorAll('[data-action="loginprofile"]').forEach(button=>{
-        button.setAttribute('aria-haspopup','dialog');
-        button.setAttribute('aria-label',tr('Nhập PIN của ','Enter PIN for ','PINを入力：')+(db.profiles.find(p=>p.id===button.dataset.id)?.name||''));
+        button.removeAttribute('aria-haspopup');
+        button.setAttribute('aria-label',tr('Vào học với ','Start learning as ','学習を開始：')+(db.profiles.find(p=>p.id===button.dataset.id)?.name||''));
       });
     }
     return template.innerHTML;
@@ -63,7 +63,7 @@ window.NPLogin=(function(){
     event.preventDefault();
     event.stopImmediatePropagation();
     if(window.NPFamilyAccess)window.NPFamilyAccess.open(p.id,button);
-    else modal('Chưa tải được đăng nhập demo','<p>Vui lòng tải lại trang để nhập PIN.</p>');
+    else modal('Chưa mở được hồ sơ demo','<p>Vui lòng tải lại trang rồi chọn avatar.</p>');
   },true);
   document.addEventListener('click',event=>{
     if(event.target.closest('[data-locale]')&&route()==='login')queueMicrotask(()=>{
