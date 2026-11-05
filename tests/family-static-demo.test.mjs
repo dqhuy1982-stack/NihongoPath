@@ -31,7 +31,7 @@ test('family demo ships separate educational targets and PIN-first guest picker'
  assert.ok(index.includes('src="family-demo-auth.js"'));
  assert.ok(index.includes('src="family-portraits.js"'));
  assert.ok(index.includes('href="family-demo.css"'));
- assert.ok(app.includes('window.NPFamilyAccess.isActive(db.current)'));
+ assert.ok(app.includes('window.NPFamilyAccess?.isActive(db.current)'));
  assert.ok(app.includes("profiles:db.profiles.filter(p=>p.id!=='guest')"),'Guest must not enter saved family profiles');
 });
 
