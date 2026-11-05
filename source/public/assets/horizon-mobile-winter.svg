@@ -6,7 +6,7 @@
 </defs>
 <rect width="390" height="844" fill="url(#paper)"/>
 <rect width="390" height="355" fill="url(#warm)"/>
-<!-- Restrained offset Fuji: crisp contours, deliberately smaller than HORIZON signature. -->
+<!-- Restrained offset Fuji: crisp contours, deliberately smaller than central brand. -->
 <path d="M251 255 346 148 439 255Z" fill="url(#mountain)"/>
 <path d="M305 196 346 148 387 196 371 186 363 201 352 186 343 199 334 184 324 199 317 187Z" fill="#ffffff" opacity=".94"/>
 <path d="M304 197 346 148 380 188" fill="none" stroke="#9fb6c0" stroke-width=".85" stroke-linecap="round" opacity=".30"/>
