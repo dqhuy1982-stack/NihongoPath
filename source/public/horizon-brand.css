@@ -51,7 +51,7 @@
 }
 .sidebar .brand-symbol.horizon-symbol,
 .reviewbar .review-brand-icon{
-  content:url('assets/horizon-mark-light.svg?v=refined2');
+  content:url('assets/horizon-mark-light.svg?v=homev3');
 }
 .sidebar .brand-symbol.horizon-symbol{width:51px;height:43px}
 .sidebar .brand .brand-copy.horizon-wordmark strong{
@@ -132,7 +132,7 @@
 body.dark .home-v2 .home-brand .brand-symbol.horizon-symbol,
 body.dark .mobile-brand .brand-symbol.horizon-symbol,
 body.dark .auth-top .brand-symbol.horizon-symbol{
-  content:url('assets/horizon-mark-light.svg?v=refined2');
+  content:url('assets/horizon-mark-light.svg?v=homev3');
 }
 body.dark .home-v2 .home-brand .horizon-wordmark strong,
 body.dark .mobile-brand .horizon-wordmark strong,
