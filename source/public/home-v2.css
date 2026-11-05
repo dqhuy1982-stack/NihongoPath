@@ -1,259 +1,290 @@
-/* Nihongo Path — HOME V2
-   A single-purpose family learner picker, scoped to static landing only.
-   Never modify the learning shell, lessons, Kana stroke geometry or storage. */
+/* Nihongo Path / Refined family entrance
+   One focal point, four profiles, one secondary guest action.
+   Scoped to Home V2 only; no changes to lessons, learner data or app shell. */
 
 .home-v2.atelier-home{
   min-height:100svh;height:auto;
-  display:grid;grid-template-rows:76px minmax(0,1fr);
-  padding:0 clamp(22px,4.8vw,74px);
-  background:#f7f6f1;color:#254238;
+  display:grid;grid-template-rows:78px minmax(0,1fr);
+  padding:0 clamp(18px,4vw,60px);
   overflow:visible;
+  background:#f7f6f1;color:#233e31;
 }
 .home-v2 .atelier-header{
-  height:76px;max-width:1190px;
-  border-bottom:1px solid #e1e6db;
+  height:78px;max-width:1230px;
+  border-bottom:1px solid #dedfd7;
 }
-.home-v2 .home-brand{gap:12px}
+.home-v2 .home-brand{gap:11px}
+.home-v2 .home-brand .brand-symbol{width:39px;height:43px}
 .home-v2 .home-brand .brand-copy strong{
-  font-size:clamp(20px,2vw,27px);font-weight:600;letter-spacing:-.04em;
+  font:500 clamp(22px,2.3vw,29px)/1.15 Newsreader,Georgia,serif!important;
+  letter-spacing:-.025em;
 }
-.home-v2 .atelier-header-actions{gap:12px}
+.home-v2 .atelier-header-actions{gap:14px}
 .home-v2 .atelier-header .language-switch{
-  background:#eef1e9;border:1px solid #dce4d8;border-radius:99px;
+  background:#eeefe8;border:1px solid #dfe3d8;border-radius:100px;
+  padding:3px;
 }
 .home-v2 .atelier-header .language-switch button{
-  font-size:12px;font-weight:600;min-height:34px;
+  min-height:34px;min-width:34px;
+  font-size:12px;font-weight:600;
 }
-.home-v2 .atelier-main{
-  display:grid;
-  grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);
-  align-items:center;
-  gap:clamp(32px,5vw,74px);
-  width:100%;max-width:1150px;
-  padding:30px 0 44px;
-  min-height:calc(100svh - 76px);
-  margin:auto;
+.home-v2 .atelier-main,
+.compact .home-v2 .atelier-main{
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  width:100%;max-width:1210px;
+  min-height:calc(100svh - 78px);
+  margin:auto;padding:38px 10px 44px;
+  gap:0;outline:none;
 }
-.home-v2 .atelier-story{
-  max-width:475px;
-  padding:0 0 16px;
+.home-v2 .atelier-story,
+.compact .home-v2 .atelier-story{
+  max-width:980px;width:100%;
+  padding:0;text-align:center;
 }
 .home-v2-eyebrow{
-  display:inline-flex;align-items:center;gap:12px;
+  display:flex;align-items:center;justify-content:center;
+  gap:14px;color:#5d775e;
   font:700 11px/1.5 var(--font-readable);
-  letter-spacing:.14em;color:#557260;
+  letter-spacing:.18em;
 }
-.home-v2-eyebrow:before{
-  content:"";display:inline-block;width:28px;height:2px;
-  background:#879e7e;border-radius:2px;
+.home-v2-eyebrow:before,.home-v2-eyebrow:after{
+  content:"";width:25px;height:1px;
+  background:#a9b8a1;
 }
 .home-v2 .atelier-story h1,
-.compact .home-v2 .atelier-story h1{
-  font:600 clamp(44px,4.7vw,67px)/1.12 Newsreader,'Noto Serif JP',serif;
-  letter-spacing:-.042em;
-  margin:24px 0 0;color:#254238;
+.compact .home-v2 .atelier-story h1,
+html[lang=ja] .home-v2 .atelier-story h1{
+  font:700 clamp(36px,4vw,51px)/1.24 var(--font-readable);
+  color:#244134;letter-spacing:-.048em;
+  margin:18px 0 0;
   text-wrap:balance;
 }
-.home-v2 .atelier-story h1 em{
-  font-weight:600;font-style:italic;
-  color:#55725b;
+.home-v2-intro,
+.compact .home-v2-intro{
+  margin:12px auto 0;
+  color:#667866;
+  font:italic 500 clamp(17px,1.65vw,22px)/1.5 Newsreader,Georgia,'Noto Serif JP',serif;
+  letter-spacing:0;
 }
-.home-v2-intro{
-  margin:24px 0 0;
-  max-width:390px;
-  color:#52645a;
-  font:500 15px/1.8 var(--font-readable);
-}
-.home-v2-accent{
-  display:flex;align-items:center;gap:14px;margin-top:47px;
-  color:#7a8e7c;letter-spacing:.13em;
-  font:600 11px/1.4 var(--font-readable);
-}
-.home-v2-accent>span:first-child{
-  display:block;width:57px;height:1px;background:#b7c7af;
-}
-.home-v2 .atelier-access{
-  width:100%;max-width:560px;
+.home-v2 .atelier-access,
+.compact .home-v2 .atelier-access{
+  width:100%;max-width:1060px;
   border:0;padding:0;
   background:transparent;
 }
-.home-v2 .access-heading{margin:0}
-.home-v2 .access-heading h2,
-.compact .home-v2 .access-heading h2{
-  color:#244237;
-  font:700 clamp(26px,2.7vw,34px)/1.24 var(--font-readable);
-  letter-spacing:-.035em;
-  margin:0;
-}
-.home-v2 .access-heading>p,
-.compact .home-v2 .access-heading>p{
-  display:block;margin:8px 0 0;
-  font-size:14px;font-weight:500;line-height:1.65;color:#526659;
-}
-.home-v2 .portal-people{
+.home-v2 .portal-people,
+.compact .home-v2 .portal-people{
+  width:100%;
   display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:14px;margin:24px 0 0;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:18px;
+  margin:47px auto 0;
 }
 .home-v2 .portal-person,
 .compact .home-v2 .portal-person{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  min-height:169px;min-width:0;
-  padding:13px 12px 15px;gap:0;
-  border:1px solid #d7e2d4;
-  border-radius:22px;
-  background:#fffefa;
-  box-shadow:0 5px 18px #263e3510;
-  transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease,background .18s ease;
-  cursor:pointer;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  position:relative;
+  min-width:0;min-height:255px;
+  padding:21px 12px 22px;gap:0;
+  border-radius:21px;
+  border:1px solid #d8dfd5;
+  background:linear-gradient(180deg,#fffefa,#fcfbf7);
+  box-shadow:0 12px 35px #2a493b0c;
+  color:#223d31;text-align:center;
+  transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease,background .18s ease;
+}
+.home-v2 .portal-person:after{
+  content:"↗";position:absolute;
+  top:13px;right:15px;
+  font:600 18px/1 var(--font-readable);
+  color:#76927d;
 }
 .home-v2 .portal-person .family-photo{
-  padding:3px;transition:none;
+  display:block;position:relative;
+  padding:4px;box-shadow:none;transform:none;
 }
 .home-v2 .portal-person .family-photo:before{
-  border:1px solid #c9d8c5;
+  content:"";position:absolute;inset:0;
+  border:1px solid #cbd4bf;border-radius:50%;
 }
-.home-v2 .portal-person .avatar{
-  width:88px;height:88px;
+.home-v2 .portal-person .avatar,
+.compact .home-v2 .portal-person .avatar{
+  width:104px;height:104px;
   border-radius:50%;
-  box-shadow:0 3px 12px #2b49341a;
+  filter:none;
+  box-shadow:0 3px 11px #2d493318;
 }
 .home-v2 .portal-person .family-name,
 .compact .home-v2 .portal-person .family-name{
-  font:700 15px/1.38 var(--font-readable);
-  letter-spacing:-.015em;
-  color:#28473c;
-  margin-top:9px;
+  color:#233e31;
+  font:700 16px/1.4 var(--font-readable);
+  letter-spacing:-.02em;
+  margin-top:17px;
   white-space:normal;overflow-wrap:anywhere;
 }
 .home-v2 .portal-person-goal,
 .compact .home-v2 .portal-person-goal{
-  font:500 12px/1.5 var(--font-readable);
-  color:#52695b;
-  margin-top:2px;
+  font:500 12px/1.55 var(--font-readable);
+  color:#506957;
+  margin-top:4px;
 }
 .home-v2 .portal-person-arrow{display:none}
-.home-v2 .portal-person:hover{
-  transform:translateY(-2px);
-  background:#f4f8f1;border-color:#84a18a;
-  box-shadow:0 9px 26px #263e351a;
-}
+.home-v2 .portal-person:hover,
 .home-v2 .portal-person:focus-visible{
-  outline:3px solid #2f7052;outline-offset:3px;
+  border-color:#88a88c;
+  background:#f5f8f1;
+  box-shadow:0 14px 32px #24432f17;
 }
+.home-v2 .portal-person:hover{transform:translateY(-3px)}
 .home-v2 .portal-person:active{transform:translateY(0)}
-.home-v2 .portal-guest-row{
-  justify-content:center;border:0;
-  margin:15px 0 0;padding:0;
+.home-v2 .portal-person:focus-visible{
+  outline:3px solid #316f53;outline-offset:3px;
+}
+.home-v2 .portal-guest-row,
+.compact .home-v2 .portal-guest-row{
+  justify-content:center;
+  margin:26px 0 0;padding:0;
+  border:0;
 }
 .home-v2 .portal-guest,
 .compact .home-v2 .portal-guest{
-  border:0;background:transparent;box-shadow:none;
-  color:#335d47;
-  min-height:44px;
-  padding:10px 14px;
-  font:600 13px/1.4 var(--font-readable);
+  display:inline-flex;align-items:center;justify-content:center;
+  gap:10px;
+  border:0;background:none;box-shadow:none;
+  font:600 13px/1.5 var(--font-readable);
+  color:#466a50;
+  min-height:44px;padding:8px 14px;
+  border-radius:99px;
 }
-.home-v2 .portal-guest:hover{text-decoration:underline;text-underline-offset:4px}
-.home-v2 .portal-guest .icon{width:17px;height:17px}
+.home-v2 .portal-guest:hover{
+  color:#254b35;text-decoration:underline;
+  text-underline-offset:4px;
+}
+.home-v2 .portal-guest .icon{width:16px;height:16px}
 
-/* Short laptop displays: compact vertically without hiding meaningful content. */
+/* Low-height office screens: avoid cutting off the Guest action. */
 @media(min-width:851px) and (max-height:760px){
-  .home-v2.atelier-home{grid-template-rows:66px minmax(0,1fr)}
-  .home-v2 .atelier-header{height:66px}
-  .home-v2 .atelier-main{min-height:calc(100svh - 66px);padding:20px 0 24px}
-  .home-v2 .atelier-story h1{font-size:clamp(40px,4vw,57px)}
-  .home-v2 .portal-people{gap:10px;margin-top:16px}
-  .home-v2 .portal-person{min-height:145px}
-  .home-v2 .portal-person .avatar{width:73px;height:73px}
-  .home-v2-accent{margin-top:28px}
+  .home-v2.atelier-home{grid-template-rows:68px minmax(0,1fr)}
+  .home-v2 .atelier-header{height:68px}
+  .home-v2 .atelier-main{min-height:calc(100svh - 68px);padding:24px 8px 30px}
+  .home-v2 .portal-people{gap:14px;margin-top:32px}
+  .home-v2 .portal-person{min-height:224px}
+  .home-v2 .portal-person .avatar{width:90px;height:90px}
+  .home-v2 .portal-person .family-name{margin-top:12px}
+  .home-v2 .portal-guest-row{margin-top:18px}
 }
 
-/* Tablet and phones: brand, compact statement, 2x2 learner picker, guest. */
+/* Phones and tablets: the four profiles become a compact 2x2 picker. */
 @media(max-width:850px){
   .home-v2.atelier-home,
   .compact .home-v2.atelier-home{
-    display:grid;grid-template-rows:70px auto;
-    height:auto;min-height:100svh;
-    padding:0 clamp(16px,4vw,30px);
+    grid-template-rows:70px minmax(0,1fr);
+    min-height:100svh;height:auto;
+    padding:0 clamp(16px,4.8vw,30px);
   }
-  .home-v2 .atelier-header{height:70px;border-bottom:1px solid #e1e6db;gap:8px}
+  .home-v2 .atelier-header{height:70px;gap:8px}
   .home-v2 .atelier-header-actions{gap:7px}
   .home-v2 .atelier-main,
   .compact .home-v2 .atelier-main{
-    width:100%;max-width:560px;
-    min-height:0;
-    display:grid;grid-template-columns:minmax(0,1fr);
-    justify-content:stretch;align-items:start;
-    gap:22px;
-    padding:26px 0 34px!important;
+    min-height:calc(100svh - 70px);
+    width:100%;max-width:570px;
+    display:flex;flex-direction:column;
+    justify-content:flex-start;align-items:center;
+    gap:0;padding:42px 0 34px!important;
   }
-  .home-v2 .atelier-story{max-width:none;padding:0;text-align:left}
-  .home-v2-eyebrow{font-size:10px}
+  .home-v2-eyebrow{font-size:10px;letter-spacing:.14em;gap:8px}
+  .home-v2-eyebrow:before,.home-v2-eyebrow:after{width:21px}
   .home-v2 .atelier-story h1,
-  .compact .home-v2 .atelier-story h1{
-    font-size:clamp(33px,6vw,43px);line-height:1.15;
-    margin:12px 0 0;
+  .compact .home-v2 .atelier-story h1,
+  html[lang=ja] .home-v2 .atelier-story h1{
+    font-size:clamp(29px,5vw,38px);
+    margin-top:14px;line-height:1.25;letter-spacing:-.03em;
   }
-  .home-v2-intro{max-width:460px;margin-top:10px;font-size:13px;line-height:1.65}
-  .home-v2-accent{display:none}
-  .home-v2 .atelier-access,
-  .compact .home-v2 .atelier-access{padding:0;max-width:none}
-  .home-v2 .access-heading h2,
-  .compact .home-v2 .access-heading h2{font-size:25px}
-  .home-v2 .access-heading>p,
-  .compact .home-v2 .access-heading>p{font-size:13px;margin-top:5px}
+  .home-v2-intro,.compact .home-v2-intro{
+    margin-top:10px;
+    font-size:clamp(15px,3.2vw,18px);
+    line-height:1.5;
+  }
   .home-v2 .portal-people,
-  .compact .home-v2 .portal-people{gap:10px;margin:16px 0 0}
+  .compact .home-v2 .portal-people{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px;
+    margin-top:30px;
+  }
   .home-v2 .portal-person,
   .compact .home-v2 .portal-person{
-    min-height:143px;padding:11px 7px 12px;
-    border-radius:18px;
+    min-height:184px;
+    padding:13px 7px 14px;
+    border-radius:17px;
   }
   .home-v2 .portal-person .avatar,
   .compact .home-v2 .portal-person .avatar{
-    width:77px;height:77px;
+    width:83px;height:83px;
   }
   .home-v2 .portal-person .family-name,
   .compact .home-v2 .portal-person .family-name{
-    font-size:14px;margin-top:7px;
+    font-size:14px;margin-top:11px;
   }
   .home-v2 .portal-person-goal,
-  .compact .home-v2 .portal-person-goal{font-size:12px;line-height:1.4}
+  .compact .home-v2 .portal-person-goal{
+    font-size:12px;margin-top:3px;
+  }
+  .home-v2 .portal-person:after{font-size:15px;top:9px;right:10px}
   .home-v2 .portal-guest-row,
-  .compact .home-v2 .portal-guest-row{border:0;margin-top:9px;padding:0}
+  .compact .home-v2 .portal-guest-row{margin-top:22px}
 }
 @media(max-width:430px){
-  .home-v2 .home-brand .brand-copy strong,
-  .compact .home-v2 .home-brand .brand-copy strong{font-size:17px!important}
-  .home-v2 .home-brand .brand-symbol{width:29px;height:32px}
+  .home-v2 .home-brand .brand-symbol{width:28px;height:31px}
+  .home-v2 .home-brand .brand-copy strong{
+    font-size:19px!important;
+  }
+  .home-v2 .atelier-header .language-switch button{
+    padding:5px 6px;min-width:28px;font-size:11px;
+  }
   .home-v2 .atelier-header-actions{gap:4px}
-  .home-v2 .atelier-header .language-switch button,
-  .compact .home-v2 .atelier-header .language-switch button{padding:5px 6px;min-width:27px;font-size:11px}
-  .home-v2 .atelier-story h1,
-  .compact .home-v2 .atelier-story h1{font-size:35px}
-  .home-v2 .portal-person .avatar,
-  .compact .home-v2 .portal-person .avatar{width:69px;height:69px}
+  .home-v2 .atelier-main,
+  .compact .home-v2 .atelier-main{padding-top:40px!important}
+  .home-v2 .portal-people,.compact .home-v2 .portal-people{gap:11px}
   .home-v2 .portal-person,
-  .compact .home-v2 .portal-person{min-height:136px}
+  .compact .home-v2 .portal-person{min-height:181px}
+  .home-v2 .portal-person .avatar,
+  .compact .home-v2 .portal-person .avatar{width:80px;height:80px}
 }
-body.dark .home-v2.atelier-home{background:#1c3029;color:#eaf0e4}
-body.dark .home-v2 .atelier-header{border-color:#496055}
-body.dark .home-v2-eyebrow{color:#b2c7af}
-body.dark .home-v2-eyebrow:before{background:#9bb493}
-body.dark .home-v2 .atelier-story h1{color:#f0f4e9}
-body.dark .home-v2 .atelier-story h1 em{color:#c8d8b7}
-body.dark .home-v2-intro{color:#c7d5c5}
-body.dark .home-v2-accent{color:#b5c8b2}
-body.dark .home-v2 .access-heading h2{color:#f0f4e9}
-body.dark .home-v2 .access-heading>p{color:#c7d5c5}
-body.dark .home-v2 .portal-person{background:#263d33;border-color:#57705d}
-body.dark .home-v2 .portal-person:hover{background:#304b3c;border-color:#a7c5a1}
-body.dark .home-v2 .portal-person .family-name{color:#f0f4e9}
-body.dark .home-v2 .portal-person-goal{color:#d1dfd0}
-body.dark .home-v2 .portal-guest{color:#d1e4c8}
-body.dark .home-v2 .atelier-header .language-switch{background:#263e32;border-color:#4a6852}
+html[lang=ja] .home-v2 .atelier-story h1{
+  font-family:'Noto Serif JP',var(--font-readable);
+  letter-spacing:-.02em;
+}
+/* Same reading hierarchy for dark mode. */
+body.dark .home-v2.atelier-home{background:#1b2e27;color:#eef3e8}
+body.dark .home-v2 .atelier-header{border-bottom-color:#40554a}
+body.dark .home-v2-eyebrow{color:#b3c9af}
+body.dark .home-v2-eyebrow:before,
+body.dark .home-v2-eyebrow:after{background:#78937d}
+body.dark .home-v2 .atelier-story h1{color:#f1f5ec}
+body.dark .home-v2-intro{color:#c6d3c2}
+body.dark .home-v2 .portal-person{
+  background:linear-gradient(180deg,#273f34,#243b31);
+  border-color:#526d58;box-shadow:0 10px 30px #0000001a;
+}
+body.dark .home-v2 .portal-person:hover,
+body.dark .home-v2 .portal-person:focus-visible{
+  background:#2d473a;border-color:#93b499;
+}
+body.dark .home-v2 .portal-person .family-name{color:#f0f5ec}
+body.dark .home-v2 .portal-person-goal{color:#cfdfcc}
+body.dark .home-v2 .portal-person:after{color:#bfd4b7}
+body.dark .home-v2 .portal-guest{color:#d3e2cf}
+body.dark .home-v2 .portal-guest:hover{color:#f0f5ec}
+body.dark .home-v2 .atelier-header .language-switch{
+  background:#284337;border-color:#526c56;
+}
 @media(prefers-reduced-motion:reduce){
   .home-v2 .portal-person{transition:none}
   .home-v2 .portal-person:hover{transform:none}
+}
+@media(prefers-contrast:more){
+  .home-v2 .portal-person{border-width:2px}
+  .home-v2 .portal-person-goal{color:#234533}
 }
