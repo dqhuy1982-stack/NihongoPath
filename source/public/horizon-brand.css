@@ -1,0 +1,178 @@
+/* HORIZON / brand integration
+   Quiet editorial identity for the existing family learning product.
+   The H mark suggests a Japanese brush stroke; the arc and small sun suggest
+   progress toward a widening horizon. Keep the product UI deliberately calm. */
+
+:root{
+  --horizon-ink:#284b3b;
+  --horizon-sage:#93a98b;
+  --horizon-paper:#f7f6f1;
+}
+
+/* Shared identity across Home, full sidebar, compact header and prototypes. */
+.brand .brand-symbol.horizon-symbol{
+  display:block;
+  flex:0 0 auto;
+  width:41px;
+  height:41px;
+  object-fit:contain;
+  border:0!important;
+  box-shadow:none!important;
+}
+.brand .brand-copy.horizon-wordmark{
+  display:inline-flex;
+  flex-direction:row;
+  align-items:center;
+  flex-wrap:nowrap;
+  gap:0;
+  min-width:0;
+}
+.brand .brand-copy.horizon-wordmark strong{
+  display:block;
+  color:var(--horizon-ink);
+  font-family:Newsreader,Georgia,'Noto Serif JP',serif!important;
+  font-weight:520!important;
+  font-size:25px!important;
+  letter-spacing:.13em!important;
+  line-height:1.15;
+  white-space:nowrap;
+}
+.brand:focus-visible{
+  outline:2px solid #749878;
+  outline-offset:5px;
+  border-radius:4px;
+}
+.sidebar .brand{
+  justify-content:flex-start;
+  gap:10px;
+}
+.sidebar .brand-symbol.horizon-symbol,
+.reviewbar .review-brand-icon{
+  content:url('assets/horizon-mark-light.svg');
+}
+.sidebar .brand .brand-copy.horizon-wordmark strong{
+  color:#f0f2ea!important;
+  font-size:20px!important;
+  letter-spacing:.115em!important;
+}
+.mobile-brand .brand-symbol.horizon-symbol{width:32px;height:32px}
+.mobile-brand .brand-copy.horizon-wordmark strong{
+  font-size:18px!important;
+  letter-spacing:.11em!important;
+}
+.auth-top .brand .brand-copy.horizon-wordmark strong{
+  font-size:21px!important;
+}
+.reviewbar .review-brand-icon{width:22px;height:22px}
+.reviewbar strong{letter-spacing:.145em}
+
+/* Home header: calm mark + serif wordmark, no logo card or metallic effect. */
+.home-v2 .home-brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+}
+.home-v2 .home-brand .brand-symbol.horizon-symbol{
+  width:42px;height:42px;
+}
+.home-v2 .home-brand .brand-copy.horizon-wordmark strong{
+  font-size:27px!important;
+  font-weight:500!important;
+  letter-spacing:.15em!important;
+}
+.home-v2 .home-brand:hover .horizon-symbol{transform:translateY(-1px)}
+.home-v2 .horizon-symbol{transition:transform .18s ease}
+
+/* A complete sentiment that doesn't compete with the functional H1. */
+.home-v2 .atelier-story .horizon-home-slogan{
+  margin:18px auto 0;
+  color:#5d775f;
+  font:italic 500 clamp(17px,1.9vw,23px)/1.35 Newsreader,Georgia,serif;
+  letter-spacing:.015em;
+}
+.home-v2 .atelier-story .horizon-home-slogan:before{
+  content:"";
+  display:block;
+  width:60px;height:1px;
+  margin:0 auto 14px;
+  background:linear-gradient(90deg,transparent,#91a78c,transparent);
+}
+.home-v2 .atelier-story .horizon-home-slogan em{
+  font:inherit;
+  color:#355944;
+}
+.home-v2 .atelier-story h1,
+.compact .home-v2 .atelier-story h1{
+  margin-top:12px;
+}
+.home-v2 .atelier-story h1 em{color:#4b7054}
+.home-v2 .home-v2-intro{max-width:540px}
+
+/* Subtle sense of a journey: the cards rise only one touch above the paper. */
+.home-v2 .portal-person,
+.compact .home-v2 .portal-person{
+  box-shadow:0 8px 26px #253a2c0c;
+}
+.home-v2 .portal-person:hover{
+  box-shadow:0 13px 30px #253a2c17;
+}
+.home-v2 .portal-person:focus-visible{
+  outline:3px solid #538267;
+  outline-offset:3px;
+}
+
+/* Dark mode keeps the same calm contrast, not a separate gold luxury theme. */
+body.dark .home-v2 .home-brand .brand-symbol.horizon-symbol,
+body.dark .mobile-brand .brand-symbol.horizon-symbol,
+body.dark .auth-top .brand-symbol.horizon-symbol{
+  content:url('assets/horizon-mark-light.svg');
+}
+body.dark .home-v2 .home-brand .horizon-wordmark strong,
+body.dark .mobile-brand .horizon-wordmark strong,
+body.dark .auth-top .horizon-wordmark strong{
+  color:#eef2e9!important;
+}
+body.dark .home-v2 .horizon-home-slogan{color:#c1d5ba}
+body.dark .home-v2 .horizon-home-slogan em{color:#e3efe0}
+body.dark .home-v2 .horizon-home-slogan:before{
+  background:linear-gradient(90deg,transparent,#8ba589,transparent);
+}
+body.dark .home-v2 .portal-person,
+body.dark .home-v2 .portal-person:hover{
+  box-shadow:0 9px 26px #00000016;
+}
+
+/* Comfortable header and editorial hierarchy across device sizes. */
+@media(min-width:851px) and (max-height:760px){
+  .home-v2 .atelier-story .horizon-home-slogan{margin-top:9px;font-size:18px}
+  .home-v2 .atelier-story .horizon-home-slogan:before{margin-bottom:8px}
+  .home-v2 .atelier-story h1{margin-top:7px}
+  .home-v2 .portal-people{margin-top:24px}
+}
+@media(max-width:850px){
+  .home-v2 .home-brand .brand-symbol.horizon-symbol{width:36px;height:36px}
+  .home-v2 .home-brand .brand-copy.horizon-wordmark strong{font-size:22px!important}
+  .home-v2 .atelier-story .horizon-home-slogan{
+    margin-top:12px;
+    font-size:17px;
+    line-height:1.35;
+  }
+  .home-v2 .atelier-story .horizon-home-slogan:before{width:42px;margin-bottom:9px}
+  .home-v2 .atelier-story h1{margin-top:8px}
+  .home-v2 .portal-people,.compact .home-v2 .portal-people{margin-top:26px}
+}
+@media(max-width:430px){
+  .home-v2 .home-brand{gap:6px}
+  .home-v2 .home-brand .brand-symbol.horizon-symbol{width:31px;height:31px}
+  .home-v2 .home-brand .brand-copy.horizon-wordmark strong{
+    font-size:18px!important;
+    letter-spacing:.095em!important;
+  }
+  .home-v2 .atelier-story .horizon-home-slogan{font-size:16px}
+  .home-v2 .portal-people,.compact .home-v2 .portal-people{margin-top:24px}
+}
+@media(prefers-reduced-motion:reduce){
+  .home-v2 .horizon-symbol{transition:none}
+  .home-v2 .home-brand:hover .horizon-symbol{transform:none}
+}
