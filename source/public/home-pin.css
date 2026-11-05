@@ -1,0 +1,184 @@
+/* Home card -> PIN panel morph. Fixed overlay only while explicitly opened. */
+body.np-pin-active{overflow:hidden}
+.np-pin-overlay{
+  position:fixed;inset:0;z-index:1100;
+  pointer-events:none;
+}
+.np-pin-backdrop{
+  position:fixed;inset:0;width:100%;height:100%;
+  border:0;border-radius:0;background:rgba(16,35,28,.02);
+  opacity:0;cursor:default;
+  transition:background .32s ease,opacity .32s ease;
+  pointer-events:auto;
+}
+.np-pin-visible .np-pin-backdrop{
+  opacity:1;background:rgba(15,32,26,.47);
+  -webkit-backdrop-filter:blur(5px);
+  backdrop-filter:blur(5px);
+}
+.home-v2 .portal-person.np-pin-source{visibility:hidden}
+.np-pin-window{
+  position:fixed;left:-9999px;top:-9999px;
+  box-sizing:border-box;
+  display:flex;flex-direction:column;align-items:stretch;
+  overflow:hidden;overscroll-behavior:contain;
+  background:#fffefa;color:#244237;
+  border:1px solid #d5e1d5;
+  border-radius:23px;
+  box-shadow:0 20px 74px #071c1530;
+  pointer-events:auto;
+  transition:left .34s cubic-bezier(.2,.78,.2,1),
+             top .34s cubic-bezier(.2,.78,.2,1),
+             width .34s cubic-bezier(.2,.78,.2,1),
+             height .34s cubic-bezier(.2,.78,.2,1),
+             border-radius .34s ease,
+             box-shadow .34s ease;
+}
+.np-pin-visible .np-pin-window{
+  border-radius:28px;
+  box-shadow:0 30px 88px #071c1552;
+  overflow-y:auto;
+}
+.np-pin-close{
+  position:absolute;right:13px;top:12px;z-index:2;
+  width:39px;height:39px;padding:0;
+  border-radius:50%;border:1px solid #d8e2d7;
+  background:#f5f8f2;color:#3c5948;
+  font:400 25px/1 var(--font-readable,Arial,sans-serif);
+  display:grid;place-items:center;cursor:pointer;
+  opacity:0;transition:opacity .18s ease;
+}
+.np-pin-visible .np-pin-close{opacity:1}
+.np-pin-close:hover{background:#e5eee1}
+.np-pin-identity{
+  display:flex;align-items:center;flex-direction:column;
+  padding:22px 30px 13px;gap:3px;
+  text-align:center;flex:0 0 auto;
+}
+.np-pin-photo{
+  border-radius:50%;padding:4px;
+  border:1px solid #c8d7c6;
+  line-height:0;
+}
+.np-pin-photo .avatar{width:89px;height:89px;filter:none;box-shadow:none}
+.np-pin-photo .avatar img{
+  width:100%;height:100%;object-fit:cover;
+  object-position:center;border-radius:50%;image-rendering:auto;
+}
+.np-pin-name{
+  font:700 18px/1.42 var(--font-readable,Arial,sans-serif);
+  margin-top:8px;color:#244237;
+}
+.np-pin-goal{
+  font:600 12px/1.5 var(--font-readable,Arial,sans-serif);
+  color:#53715b;
+}
+.np-pin-body{
+  display:grid;gap:0;
+  padding:7px 28px 24px;
+  opacity:0;transform:translateY(13px);
+  transition:opacity .22s ease .1s,transform .3s ease .07s;
+  flex:1 0 auto;
+}
+.np-pin-visible .np-pin-body{
+  opacity:1;transform:none;
+}
+.np-pin-step{
+  color:#648268;letter-spacing:.15em;
+  text-align:center;font:700 10px/1.5 var(--font-readable,Arial,sans-serif);
+}
+.np-pin-body h2{
+  margin:7px 0 0;text-align:center;
+  font:700 23px/1.25 var(--font-readable,Arial,sans-serif);
+  letter-spacing:-.03em;color:#243f34;
+}
+.np-pin-body>p{
+  text-align:center;color:#586c5f;
+  font:500 12px/1.65 var(--font-readable,Arial,sans-serif);
+  margin:7px 0 0;
+}
+.np-pin-form{display:grid;gap:10px;margin-top:15px}
+.np-pin-input-wrap{display:grid;gap:5px}
+.np-pin-input-wrap[hidden]{display:none}
+.np-pin-input-wrap label{
+  text-align:left;font:600 12px/1.5 var(--font-readable,Arial,sans-serif);
+  color:#365b43;
+}
+#np-pin-input{
+  width:100%;height:48px;
+  border:1px solid #b7cdb7;border-radius:13px;
+  background:#fff;color:#213f32;
+  text-align:center;font:700 22px/1 var(--font-readable,Arial,sans-serif);
+  letter-spacing:.3em;box-shadow:inset 0 1px 3px #21463008;
+  padding:9px 12px;
+}
+#np-pin-input:focus-visible{
+  outline:3px solid #8bb59a;outline-offset:2px;
+}
+#np-pin-input[aria-invalid=true]{border-color:#b94e4e}
+.np-pin-error{
+  font:600 12px/1.5 var(--font-readable,Arial,sans-serif);
+  color:#a23636;text-align:center;margin:0;
+}
+.np-pin-error[hidden]{display:none}
+.np-pin-submit{
+  width:100%;min-height:46px;
+  border:1px solid #274d3b;border-radius:13px;
+  background:#274d3b;color:#fffefa;
+  font:700 14px/1.4 var(--font-readable,Arial,sans-serif);
+  cursor:pointer;transition:background .2s ease,transform .16s ease;
+}
+.np-pin-submit:hover{background:#37664d}
+.np-pin-submit:active{transform:scale(.985)}
+.np-pin-submit:disabled{cursor:wait;opacity:.65}
+.np-pin-recover{
+  display:block;margin:5px auto 0;padding:4px 12px;min-height:32px;
+  color:#426c50;background:transparent;border:0;
+  font:600 12px/1.5 var(--font-readable,Arial,sans-serif);
+  cursor:pointer;
+}
+.np-pin-recover:hover{text-decoration:underline;text-underline-offset:3px}
+.np-pin-recover[hidden]{display:none}
+.np-pin-body .np-pin-disclaimer{
+  margin-top:7px;color:#627668;
+  font-size:10px;line-height:1.5;
+}
+.np-pin-window :is(button,input):focus-visible{
+  outline:3px solid #5d9c76;outline-offset:3px;
+}
+body.dark .np-pin-window{
+  background:#223a2f;color:#eff4e9;
+  border-color:#587260;
+}
+body.dark .np-pin-identity .np-pin-name,
+body.dark .np-pin-body h2{color:#eff4e9}
+body.dark .np-pin-goal,body.dark .np-pin-step,
+body.dark .np-pin-body>p,body.dark .np-pin-body .np-pin-disclaimer{color:#c8d9c6}
+body.dark .np-pin-input-wrap label{color:#d4e5d0}
+body.dark #np-pin-input{background:#2c4839;border-color:#66866c;color:#eff4e9}
+body.dark .np-pin-close{background:#2e4b3c;border-color:#587560;color:#eff4e9}
+body.dark .np-pin-submit{background:#d3e4c6;border-color:#d3e4c6;color:#203c2c}
+body.dark .np-pin-recover{color:#d0e6c5}
+@media(max-width:480px){
+  .np-pin-identity{padding:16px 22px 8px}
+  .np-pin-photo .avatar{width:76px;height:76px}
+  .np-pin-name{font-size:17px;margin-top:7px}
+  .np-pin-body{padding:4px 22px 19px}
+  .np-pin-body h2{font-size:21px}
+  .np-pin-body>p{font-size:12px}
+  .np-pin-form{margin-top:11px}
+  .np-pin-close{width:36px;height:36px;right:9px;top:9px}
+}
+@media(max-height:640px){
+  .np-pin-identity{padding-top:11px;padding-bottom:4px}
+  .np-pin-photo .avatar{width:62px;height:62px}
+  .np-pin-name{font-size:16px;margin-top:4px}
+  .np-pin-body{padding:4px 20px 12px}
+  .np-pin-form{margin-top:8px}
+  .np-pin-body .np-pin-disclaimer{margin-top:3px}
+}
+@media(prefers-reduced-motion:reduce){
+  .np-pin-backdrop,.np-pin-window,.np-pin-body,.np-pin-close,.np-pin-submit{
+    transition:none;
+  }
+}
