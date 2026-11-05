@@ -20,6 +20,9 @@ test('four 320px portraits are individually cached WebP files from the uploaded 
    assert.ok(bytes.length>5000&&bytes.length<35000,id+' should be high enough quality but lightweight');
    assert.equal(bytes.subarray(0,4).toString(),'RIFF',id);
    assert.equal(bytes.subarray(8,12).toString(),'WEBP',id);
+   assert.equal(bytes.subarray(12,16).toString(),'VP8 ',id);
+   assert.equal(bytes.readUInt16LE(26)&0x3fff,320,id+' width must remain 320px');
+   assert.equal(bytes.readUInt16LE(28)&0x3fff,320,id+' height must remain 320px');
    digests.push(bytes.toString('base64').slice(0,150));
  }
  assert.equal(new Set(digests).size,4,'Each avatar must be its own original picture');
