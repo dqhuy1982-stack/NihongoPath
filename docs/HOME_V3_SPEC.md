@@ -40,3 +40,35 @@ Home is a quiet welcome space. The prior Home placed the logo in a left-aligned 
 - JS syntax + Home tests + brand tests + Learning QA + Security Gate + GitHub Pages build/deploy all pass on `develop`.
 
 **Principle:** Brand first, learning next. Suggest journey through the symbol, not extra decoration.
+
+## 7. Editorial Portrait Gallery refinement (2026-11-05)
+The first Home V3 implementation was functional but visually over-structured: the
+welcome question occupied two lines on desktop; four outlined rectangles with
+number badges and corner arrows resembled an enterprise account picker; images
+were only 96px and did not carry the brand's warmth.
+
+### Final desktop direction
+- Keep the centered HORIZON signature and tagline as one intentional lockup.
+- Override legacy `.atelier-story h1>span,em { display:block }`: keep the
+  functional question **on one line on desktop**, with natural wrap on narrow phones.
+- Replace **four framed cards** with a **single editorial portrait gallery**:
+  hairline upper/lower rules, faint vertical separators, generous open columns.
+  No numbers (01–04), northeast arrows, floating-box shadows or saturated accents.
+- Portraits become the primary visual anchors: approx **156 × 174px** arched
+  silhouettes in the high-resolution original family photos; quiet hover lift and
+  restrained image shadow. Show learner names and their actual N5/N2/N4/N4 goals.
+- Each full portrait column is still a button and keeps its existing PIN morph,
+  keyboard focus, Guest action and learning session ownership unchanged.
+- A short desktop viewport compacts to a ~121 × 137px portrait; phones use a
+  calm 2×2 touch grid with smaller framed hit areas and natural page scrolling.
+- Keep the site's forest/ivory palette, dark-mode contrast, accessible focus and
+  reduced-motion handling. Do not force nonfunctional progress indicators.
+
+### Visual QA
+- The team inspected the user's 2026-11-05 1906×1030 PC screenshot and made
+  a local layout-only mock at 1658×896, 1366×768, 390×844 and 360×700.
+  These local mock checks **do not** replace actual live-site/browser QA.
+- Automated source tests now check editorial separators, arched photo sizing,
+  badge removal, dark mode, breakpoints and preservation of PIN/Guest routes.
+- Changed source is limited to `source/public/home-v3.css` and associated tests;
+  baseline, `main`, shared account logic, photos and Kana components stay unchanged.
