@@ -74,6 +74,23 @@ remote schema without checking duplicate owners, migration tables and profile
 revision semantics. Import/sync of completed local learning remains a separate
 reviewed migration, not part of the preflight.
 
+### Prepare data-only transfers on the original home PC (no remote writes)
+
+Once remote D1 has been confirmed empty in all seven learning tables, use the
+home PC to prepare **data-only exports**; do not share personal study SQL files
+through a company computer or git. Run from `C:\Dev\NihongoPath`:
+
+```powershell
+git pull --ff-only origin feature/family-one-tap-entry
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Prepare-Nihongo-Learning-Transfer.ps1
+```
+
+The script exports seven learning tables to `.private-backups\transfer-...`
+and prints only row counts. It does not touch D1 remote. Inspect those counts
+before selecting an explicit, guarded import; `d1_migrations`, `_cf_KV`, and
+`sqlite_sequence` are intentionally excluded. Do not run from the office PC:
+its D1 local instance is a different database.
+
 ## Before any Internet-facing test
 1. Complete GitHub learning QA, family key tests and Worker dry-run build. Confirm all pass.
 2. Do not assume Cloudflare Access policies protect the public preview; they were removed at user request.
