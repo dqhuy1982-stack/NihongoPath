@@ -16,10 +16,10 @@ const demoStarterNote=id=>{const [title,body,target]=familyDemoNotes[id]||family
  id:'sample-note-'+id,type:'note',title,body,target,source:'Gợi ý thử giao diện · demo',demo:true,at:'2026-11-05T00:00:00.000Z'
 };};
 const initialProfiles=[
- ['demo-a','Bố','N5',20,'manager','Ôn Hiragana, Katakana và N5','foundation','Nền tảng Kana → N5'],
+ ['demo-a','Quang Huy','N5',20,'manager','Ôn Hiragana, Katakana và N5','foundation','Nền tảng Kana → N5'],
  ['demo-b','Vy Anh','N2',30,'learner','Luyện JLPT N2: từ vựng, đọc và nghe','N2','JLPT N2 · lộ trình dự kiến'],
- ['demo-c','Khánh','N5',15,'learner','Từ vựng và hội thoại tiếng Nhật ở trường','N5','N5 · giao tiếp trường học'],
- ['demo-d','Hưng','Nền tảng',10,'learner','Hiragana, Katakana và phản xạ qua Kana','foundation','Kana · làm quen từng bước']
+ ['demo-c','Nam Khánh','N5',15,'learner','Từ vựng và hội thoại tiếng Nhật ở trường','N5','N5 · giao tiếp trường học'],
+ ['demo-d','Gia Hưng','Nền tảng',10,'learner','Hiragana, Katakana và phản xạ qua Kana','foundation','Kana · làm quen từng bước']
 ].map(([id,name,goal,minutes,role,purpose,course,studyFocus],i)=>({
  id,name,goal,minutes,role,purpose,course,studyFocus,color:i,
  days:['T2','T4','T6'],deadline:'',onboarded:true,archived:false,
@@ -29,7 +29,7 @@ const initialProfiles=[
 }));
 let db;try{const saved=JSON.parse(localStorage.getItem(KEY));db=saved?.schemaVersion===1&&Array.isArray(saved.profiles)&&saved.profiles.length?saved:null;}catch{}
 db??={schemaVersion:1,current:'demo-a',profiles:structuredClone(initialProfiles)};
-if(window.NP_STATIC_PUBLISH&&db.familyDemoVersion!==3){
+if(window.NP_STATIC_PUBLISH&&db.familyDemoVersion!==4){
  // Adopt old placeholder profiles without overwriting any learning history.
  for(const sample of initialProfiles){
    let p=db.profiles.find(x=>x.id===sample.id);
@@ -37,11 +37,16 @@ if(window.NP_STATIC_PUBLISH&&db.familyDemoVersion!==3){
    if(/^Learner [A-D]$/.test(p.name||'')){
      Object.assign(p,{name:sample.name,goal:sample.goal,minutes:sample.minutes,role:sample.role,
        purpose:sample.purpose,course:sample.course,studyFocus:sample.studyFocus,shortcuts:sample.shortcuts});
-   } else if(!p.studyFocus) p.studyFocus=sample.studyFocus;
+   } else {
+     // Rename only old default demo names. Never overwrite a name edited by a learner.
+     const oldDefaults={'demo-a':'Bố','demo-b':'Vy Anh','demo-c':'Khánh','demo-d':'Hưng'};
+     if(p.name===oldDefaults[p.id])p.name=sample.name;
+     if(!p.studyFocus)p.studyFocus=sample.studyFocus;
+   }
    if(!Array.isArray(p.notes)||!p.notes.length)p.notes=structuredClone(sample.notes);
  }
  db.profiles=db.profiles.filter(p=>p.id!=='guest');
- db.familyDemoVersion=3;
+ db.familyDemoVersion=4;
  try{localStorage.setItem(KEY,JSON.stringify(db));}catch{}
 }
 if(!db.profiles.some(p=>p.id===db.current&&!p.archived))db.current=db.profiles.find(p=>!p.archived)?.id||db.profiles[0].id;
@@ -265,7 +270,7 @@ case 'restoreprofile':if(P().role==='manager'){const p=db.profiles.find(p=>p.id=
 case 'resetprofile':modal('Đặt lại hoạt động thử?',`<p>Sẽ xóa phiên học, lịch ôn, ghi chú, kết quả kiểm tra, lượt thẻ và lượt viết của <strong>${esc(P().name)}</strong>. Tên và mục tiêu được giữ.</p><div class="actions">${button('Xóa hoạt động thử','confirmresetprofile','btn danger')}<button type="button" class="btn" data-close>Hủy</button></div>`);break;
 case 'confirmresetprofile':if(window.NPLessonUI)NPLessonUI.clear(P().id);Object.assign(P(),{notes:[],attempts:[],flashReviews:[],writing:0,resume:null,practiceResults:[],activePractice:null,examSessions:{},examAttempts:[]});resetLearningView();persist('Đã đặt lại hoạt động thử của hồ sơ hiện tại.');closeModal();render(false);break;
 case 'resetdemo':modal('Đặt lại hồ sơ và hoạt động học thử?',`<p>Khôi phục bốn hồ sơ mẫu ban đầu. Các hồ sơ thêm, ghi chú và cấu hình học thử sẽ bị xóa. Bản nháp nội dung được quản lý riêng trong Xưởng nội dung. Không tác động dữ liệu của ứng dụng khác.</p><div class="actions">${button('Đặt lại bản thử','confirmresetdemo','btn danger')}<button type="button" class="btn" data-close>Hủy</button></div>`);break;
-case 'confirmresetdemo':if(window.NPLessonUI)NPLessonUI.clearAll();db={schemaVersion:1,familyDemoVersion:3,current:'demo-a',profiles:structuredClone(initialProfiles)};if(window.NPFamilyAccess)window.NPFamilyAccess.lock();settingsDirty=false;resetLearningView();persist('Đã khôi phục bộ hồ sơ mẫu.');closeModal();go('map');break;
+case 'confirmresetdemo':if(window.NPLessonUI)NPLessonUI.clearAll();db={schemaVersion:1,familyDemoVersion:4,current:'demo-a',profiles:structuredClone(initialProfiles)};if(window.NPFamilyAccess)window.NPFamilyAccess.lock();settingsDirty=false;resetLearningView();persist('Đã khôi phục bộ hồ sơ mẫu.');closeModal();go('map');break;
 }});
 document.addEventListener('submit',e=>{const f=e.target;if(!f.matches('[data-form]'))return;e.preventDefault();const data=new FormData(f),p=P();switch(f.dataset.form){case 'demologin':{if(data.get('learner')==='guest'){accessError='';go('guest');break;}const code=String(data.get('demoCode')||'').trim().toUpperCase();const target=db.profiles.find(x=>x.id===data.get('learner')&&!x.archived);if(code!=='PATH-DEMO'||!target){accessError='Mã demo chưa đúng. Dùng PATH-DEMO để thử luồng.';const err=$('#login-error');err.textContent=accessError;err.hidden=false;f.querySelector('[name=demoCode]').setAttribute('aria-invalid','true');Locale.translate(err);f.querySelector('[name=demoCode]').focus();return;}db.current=target.id;rememberDemoProfile=data.has('rememberProfile');db.demoLoginProfile=rememberDemoProfile?target.id:null;accessError='';resetLearningView();persist();go(target.onboarded?'today':'onboarding');break;}case 'recover':recoverTargetId=String(data.get('learner'));go('recovery');break;case 'reset-access':{const a=String(data.get('samplePassword')||''),b=String(data.get('sampleConfirm')||'');if(a.length<8||a!==b){resetError='Hai giá trị mẫu cần giống nhau và có ít nhất 8 ký tự.';const err=$('#reset-error');err.textContent=resetError;err.hidden=false;Locale.translate(err);return;}resetError='';f.reset();go('reset-done');break;}case 'invite':{const code=String(data.get('inviteCode')||'').trim().toUpperCase();if(code!=='PATH-FAMILY'){inviteError='Mã mẫu chưa đúng. Dùng PATH-FAMILY để xem luồng.';const err=$('#invite-error');err.textContent=inviteError;err.hidden=false;Locale.translate(err);return;}inviteError='';go('invite-preview');break;}case 'join':{const name=String(data.get('name')||'').trim();if(!name)return;const n=structuredClone(initialProfiles[0]);Object.assign(n,{id:uid(),name,goal:'Nền tảng',minutes:15,role:'learner',color:Number(data.get('color')),onboarded:false});db.profiles.push(n);db.current=n.id;resetLearningView();if(persist('Đã tạo hồ sơ thử trên trình duyệt này.'))go('onboarding');break;}case 'onboarding':p.name=String(data.get('name')).trim();p.goal=String(data.get('goal'));p.minutes=Number(data.get('minutes'));p.onboarded=true;if(persist('Đã lưu thiết lập thử.'))go('ready');break;
 case 'addprofile':if(p.role!=='manager')return;{const n=structuredClone(initialProfiles[0]);Object.assign(n,{id:uid(),name:String(data.get('name')).trim(),goal:String(data.get('goal')),minutes:Number(data.get('minutes')),role:'learner',color:db.profiles.length%4,onboarded:false});if(!n.name)return;db.profiles.push(n);if(persist('Đã thêm hồ sơ thử. Chưa tạo tài khoản đăng nhập.')){closeModal();render(false);}}break;
