@@ -115,7 +115,7 @@
        const index=live.profiles.findIndex(x=>x.id===p.id);if(index>=0)live.profiles[index]=result.profile;else live.profiles.push(result.profile);
        const display=db.profiles.find(x=>x.id===p.id);if(display)display.serverRevision=result.profile.serverRevision;
        if(result.state)live.states[p.id]=result.state;
-       live.pending--;if(!live.pending){live.unsaved=false;status('Đã lưu trên tài khoản');if(message)notify('Đã lưu thay đổi trên tài khoản.');}
+       live.pending--;if(!live.pending){live.unsaved=false;status('Đã lưu trên D1');if(message)notify('Đã lưu thay đổi trên D1.');}
      }).catch(error=>{live.pending=Math.max(0,live.pending-1);live.unsaved=true;live.error=error.message;status(error.message,true);profileSignatures[p.id]='';notify(error.message+' Giữ tab này và chọn Thử lưu lại.');});
    }
    return true;
@@ -149,7 +149,7 @@
    const base=route().split('/')[0];
    document.body.classList.remove('is-admin');
    if(base==='today'){$('#app').innerHTML=shell(pilotHome());document.body.classList.remove('is-login');applyPrefs();Locale.translate(document);}
-   else if(base==='guide'){$('#app').innerHTML=shell(heading('Bắt đầu một vòng học nhỏ.','Nền tảng và N5 là hai gói đầu tiên. Bạn có thể dừng rồi mở lại đúng hồ sơ để học tiếp.','HƯỚNG DẪN')+'<section class="card"><h2>Học thử theo nhịp của bạn</h2><ol><li>Chọn hồ sơ gia đình.</li><li>Mở Nền tảng hoặc N5 trong mục Học.</li><li>Chọn phiên ngắn, thử trả lời và xem giải thích.</li><li>Chờ xác nhận đã lưu trước khi đóng tab.</li><li>Xem tổng kết và lịch ôn trong mục Ôn hoặc Báo cáo.</li></ol><p>Mở cùng Site bằng cùng tài khoản ChatGPT trên thiết bị khác để tải lại tiến độ. Hồ sơ hiện do chủ tài khoản quản lý; chưa có đăng nhập riêng cho từng thành viên.</p><p>Chưa có audio, chấm nói/viết, thông báo nhắc học hoặc học offline hoàn chỉnh trong gói này.</p></section><div class="actions section">'+link('Mở bài học','learn','btn primary')+link('Về Hôm nay','today','btn')+'</div>');document.body.classList.remove('is-login');applyPrefs();}
+   else if(base==='guide'){$('#app').innerHTML=shell(heading('Bắt đầu một vòng học nhỏ.','Nền tảng và N5 là hai gói đầu tiên. Bạn có thể dừng rồi mở lại đúng hồ sơ để học tiếp.','HƯỚNG DẪN')+'<section class="card"><h2>Học thử theo nhịp của bạn</h2><ol><li>Chọn hồ sơ gia đình.</li><li>Mở Nền tảng hoặc N5 trong mục Học.</li><li>Chọn phiên ngắn, thử trả lời và xem giải thích.</li><li>Chờ xác nhận đã lưu trước khi đóng tab.</li><li>Xem tổng kết và lịch ôn trong mục Ôn hoặc Báo cáo.</li></ol><p>Mở cùng một link trên PC hoặc iPhone. Sau khi nhập mã gia đình một lần trên mỗi thiết bị, tiến độ sẽ được tải từ D1. Các avatar dùng chung một không gian gia đình.</p><p>Kana đã có bộ ghi âm trên thiết bị. Chưa có chấm nói, chấm viết tự động hoặc chế độ học offline hoàn chỉnh.</p></section><div class="actions section">'+link('Mở bài học','learn','btn primary')+link('Về Hôm nay','today','btn')+'</div>');document.body.classList.remove('is-login');applyPrefs();}
    else if(['learn','library'].includes(base)||base==='course'&&['foundation','N5'].includes(route().split('/')[1])){$('#app').innerHTML=shell(heading('Nền tảng & N5','Hai gói đầu tiên để học thử. Các chặng N4–N1 tiếp tục giữ trong lộ trình.','HỌC')+`<div class="grid two">${cards()}</div>`+foundationStudioCard()+link('Xem toàn bộ hành trình','journey','textlink','map'));document.body.classList.remove('is-login');applyPrefs();}
    else if(!allowed.has(base)||base==='settings'&&['account','data','reminders'].includes(route().split('/')[1])){$('#app').innerHTML=shell(heading('Phần này chưa mở trong đợt học thử.','Tiến độ thật hiện áp dụng cho hai bài Nền tảng/N5, ôn, sổ và báo cáo.','ĐANG PHÁT TRIỂN')+link('Về Hôm nay','today','btn primary')+'<p class="article-note">Nội dung đang được phát triển, không ảnh hưởng tiến độ đã lưu.</p>');document.body.classList.remove('is-login');applyPrefs();}
    else originalRender(scroll);
@@ -168,7 +168,7 @@
    document.querySelector('.review-label')?.replaceChildren(document.createTextNode('Nền tảng & N5 · Học thử'));
    const rb=document.querySelector('.review-actions');if(rb&&!document.querySelector('#online-status'))rb.insertAdjacentHTML('afterbegin','<span id="online-status" role="status">Đã kết nối tài khoản</span>');
    if(live.error){status(live.error,true);const statusEl=document.querySelector('#online-status');if(statusEl&&!document.querySelector('#online-retry'))statusEl.insertAdjacentHTML('afterend','<button class="btn sm" id="online-retry">Thử lưu lại</button>');document.querySelector('#online-retry')?.addEventListener('click',()=>{live.error='';live.unsaved=false;persist();render(false);});}else if(live.pending)status('Đang lưu thay đổi…');
-   document.querySelectorAll('.n5-save').forEach(el=>{el.childNodes.forEach(n=>{if(n.nodeType===3&&n.textContent.includes('Đã lưu trên trình duyệt này'))n.textContent=live.busy?'Đang lưu…':'Đã lưu trên tài khoản';});});
+   document.querySelectorAll('.n5-save').forEach(el=>{el.childNodes.forEach(n=>{if(n.nodeType===3&&n.textContent.includes('Đã lưu trên trình duyệt này'))n.textContent=live.busy?'Đang lưu…':'Đã lưu trên D1';});});
    document.querySelectorAll('a[href="#story/meet"]').forEach(a=>a.href='#lesson/n5-introduction');
    document.querySelectorAll('.n5-entry .n5-time-options button[data-minutes="15"]').forEach(el=>{if(el.dataset.content==='foundation-vowels')el.hidden=true;});
    if(base==='login'){
@@ -197,7 +197,7 @@
    try{
      let result;
      try{result=await api('learners/'+encode(id)+'/state','POST',body);}catch(error){if(error.status)throw error;result=await api('learners/'+encode(id)+'/state','POST',body);}
-     live.states[id]=result.state;lastCommand=null;live.error='';startedAt=performance.now();status('Đã lưu trên tài khoản');return result;
+     live.states[id]=result.state;lastCommand=null;live.error='';startedAt=performance.now();status('Đã lưu trên D1');return result;
    }catch(error){
      if(error.status===409){const result=await api('learners/'+encode(id)+'/state');live.states[id]=result.state;lastCommand=null;}
      live.error=error.message;notify(error.message+' Bước chưa được xác nhận sẽ không tính là hoàn tất.');return null;
