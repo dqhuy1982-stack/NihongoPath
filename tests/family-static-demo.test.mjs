@@ -7,19 +7,22 @@ import vm from 'node:vm';
 const root=new URL('../source/public/',import.meta.url);
 const read=name=>readFileSync(new URL(name,root),'utf8');
 
-test('public family avatars contain four valid optimized WebP portraits',()=>{
+test('four 320px portraits are individually cached WebP files from the uploaded sources',()=>{
  const script=read('family-portraits.js');
- const json=script.match(/^.*?window\.NP_FAMILY_PHOTOS=(\{.*\});\s*$/s)?.[1];
- assert.ok(json,'Missing family image map');
+ const json=script.match(/window\\.NP_FAMILY_PHOTOS=(\\{[\\s\\S]*?\\});/)?.[1];
+ assert.ok(json,'Missing image map');
  const images=JSON.parse(json);
  assert.deepEqual(Object.keys(images),['demo-a','demo-b','demo-c','demo-d']);
+ const digests=[];
  for(const [id,uri] of Object.entries(images)){
-   assert.match(uri,/^data:image\/webp;base64,/);
-   const bytes=Buffer.from(uri.split(',')[1],'base64');
-   assert.ok(bytes.length>1000&&bytes.length<10000,id);
+   assert.equal(uri,'assets/family/'+id+'.webp','Use real URLs, not 1KB blurred data URIs');
+   const bytes=readFileSync(new URL(uri,root));
+   assert.ok(bytes.length>5000&&bytes.length<35000,id+' should be high enough quality but lightweight');
    assert.equal(bytes.subarray(0,4).toString(),'RIFF',id);
    assert.equal(bytes.subarray(8,12).toString(),'WEBP',id);
+   digests.push(bytes.toString('base64').slice(0,150));
  }
+ assert.equal(new Set(digests).size,4,'Each avatar must be its own original picture');
 });
 
 test('family demo ships requested N5/N2/N4/N4 targets and one-tap guest picker',()=>{
