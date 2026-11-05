@@ -7,23 +7,23 @@ const load = pathname => readFileSync(new URL('../'+pathname,import.meta.url),'u
 const jsonc = pathname => JSON.parse(load(pathname).split(/\r?\n/).filter(line=>!line.trim().startsWith('//')).join('\n'));
 const DB_ID='8504e0d8-c7a5-490d-ab40-a7590cd9af9d';
 
-test('Dev D1 binding uses provided ID and cannot overwrite live Worker by default',()=>{
-  const main=jsonc('wrangler.jsonc'),dev=jsonc('wrangler.backend.jsonc');
-  assert.equal(main.name,'nihongopath');
-  assert.ok(!main.d1_databases?.length,'public static deploy must remain D1-free');
-  assert.ok(main.previews && Object.keys(main.previews).length===0,'PR static preview requires an empty previews block and no backend bindings');
-  assert.equal(dev.name,'nihongopath-d1-sandbox','development backend must have different Worker name');
-  assert.equal(dev.workers_dev,false,'never expose an unauthenticated sandbox workers.dev route');
-  assert.equal(dev.preview_urls,false,'preview URL must stay disabled until Access is configured');
-  assert.equal(dev.main,'./workers/nihongopath-api.mjs');
-  assert.equal(dev.d1_databases?.length,1);
-  const binding=dev.d1_databases[0];
+test('One existing Worker and D1 database are the deployment source of truth',()=>{
+  const main=jsonc('wrangler.jsonc');
+  assert.equal(main.name,'nihongopath','keep the original live Worker');
+  assert.equal(main.main,'./workers/nihongopath-api.mjs','single verified API gateway');
+  assert.equal(main.assets.directory,'./dist/site');
+  assert.equal(main.assets.binding,'ASSETS');
+  assert.deepEqual(main.assets.run_worker_first,['/api/*']);
+  assert.equal(main.d1_databases?.length,1,'no additional database');
+  const binding=main.d1_databases[0];
   assert.equal(binding.binding,'DB');
   assert.equal(binding.database_name,'nihongopath-dev');
   assert.equal(binding.database_id,DB_ID);
   assert.equal(binding.migrations_dir,'source/drizzle');
-  assert.ok(!dev.vars?.ACCESS_AUD,'do not invent Cloudflare Access audience');
-  assert.ok(!dev.vars?.ACCESS_TEAM_DOMAIN,'do not invent Cloudflare Access team domain');
+  assert.ok(!main.vars?.FAMILY_SYNC_KEY,'never put a family key into source-controlled vars');
+  assert.ok(!main.vars?.ACCESS_AUD,'no invented Cloudflare Access audience');
+  assert.ok(!main.routes,'keep existing workers.dev hostname');
+  assert.ok(main.previews && Object.keys(main.previews).length===0);
 });
 
 function localDatabase(){
