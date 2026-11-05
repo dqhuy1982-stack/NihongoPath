@@ -5,6 +5,7 @@ window.NPFamilyPinUI=(function(){
  'use strict';
  const tr=(vi,en,ja)=>[vi,en,ja][{vi:0,en:1,ja:2}[window.Locale?.code]||0];
  const motionOff=()=>window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+ const touchLike=()=>window.matchMedia?.('(pointer:coarse)').matches;
  let current=null;
 
  function targetRect(height){
@@ -71,14 +72,26 @@ window.NPFamilyPinUI=(function(){
    recover.hidden=stage==='create'||stage==='confirm';
    recover.textContent=stage==='reset'?tr('Quay lại nhập PIN','Back to PIN','PIN入力に戻る'):tr('Quên PIN demo?','Forgot demo PIN?','PINを忘れた場合');
    showError('');
-   if(stage!=='reset')focusInput();
+   // On desktop, focusing while the card is still small can force an early
+   // scroll container and flash the scrollbar. Keep gesture-time focus on iOS.
+   if(stage!=='reset'&&(current.expanded||touchLike()))focusInput();
    if(current.expanded)reposition();
+ }
+ function updateScrollability(){
+   if(!current||!current.settled)return;
+   const {panel,overlay}=current;
+   overlay.classList.remove('np-pin-scrollable');
+   const needsScroll=panel.scrollHeight>panel.clientHeight+2;
+   overlay.classList.toggle('np-pin-scrollable',needsScroll);
  }
  function reposition(){
    if(!current||!current.expanded)return;
-   const {panel}=current;
-   // The form is fixed-size by design; internal scrolling is available on tiny screens.
+   const {panel,overlay}=current;
+   // Recalculate actual content height when changing the PIN step or viewport.
+   overlay.classList.remove('np-pin-scrollable');
+   current.naturalHeight=Math.max(400,panel.scrollHeight);
    setGeometry(panel,targetRect(current.naturalHeight));
+   if(current.settled)requestAnimationFrame(updateScrollability);
  }
 
  function close(immediate=false){
@@ -96,7 +109,8 @@ window.NPFamilyPinUI=(function(){
      if(!immediate&&state.source?.isConnected&&route()==='login')state.source.focus({preventScroll:true});
    };
    if(immediate||motionOff()){remove();return;}
-   state.overlay.classList.remove('np-pin-visible');
+   // Closing the panel must not reveal an internal scrollbar as it shrinks.
+   state.overlay.classList.remove('np-pin-scrollable','np-pin-settled','np-pin-visible');
    const r=state.source?.isConnected?state.source.getBoundingClientRect():state.origin;
    setGeometry(state.panel,{left:r.left,top:r.top,width:r.width,height:r.height});
    window.setTimeout(remove,320);
@@ -150,7 +164,7 @@ window.NPFamilyPinUI=(function(){
      </section>`;
    const panel=overlay.querySelector('.np-pin-window');
    document.body.appendChild(overlay);
-   const state={overlay,panel,person,source,origin,stage:'',pending:'',busy:false,expanded:false,naturalHeight:455};
+   const state={overlay,panel,person,source,origin,stage:'',pending:'',busy:false,expanded:false,settled:false,naturalHeight:455};
    current=state;
    // Measure at the destination width before starting the morph.
    panel.style.transition='none';
@@ -219,16 +233,33 @@ window.NPFamilyPinUI=(function(){
    window.visualViewport?.addEventListener('resize',onResize);
    window.addEventListener('hashchange',onHashChange);
    document.addEventListener('keydown',onKeydown,true);
-   // The morph begins from the exact clicked card bounds.
+   // The morph begins from the clicked card bounds. Only after it finishes do
+   // we allow a scrollbar, and only if the visible viewport truly needs one.
+   const finishMorph=()=>{
+     if(current!==state||state.settled)return;
+     state.settled=true;
+     overlay.classList.add('np-pin-settled');
+     updateScrollability();
+     if(!touchLike())focusInput();
+   };
    requestAnimationFrame(()=>{
      if(current!==state)return;
      panel.style.transition='';
      state.expanded=true;
      overlay.classList.add('np-pin-visible');
      setGeometry(panel,targetRect(state.naturalHeight));
-     if(motionOff())panel.style.transition='none';
+     if(motionOff()){
+       panel.style.transition='none';
+       finishMorph();
+     }else{
+       panel.addEventListener('transitionend',event=>{
+         if(event.target===panel&&event.propertyName==='height')finishMorph();
+       },{once:false});
+       window.setTimeout(finishMorph,390);
+     }
    });
-   focusInput();
+   // iPhone must focus from the original tap gesture, without keyboard regressions.
+   if(touchLike())focusInput();
    return true;
  }
  return {open,close};
