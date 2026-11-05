@@ -29,7 +29,7 @@ jobs:
       - name: Validate Home PIN JavaScript syntax
         run: node --check source/public/family-demo-auth.js && node --check source/public/login-ui.js && node --check source/public/family-pin-ui.js
       - name: Validate Home V2 and typography regressions
-        run: node --test tests/readability.test.mjs tests/home-v2.test.mjs tests/family-static-demo.test.mjs tests/horizon-brand.test.mjs tests/home-v4.test.mjs
+        run: node --test tests/readability.test.mjs tests/home-v2.test.mjs tests/family-static-demo.test.mjs tests/horizon-brand.test.mjs tests/home-v4.test.mjs tests/home-v5.test.mjs
       - name: Build static Nihongo Path for GitHub Pages
         run: |
           unset NP_FAMILY_SYNC_BUILD
