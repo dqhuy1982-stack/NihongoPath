@@ -45,8 +45,9 @@ const hash=crypto.createHash('sha256').update(fs.readFileSync(pilotPath)).digest
 if(!/src="pilot-online\.js\?v=[a-f0-9]{12}"/.test(html))
  throw Error('Cannot find versioned pilot adapter');
 html=html.replace(/src="pilot-online\.js\?v=[a-f0-9]{12}"/,'src="pilot-online.js?v='+hash+'"');
-html=html.replace('<title>Nihongo Path · Review toàn bộ giao diện</title>','<title>Nihongo Path · Học tiếng Nhật</title>');
-html=html.replace('Design review · Prototype','Nihongo Path');
+if(!html.includes('<title>HORIZON · A little closer. A world wider.</title>'))
+ throw Error('HORIZON page identity not found in source');
+html=html.replace('Design review · Prototype','HORIZON');
 // The shipped family screen must not expose developer device simulators,
 // scenario tools or the sitemap review bar. Keep source/public untouched.
 // Other app layouts use --review-height for fixed navigation offsets.
@@ -71,7 +72,7 @@ if(fs.existsSync(manifestPath)){
 const notice=path.join(dest,'PREVIEW_NOTICE.txt');
 if(fs.existsSync(notice))fs.rmSync(notice);
 fs.writeFileSync(path.join(dest,'SITE_STATUS.txt'),[
- 'NIHONGO PATH - PUBLIC WEBSITE',
+ 'HORIZON - PUBLIC WEBSITE',
  'Built directly from the single private NihongoPath/develop source.',
  familySync?'One live family app: server API requires FAMILY_SYNC_KEY configured as Worker secret.':'Static preview only: client-side learning.',
  familySync?'Pair each device once to store real learning in the shared remote D1.':'Learner data stays in this browser; progress does NOT sync across devices.',
