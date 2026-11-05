@@ -24,7 +24,7 @@ test('public family avatars contain four valid optimized WebP portraits',()=>{
 
 test('family demo ships separate educational targets and PIN-first guest picker',()=>{
  const app=read('app.js'),login=read('login-ui.js'),index=read('index.html');
- for(const label of ['Bố','Vy Anh','Khánh','Hưng'])assert.ok(app.includes(label),'Missing '+label);
+ for(const label of ['Quang Huy','Vy Anh','Nam Khánh','Gia Hưng'])assert.ok(app.includes(label),'Missing '+label);
  for(const level of ["'N2'","'N5'","'Nền tảng'"])assert.ok(app.includes(level),level);
  assert.ok(login.includes("window.NPFamilyAccess.open"),'Avatar bypasses PIN dialog');
  assert.ok(login.includes("window.NPFamilyAccess.enterGuest"),'Guest entry missing');
@@ -89,4 +89,36 @@ test('PIN is set per browser, checked before family entry, and guest is isolated
  access.lock();
  assert.equal(access.isActive('guest'),false);
  assert.equal(db.profiles.some(p=>p.id==='guest'),false);
+});
+
+test('existing local demo profile names migrate without losing progress or PIN',()=>{
+ const app=read('app.js');
+ const begin='if(window.NP_STATIC_PUBLISH&&db.familyDemoVersion!==4){';
+ const end='\nif(!db.profiles.some(';
+ const start=app.indexOf(begin),stop=app.indexOf(end,start);
+ assert.ok(start>=0&&stop>start,'demo migration block must exist');
+ const legacyProfiles=[
+  {id:'demo-a',name:'Bố',role:'manager',notes:[{text:'Dad note'}],attempts:[{score:2}],goal:'N5'},
+  {id:'demo-b',name:'Vy Anh',role:'learner',notes:[{text:'N2 note'}],attempts:[],goal:'N2'},
+  {id:'demo-c',name:'Khánh',role:'learner',notes:[],attempts:[],goal:'N5'},
+  {id:'demo-d',name:'Hưng',role:'learner',notes:[],attempts:[],goal:'Nền tảng'}
+ ];
+ const db={schemaVersion:1,familyDemoVersion:3,current:'demo-a',profiles:legacyProfiles};
+ const samples=['Quang Huy','Vy Anh','Nam Khánh','Gia Hưng'].map((name,i)=>({
+   id:'demo-'+String.fromCharCode(97+i),name,goal:['N5','N2','N5','Nền tảng'][i],
+   role:i?'learner':'manager',notes:[{text:'Starter'}],shortcuts:['kana'],studyFocus:'Demo'
+ }));
+ const storage=new Map([['np-family-demo-pin-v1','PIN HASH MUST SURVIVE']]);
+ const sandbox={db,initialProfiles:samples,window:{NP_STATIC_PUBLISH:true},
+   structuredClone,localStorage:{setItem:(key,value)=>storage.set(key,value)},KEY:'nihongo-path-flow-review-v3'};
+ vm.runInNewContext(app.slice(start,stop),sandbox);
+ assert.deepEqual(db.profiles.map(p=>p.name),['Quang Huy','Vy Anh','Nam Khánh','Gia Hưng']);
+ assert.equal(db.profiles[0].notes[0].text,'Dad note');
+ assert.equal(db.profiles[0].attempts[0].score,2);
+ assert.equal(db.familyDemoVersion,4);
+ assert.equal(storage.get('np-family-demo-pin-v1'),'PIN HASH MUST SURVIVE');
+ // A custom name must not be overwritten by a later release.
+ db.familyDemoVersion=3;db.profiles[0].name='Tên tự chọn';
+ vm.runInNewContext(app.slice(start,stop),sandbox);
+ assert.equal(db.profiles[0].name,'Tên tự chọn');
 });
