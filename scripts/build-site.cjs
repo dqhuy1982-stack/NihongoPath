@@ -1,11 +1,9 @@
 'use strict';
 /**
- * Publishable, client-only Nihongo Path website from the single private source.
- * This is a deployment artifact, NOT another repository or working copy.
- * No real authentication or cross-device learner data sync is enabled.
- *
- * Cloudflare Pages: build command = node scripts/build-site.cjs
- *                   output directory = dist/site
+ * Build the same Nihongo Path UI for static preview or the single D1-backed
+ * Cloudflare Worker. The remote learning API remains server-side only.
+ * Live build: NP_FAMILY_SYNC_BUILD=1 node scripts/build-site.cjs
+ * No additional website, repository or user-facing environment is created.
  */
 const fs=require('node:fs');
 const path=require('node:path');
@@ -15,7 +13,7 @@ const cp=require('node:child_process');
 const root=path.resolve(__dirname,'..');
 const preview=path.join(root,'dist','public-preview');
 const dest=path.join(root,'dist','site');
-// Opt-in only for the private D1 sandbox build. Public previews stay local-only.
+// The live D1 build is explicitly enabled. Omitted flag produces static-only UI.
 const familySync=process.env.NP_FAMILY_SYNC_BUILD==='1';
 
 // Gate publication on the regression tests used by existing reviewed workflow.
@@ -34,7 +32,7 @@ if(!html.includes(guard))throw Error('Unexpected static preview guard; no public
 html=html.replace(guard,familySync
  ?'<script>window.NP_STATIC_PUBLISH=true;window.NP_FAMILY_SYNC=true;</script>'
  :'<script>window.NP_STATIC_PUBLISH=true;</script>');
-// The current public release is static. Never try the server-only /api/pilot path.
+// Enable the API adapter only for the live family-sync build.
 const pilotPath=path.join(dest,'pilot-online.js');
 let pilot=fs.readFileSync(pilotPath,'utf8');
 const marker=/\(function\(\)\{\r?\n\s*'use strict';\r?\n/;
@@ -57,7 +55,7 @@ if(!html.includes('<\/head>')||!html.includes('class="reviewbar"'))
  throw Error('Static review chrome changed; review the family build before publishing');
 html=html.replace('<\/head>',familyChrome+'<\/head>');
 if(!html.includes(familyChrome))throw Error('Family static chrome cleanup missing');
-// No URL ?mode=demo is required in published site; the app remains client-only.
+// Do not preserve the prototype's forced demo URL in the published site.
 if(html.includes('searchParams.set("mode","demo")'))throw Error('Demo URL rewrite remains');
 if(!html.includes('window.NP_STATIC_PUBLISH=true;'))throw Error('Static deployment guard missing');
 fs.writeFileSync(indexPath,html,'utf8');
@@ -75,10 +73,10 @@ if(fs.existsSync(notice))fs.rmSync(notice);
 fs.writeFileSync(path.join(dest,'SITE_STATUS.txt'),[
  'NIHONGO PATH - PUBLIC WEBSITE',
  'Built directly from the single private NihongoPath/develop source.',
- familySync?'Family D1 sandbox build: API requires a separate Worker secret.':'Current implementation is client-side only. No production authentication.',
- familySync?'Family sync is optional: local learning remains available without pairing.':'Learner data stays in this browser; progress does NOT sync across devices.',
+ familySync?'One live family app: server API requires FAMILY_SYNC_KEY configured as Worker secret.':'Static preview only: client-side learning.',
+ familySync?'Pair each device once to store real learning in the shared remote D1.':'Learner data stays in this browser; progress does NOT sync across devices.',
  'Demo access codes are samples only: do not enter real passwords or personal data.',
- 'No backend, D1 database, server code, source secrets or private repo data is shipped.',
+ 'No backend source, D1 records, server secrets or private repo data is shipped in assets.',
  'Kana audio: 46 locally bundled CC BY 4.0 recordings; see assets/kana-audio/ATTRIBUTION.txt.',
  ''
 ].join('\n'),'utf8');
@@ -88,5 +86,5 @@ if(clips.length!==46||!fs.existsSync(path.join(dest,'kana-recall.js'))||
  !fs.existsSync(path.join(dest,'kana-stroke-view.js'))||
  !fs.existsSync(path.join(dest,'.nojekyll')))throw Error('Incomplete public site export');
 console.log(JSON.stringify({status:'ready',output:'dist/site',sourceBranch:'develop',
- siteMode:familySync?'family-sync-sandbox':'static-client-only',audioClips:clips.length,liveBackend:familySync,
+ siteMode:familySync?'family-d1-live':'static-client-only',audioClips:clips.length,liveBackend:familySync,
  published:false},null,2));
