@@ -13,11 +13,11 @@ const manifest=JSON.parse(read('manifest.webmanifest'));
 
 test('HORIZON web brand is consistent from Home through the learning shell',()=>{
  assert.match(page,/<title>HORIZON · A little closer\. A world wider\.<\/title>/);
- assert.match(page,/href="assets\/horizon-app\.svg\?v=refined2"/);
+ assert.match(page,/href="assets\/horizon-app\.svg\?v=homev3"/);
  assert.match(page,/href="horizon-brand\.css"/);
  assert.ok(page.indexOf('href="horizon-brand.css"')>page.indexOf('href="home-pin.css"'),
    'brand layer should not override PIN dialog/learning behavior');
- assert.ok(app.includes('src="assets/horizon-mark.svg?v=refined2"'));
+ assert.ok(app.includes('src="assets/horizon-mark.svg?v=homev3"'));
  assert.ok(app.includes('horizon-wordmark'));
  assert.ok(app.includes('<strong>HORIZON</strong>'));
  assert.ok(app.includes('HORIZON — Hôm nay'));
@@ -68,7 +68,7 @@ test('iPhone and installable application icons are real readable PNG assets',()=
  }
  assert.ok(page.includes('href="assets/horizon-icon-180.png?v=refined2"'));
  assert.equal(manifest.short_name,'HORIZON');
- assert.ok(manifest.icons.some(i=>i.src==='assets/horizon-app.svg?v=refined2'));
+ assert.ok(manifest.icons.some(i=>i.src==='assets/horizon-app.svg?v=homev3'));
  assert.ok(manifest.icons.some(i=>i.src==='assets/horizon-icon-192.png?v=refined2'));
  assert.ok(manifest.icons.some(i=>i.src==='assets/horizon-icon-512.png?v=refined2'));
 });
@@ -77,14 +77,14 @@ test('HORIZON mark uses correct horizontal proportions and avoids a clipped H at
  const normal=read('assets/horizon-mark.svg');
  const light=read('assets/horizon-mark-light.svg');
  for(const svg of [normal,light]){
-  assert.ok(svg.includes('viewBox="0 0 120 96"'),'H mark needs breathing room, not a square viewBox');
+  assert.ok(svg.includes('viewBox="-8 -6 136 108"'),'H mark needs visible padding beyond all brush contours');
   assert.ok(svg.includes('preserveAspectRatio="xMidYMid meet"'),'SVG must retain original proportions');
-  assert.ok(svg.includes('translate(42 0)'),'symmetric but independently spaced Japanese-inspired stems');
-  assert.ok(svg.includes('C35 14 31 23 31 35'),'stems should have an organic tapered upper transition');
-  assert.ok(svg.includes('M7 59 C36 40 83 40 113 59'),'horizon line should extend beyond both H stems');
+  assert.ok(svg.includes('M82 14 C73.5'),'second independent, curved upper serif');
+  assert.ok(svg.includes('M40 14 C31.5'),'stems should have smoothly tapered upper transitions');
+  assert.ok(svg.includes('M5 59 C31.5 40 86.5 40 115 59'),'horizon line should sweep beyond both H stems');
  }
  assert.ok(css.includes('width:64px;height:52px'),'Home PC logo needs horizontal aspect ratio and room');
  assert.ok(css.includes('width:54px;height:45px'),'tablet logo needs horizontal aspect ratio');
  assert.ok(css.includes('width:46px;height:39px'),'phone logo needs sufficient room');
- assert.ok(css.includes("assets/horizon-mark-light.svg?v=refined2"),'dark-mode imagery should not use old cached mark');
+ assert.ok(css.includes("assets/horizon-mark-light.svg?v=homev3"),'dark-mode imagery should not use old cached mark');
 });
