@@ -1,16 +1,54 @@
-# Nihongo Path — One source of truth
+# NIHONGO PATH — one GitHub Pages development flow
 
-## Daily development (home PC and office PC)
+## Current deployment (November 2026)
 
-- **One GitHub repository:** `dqhuy1982-stack/NihongoPath`.
-- **One active working branch:** `develop`. No separate home/office/phone branches.
-- **One checkout per PC:** `C:\Dev\NihongoPath`; both checkouts pull/push `origin/develop`.
-- `main` is a release/reference branch, **not** a second codebase to edit in parallel.
-- Old `feature/*` and `fix/*` branches are historical, not places to continue work. Do not delete without confirming whether they contain unique commits.
-- One planned public app: `nihongopath.dqhuy1982.workers.dev`. The original ChatGPT Site stays preserved as its historical baseline, not a second actively developed app.
-- One planned shared learning database: Cloudflare D1 `nihongopath-dev`, initially development; remote data synchronization **is not live yet**.
+- **One source:** [dqhuy1982-stack/NihongoPath](https://github.com/dqhuy1982-stack/NihongoPath), active branch `develop` on home/office PCs.
+- **One live web demo:** https://dqhuy1982-stack.github.io/NihongoPath/
+- **One automatic pipeline:** `.github/workflows/pages.yml` builds `dist/site` and deploys GitHub Pages after changes to `develop`.
+- **No live API, Firebase, D1 or server auth** is used by this GitHub Pages demo. Old Cloudflare configs remain in repository history for possible future migration, but are not the website or learning backend.
+- `main` is the older release branch and is not the active development branch.
 
-### On each PC before starting work
+## Profiles and the demo "database"
+
+The GitHub Pages app seeds four separate profiles (`demo-a` through `demo-d`)
+with their own goal, recommended path, shortcuts, editable starter note,
+learning history and Kana data:
+
+| Profile | Goal / study focus | Actual currently available material |
+|---|---|---|
+| Bố | Kana → N5 | Kana, Foundation, N5 pilot |
+| Vy Anh | N2 reading/listening prep | N2 is **planned**; only Foundation / N5 pilot is currently interactive |
+| Khánh | N5 and school conversations | Kana and N5 pilot |
+| Hưng | Foundation: Hiragana / Katakana | Kana Writing Studio and Foundation pilot |
+
+These paths are **proposed demo goals**, not assessments or proof of completed
+learning. Notes shipped with the app are clearly marked demo and editable.
+Four optimized portraits supplied by the user are included in the **public**
+repository and public website. No real PINs are shipped in source.
+
+Profiles and learning progress are persisted locally via browser storage
+(`nihongo-path-flow-review-v3`, plus the lesson/Kana stores). This behaves
+like a local demo database: **each PC/browser/iPhone has separate data**.
+GitHub Pages does **not** sync learning state between devices.
+
+## Demo PIN and Guest behavior
+
+- Tap an avatar → first time **create a 4–6-digit PIN on that device**.
+  Later taps require that PIN. PIN verification runs in the browser.
+- The PIN salt/hash is in localStorage; only the selected session ID is kept
+  in sessionStorage while the browser tab remains open. The PIN does **not**
+  travel through GitHub or between devices; configure separately on each.
+- Anyone with browser storage/developer tools can bypass or reset a local PIN.
+  This is a UI interaction demo, **not** real account security.
+- **Guest** requires no PIN. Guest state is kept out of the four local profile
+  records, and Guest cannot enter family management or content admin screens.
+- The four profile photos and visible names are publicly accessible. Avoid
+  using private personal details or genuine credentials in this demo.
+- On first release the app migrates any old generic "Learner A–D" profiles to
+  new labels while preserving old learning data. Non-empty custom notes are
+  not overwritten.
+
+## Dev workflow on either PC
 
 ```powershell
 cd C:\Dev\NihongoPath
@@ -18,43 +56,13 @@ git status -sb
 git fetch origin
 git switch develop
 git pull --ff-only origin develop
-git log -1 --oneline
 ```
 
-Do not switch branches when there are local edits you need to save first. For script
-restriction on managed Windows, use `npm.cmd` / `npx.cmd` where permitted by IT policy.
+When code changes are reviewed and approved, commit and push only intended
+source files to `develop`. GitHub Actions deploys the validated static site.
+No `wrangler deploy`, Firebase project, extra repository, second website or
+manual PowerShell build is necessary for updates.
 
-### After finishing an approved code change
-
-```powershell
-git status --short
-git add <the-specific-files-you-changed>
-git commit -m "feat: describe change"
-git push origin develop
-```
-
-On the other PC, use `git pull --ff-only origin develop`. Never edit both
-PCs concurrently without pulling first. Do not commit generated files,
-`node_modules`, `.dev.vars`, `.wrangler`, or `.private-backups`.
-
-### One shared learning database, no demo migration
-
-Git syncs source, **not** study history. Home D1 learning was explicitly
-confirmed to be disposable **demo data**; no transfer is needed.
-
-The existing remote Cloudflare D1 database `nihongopath-dev` is the intended
-single source for new learning. It had 0 records across all seven learning
-tables when last checked on 2026-11-05. A single family key is entered once on
-each trusted device; thereafter both machines and iPhone use the same public
-website and server-backed learning. No Cloudflare Access policy is required.
-Do not put family keys or SQL backups on the company computer or GitHub.
-
-### Release approach
-
-Publish the same existing `nihongopath` Worker, not a new environment.
-The root `wrangler.jsonc` is the only deploy config; the build must use
-`NP_FAMILY_SYNC_BUILD=1 node scripts/build-site.cjs`. See
-`docs/FAMILY_D1_SYNC.md` for the safe ordered deployment steps.
-Configure Cloudflare Workers Builds production branch to `develop` so
-future commits cannot overwrite the deployed D1-backed site with old `main`
-static-only assets.
+Public code/photos are not protected by the PIN. A future multi-device data
+sync requirement needs an authenticated online database separately; GitHub
+Pages alone cannot provide it.
