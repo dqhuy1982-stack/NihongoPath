@@ -22,11 +22,12 @@ test('public family avatars contain four valid optimized WebP portraits',()=>{
  }
 });
 
-test('family demo ships separate educational targets and PIN-first guest picker',()=>{
+test('family demo ships requested N5/N2/N4/N4 targets and one-tap guest picker',()=>{
  const app=read('app.js'),login=read('login-ui.js'),index=read('index.html');
  for(const label of ['Quang Huy','Vy Anh','Nam Khánh','Gia Hưng'])assert.ok(app.includes(label),'Missing '+label);
- for(const level of ["'N2'","'N5'","'Nền tảng'"])assert.ok(app.includes(level),level);
- assert.ok(login.includes("window.NPFamilyAccess.open"),'Avatar bypasses PIN dialog');
+ for(const level of ["'N2'","'N5'","'N4'"])assert.ok(app.includes(level),level);
+ assert.ok(login.includes("window.NPFamilyAccess.open"),'Avatar one-tap route missing');
+ assert.ok(!login.includes("Nhập PIN của"),'Published UI must not prompt for PIN');
  assert.ok(login.includes("window.NPFamilyAccess.enterGuest"),'Guest entry missing');
  assert.ok(index.includes('src="family-demo-auth.js"'));
  assert.ok(index.includes('src="family-portraits.js"'));
@@ -37,63 +38,54 @@ test('family demo ships separate educational targets and PIN-first guest picker'
 
 function makeBrowser(){
  const storage=()=>{const map=new Map();return {getItem:k=>map.get(k)||null,setItem:(k,v)=>map.set(k,String(v)),removeItem:k=>map.delete(k)};};
- const localStorage=storage(),sessionStorage=storage(),handlers={},view={};
+ const localStorage=storage(),sessionStorage=storage();
  const db={current:'demo-a',profiles:[
-  {id:'demo-a',name:'Bố',role:'manager',goal:'N5',notes:[],attempts:[],onboarded:true,archived:false},
+  {id:'demo-a',name:'Quang Huy',role:'manager',goal:'N5',notes:[],attempts:[],onboarded:true,archived:false},
   {id:'demo-b',name:'Vy Anh',role:'learner',goal:'N2',notes:[],attempts:[],onboarded:true,archived:false}
  ]};
- const initialProfiles=[{id:'demo-a'}, {id:'demo-b'}, {id:'demo-c'}, {id:'demo-d',goal:'Nền tảng',minutes:10,role:'learner',notes:[],attempts:[],flashReviews:[]}];
- const form={id:'np-pin-form',fields:new Map(),querySelector(s){if(s==='#np-pin-error')return view.error||(view.error={textContent:''});if(s==='button[type=submit]')return view.submit||(view.submit={disabled:false});if(s==='#np-pin-input')return {select(){}};return null;}};
- const dialog={classList:{add(){}},open:false};
- let route='';
+ const initialProfiles=[{id:'demo-a'}, {id:'demo-b'}, {id:'demo-c'}, {id:'demo-d',goal:'N4',minutes:10,role:'learner',notes:[],attempts:[],flashReviews:[]}];
+ let route='',saveCount=0;
  const context={
   window:{NP_STATIC_PUBLISH:true,NP_FAMILY_SYNC:false},
-  document:{addEventListener(name,fn){handlers[name]=fn;},querySelector(sel){return sel==='#modal'?dialog:{focus(){}};}},
-  localStorage,sessionStorage,db,initialProfiles,crypto:webcrypto,TextEncoder,Date,
-  structuredClone,FormData:class{constructor(f){this.fields=f.fields;}get(k){return this.fields.get(k);}},
-  modal(title,html){view.title=title;view.html=html;},closeModal(){},esc:s=>s,avatar:()=>'<avatar/>',icon:()=>'<icon/>',
-  persist(){view.saves=(view.saves||0)+1;},resetLearningView(){},go(to){route=to;},
+  sessionStorage,localStorage,db,initialProfiles,structuredClone,
+  persist(){saveCount++;},resetLearningView(){},go(to){route=to;},
   loginSelected:'',console
  };
  vm.runInNewContext(read('family-demo-auth.js'),context);
- return {access:context.window.NPFamilyAccess,db,localStorage,sessionStorage,handlers,form,view,route:()=>route};
+ return {access:context.window.NPFamilyAccess,db,localStorage,sessionStorage,route:()=>route,saves:()=>saveCount};
 }
 
-test('PIN is set per browser, checked before family entry, and guest is isolated',async()=>{
- const {access,db,localStorage,handlers,form,view,route}=makeBrowser();
+test('one tap selects a learner and supports switching without PIN; Guest remains separate',()=>{
+ const {access,db,localStorage,sessionStorage,route,saves}=makeBrowser();
+ localStorage.setItem('np-family-demo-pin-v1','LEGACY PIN HASH REMAINS UNUSED');
  assert.equal(access.isActive('demo-a'),false);
- access.open('demo-a');
- assert.match(view.html,/PIN mới/);
- form.fields=new Map([['learner','demo-a'],['pin','4826'],['confirm','4826']]);
- const ev={target:form,preventDefault(){},stopImmediatePropagation(){}};
- await handlers.submit(ev);
+ assert.equal(access.open('demo-a'),true);
  assert.equal(access.isActive('demo-a'),true);
  assert.equal(db.current,'demo-a');
  assert.equal(route(),'today');
- const saved=localStorage.getItem('np-family-demo-pin-v1');
- assert.ok(saved);
- assert.ok(!saved.includes('4826'),'Do not persist plaintext PIN');
- access.lock();assert.equal(access.isActive('demo-a'),false);
- access.open('demo-a');assert.match(view.html,/Nhập PIN/);
- form.fields=new Map([['learner','demo-a'],['pin','9999']]);
- await handlers.submit(ev);
+ assert.equal(sessionStorage.getItem('np-family-session-v1'),'demo-a');
+ assert.equal(access.open('demo-b'),true);
  assert.equal(access.isActive('demo-a'),false);
- assert.match(view.error.textContent,/PIN chưa đúng/);
- form.fields.set('pin','4826');
- await handlers.submit(ev);
- assert.equal(access.isActive('demo-a'),true);
- access.enterGuest();
+ assert.equal(access.isActive('demo-b'),true);
+ assert.equal(db.current,'demo-b');
+ assert.equal(access.open('nonexistent'),false);
+ assert.equal(access.open('guest'),false);
+ assert.equal(access.enterGuest(),true);
  assert.equal(access.isActive('guest'),true);
  assert.equal(db.current,'guest');
  assert.ok(db.profiles.some(p=>p.id==='guest'));
+ assert.ok(saves()>=3);
  access.lock();
  assert.equal(access.isActive('guest'),false);
  assert.equal(db.profiles.some(p=>p.id==='guest'),false);
+ assert.equal(db.current,'demo-a');
+ assert.equal(sessionStorage.getItem('np-family-session-v1'),null);
+ assert.equal(localStorage.getItem('np-family-demo-pin-v1'),'LEGACY PIN HASH REMAINS UNUSED');
 });
 
-test('existing local demo profile names migrate without losing progress or PIN',()=>{
+test('old browser profiles receive N4 targets without losing progress or custom names',()=>{
  const app=read('app.js');
- const begin='if(window.NP_STATIC_PUBLISH&&db.familyDemoVersion!==4){';
+ const begin='if(window.NP_STATIC_PUBLISH&&db.familyDemoVersion!==5){';
  const end='\nif(!db.profiles.some(';
  const start=app.indexOf(begin),stop=app.indexOf(end,start);
  assert.ok(start>=0&&stop>start,'demo migration block must exist');
@@ -103,9 +95,9 @@ test('existing local demo profile names migrate without losing progress or PIN',
   {id:'demo-c',name:'Khánh',role:'learner',notes:[],attempts:[],goal:'N5'},
   {id:'demo-d',name:'Hưng',role:'learner',notes:[],attempts:[],goal:'Nền tảng'}
  ];
- const db={schemaVersion:1,familyDemoVersion:3,current:'demo-a',profiles:legacyProfiles};
+ const db={schemaVersion:1,familyDemoVersion:4,current:'demo-a',profiles:legacyProfiles};
  const samples=['Quang Huy','Vy Anh','Nam Khánh','Gia Hưng'].map((name,i)=>({
-   id:'demo-'+String.fromCharCode(97+i),name,goal:['N5','N2','N5','Nền tảng'][i],
+   id:'demo-'+String.fromCharCode(97+i),name,goal:['N5','N2','N4','N4'][i],course:['foundation','N2','N4','N4'][i],
    role:i?'learner':'manager',notes:[{text:'Starter'}],shortcuts:['kana'],studyFocus:'Demo'
  }));
  const storage=new Map([['np-family-demo-pin-v1','PIN HASH MUST SURVIVE']]);
@@ -115,10 +107,14 @@ test('existing local demo profile names migrate without losing progress or PIN',
  assert.deepEqual(db.profiles.map(p=>p.name),['Quang Huy','Vy Anh','Nam Khánh','Gia Hưng']);
  assert.equal(db.profiles[0].notes[0].text,'Dad note');
  assert.equal(db.profiles[0].attempts[0].score,2);
- assert.equal(db.familyDemoVersion,4);
+ assert.equal(db.familyDemoVersion,5);
+ assert.equal(db.profiles[2].goal,'N4');
+ assert.equal(db.profiles[3].goal,'N4');
+ assert.equal(db.profiles[2].course,'N4');
+ assert.equal(db.profiles[3].course,'N4');
  assert.equal(storage.get('np-family-demo-pin-v1'),'PIN HASH MUST SURVIVE');
  // A custom name must not be overwritten by a later release.
- db.familyDemoVersion=3;db.profiles[0].name='Tên tự chọn';
+ db.familyDemoVersion=4;db.profiles[0].name='Tên tự chọn';
  vm.runInNewContext(app.slice(start,stop),sandbox);
  assert.equal(db.profiles[0].name,'Tên tự chọn');
 });
