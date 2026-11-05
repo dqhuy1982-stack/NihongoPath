@@ -37,22 +37,24 @@ On the other PC, use `git pull --ff-only origin develop`. Never edit both
 PCs concurrently without pulling first. Do not commit generated files,
 `node_modules`, `.dev.vars`, `.wrangler`, or `.private-backups`.
 
-### Data does not follow Git
+### One shared learning database, no demo migration
 
-Git syncs source, **not** study history. Completed learning is saved in HOME
-local D1 and local SQL backup. Remote D1 had **0 records in all 7 learning tables**
-at the last verified check on 2026-11-05. Do not reset home local D1 or
-initialize fresh remote learner profiles before a verified migration.
+Git syncs source, **not** study history. Home D1 learning was explicitly
+confirmed to be disposable **demo data**; no transfer is needed.
 
-Use remote D1 as the eventual single place for all family study progress only
-after a guarded data transfer and backend activation. Do not store Cloudflare
-account tokens, personal study backups or family sync key on the work computer.
+The existing remote Cloudflare D1 database `nihongopath-dev` is the intended
+single source for new learning. It had 0 records across all seven learning
+tables when last checked on 2026-11-05. A single family key is entered once on
+each trusted device; thereafter both machines and iPhone use the same public
+website and server-backed learning. No Cloudflare Access policy is required.
+Do not put family keys or SQL backups on the company computer or GitHub.
 
 ### Release approach
 
-Do **not** create another public demo/site just to test sync. Keep the current
-one-URL website. Before switching its static frontend to D1-backed mode,
-validate API access control, remote backup, all four learner records and
-successful PC/iPhone sync/rollback. The separate Wrangler sandbox config is a
-local/build safety tool, not a second user-facing site or a second dataset
-to maintain.
+Publish the same existing `nihongopath` Worker, not a new environment.
+The root `wrangler.jsonc` is the only deploy config; the build must use
+`NP_FAMILY_SYNC_BUILD=1 node scripts/build-site.cjs`. See
+`docs/FAMILY_D1_SYNC.md` for the safe ordered deployment steps.
+Configure Cloudflare Workers Builds production branch to `develop` so
+future commits cannot overwrite the deployed D1-backed site with old `main`
+static-only assets.
