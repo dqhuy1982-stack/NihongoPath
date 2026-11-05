@@ -25,7 +25,7 @@ test('Home V2 stylesheet is loaded last, after shared readability rules',()=>{
 
 test('Home V2 only changes static home/login and removes visual clutter',()=>{
  assert.ok(ui.includes("if(!window.NP_FAMILY_SYNC){"),'exclude server-backed mode');
- assert.ok(ui.includes("home.classList.add('home-v2')"),'home needs scoped class');
+ assert.ok(ui.includes("home.classList.add('home-v2','home-v3')"),'home needs scoped V3 and shared gallery classes');
  for(const redundant of [".brand-edition", ".home-guide", ".atelier-footer", ".portal-entry-hint"]){
   assert.ok(ui.includes(redundant),'expected landing reduction '+redundant);
  }
