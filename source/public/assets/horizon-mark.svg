@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" role="img" aria-labelledby="horizon-title">
+  <title id="horizon-title">HORIZON — horizon H mark</title>
+  <g fill="#284B3B">
+    <path d="M22 14h11c-5.5 4.7-7.1 10.3-7.1 18.6v20.7c0 6.5-4.3 11.3-12.4 14.6 3.3-4.6 5.1-9.3 5.1-16.1V31.3c0-8.6.5-12.5 3.4-17.3Z"/>
+    <path d="M52 14h11c-5.5 4.7-7.1 10.3-7.1 18.6v20.7c0 6.5-4.3 11.3-12.4 14.6 3.3-4.6 5.1-9.3 5.1-16.1V31.3c0-8.6.5-12.5 3.4-17.3Z"/>
+  </g>
+  <path d="M10 45.7c18.7-11.7 40.8-11.7 60 0" fill="none" stroke="#93A98B" stroke-width="3.1" stroke-linecap="round"/>
+  <circle cx="40" cy="27.7" r="4.4" fill="#93A98B"/>
+</svg>
