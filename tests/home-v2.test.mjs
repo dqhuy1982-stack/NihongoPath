@@ -7,6 +7,8 @@ const read=file=>readFileSync(new URL(file,root),'utf8');
 const page=read('index.html');
 const ui=read('login-ui.js');
 const home=read('home-v2.css');
+const pinUi=read('family-pin-ui.js');
+const pinCss=read('home-pin.css');
 const app=read('app.js');
 const auth=read('family-demo-auth.js');
 
@@ -16,6 +18,8 @@ test('Home V2 stylesheet is loaded last, after shared readability rules',()=>{
  assert.equal(page.split(link).length,2,'new stylesheet should appear exactly once');
  assert.ok(page.indexOf(link)>page.indexOf('href="readability.css"'));
  assert.ok(page.indexOf(link)<page.indexOf('</head>'));
+ assert.ok(page.indexOf('href="home-pin.css"')>page.indexOf(link));
+ assert.ok(page.indexOf('src="family-pin-ui.js"')>page.indexOf('src="login-ui.js"'));
 });
 
 test('Home V2 only changes static home/login and removes visual clutter',()=>{
@@ -34,14 +38,23 @@ test('Home V2 only changes static home/login and removes visual clutter',()=>{
  for(const name of ['Quang Huy','Vy Anh','Nam Khánh','Gia Hưng'])assert.ok(app.includes(name));
 });
 
-test('One-tap learner and Guest pathways stay intact',()=>{
+test('learner cards morph to demo PIN; Guest remains no-PIN',()=>{
  assert.ok(ui.includes('data-action="loginprofile"'));
  assert.ok(ui.includes("window.NPFamilyAccess.open(p.id,button)"));
+ assert.ok(ui.includes("aria-haspopup','dialog"));
+ assert.ok(auth.includes('createPin,unlock,resetPin,hasPin'));
+ assert.ok(pinUi.includes('np-pin-window'));
+ assert.ok(pinUi.includes("renderStage(window.NPFamilyAccess.hasPin(id)?'unlock':'create')"));
+ assert.ok(pinUi.includes("renderStage('confirm')"));
+ assert.ok(pinUi.includes('np-pin-source'));
+ assert.ok(pinCss.includes('.np-pin-visible .np-pin-backdrop'));
+ assert.ok(pinCss.includes('@media(prefers-reduced-motion:reduce)'));
+ assert.ok(pinCss.includes('role')===false,'CSS stays presentation-only');
  assert.ok(ui.includes('data-action="portal-guest"'));
  assert.ok(ui.includes("window.NPFamilyAccess.enterGuest()"));
  assert.ok(auth.includes("if(!window.NP_STATIC_PUBLISH||window.NP_FAMILY_SYNC"),'server mode must stay separate');
  assert.ok(app.includes("profiles:db.profiles.filter(p=>p.id!=='guest')"));
- assert.ok(!ui.includes("Chọn avatar để nhập hoặc tạo PIN"),'no PIN on static demo');
+ assert.ok(!auth.includes('return enter(id);\n }\n function enterGuest'),'no immediate family entry');
 });
 
 test('Home V2 responsive, scrollable and accessible on phone and desktop',()=>{
