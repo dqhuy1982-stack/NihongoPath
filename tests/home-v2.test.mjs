@@ -7,6 +7,7 @@ const read=file=>readFileSync(new URL(file,root),'utf8');
 const page=read('index.html');
 const ui=read('login-ui.js');
 const home=read('home-v2.css');
+const homeV3=read('home-v3.css');
 const pinUi=read('family-pin-ui.js');
 const pinCss=read('home-pin.css');
 const app=read('app.js');
@@ -28,8 +29,13 @@ test('Home V2 only changes static home/login and removes visual clutter',()=>{
  for(const redundant of [".brand-edition", ".home-guide", ".atelier-footer", ".portal-entry-hint"]){
   assert.ok(ui.includes(redundant),'expected landing reduction '+redundant);
  }
- assert.ok(ui.includes('home-v2-eyebrow'));
+ assert.ok(ui.includes("home.classList.add('home-v2','home-v3')"));
+ assert.ok(ui.includes("home.querySelector('.home-brand')?.remove()"));
+ assert.ok(ui.includes('horizon-hero-lockup'));
  assert.ok(ui.includes('home-v2-intro'));
+ assert.ok(ui.includes('horizon-hero-wordmark'));
+ assert.ok(ui.includes('horizon-hero-tagline'));
+ assert.ok(page.includes('href="home-v3.css"'));
  assert.ok(ui.includes("section.querySelector('.portal-entry-hint')?.remove()"));
  assert.ok(ui.includes("tr('Hôm nay, ai sẽ học?'"),'family picker must remain primary');
  for(const id of ['demo-a','demo-b','demo-c','demo-d']){
@@ -85,4 +91,27 @@ test('PIN expansion never reveals a transient desktop scrollbar',()=>{
  assert.ok(pinUi.includes('if(!touchLike())focusInput()'),'desktop focus must be deferred');
  assert.ok(pinUi.includes('if(touchLike())focusInput()'),'iPhone gesture-time focus must be preserved');
  assert.ok(pinUi.includes("state.overlay.classList.remove('np-pin-scrollable','np-pin-settled','np-pin-visible')"),'closing should hide the scroll container immediately');
+});
+
+test('HOME V3 keeps the brand together at the center, with only locale controls in header',()=>{
+ assert.ok(page.indexOf('href="home-v3.css"')>page.indexOf('href="horizon-brand.css"'),'V3 overrides load last');
+ assert.ok(ui.includes("home.classList.add('home-v2','home-v3')"));
+ assert.ok(ui.includes("home.querySelector('.home-brand')?.remove()"));
+ assert.ok(ui.includes('class="horizon-hero-lockup"'));
+ assert.ok(ui.includes('class="horizon-hero-wordmark">HORIZON</div>'));
+ assert.ok(ui.includes('class="horizon-home-slogan horizon-hero-tagline"'));
+ assert.ok(ui.includes('A little closer. <em>A world wider.</em>'));
+ assert.ok(ui.includes('class="home-v3-welcome"'));
+ assert.ok(ui.includes('class="home-v3-question"'));
+ assert.ok(homeV3.includes('justify-content:center'));
+ assert.ok(homeV3.includes('.home-v3 .horizon-hero-mark'));
+ assert.ok(homeV3.includes('width:114px'));
+ assert.ok(homeV3.includes('.home-v3 .horizon-hero-wordmark'));
+ assert.ok(homeV3.includes('font-size:clamp(39px,3.65vw,49px)'));
+ assert.ok(!homeV3.includes('position:fixed'),'Home header should not float above cards');
+ assert.ok(homeV3.includes('grid-template-columns:repeat(2,minmax(0,1fr))'),'mobile 2x2 learner cards');
+ assert.ok(homeV3.includes('@media(max-width:430px)'));
+ assert.ok(homeV3.includes('@media(max-width:850px) and (max-height:740px)'));
+ assert.ok(homeV3.includes('body.dark .home-v3'));
+ assert.ok(homeV3.includes('@media(prefers-reduced-motion:reduce)'));
 });
