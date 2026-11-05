@@ -27,7 +27,7 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
       - name: Validate Home V2 and typography regressions
-        run: node --test tests/readability.test.mjs tests/home-v2.test.mjs
+        run: node --test tests/readability.test.mjs tests/home-v2.test.mjs tests/family-static-demo.test.mjs
       - name: Build static Nihongo Path for GitHub Pages
         run: |
           unset NP_FAMILY_SYNC_BUILD
