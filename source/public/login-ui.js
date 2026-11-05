@@ -1,4 +1,4 @@
-/* Avatar-first entry. Static demo is one tap; legacy login dialog remains for backend/reference flows. */
+/* Avatar-first entry. Static demo morphs a learner card into a local PIN panel; backend remains separate. */
 window.NPLogin=(function(){
   'use strict';
   const tr=(vi,en,ja)=>[vi,en,ja][{vi:0,en:1,ja:2}[Locale.code]||0];
@@ -15,7 +15,7 @@ window.NPLogin=(function(){
       <div class="portal-guest-row">${button(icon('leaf')+`<span>${tr('Khám phá với tư cách khách','Explore as a guest','ゲストとして体験')}</span>`,'portal-guest','portal-guest')}${link(tr('Hồ sơ khác','Other profiles','ほかのプロフィール'),'profiles','textlink')}</div>
       <div class="atelier-access-links portal-access-links">${link(tr('Tôi có mã mời','I have an invitation','招待コードを持っています')+icon('arrow'),'invite','')}<span>${tr('Bản trải nghiệm · dùng mã mẫu','Prototype · sample access code','体験版・サンプルコード')}</span></div>`;
     if(window.NP_STATIC_PUBLISH){
-      // Public GitHub Pages demo: one tap, no credentials or server-side auth.
+      // Public GitHub Pages demo: card expands to a local-only PIN prompt.
       // HOME V2 is scoped to the static family landing; app and learning flows stay unchanged.
       if(!window.NP_FAMILY_SYNC){
         const home=template.content.querySelector('.atelier-home');
@@ -41,10 +41,10 @@ window.NPLogin=(function(){
       section.querySelector('.portal-access-links')?.remove();
       section.querySelector('.portal-guest-row > a')?.remove();
       const hint=section.querySelector('.portal-entry-hint');
-      if(hint)hint.textContent=tr('Chọn avatar để vào học ngay. Tiến độ chỉ lưu trên thiết bị này.','Tap an avatar to start learning. Progress stays on this device.','写真を選ぶとすぐに学習を開始します。記録はこの端末に保存されます。');
+      if(hint)hint.textContent=tr('Chọn avatar để nhập PIN demo.','Choose an avatar to enter your demo PIN.','写真を選んでPINを入力してください。');
       section.querySelectorAll('[data-action="loginprofile"]').forEach(button=>{
-        button.removeAttribute('aria-haspopup');
-        button.setAttribute('aria-label',tr('Vào học với ','Start learning as ','学習を開始：')+(db.profiles.find(p=>p.id===button.dataset.id)?.name||''));
+        button.setAttribute('aria-haspopup','dialog');
+        button.setAttribute('aria-label',tr('Mở PIN của ','Open PIN for ','PINを開く：')+(db.profiles.find(p=>p.id===button.dataset.id)?.name||''));
       });
     }
     return template.innerHTML;
@@ -71,7 +71,7 @@ window.NPLogin=(function(){
       if(dialog.open&&document.activeElement?.id==='demo-access-code')document.activeElement.scrollIntoView({block:'nearest',inline:'nearest',behavior:'instant'});
     });
   }
-  // A one-tap picker for static, browser-only family learning.
+  // The single tap opens a card-to-PIN morph on the public, static family preview.
   // Production/server-backed profiles use the independent verified API path.
   document.addEventListener('click',event=>{
     if(!window.NP_STATIC_PUBLISH||route()!=='login')return;
@@ -102,5 +102,5 @@ window.NPLogin=(function(){
     });
   });
   window.visualViewport?.addEventListener('resize',updateHeight);
-  return {enhance,open,isBaseline};
+  return {enhance,open,isBaseline,openPin:(id,button)=>window.NPFamilyPinUI?.open(id,button)};
 })();
