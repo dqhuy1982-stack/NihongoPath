@@ -97,7 +97,7 @@ test('old browser profiles receive N4 targets without losing progress or custom 
  ];
  const db={schemaVersion:1,familyDemoVersion:4,current:'demo-a',profiles:legacyProfiles};
  const samples=['Quang Huy','Vy Anh','Nam Khánh','Gia Hưng'].map((name,i)=>({
-   id:'demo-'+String.fromCharCode(97+i),name,goal:['N5','N2','N4','N4'][i],course:['foundation','N2','N4','N4'][i],
+   id:'demo-'+String.fromCharCode(97+i),name,goal:['N5','N2','N4','N4'][i],course:['N5','N2','N4','N4'][i],
    role:i?'learner':'manager',notes:[{text:'Starter'}],shortcuts:['kana'],studyFocus:'Demo'
  }));
  const storage=new Map([['np-family-demo-pin-v1','PIN HASH MUST SURVIVE']]);
@@ -108,6 +108,8 @@ test('old browser profiles receive N4 targets without losing progress or custom 
  assert.equal(db.profiles[0].notes[0].text,'Dad note');
  assert.equal(db.profiles[0].attempts[0].score,2);
  assert.equal(db.familyDemoVersion,5);
+ assert.equal(db.profiles[0].goal,'N5');
+ assert.equal(db.profiles[0].course,'N5');
  assert.equal(db.profiles[2].goal,'N4');
  assert.equal(db.profiles[3].goal,'N4');
  assert.equal(db.profiles[2].course,'N4');
