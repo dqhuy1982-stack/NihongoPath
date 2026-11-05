@@ -28,12 +28,16 @@ test('four 320px portraits are individually cached WebP files from the uploaded 
  assert.equal(new Set(digests).size,4,'Each avatar must be its own original picture');
 });
 
-test('family demo ships requested N5/N2/N4/N4 targets and one-tap guest picker',()=>{
+test('family demo retains N5/N2/N4/N4, morphing PIN access and Guest',()=>{
  const app=read('app.js'),login=read('login-ui.js'),index=read('index.html');
  for(const label of ['Quang Huy','Vy Anh','Nam Khánh','Gia Hưng'])assert.ok(app.includes(label),'Missing '+label);
  for(const level of ["'N2'","'N5'","'N4'"])assert.ok(app.includes(level),level);
- assert.ok(login.includes("window.NPFamilyAccess.open"),'Avatar one-tap route missing');
- assert.ok(!login.includes("Nhập PIN của"),'Published UI must not prompt for PIN');
+ assert.ok(login.includes("window.NPFamilyAccess.open"),'Avatar PIN open route missing');
+ assert.ok(login.includes("aria-haspopup','dialog"),'Avatar must announce PIN dialog');
+ assert.ok(read('family-pin-ui.js').includes('np-pin-window'),'Missing morphing dialog');
+ assert.ok(index.includes('src="family-pin-ui.js"'));
+ assert.ok(index.includes('href="home-pin.css"'));
+ assert.ok(read('family-demo-auth.js').includes("hash:'SHA-256'"),'PIN should be derived, not embedded in public source');
  assert.ok(login.includes("window.NPFamilyAccess.enterGuest"),'Guest entry missing');
  assert.ok(index.includes('src="family-demo-auth.js"'));
  assert.ok(index.includes('src="family-portraits.js"'));
@@ -46,47 +50,79 @@ function makeBrowser(){
  const storage=()=>{const map=new Map();return {getItem:k=>map.get(k)||null,setItem:(k,v)=>map.set(k,String(v)),removeItem:k=>map.delete(k)};};
  const localStorage=storage(),sessionStorage=storage();
  const db={current:'demo-a',profiles:[
-  {id:'demo-a',name:'Quang Huy',role:'manager',goal:'N5',notes:[],attempts:[],onboarded:true,archived:false},
+  {id:'demo-a',name:'Quang Huy',role:'manager',goal:'N5',notes:[{text:'Keep progress'}],attempts:[],onboarded:true,archived:false},
   {id:'demo-b',name:'Vy Anh',role:'learner',goal:'N2',notes:[],attempts:[],onboarded:true,archived:false}
  ]};
  const initialProfiles=[{id:'demo-a'}, {id:'demo-b'}, {id:'demo-c'}, {id:'demo-d',goal:'N4',minutes:10,role:'learner',notes:[],attempts:[],flashReviews:[]}];
- let route='',saveCount=0;
+ let location='',saves=0,opened='';
  const context={
-  window:{NP_STATIC_PUBLISH:true,NP_FAMILY_SYNC:false},
+  window:{NP_STATIC_PUBLISH:true,NP_FAMILY_SYNC:false,NPLogin:{openPin(id){opened=id;return true;}}},
   sessionStorage,localStorage,db,initialProfiles,structuredClone,
-  persist(){saveCount++;},resetLearningView(){},go(to){route=to;},
+  crypto:webcrypto,TextEncoder,
+  persist(){saves++;},resetLearningView(){},go(to){location=to;},
   loginSelected:'',console
  };
  vm.runInNewContext(read('family-demo-auth.js'),context);
- return {access:context.window.NPFamilyAccess,db,localStorage,sessionStorage,route:()=>route,saves:()=>saveCount};
+ return {access:context.window.NPFamilyAccess,db,localStorage,sessionStorage,route:()=>location,saves:()=>saves,opened:()=>opened};
 }
 
-test('one tap selects a learner and supports switching without PIN; Guest remains separate',()=>{
- const {access,db,localStorage,sessionStorage,route,saves}=makeBrowser();
- localStorage.setItem('np-family-demo-pin-v1','LEGACY PIN HASH REMAINS UNUSED');
+test('tapping a learner card opens PIN; no login until correct PIN is entered',async()=>{
+ const {access,db,localStorage,sessionStorage,route,opened}=makeBrowser();
+ localStorage.setItem('np-family-demo-pin-v1','OLD LEGACY DEMO PIN RECORD');
  assert.equal(access.isActive('demo-a'),false);
+ assert.equal(access.hasPin('demo-a'),false);
  assert.equal(access.open('demo-a'),true);
+ assert.equal(opened(),'demo-a');
+ assert.equal(access.isActive('demo-a'),false);
+ assert.equal(route(),'');
+ assert.equal(await access.unlock('demo-a','1234'),false);
+ assert.equal(await access.createPin('demo-a','123'),false);
+ assert.equal(await access.createPin('demo-a','1234'),true);
+ assert.equal(access.hasPin('demo-a'),true);
  assert.equal(access.isActive('demo-a'),true);
  assert.equal(db.current,'demo-a');
  assert.equal(route(),'today');
  assert.equal(sessionStorage.getItem('np-family-session-v1'),'demo-a');
+ const pins=JSON.parse(localStorage.getItem('np-family-demo-pins-v2'));
+ assert.equal(pins['demo-a'].v,2);
+ assert.ok(pins['demo-a'].salt.length>=32);
+ assert.ok(pins['demo-a'].hash.length>=64);
+ assert.ok(!JSON.stringify(pins).includes('1234'),'PIN must not be stored in plaintext');
+ assert.equal(await access.createPin('demo-a','2222'),false,'existing PIN cannot be silently replaced');
  assert.equal(access.open('demo-b'),true);
- assert.equal(access.isActive('demo-a'),false);
- assert.equal(access.isActive('demo-b'),true);
+ assert.equal(opened(),'demo-b');
+ assert.equal(access.isActive('demo-b'),false);
+ assert.equal(db.current,'demo-a','switching must require learner B PIN');
+ assert.equal(await access.createPin('demo-b','654321'),true);
  assert.equal(db.current,'demo-b');
- assert.equal(access.open('nonexistent'),false);
+ access.lock();
+ assert.equal(await access.unlock('demo-a','9999'),false);
+ assert.equal(db.current,'demo-b');
+ assert.equal(await access.unlock('demo-a','1234'),true);
+ assert.equal(db.current,'demo-a');
  assert.equal(access.open('guest'),false);
+ assert.equal(access.open('missing'),false);
+ assert.equal(localStorage.getItem('np-family-demo-pin-v1'),'OLD LEGACY DEMO PIN RECORD');
+});
+
+test('local demo PIN reset and Guest never erase existing learner progress',async()=>{
+ const {access,db,localStorage}=makeBrowser();
+ assert.equal(await access.createPin('demo-a','4455'),true);
+ assert.equal(await access.createPin('demo-b','7788'),true);
+ assert.equal(access.resetPin('demo-a'),true);
+ assert.equal(access.hasPin('demo-a'),false);
+ assert.equal(access.hasPin('demo-b'),true);
+ assert.equal(db.profiles[0].notes[0].text,'Keep progress');
  assert.equal(access.enterGuest(),true);
  assert.equal(access.isActive('guest'),true);
  assert.equal(db.current,'guest');
  assert.ok(db.profiles.some(p=>p.id==='guest'));
- assert.ok(saves()>=3);
  access.lock();
  assert.equal(access.isActive('guest'),false);
  assert.equal(db.profiles.some(p=>p.id==='guest'),false);
- assert.equal(db.current,'demo-a');
- assert.equal(sessionStorage.getItem('np-family-session-v1'),null);
- assert.equal(localStorage.getItem('np-family-demo-pin-v1'),'LEGACY PIN HASH REMAINS UNUSED');
+ assert.equal(db.profiles[0].notes[0].text,'Keep progress');
+ assert.equal(JSON.parse(localStorage.getItem('np-family-demo-pins-v2'))['demo-b'].v,2);
+ assert.equal(JSON.parse(localStorage.getItem('np-family-demo-pins-v2'))['demo-a'],undefined);
 });
 
 test('old browser profiles receive N4 targets without losing progress or custom names',()=>{
