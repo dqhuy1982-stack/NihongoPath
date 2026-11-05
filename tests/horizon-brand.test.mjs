@@ -17,7 +17,7 @@ test('HORIZON web brand is consistent from Home through the learning shell',()=>
  assert.match(page,/href="horizon-brand\.css"/);
  assert.ok(page.indexOf('href="horizon-brand.css"')>page.indexOf('href="home-pin.css"'),
    'brand layer should not override PIN dialog/learning behavior');
- assert.ok(app.includes("src=\\"assets/horizon-mark.svg\\""));
+ assert.ok(app.includes('src="assets/horizon-mark.svg"'));
  assert.ok(app.includes('horizon-wordmark'));
  assert.ok(app.includes('<strong>HORIZON</strong>'));
  assert.ok(app.includes('HORIZON — Hôm nay'));
