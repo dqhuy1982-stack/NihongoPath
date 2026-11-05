@@ -14,9 +14,9 @@
   color:#274333;
   overflow:visible;
 }
-.home-v4[data-season="summer"]{--horizon-season-accent:#7b9c8b;--horizon-scene:url('assets/horizon-fuji-summer.svg')}
-.home-v4[data-season="autumn"]{--horizon-season-accent:#b29171;--horizon-scene:url('assets/horizon-fuji-autumn.svg')}
-.home-v4[data-season="winter"]{--horizon-season-accent:#879bac;--horizon-scene:url('assets/horizon-fuji-winter.svg')}
+.home-v4.home-v3.home-v2.atelier-home[data-season="summer"]{--horizon-season-accent:#7b9c8b;--horizon-scene:url('assets/horizon-fuji-summer.svg')}
+.home-v4.home-v3.home-v2.atelier-home[data-season="autumn"]{--horizon-season-accent:#b29171;--horizon-scene:url('assets/horizon-fuji-autumn.svg')}
+.home-v4.home-v3.home-v2.atelier-home[data-season="winter"]{--horizon-season-accent:#879bac;--horizon-scene:url('assets/horizon-fuji-winter.svg')}
 
 /* Controls are solid and crisp on mobile Safari (no backdrop filtering). */
 .home-v4 .atelier-header,
