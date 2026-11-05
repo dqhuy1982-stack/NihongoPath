@@ -15,7 +15,29 @@ window.NPLogin=(function(){
       <div class="portal-guest-row">${button(icon('leaf')+`<span>${tr('Khám phá với tư cách khách','Explore as a guest','ゲストとして体験')}</span>`,'portal-guest','portal-guest')}${link(tr('Hồ sơ khác','Other profiles','ほかのプロフィール'),'profiles','textlink')}</div>
       <div class="atelier-access-links portal-access-links">${link(tr('Tôi có mã mời','I have an invitation','招待コードを持っています')+icon('arrow'),'invite','')}<span>${tr('Bản trải nghiệm · dùng mã mẫu','Prototype · sample access code','体験版・サンプルコード')}</span></div>`;
     if(window.NP_STATIC_PUBLISH){
-      // Public GitHub Pages demo: a tap selects the profile, no password or PIN.
+      // Public GitHub Pages demo: one tap, no credentials or server-side auth.
+      // HOME V2 is scoped to the static family landing; app and learning flows stay unchanged.
+      if(!window.NP_FAMILY_SYNC){
+        const home=template.content.querySelector('.atelier-home');
+        home.classList.add('home-v2');
+        home.querySelector('.brand-edition')?.remove();
+        home.querySelector('.home-guide')?.remove();
+        home.querySelector('.atelier-footer')?.remove();
+        const story=home.querySelector('.atelier-story');
+        story.innerHTML=`<div class="home-v2-eyebrow">${tr('HỌC TIẾNG NHẬT CÙNG GIA ĐÌNH','JAPANESE, LEARNED TOGETHER','家族で学ぶ日本語')}</div>
+          <h1>${tr('Mỗi người một','Your own pace.','自分のペースで')}<br><em>${tr('nhịp học.','One shared journey.','一歩ずつ。')}</em></h1>
+          <p class="home-v2-intro">${tr('Một nơi để học tiếng Nhật theo mục tiêu riêng, từng ngày một bước.','A personal Japanese learning space. One small step every day.','それぞれの目標で日本語を学ぶ。今日も一歩ずつ。')}</p>
+          <div class="home-v2-accent" aria-hidden="true"><span></span><span lang="ja">一歩 · IPPŌ</span></div>`;
+        section.querySelector('.access-heading .atelier-kicker')?.remove();
+        const heading=section.querySelector('.access-heading>p');
+        if(heading)heading.textContent=tr('Chọn hồ sơ để vào học ngay.','Choose a profile to start learning.','プロフィールを選んで学習を始めましょう。');
+        section.querySelector('.portal-entry-hint')?.remove();
+        const guest=section.querySelector('[data-action="portal-guest"]');
+        if(guest){
+          guest.innerHTML=icon('leaf')+'<span>'+tr('Vào thử với tư cách khách','Try as a guest','ゲストとして試す')+'</span>';
+          guest.setAttribute('aria-label',tr('Vào thử với tư cách khách','Try as a guest','ゲストとして試す'));
+        }
+      }
       // Guest is separate; this is not real authentication.
       section.querySelector('.portal-access-links')?.remove();
       section.querySelector('.portal-guest-row > a')?.remove();
