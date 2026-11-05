@@ -4,13 +4,41 @@ window.NPLogin=(function(){
   const tr=(vi,en,ja)=>[vi,en,ja][{vi:0,en:1,ja:2}[Locale.code]||0];
   let opener=null;
   const isBaseline=()=>new URLSearchParams(location.search).get('login-view')==='before';
+  const seasons=['spring','summer','autumn','winter'];
+  const seasonMarks=['春','夏','秋','冬'];
+  const seasonLabels={
+    vi:['Xuân','Hạ','Thu','Đông'],
+    en:['Spring','Summer','Autumn','Winter'],
+    ja:['春','夏','秋','冬']
+  };
+  function preferredSeason(){
+    try{const value=localStorage.getItem('np-home-season-v1');return seasons.includes(value)?value:'spring';}
+    catch{return 'spring';}
+  }
+  // Both labels are live profile fields. Neither the JLPT grade nor future
+  // exam dates are hard-coded into the landing page.
+  function currentFocus(person){
+    const focus=String(person.studyFocus||person.purpose||'').trim();
+    const level=String(person.goal||'').trim();
+    for(const prefix of [level+' · ','JLPT '+level+' · ']){
+      if(level&&focus.startsWith(prefix))return focus.slice(prefix.length);
+    }
+    return focus;
+  }
+  function currentStage(person){
+    const level=String(person.goal||'').trim();
+    if(!level)return tr('Lộ trình riêng','Own learning path','自分の学習ルート');
+    if(level==='N5')return tr('Nền tảng N5','Foundation N5','基礎 N5');
+    if(level==='N2')return 'JLPT N2';
+    return level;
+  }
   function enhance(html,people,selected){
     if(isBaseline())return html;
     const template=document.createElement('template');template.innerHTML=html;
     template.content.querySelector('.atelier-home').classList.add('portal-home');
     const section=template.content.querySelector('.atelier-access');
     section.innerHTML=`<div class="access-heading"><span class="atelier-kicker">${tr('CHÀO MỪNG TRỞ LẠI','WELCOME BACK','おかえりなさい')}</span><h2>${tr('Hôm nay, ai sẽ học?','Who is learning today?','今日は、だれが学びますか。')}</h2><p>${tr('Chạm vào ảnh. Bước vào nhịp học của bạn.','Choose your portrait. Return to your own pace.','写真を選んで、自分のペースへ。')}</p></div>
-      <div class="portal-people family-picker" role="group" aria-label="${tr('Chọn người học','Choose a learner','学習者を選ぶ')}">${people.map(p=>`<button type="button" class="family-choice portal-person" data-action="loginprofile" data-id="${esc(p.id)}" aria-haspopup="dialog" aria-label="${esc(tr('Mở khung nhập mã cho ','Open access code for ','アクセスコードを入力：')+p.name)}"><span class="family-photo">${avatar(p,true)}<span class="portal-person-arrow" aria-hidden="true">${icon('arrow')}</span></span><span class="family-name" data-no-translate>${esc(p.name)}</span><span class="portal-person-goal">${tr('Mục tiêu','Goal','目標')} ${esc(p.goal)}</span></button>`).join('')}</div>
+      <div class="portal-people family-picker" role="group" aria-label="${tr('Chọn người học','Choose a learner','学習者を選ぶ')}">${people.map((p,i)=>`<button type="button" class="family-choice portal-person" data-action="loginprofile" data-learner-season="${seasons[i%4]}" data-id="${esc(p.id)}" aria-haspopup="dialog" aria-label="${esc(tr('Mở khung nhập mã cho ','Open access code for ','アクセスコードを入力：')+p.name)}"><span class="home-season-emblem" lang="ja" aria-hidden="true">${seasonMarks[i%4]}</span><span class="family-photo">${avatar(p,true)}<span class="portal-person-arrow" aria-hidden="true">${icon('arrow')}</span></span><span class="family-name" data-no-translate>${esc(p.name)}</span><span class="home-learner-rule" aria-hidden="true"></span><span class="portal-person-goal">${esc(currentStage(p))}</span><span class="home-learner-focus" data-no-translate>${esc(currentFocus(p))}</span><span class="home-season-decoration" aria-hidden="true"></span></button>`).join('')}</div>
       <p class="portal-entry-hint">${icon('lock')} ${tr('Chọn ảnh để nhập mã truy cập.','Select a portrait to enter your code.','写真を選ぶと入力画面が開きます。')}</p>
       <div class="portal-guest-row">${button(icon('leaf')+`<span>${tr('Khám phá với tư cách khách','Explore as a guest','ゲストとして体験')}</span>`,'portal-guest','portal-guest')}${link(tr('Hồ sơ khác','Other profiles','ほかのプロフィール'),'profiles','textlink')}</div>
       <div class="atelier-access-links portal-access-links">${link(tr('Tôi có mã mời','I have an invitation','招待コードを持っています')+icon('arrow'),'invite','')}<span>${tr('Bản trải nghiệm · dùng mã mẫu','Prototype · sample access code','体験版・サンプルコード')}</span></div>`;
@@ -20,6 +48,16 @@ window.NPLogin=(function(){
       if(!window.NP_FAMILY_SYNC){
         const home=template.content.querySelector('.atelier-home');
         home.classList.add('home-v2','home-v3');
+        home.classList.add('home-v4');
+        home.dataset.season=preferredSeason();
+        const headerActions=home.querySelector('.atelier-header-actions');
+        if(headerActions){
+          const seasonControl=document.createElement('label');
+          seasonControl.className='home-season-control';
+          const options=seasonLabels[Locale.code]||seasonLabels.vi;
+          seasonControl.innerHTML=`<span class="season-control-icon" aria-hidden="true">◌</span><select class="home-season-select" aria-label="${tr('Chọn chủ đề bốn mùa','Choose seasonal theme','季節のテーマを選ぶ')}" data-no-translate>${seasons.map((season,i)=>`<option value="${season}" ${season===home.dataset.season?'selected':''}>${options[i]}</option>`).join('')}</select>`;
+          headerActions.prepend(seasonControl);
+        }
         // This is an entrance/welcome screen. Keep only locale and theme in
         // the header; a single large lockup belongs to the centered hero.
         home.querySelector('.home-brand')?.remove();
@@ -33,8 +71,8 @@ window.NPLogin=(function(){
             <p class="horizon-home-slogan horizon-hero-tagline" lang="en">A little closer. <em>A world wider.</em></p>
           </div>
           <div class="home-v3-welcome">
-            <h1 class="home-v3-question"><span>${tr('Hôm nay,','Today,','今日は、')}</span> <em>${tr('ai sẽ học?','who is learning?','だれが学ぶ？')}</em></h1>
-            <p class="home-v2-intro">${tr('Chọn hồ sơ để tiếp tục hành trình của bạn.','Choose your profile and continue your journey.','プロフィールを選んで学びの続きを始めましょう。')}</p>
+            <h1 class="home-v3-question"><span>${tr('Hôm nay,','Today,','今日は、')}</span> <em>${tr('ai sẽ tiếp tục hành trình?','who continues the journey?','だれが旅を続けますか？')}</em></h1>
+            <p class="home-v2-intro">${tr('Chọn hồ sơ để trở lại nhịp học của mình.','Choose your profile to pick up where you left off.','プロフィールを選んで、学びの続きを始めましょう。')}</p>
           </div>`;
         // Four whole-card avatar buttons remain in the same order.
         // The heading above is the sole visual focus, not a second competing headline.
@@ -82,6 +120,13 @@ window.NPLogin=(function(){
   }
   // The single tap opens a card-to-PIN morph on the public, static family preview.
   // Production/server-backed profiles use the independent verified API path.
+  document.addEventListener('change',event=>{
+    const picker=event.target.closest?.('.home-season-select');
+    if(!picker||!seasons.includes(picker.value))return;
+    const home=picker.closest('.home-v4');
+    if(home)home.dataset.season=picker.value;
+    try{localStorage.setItem('np-home-season-v1',picker.value);}catch{}
+  });
   document.addEventListener('click',event=>{
     if(!window.NP_STATIC_PUBLISH||route()!=='login')return;
     // When paired, let the D1 adapter apply its save-before-switch guards.
