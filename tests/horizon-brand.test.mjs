@@ -25,7 +25,7 @@ test('HORIZON web brand is consistent from Home through the learning shell',()=>
  assert.ok(!app.includes('<strong>Nihongo</strong>'),'no old nav wordmark');
  assert.ok(ui.includes('class="horizon-home-slogan horizon-hero-tagline"'));
  assert.ok(ui.includes('A little closer. <em>A world wider.</em>'));
- assert.ok(ui.includes('home.classList.add(\'home-v2\')'));
+ assert.ok(ui.includes("home.classList.add('home-v2','home-v3')"));
  assert.ok(ui.includes('window.NPFamilyAccess.open(p.id,button)'),'PIN access unchanged');
  assert.ok(ui.includes('window.NPFamilyAccess.enterGuest()'),'Guest unchanged');
 });
