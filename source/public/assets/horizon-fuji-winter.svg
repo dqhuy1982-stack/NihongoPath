@@ -10,7 +10,7 @@
 </defs>
 <rect width="1600" height="900" fill="url(#paper)"/>
 <rect width="1600" height="430" fill="url(#sun)"/>
-<!-- Northern ridges and the HORIZON: Fuji remains in the background, never inside a portrait. -->
+<!-- Distant mountain ridges and a quiet lakeside. This is artwork only. -->
 <path d="M-80 263 Q92 192 237 238 T530 235 Q682 205 815 253 T1105 225 Q1295 177 1664 244 L1664 388 L-80 388Z" fill="#9fadb4" opacity=".14"/>
 <path d="M830 290 Q1005 204 1113 242 L1272 76 1463 230 Q1520 245 1660 218 L1660 387 L830 387Z" fill="url(#mountain)" opacity=".86"/>
 <path d="M1207 148 L1272 76 1335 150 1308 134 1299 150 1281 132 1262 150 1251 133 1236 151Z" fill="#fafcff" opacity=".93"/>
