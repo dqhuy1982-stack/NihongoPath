@@ -62,7 +62,7 @@ const P=()=>db.profiles.find(p=>p.id===db.current)||db.profiles[0];
 lessonStep=Math.min(2,Math.max(0,P().resume?.step||0));
 const initials=name=>name.trim().split(/\s+/).slice(-2).map(s=>s[0]).join('').toUpperCase();
 const familyPhotos={'demo-a':'demo-a','demo-b':'demo-b','demo-c':'demo-c','demo-d':'demo-d'};
-const avatar=(p=P(),large=false)=>{const photo=window.NP_FAMILY_PHOTOS?.[p.id]||(familyPhotos[p.id]?`assets/family/${familyPhotos[p.id]}.webp`:null);return `<span class="avatar ${large?'lg':''} alt${(p.color||0)%4} ${photo?'has-photo':''}" aria-hidden="true">${photo?`<img src="${photo}" alt="" width="80" height="80" loading="lazy">`:p.id==='guest'?icon('leaf'):esc(initials(p.name))}</span>`;};
+const avatar=(p=P(),large=false)=>{const photo=window.NP_FAMILY_PHOTOS?.[p.id]||(familyPhotos[p.id]?`assets/family/${familyPhotos[p.id]}.webp`:null);return `<span class="avatar ${large?'lg':''} alt${(p.color||0)%4} ${photo?'has-photo':''}" aria-hidden="true">${photo?`<img src="${photo}" alt="" width="320" height="320" decoding="async" loading="${large?'eager':'lazy'}">`:p.id==='guest'?icon('leaf'):esc(initials(p.name))}</span>`;};
 const badge=(text,type='')=>`<span class="badge ${type}">${esc(text)}</span>`;
 const link=(label,route,cls='btn',ic='')=>`<a class="${cls}" href="#${route}">${ic?icon(ic):''}${label}</a>`;
 const button=(label,action,cls='btn',extra='')=>`<button type="button" class="${cls}" data-action="${action}" ${extra}>${label}</button>`;
