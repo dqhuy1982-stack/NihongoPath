@@ -141,6 +141,10 @@ window.NPFamilyPinUI=(function(){
    overlay.innerHTML=`<button type="button" class="np-pin-backdrop" aria-label="${tr('Đóng khung PIN','Close PIN panel','PIN画面を閉じる')}"></button>
      <section class="np-pin-window" role="dialog" aria-modal="true" aria-labelledby="np-pin-title" aria-describedby="np-pin-description">
        <button type="button" class="np-pin-close" aria-label="${tr('Đóng','Close','閉じる')}">×</button>
+       <div class="np-pin-brand" aria-hidden="true">
+         <img src="assets/horizon-mark.svg?v=homev3" width="41" height="33" alt="">
+         <span>HORIZON</span>
+       </div>
        <div class="np-pin-identity">
          <div class="np-pin-photo">${avatar(person,true)}</div>
          <strong class="np-pin-name" data-no-translate>${esc(person.name)}</strong>
