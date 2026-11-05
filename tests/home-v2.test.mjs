@@ -105,13 +105,33 @@ test('HOME V3 keeps the brand together at the center, with only locale controls 
  assert.ok(ui.includes('class="home-v3-question"'));
  assert.ok(homeV3.includes('justify-content:center'));
  assert.ok(homeV3.includes('.home-v3 .horizon-hero-mark'));
- assert.ok(homeV3.includes('width:114px'));
+ assert.ok(homeV3.includes('width:98px'));
  assert.ok(homeV3.includes('.home-v3 .horizon-hero-wordmark'));
- assert.ok(homeV3.includes('font-size:clamp(39px,3.65vw,49px)'));
+ assert.ok(homeV3.includes('font:510 clamp(40px,3.4vw,46px)'));
  assert.ok(!homeV3.includes('position:fixed'),'Home header should not float above cards');
  assert.ok(homeV3.includes('grid-template-columns:repeat(2,minmax(0,1fr))'),'mobile 2x2 learner cards');
  assert.ok(homeV3.includes('@media(max-width:430px)'));
  assert.ok(homeV3.includes('@media(max-width:850px) and (max-height:740px)'));
  assert.ok(homeV3.includes('body.dark .home-v3'));
  assert.ok(homeV3.includes('@media(prefers-reduced-motion:reduce)'));
+});
+
+test('editorial portrait gallery has no numbered corner or boxed desktop tiles',()=>{
+ assert.ok(homeV3.includes('.home-v3.home-v2 .portal-people'),'new gallery scoped to family landing');
+ assert.ok(homeV3.includes('border-top:1px solid #dce5d9'),'gallery gets subtle editorial boundary');
+ assert.ok(homeV3.includes('border-bottom:1px solid #dce5d9'));
+ assert.ok(homeV3.includes('.portal-person + .portal-person'),'hairline separators replace card boxes');
+ assert.ok(homeV3.includes('content:none!important'),'number and arrow badges removed');
+ assert.ok(homeV3.includes('border-radius:91px 91px 22px 22px!important'),'arched portrait silhouette');
+ assert.ok(homeV3.includes('width:156px'),'larger portraits become the visual focus');
+ assert.ok(homeV3.includes('height:174px'));
+ assert.ok(homeV3.includes('object-fit:cover'),'avoid stretching headshots');
+ assert.ok(homeV3.includes('display:inline;'),'one-line greeting instead of forced 2-line H1');
+ assert.ok(homeV3.includes('white-space:nowrap'),'desktop greeting remains on one line');
+ assert.ok(homeV3.includes('@media(min-width:851px) and (max-height:760px)'),'short PC displays can compress');
+ assert.ok(homeV3.includes('@media(max-width:850px) and (max-height:740px)'),'small phones scroll naturally');
+ assert.ok(homeV3.includes('body.dark .home-v3.home-v2 .portal-person'),'dark mode stays legible');
+ assert.ok(homeV3.includes('@media(prefers-reduced-motion:reduce)'),'respect reduced motion');
+ assert.ok(!homeV3.includes('position:fixed'),'no fake fullscreen sections or scroll traps');
+ assert.ok(ui.includes("window.NPFamilyAccess.open(p.id,button)"),'still opens PIN panel');
 });
