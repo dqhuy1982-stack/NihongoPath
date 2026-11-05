@@ -1,8 +1,10 @@
 name: Nihongo Path — GitHub Pages
 
-# Pages is unavailable for this private repository on its current plan.
-# Keep the workflow for future use, but do not fail every develop push.
+# Automatically deploy from the sole develop branch after this repo is public.
+# Private-repository pushes skip Pages instead of failing.
 on:
+  push:
+    branches: [develop]
   workflow_dispatch:
 
 permissions:
@@ -14,6 +16,7 @@ concurrency:
 
 jobs:
   build:
+    if: ${{ github.event.repository.private == false }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout one source
