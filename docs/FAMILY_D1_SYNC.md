@@ -17,9 +17,9 @@
 ## Local verification on Windows (safe; does not affect hosted D1)
 
 Run from `C:\Dev\NihongoPath` after committing or backing up any uncommitted changes.
-Use only the reviewed branch; do not discard existing local work.
+Use `develop` on both PCs (see `docs/ONE_WORKFLOW.md`); do not discard existing local work.
 
-**Easiest:** After switching and pulling this feature branch, run
+**Easiest:** From the shared `develop` branch on the home PC, run
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Start-Nihongo-Family-Sync.ps1
 ```
@@ -30,8 +30,8 @@ privately. Do not share its contents in chat or screenshots.
 
 ```powershell
 git fetch origin
-git switch feature/family-one-tap-entry
-git pull --ff-only origin feature/family-one-tap-entry
+git switch develop
+git pull --ff-only origin develop
 
 # Generate a random family code. Store it in your password manager; do not paste in chat.
 $bytes = New-Object byte[] 32
@@ -60,12 +60,12 @@ Stop `wrangler dev` gracefully (`x`), then:
 
 ```powershell
 cd C:\Dev\NihongoPath
-git pull --ff-only origin feature/family-one-tap-entry
+git pull --ff-only origin develop
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Prepare-Nihongo-Remote-Sync.ps1
 ```
 
 This script creates separate local and remote D1 SQL backups under
-`.private-backups/`, checks remote D1 metadata and pending migrations, but
+`.private-backups/`, checks remote D1 schema by read-only SQL, but
 **never** modifies remote D1, uploads local records, creates Workers or changes Access.
 
 Confirm whether remote `family:primary` records already exist before planning
@@ -81,7 +81,7 @@ home PC to prepare **data-only exports**; do not share personal study SQL files
 through a company computer or git. Run from `C:\Dev\NihongoPath`:
 
 ```powershell
-git pull --ff-only origin feature/family-one-tap-entry
+git pull --ff-only origin develop
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\Prepare-Nihongo-Learning-Transfer.ps1
 ```
 
