@@ -1,8 +1,8 @@
 name: Nihongo Path — GitHub Pages
 
+# Pages is unavailable for this private repository on its current plan.
+# Keep the workflow for future use, but do not fail every develop push.
 on:
-  push:
-    branches: [develop]
   workflow_dispatch:
 
 permissions:
