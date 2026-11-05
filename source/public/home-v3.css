@@ -1,0 +1,280 @@
+/* HORIZON / HOME V3 — centered brand lockup.
+   Scoped to static family Home only. Learner/PIN interaction and app shell
+   remain owned by their existing components. Last stylesheet wins. */
+
+.home-v3.home-v2.atelier-home{
+  grid-template-rows:56px minmax(0,1fr);
+}
+.home-v3.home-v2 .atelier-header{
+  height:56px;
+  max-width:1120px;
+  justify-content:flex-end;
+  border-bottom:0;
+}
+.home-v3.home-v2 .atelier-header-actions{
+  margin-left:auto;
+}
+.home-v3.home-v2 .atelier-main,
+.compact .home-v3.home-v2 .atelier-main{
+  min-height:calc(100svh - 56px);
+  max-width:1120px;
+  padding:16px 8px 24px!important;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:0;
+}
+.home-v3.home-v2 .atelier-story,
+.compact .home-v3.home-v2 .atelier-story{
+  width:100%;
+  max-width:930px;
+  padding:0;
+  text-align:center;
+}
+.home-v3 .horizon-hero-lockup{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  width:100%;
+  margin:0 auto;
+  color:#284b3b;
+}
+.home-v3 .horizon-hero-mark{
+  display:block;
+  width:114px;
+  height:auto;
+  aspect-ratio:136 / 108;
+  max-width:100%;
+  flex:none;
+  object-fit:contain;
+  object-position:center;
+  overflow:visible;
+  margin:0 auto 2px;
+  filter:none;
+}
+.home-v3 .horizon-hero-wordmark{
+  font-family:Newsreader,Georgia,'Noto Serif JP',serif;
+  font-size:clamp(39px,3.65vw,49px);
+  font-weight:530;
+  line-height:1.02;
+  letter-spacing:.145em;
+  color:#284b3b;
+  padding-left:.145em;
+  white-space:nowrap;
+}
+.home-v3 .atelier-story .horizon-hero-tagline{
+  margin:4px 0 0;
+  color:#718a70;
+  font:italic 500 clamp(18px,1.65vw,21px)/1.42 Newsreader,Georgia,serif;
+  letter-spacing:.012em;
+  white-space:normal;
+  text-wrap:balance;
+}
+.home-v3 .atelier-story .horizon-hero-tagline em{
+  color:inherit;
+  font:inherit;
+}
+.home-v3 .atelier-story .horizon-hero-tagline:before{
+  content:none;
+  display:none;
+}
+.home-v3 .home-v3-welcome{
+  margin:23px auto 0;
+}
+.home-v3.home-v2 .atelier-story .home-v3-question,
+.compact .home-v3.home-v2 .atelier-story .home-v3-question{
+  margin:0;
+  color:#233e32;
+  font:520 clamp(33px,3vw,41px)/1.15 Newsreader,Georgia,'Noto Serif JP',serif;
+  letter-spacing:-.025em;
+  text-wrap:balance;
+}
+.home-v3.home-v2 .atelier-story .home-v3-question span{
+  font-weight:520;
+}
+.home-v3.home-v2 .atelier-story .home-v3-question em{
+  font-weight:500;
+  font-style:italic;
+  color:#5b7a60;
+}
+.home-v3.home-v2 .home-v2-intro,
+.compact .home-v3.home-v2 .home-v2-intro{
+  margin:6px auto 0;
+  max-width:540px;
+  color:#5e705f;
+  font:500 13px/1.55 var(--font-readable);
+}
+.home-v3.home-v2 .portal-people,
+.compact .home-v3.home-v2 .portal-people{
+  width:100%;
+  max-width:1040px;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  margin:23px auto 0;
+  gap:15px;
+}
+.home-v3.home-v2 .portal-person,
+.compact .home-v3.home-v2 .portal-person{
+  min-height:207px;
+  padding:17px 10px 16px;
+  border-radius:18px;
+}
+.home-v3.home-v2 .portal-person .avatar,
+.compact .home-v3.home-v2 .portal-person .avatar{
+  width:96px;
+  height:96px;
+}
+.home-v3.home-v2 .portal-person .family-name,
+.compact .home-v3.home-v2 .portal-person .family-name{
+  margin-top:11px;
+}
+.home-v3.home-v2 .portal-guest-row,
+.compact .home-v3.home-v2 .portal-guest-row{
+  margin:13px 0 0;
+}
+/* Short desktop displays: readable identity without cutting off Guest. */
+@media(min-width:851px) and (max-height:760px){
+  .home-v3.home-v2.atelier-home{
+    grid-template-rows:48px minmax(0,1fr);
+  }
+  .home-v3.home-v2 .atelier-header{height:48px}
+  .home-v3.home-v2 .atelier-main,
+  .compact .home-v3.home-v2 .atelier-main{
+    min-height:calc(100svh - 48px);
+    padding:10px 8px 14px!important;
+  }
+  .home-v3 .horizon-hero-mark{width:91px}
+  .home-v3 .horizon-hero-wordmark{font-size:39px}
+  .home-v3 .atelier-story .horizon-hero-tagline{font-size:17px}
+  .home-v3 .home-v3-welcome{margin-top:13px}
+  .home-v3.home-v2 .atelier-story .home-v3-question{font-size:33px}
+  .home-v3.home-v2 .portal-people{margin-top:17px}
+  .home-v3.home-v2 .portal-person{
+    min-height:176px;
+    padding:11px 10px;
+  }
+  .home-v3.home-v2 .portal-person .avatar{width:79px;height:79px}
+  .home-v3.home-v2 .portal-person .family-name{margin-top:8px}
+  .home-v3.home-v2 .portal-guest-row{margin-top:8px}
+}
+@media(max-width:850px){
+  .home-v3.home-v2.atelier-home,
+  .compact .home-v3.home-v2.atelier-home{
+    grid-template-rows:54px minmax(0,1fr);
+  }
+  .home-v3.home-v2 .atelier-header{
+    height:54px;
+    justify-content:flex-end;
+  }
+  .home-v3.home-v2 .atelier-main,
+  .compact .home-v3.home-v2 .atelier-main{
+    min-height:calc(100svh - 54px);
+    width:100%;
+    max-width:560px;
+    padding:12px 0 23px!important;
+    justify-content:flex-start;
+  }
+  .home-v3 .horizon-hero-mark{width:92px;margin-bottom:2px}
+  .home-v3 .horizon-hero-wordmark{
+    font-size:clamp(32px,5.2vw,39px);
+    letter-spacing:.125em;
+    padding-left:.125em;
+  }
+  .home-v3 .atelier-story .horizon-hero-tagline{
+    font-size:clamp(16px,2.6vw,18px);
+    margin-top:3px;
+  }
+  .home-v3 .home-v3-welcome{margin-top:20px}
+  .home-v3.home-v2 .atelier-story .home-v3-question,
+  .compact .home-v3.home-v2 .atelier-story .home-v3-question{
+    font-size:clamp(29px,4.6vw,36px);
+    line-height:1.2;
+  }
+  .home-v3.home-v2 .home-v2-intro,
+  .compact .home-v3.home-v2 .home-v2-intro{
+    margin-top:7px;
+    font-size:13px;
+    max-width:430px;
+  }
+  .home-v3.home-v2 .portal-people,
+  .compact .home-v3.home-v2 .portal-people{
+    max-width:540px;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:11px;
+    margin-top:22px;
+  }
+  .home-v3.home-v2 .portal-person,
+  .compact .home-v3.home-v2 .portal-person{
+    min-height:181px;
+    padding:14px 8px;
+  }
+  .home-v3.home-v2 .portal-person .avatar,
+  .compact .home-v3.home-v2 .portal-person .avatar{
+    width:87px;
+    height:87px;
+  }
+  .home-v3.home-v2 .portal-guest-row,
+  .compact .home-v3.home-v2 .portal-guest-row{margin-top:13px}
+}
+@media(max-width:430px){
+  .home-v3 .horizon-hero-mark{width:84px}
+  .home-v3 .horizon-hero-wordmark{font-size:33px}
+  .home-v3 .atelier-story .horizon-hero-tagline{font-size:15.5px}
+  .home-v3 .home-v3-welcome{margin-top:17px}
+  .home-v3.home-v2 .atelier-story .home-v3-question,
+  .compact .home-v3.home-v2 .atelier-story .home-v3-question{
+    font-size:31px;
+  }
+  .home-v3.home-v2 .portal-people,
+  .compact .home-v3.home-v2 .portal-people{
+    margin-top:19px;
+  }
+  .home-v3.home-v2 .portal-person,
+  .compact .home-v3.home-v2 .portal-person{
+    min-height:177px;
+  }
+  .home-v3.home-v2 .portal-person .avatar,
+  .compact .home-v3.home-v2 .portal-person .avatar{
+    width:83px;height:83px;
+  }
+}
+/* Reduced height phones, without hiding user-visible content. */
+@media(max-width:850px) and (max-height:740px){
+  .home-v3.home-v2 .atelier-main,
+  .compact .home-v3.home-v2 .atelier-main{padding-top:5px!important}
+  .home-v3 .horizon-hero-mark{width:72px}
+  .home-v3 .horizon-hero-wordmark{font-size:29px}
+  .home-v3 .home-v3-welcome{margin-top:13px}
+  .home-v3.home-v2 .portal-people,
+  .compact .home-v3.home-v2 .portal-people{margin-top:14px}
+  .home-v3.home-v2 .portal-person,
+  .compact .home-v3.home-v2 .portal-person{min-height:162px}
+  .home-v3.home-v2 .portal-person .avatar,
+  .compact .home-v3.home-v2 .portal-person .avatar{width:70px;height:70px}
+  .home-v3.home-v2 .portal-guest-row,
+  .compact .home-v3.home-v2 .portal-guest-row{margin-top:6px}
+}
+html[lang=ja] .home-v3.home-v2 .atelier-story .home-v3-question{
+  font-family:'Noto Serif JP',Newsreader,serif;
+  letter-spacing:0;
+}
+html[lang=ja] .home-v3.home-v2 .atelier-story .home-v3-question em{
+  font-style:normal;
+}
+body.dark .home-v3 .horizon-hero-lockup,
+body.dark .home-v3 .horizon-hero-wordmark{
+  color:#ecf2e8;
+}
+body.dark .home-v3 .horizon-hero-mark{
+  content:url('assets/horizon-mark-light.svg?v=homev3');
+}
+body.dark .home-v3 .atelier-story .horizon-hero-tagline{
+  color:#c3d4b9;
+}
+body.dark .home-v3.home-v2 .atelier-story .home-v3-question{color:#f2f5ed}
+body.dark .home-v3.home-v2 .atelier-story .home-v3-question em{color:#cadcc4}
+body.dark .home-v3.home-v2 .home-v2-intro{color:#ccdbca}
+@media(prefers-reduced-motion:reduce){
+  .home-v3 .horizon-hero-mark{transition:none}
+}
