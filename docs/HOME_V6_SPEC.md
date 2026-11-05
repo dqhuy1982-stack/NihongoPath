@@ -37,3 +37,17 @@ The provided iPhone screenshot demonstrates a tall hero and four outlined cards 
 - 200% text zoom / landscape: natural scroll is allowed rather than clipping.
 
 Note: passing source tests and successful GitHub Pages deploy are **not** proof of real-device pixel-perfect fit. Review the published site on the user's actual Safari build before declaring visual QA complete.
+
+## Safari polish revision — 2026-11-06
+Feedback from an actual Safari screenshot: the toolbar had a soft, indistinct appearance and the original mobile Fuji dominated the logo. A source audit found no active Gaussian blur in mobile SVG art or toolbar CSS; insufficient icon stroke/contrast and soft translucent surfaces were contributing visual factors. Root cause of all Safari raster softness remains unconfirmed without device-side browser inspection.
+
+Implementation updates:
+- Rebuild all four seasonal mobile Fuji illustrations as crisp, smaller offset mountain contours with quiet ink wash; no brand text baked into SVG.
+- Replace semi-translucent header capsule with an opaque, clean surface; remove soft box shadows, increase SVG stroke to 1.95 and label size/contrast while preserving exact functional controls and seasonal persistence.
+- Move hero into an intentional top-aligned editorial composition instead of auto-centering the entire stack in spare viewport height; introduce a restrained 88px fine gold rule beneath the greeting.
+- Remove slight mobile portrait desaturation; keep user portrait assets untouched and improve ring contrast.
+- Increase guest action clarity and maintain natural vertical scrolling when the viewport cannot fit all content.
+- Keep all changes under existing V6 mobile stylesheet: no additional global CSS layer, no change to desktop V5, login code, stored learner paths or backend.
+- Regression: explicit Safari-toolbar readability / scene silhouette checks in `tests/home-v6-mobile.test.mjs`.
+
+**Verification status:** Source/CI tests do not substitute for a physical Safari screenshot review. Validate on the user's iPhone after latest Pages release, especially crispness of labels and icon strokes, total viewport balance, and theme switching.
