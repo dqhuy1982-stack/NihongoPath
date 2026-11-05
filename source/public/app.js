@@ -6,6 +6,15 @@ const uid=()=>globalThis.crypto?.randomUUID?.()||'id-'+Date.now().toString(36)+M
 const paths={home:'M3 10l9-7 9 7M5 9v12h5v-7h4v7h5V9',book:'M3 4h5a5 5 0 014 2 5 5 0 014-2h5v15h-5a5 5 0 00-4 2 5 5 0 00-4-2H3zM12 6v15',review:'M3 7v5h5M21 17v-5h-5M4 12a8 8 0 0113-6l3 3M20 12a8 8 0 01-13 6l-3-3',note:'M6 3h10l3 3v15H6zM9 8h6M9 12h7M9 16h5',compass:'M12 22a10 10 0 100-20 10 10 0 000 20zM16 8l-2.5 5.5L8 16l2.5-5.5z',chart:'M4 20V10h4v10M10 20V4h4v16M16 20v-7h4v7',help:'M9 8a3 3 0 116 0c0 2-3 2-3 5M12 17h.01M22 12a10 10 0 11-20 0 10 10 0 0120 0',gear:'M10 3h4l1 3 3 1 3 3v4l-3 1-1 3-3 3h-4l-1-3-3-1-3-3v-4l3-1 1-3zM15 12a3 3 0 11-6 0 3 3 0 016 0',arrow:'M4 12h16M14 6l6 6-6 6',chevron:'M9 5l7 7-7 7',down:'M6 9l6 6 6-6',back:'M20 12H4M10 6l-6 6 6 6',play:'M7 4l14 8-14 8z',pin:'M8 3h8l-1 6 4 4v2H5v-2l4-4zM12 15v7',check:'M5 12l4 4L20 5',plus:'M12 5v14M5 12h14',search:'M21 21l-5-5M18 10a8 8 0 11-16 0 8 8 0 0116 0',user:'M17 7a5 5 0 11-10 0 5 5 0 0110 0M3 22v-3a9 9 0 0118 0v3',users:'M16 21v-2a6 6 0 00-12 0v2M15 3a4 4 0 010 8M20 21v-2a6 6 0 00-3-5M13 7a4 4 0 11-8 0 4 4 0 018 0',clock:'M12 7v6l4 2M22 12a10 10 0 11-20 0 10 10 0 0120 0',pen:'M16 3l5 5-12 12-6 1 1-6zM14 5l5 5',leaf:'M20 3C7 3 2 9 6 15s14 2 14-12zM3 22L17 7',lock:'M5 10h14v11H5zM8 10V6a4 4 0 018 0v4',mail:'M3 5h18v14H3zM3 5l9 8 9-8',eye:'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12M15 12a3 3 0 11-6 0 3 3 0 016 0',bell:'M18 8a6 6 0 00-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4',shield:'M12 2l9 4v6c0 6-9 10-9 10S3 18 3 12V6zM8 12l3 3 5-5',calendar:'M4 5h16v16H4zM8 2v6M16 2v6M4 10h16M8 14h.1M12 14h.1M16 14h.1',download:'M12 3v12M7 10l5 5 5-5M4 16v5h16v-5',trash:'M3 6h18M9 6V3h6v3M6 6l1 15h10l1-15M10 10v7M14 10v7',undo:'M4 4v6h6M4 10c7-10 17-2 16 4-1 6-8 8-12 5',save:'M4 3h13l4 4v14H4zM8 3v6h8V3M8 21v-8h9v8',globe:'M22 12a10 10 0 11-20 0 10 10 0 0120 0M2 12h20M12 2c6 6 6 14 0 20-6-6-6-14 0-20',layers:'M2 7l10-5 10 5-10 5zM2 12l10 5 10-5M2 17l10 5 10-5',award:'M17 8a5 5 0 11-10 0 5 5 0 0110 0M8 12l-2 10 6-3 6 3-2-10',sound:'M3 9h4l5-5v16l-5-5H3zM16 8a6 6 0 010 8M19 5a10 10 0 010 14',chat:'M3 3h18v13H9l-6 5zM7 7h10M7 11h7',filter:'M3 4h18l-7 8v7l-4 2v-9z',map:'M3 5l6-3 6 3 6-3v17l-6 3-6-3-6 3zM9 2v17M15 5v17',logout:'M10 3H3v18h7M8 12h13M16 7l5 5-5 5',info:'M12 11v6M12 7h.01M22 12a10 10 0 11-20 0 10 10 0 0120 0',monitor:'M2 3h20v14H2zM8 22h8M12 17v5'};
 function icon(name,cls=''){return `<svg class="icon ${cls}" viewBox="0 0 24 24" aria-hidden="true"><path d="${paths[name]||paths.book}"/></svg>`;}
 const botanical=`<svg viewBox="0 0 120 180" fill="none" aria-hidden="true"><path d="M19 180Q37 95 96 12M31 138Q70 153 81 126Q57 111 31 138M44 110Q8 111 8 83Q32 82 44 110M59 85Q98 97 111 70Q78 61 59 85M72 62Q41 58 46 33Q67 36 72 62M84 40Q115 43 116 15Q94 17 84 40" fill="currentColor"/><path d="M19 180Q37 95 96 12" stroke="currentColor" stroke-width="1.6"/></svg>`;
+const familyDemoNotes={
+ 'demo-a':['Nhóm Hiragana dễ nhầm','Ôn nhận diện は・ま・ら và âm ghép; luyện phản xạ trước khi vào N5.','kana'],
+ 'demo-b':['N2 · kế hoạch ôn tập','Gợi ý demo: luyện từ vựng trong ngữ cảnh, đọc hiểu và nghe. Khóa N2 đầy đủ chưa phát hành.','course/N2'],
+ 'demo-c':['Tiếng Nhật ở trường','Gợi ý demo: mỗi ngày ôn một nhóm từ và thực hành câu dùng trong lớp học.','course/N5'],
+ 'demo-d':['Kana · bắt đầu từng nét','Gợi ý demo: nghe và viết あ・い・う・え・お, sau đó thử Katakana.','kana']
+};
+const demoStarterNote=id=>{const [title,body,target]=familyDemoNotes[id]||familyDemoNotes['demo-a'];return {
+ id:'sample-note-'+id,type:'note',title,body,target,source:'Gợi ý thử giao diện · demo',demo:true,at:'2026-11-05T00:00:00.000Z'
+};};
 const initialProfiles=[
  ['demo-a','Bố','N5',20,'manager','Ôn Hiragana, Katakana và N5','foundation','Nền tảng Kana → N5'],
  ['demo-b','Vy Anh','N2',30,'learner','Luyện JLPT N2: từ vựng, đọc và nghe','N2','JLPT N2 · lộ trình dự kiến'],
@@ -16,11 +25,11 @@ const initialProfiles=[
  days:['T2','T4','T6'],deadline:'',onboarded:true,archived:false,
  prefs:{theme:'light',jpSize:28,furigana:'always',romaji:false,focus:false,motion:false,reminders:false,remindTime:'20:00',quietStart:'22:00',quietEnd:'08:00'},
  shortcuts:i===1?['notebook','flash','reports']:i===2?['kana','flash','notebook']:['kana','flash','notebook'],
- notes:[],attempts:[],flashReviews:[],writing:0,resume:null
+ notes:[demoStarterNote(id)],attempts:[],flashReviews:[],writing:0,resume:null
 }));
 let db;try{const saved=JSON.parse(localStorage.getItem(KEY));db=saved?.schemaVersion===1&&Array.isArray(saved.profiles)&&saved.profiles.length?saved:null;}catch{}
 db??={schemaVersion:1,current:'demo-a',profiles:structuredClone(initialProfiles)};
-if(window.NP_STATIC_PUBLISH&&db.familyDemoVersion!==2){
+if(window.NP_STATIC_PUBLISH&&db.familyDemoVersion!==3){
  // Adopt old placeholder profiles without overwriting any learning history.
  for(const sample of initialProfiles){
    let p=db.profiles.find(x=>x.id===sample.id);
@@ -29,9 +38,10 @@ if(window.NP_STATIC_PUBLISH&&db.familyDemoVersion!==2){
      Object.assign(p,{name:sample.name,goal:sample.goal,minutes:sample.minutes,role:sample.role,
        purpose:sample.purpose,course:sample.course,studyFocus:sample.studyFocus,shortcuts:sample.shortcuts});
    } else if(!p.studyFocus) p.studyFocus=sample.studyFocus;
+   if(!Array.isArray(p.notes)||!p.notes.length)p.notes=structuredClone(sample.notes);
  }
  db.profiles=db.profiles.filter(p=>p.id!=='guest');
- db.familyDemoVersion=2;
+ db.familyDemoVersion=3;
  try{localStorage.setItem(KEY,JSON.stringify(db));}catch{}
 }
 if(!db.profiles.some(p=>p.id===db.current&&!p.archived))db.current=db.profiles.find(p=>!p.archived)?.id||db.profiles[0].id;
@@ -254,7 +264,7 @@ case 'restoreprofile':if(P().role==='manager'){const p=db.profiles.find(p=>p.id=
 case 'resetprofile':modal('Đặt lại hoạt động thử?',`<p>Sẽ xóa phiên học, lịch ôn, ghi chú, kết quả kiểm tra, lượt thẻ và lượt viết của <strong>${esc(P().name)}</strong>. Tên và mục tiêu được giữ.</p><div class="actions">${button('Xóa hoạt động thử','confirmresetprofile','btn danger')}<button type="button" class="btn" data-close>Hủy</button></div>`);break;
 case 'confirmresetprofile':if(window.NPLessonUI)NPLessonUI.clear(P().id);Object.assign(P(),{notes:[],attempts:[],flashReviews:[],writing:0,resume:null,practiceResults:[],activePractice:null,examSessions:{},examAttempts:[]});resetLearningView();persist('Đã đặt lại hoạt động thử của hồ sơ hiện tại.');closeModal();render(false);break;
 case 'resetdemo':modal('Đặt lại hồ sơ và hoạt động học thử?',`<p>Khôi phục bốn hồ sơ mẫu ban đầu. Các hồ sơ thêm, ghi chú và cấu hình học thử sẽ bị xóa. Bản nháp nội dung được quản lý riêng trong Xưởng nội dung. Không tác động dữ liệu của ứng dụng khác.</p><div class="actions">${button('Đặt lại bản thử','confirmresetdemo','btn danger')}<button type="button" class="btn" data-close>Hủy</button></div>`);break;
-case 'confirmresetdemo':if(window.NPLessonUI)NPLessonUI.clearAll();db={schemaVersion:1,familyDemoVersion:2,current:'demo-a',profiles:structuredClone(initialProfiles)};if(window.NPFamilyAccess)window.NPFamilyAccess.lock();settingsDirty=false;resetLearningView();persist('Đã khôi phục bộ hồ sơ mẫu.');closeModal();go('map');break;
+case 'confirmresetdemo':if(window.NPLessonUI)NPLessonUI.clearAll();db={schemaVersion:1,familyDemoVersion:3,current:'demo-a',profiles:structuredClone(initialProfiles)};if(window.NPFamilyAccess)window.NPFamilyAccess.lock();settingsDirty=false;resetLearningView();persist('Đã khôi phục bộ hồ sơ mẫu.');closeModal();go('map');break;
 }});
 document.addEventListener('submit',e=>{const f=e.target;if(!f.matches('[data-form]'))return;e.preventDefault();const data=new FormData(f),p=P();switch(f.dataset.form){case 'demologin':{if(data.get('learner')==='guest'){accessError='';go('guest');break;}const code=String(data.get('demoCode')||'').trim().toUpperCase();const target=db.profiles.find(x=>x.id===data.get('learner')&&!x.archived);if(code!=='PATH-DEMO'||!target){accessError='Mã demo chưa đúng. Dùng PATH-DEMO để thử luồng.';const err=$('#login-error');err.textContent=accessError;err.hidden=false;f.querySelector('[name=demoCode]').setAttribute('aria-invalid','true');Locale.translate(err);f.querySelector('[name=demoCode]').focus();return;}db.current=target.id;rememberDemoProfile=data.has('rememberProfile');db.demoLoginProfile=rememberDemoProfile?target.id:null;accessError='';resetLearningView();persist();go(target.onboarded?'today':'onboarding');break;}case 'recover':recoverTargetId=String(data.get('learner'));go('recovery');break;case 'reset-access':{const a=String(data.get('samplePassword')||''),b=String(data.get('sampleConfirm')||'');if(a.length<8||a!==b){resetError='Hai giá trị mẫu cần giống nhau và có ít nhất 8 ký tự.';const err=$('#reset-error');err.textContent=resetError;err.hidden=false;Locale.translate(err);return;}resetError='';f.reset();go('reset-done');break;}case 'invite':{const code=String(data.get('inviteCode')||'').trim().toUpperCase();if(code!=='PATH-FAMILY'){inviteError='Mã mẫu chưa đúng. Dùng PATH-FAMILY để xem luồng.';const err=$('#invite-error');err.textContent=inviteError;err.hidden=false;Locale.translate(err);return;}inviteError='';go('invite-preview');break;}case 'join':{const name=String(data.get('name')||'').trim();if(!name)return;const n=structuredClone(initialProfiles[0]);Object.assign(n,{id:uid(),name,goal:'Nền tảng',minutes:15,role:'learner',color:Number(data.get('color')),onboarded:false});db.profiles.push(n);db.current=n.id;resetLearningView();if(persist('Đã tạo hồ sơ thử trên trình duyệt này.'))go('onboarding');break;}case 'onboarding':p.name=String(data.get('name')).trim();p.goal=String(data.get('goal'));p.minutes=Number(data.get('minutes'));p.onboarded=true;if(persist('Đã lưu thiết lập thử.'))go('ready');break;
 case 'addprofile':if(p.role!=='manager')return;{const n=structuredClone(initialProfiles[0]);Object.assign(n,{id:uid(),name:String(data.get('name')).trim(),goal:String(data.get('goal')),minutes:Number(data.get('minutes')),role:'learner',color:db.profiles.length%4,onboarded:false});if(!n.name)return;db.profiles.push(n);if(persist('Đã thêm hồ sơ thử. Chưa tạo tài khoản đăng nhập.')){closeModal();render(false);}}break;
