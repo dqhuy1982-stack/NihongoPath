@@ -69,3 +69,20 @@ test('Home V2 responsive, scrollable and accessible on phone and desktop',()=>{
  assert.ok(!home.includes('overflow:hidden'),'avoid mobile clipping');
  assert.ok(!home.includes('display:none!important'),'avoid hiding learner cards');
 });
+
+test('PIN expansion never reveals a transient desktop scrollbar',()=>{
+ const start=pinCss.indexOf('.np-pin-visible .np-pin-window{');
+ const end=pinCss.indexOf('}',start);
+ const expandingStyle=pinCss.slice(start,end);
+ assert.ok(expandingStyle.includes('overflow:hidden'),'keep clipping throughout the grow animation');
+ assert.ok(!expandingStyle.includes('overflow-y:auto'),'auto overflow must not activate while the panel grows');
+ assert.ok(pinCss.includes('.np-pin-settled.np-pin-scrollable .np-pin-window'));
+ assert.ok(pinCss.includes('overflow-y:auto'),'short screens must retain scroll support after settling');
+ assert.ok(pinUi.includes("overlay.classList.add('np-pin-settled')"));
+ assert.ok(pinUi.includes("panel.scrollHeight>panel.clientHeight+2"),'enable scrolling only when content actually exceeds final height');
+ assert.ok(pinUi.includes("event.propertyName==='height'"),'wait for final size transition');
+ assert.ok(pinUi.includes('window.setTimeout(finishMorph,390)'),'fallback when transitionend is skipped');
+ assert.ok(pinUi.includes('if(!touchLike())focusInput()'),'desktop focus must be deferred');
+ assert.ok(pinUi.includes('if(touchLike())focusInput()'),'iPhone gesture-time focus must be preserved');
+ assert.ok(pinUi.includes("state.overlay.classList.remove('np-pin-scrollable','np-pin-settled','np-pin-visible')"),'closing should hide the scroll container immediately');
+});
