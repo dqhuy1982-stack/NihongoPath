@@ -1,34 +1,35 @@
-/* HORIZON / HOME V3 — centered brand lockup.
-   Scoped to static family Home only. Learner/PIN interaction and app shell
-   remain owned by their existing components. Last stylesheet wins. */
+/* HORIZON · Editorial portrait gallery refinement
+   The homepage is a welcome experience, not an account-management grid.
+   Scope every override to the static .home-v3 family landing. PIN, profile,
+   learning content and post-login navigation remain unchanged. */
 
 .home-v3.home-v2.atelier-home{
-  grid-template-rows:56px minmax(0,1fr);
+  grid-template-rows:55px minmax(0,1fr);
+  background:radial-gradient(ellipse 950px 680px at 50% 47%,#fffefa 0%,#f7f6f1 86%);
 }
 .home-v3.home-v2 .atelier-header{
-  height:56px;
-  max-width:1120px;
+  height:55px;
+  max-width:1220px;
+  border:0;
   justify-content:flex-end;
-  border-bottom:0;
 }
-.home-v3.home-v2 .atelier-header-actions{
-  margin-left:auto;
-}
+.home-v3.home-v2 .atelier-header-actions{margin-left:auto}
 .home-v3.home-v2 .atelier-main,
 .compact .home-v3.home-v2 .atelier-main{
-  min-height:calc(100svh - 56px);
-  max-width:1120px;
-  padding:16px 8px 24px!important;
   display:flex;
   flex-direction:column;
   justify-content:center;
   align-items:center;
+  width:100%;
+  max-width:1220px;
+  min-height:calc(100svh - 55px);
+  padding:17px 20px 26px!important;
   gap:0;
 }
 .home-v3.home-v2 .atelier-story,
 .compact .home-v3.home-v2 .atelier-story{
   width:100%;
-  max-width:930px;
+  max-width:1000px;
   padding:0;
   text-align:center;
 }
@@ -36,6 +37,7 @@
   display:flex;
   flex-direction:column;
   align-items:center;
+  justify-content:center;
   text-align:center;
   width:100%;
   margin:0 auto;
@@ -43,217 +45,356 @@
 }
 .home-v3 .horizon-hero-mark{
   display:block;
-  width:114px;
+  width:98px;
   height:auto;
-  aspect-ratio:136 / 108;
+  aspect-ratio:136/108;
   max-width:100%;
   flex:none;
   object-fit:contain;
   object-position:center;
   overflow:visible;
-  margin:0 auto 2px;
-  filter:none;
+  margin:0 auto 3px;
 }
 .home-v3 .horizon-hero-wordmark{
-  font-family:Newsreader,Georgia,'Noto Serif JP',serif;
-  font-size:clamp(39px,3.65vw,49px);
-  font-weight:530;
-  line-height:1.02;
-  letter-spacing:.145em;
-  color:#284b3b;
-  padding-left:.145em;
+  display:block;
+  font:510 clamp(40px,3.4vw,46px)/1.05 Newsreader,Georgia,'Noto Serif JP',serif;
+  letter-spacing:.155em;
+  padding-left:.155em;
   white-space:nowrap;
+  color:#284b3b;
 }
 .home-v3 .atelier-story .horizon-hero-tagline{
-  margin:4px 0 0;
+  margin:6px 0 0;
+  font:italic 500 clamp(18px,1.55vw,20px)/1.35 Newsreader,Georgia,serif;
   color:#718a70;
-  font:italic 500 clamp(18px,1.65vw,21px)/1.42 Newsreader,Georgia,serif;
   letter-spacing:.012em;
-  white-space:normal;
   text-wrap:balance;
 }
 .home-v3 .atelier-story .horizon-hero-tagline em{
-  color:inherit;
   font:inherit;
+  color:inherit;
 }
 .home-v3 .atelier-story .horizon-hero-tagline:before{
-  content:none;
   display:none;
+  content:none;
 }
-.home-v3 .home-v3-welcome{
-  margin:23px auto 0;
-}
+.home-v3 .home-v3-welcome{margin:28px auto 0}
 .home-v3.home-v2 .atelier-story .home-v3-question,
 .compact .home-v3.home-v2 .atelier-story .home-v3-question{
   margin:0;
-  color:#233e32;
-  font:520 clamp(33px,3vw,41px)/1.15 Newsreader,Georgia,'Noto Serif JP',serif;
-  letter-spacing:-.025em;
-  text-wrap:balance;
+  font:500 clamp(28px,2.55vw,33px)/1.2 Newsreader,Georgia,'Noto Serif JP',serif;
+  color:#274537;
+  letter-spacing:-.03em;
+  white-space:nowrap;
+  text-wrap:initial;
 }
-.home-v3.home-v2 .atelier-story .home-v3-question span{
-  font-weight:520;
+.home-v3.home-v2 .atelier-story .home-v3-question>span,
+.home-v3.home-v2 .atelier-story .home-v3-question>em{
+  display:inline;
+  margin:0;
 }
+.home-v3.home-v2 .atelier-story .home-v3-question span{font-weight:500}
 .home-v3.home-v2 .atelier-story .home-v3-question em{
   font-weight:500;
   font-style:italic;
-  color:#5b7a60;
+  color:#638064;
 }
 .home-v3.home-v2 .home-v2-intro,
 .compact .home-v3.home-v2 .home-v2-intro{
-  margin:6px auto 0;
+  margin:8px auto 0;
+  color:#5e7465;
   max-width:540px;
-  color:#5e705f;
   font:500 13px/1.55 var(--font-readable);
+}
+
+/* One editorial family gallery, rather than four large floating login cards. */
+.home-v3.home-v2 .atelier-access,
+.compact .home-v3.home-v2 .atelier-access{
+  max-width:1150px;
+  width:100%;
+  padding:0;
+  background:transparent;
+  border:0;
 }
 .home-v3.home-v2 .portal-people,
 .compact .home-v3.home-v2 .portal-people{
   width:100%;
-  max-width:1040px;
+  max-width:1150px;
+  display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
-  margin:23px auto 0;
-  gap:15px;
+  gap:0;
+  padding:17px 0 16px;
+  margin:28px auto 0;
+  border-top:1px solid #dce5d9;
+  border-bottom:1px solid #dce5d9;
+  background:transparent;
 }
 .home-v3.home-v2 .portal-person,
 .compact .home-v3.home-v2 .portal-person{
-  min-height:207px;
-  padding:17px 10px 16px;
-  border-radius:18px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  min-width:0;
+  min-height:275px;
+  padding:12px 14px 13px;
+  gap:0;
+  border:0!important;
+  border-radius:0;
+  background:transparent!important;
+  box-shadow:none!important;
+  color:#294738;
+  text-align:center;
+  transition:background-color .22s ease;
+}
+.home-v3.home-v2 .portal-person + .portal-person{
+  border-left:1px solid #e0e7dd!important;
+}
+/* Hide UI noise: previous numbered corners and northeast arrows. */
+.home-v3.home-v2 .portal-person:before,
+.home-v3.home-v2 .portal-person:after,
+.home-v3.home-v2 .portal-person:nth-child(n):before{
+  display:none!important;
+  content:none!important;
+}
+.home-v3.home-v2 .portal-person:hover,
+.home-v3.home-v2 .portal-person:focus-visible{
+  background:#eff4edb3!important;
+  transform:none;
+}
+.home-v3.home-v2 .portal-person:focus-visible{
+  outline:3px solid #55866d;
+  outline-offset:-4px;
+}
+.home-v3.home-v2 .portal-person:active{background:#e6eee4!important}
+.home-v3.home-v2 .portal-person .family-photo{
+  display:block;
+  position:relative;
+  padding:0;
+  margin:0;
+  border:0;
+  border-radius:92px 92px 22px 22px;
+  overflow:visible;
+  box-shadow:none;
+  background:transparent;
+  transform:none;
+  transition:transform .24s ease;
+}
+.home-v3.home-v2 .portal-person .family-photo:before{
+  display:none!important;
+  content:none!important;
 }
 .home-v3.home-v2 .portal-person .avatar,
 .compact .home-v3.home-v2 .portal-person .avatar{
-  width:96px;
-  height:96px;
+  display:block;
+  width:156px;
+  height:174px;
+  max-width:100%;
+  overflow:hidden;
+  isolation:isolate;
+  border:1px solid #d0ddd1;
+  border-radius:91px 91px 22px 22px!important;
+  background:#e4ece4;
+  filter:none;
+  box-shadow:0 10px 28px #233c2e13;
+}
+.home-v3.home-v2 .portal-person .avatar img,
+.compact .home-v3.home-v2 .portal-person .avatar img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:50% 42%;
+  border-radius:inherit!important;
+  image-rendering:auto;
+}
+.home-v3.home-v2 .portal-person:hover .family-photo,
+.home-v3.home-v2 .portal-person:focus-visible .family-photo{
+  transform:translateY(-4px);
 }
 .home-v3.home-v2 .portal-person .family-name,
 .compact .home-v3.home-v2 .portal-person .family-name{
-  margin-top:11px;
+  display:block;
+  color:#294738;
+  font:600 21px/1.22 Newsreader,Georgia,'Noto Serif JP',serif;
+  margin-top:17px;
+  letter-spacing:-.015em;
+  white-space:normal;
+}
+.home-v3.home-v2 .portal-person-goal,
+.compact .home-v3.home-v2 .portal-person-goal{
+  display:block;
+  color:#637e69;
+  font:600 11px/1.5 var(--font-readable);
+  margin-top:6px;
+  letter-spacing:.055em;
+  text-transform:uppercase;
 }
 .home-v3.home-v2 .portal-guest-row,
 .compact .home-v3.home-v2 .portal-guest-row{
-  margin:13px 0 0;
+  margin:10px auto 0;
+  padding:0;
+  border:0;
+  justify-content:center;
 }
-/* Short desktop displays: readable identity without cutting off Guest. */
+.home-v3.home-v2 .portal-guest,
+.compact .home-v3.home-v2 .portal-guest{
+  min-height:44px;
+  padding:8px 14px;
+  color:#58735f;
+  font:600 12px/1.5 var(--font-readable);
+  background:transparent;
+  box-shadow:none;
+}
+.home-v3.home-v2 .portal-guest:hover{
+  color:#264b38;
+  text-decoration:underline;
+  text-underline-offset:4px;
+}
+
+/* Short office displays: compact gallery without hiding Guest or adding fixed scroll. */
 @media(min-width:851px) and (max-height:760px){
-  .home-v3.home-v2.atelier-home{
-    grid-template-rows:48px minmax(0,1fr);
-  }
+  .home-v3.home-v2.atelier-home{grid-template-rows:48px minmax(0,1fr)}
   .home-v3.home-v2 .atelier-header{height:48px}
   .home-v3.home-v2 .atelier-main,
   .compact .home-v3.home-v2 .atelier-main{
     min-height:calc(100svh - 48px);
-    padding:10px 8px 14px!important;
+    padding:7px 14px 12px!important;
   }
-  .home-v3 .horizon-hero-mark{width:91px}
+  .home-v3 .horizon-hero-mark{width:81px}
   .home-v3 .horizon-hero-wordmark{font-size:39px}
   .home-v3 .atelier-story .horizon-hero-tagline{font-size:17px}
-  .home-v3 .home-v3-welcome{margin-top:13px}
-  .home-v3.home-v2 .atelier-story .home-v3-question{font-size:33px}
-  .home-v3.home-v2 .portal-people{margin-top:17px}
-  .home-v3.home-v2 .portal-person{
-    min-height:176px;
-    padding:11px 10px;
+  .home-v3 .home-v3-welcome{margin-top:15px}
+  .home-v3.home-v2 .atelier-story .home-v3-question{font-size:28px}
+  .home-v3.home-v2 .portal-people,
+  .compact .home-v3.home-v2 .portal-people{
+    margin-top:15px;
+    padding:10px 0;
   }
-  .home-v3.home-v2 .portal-person .avatar{width:79px;height:79px}
-  .home-v3.home-v2 .portal-person .family-name{margin-top:8px}
-  .home-v3.home-v2 .portal-guest-row{margin-top:8px}
+  .home-v3.home-v2 .portal-person,
+  .compact .home-v3.home-v2 .portal-person{
+    min-height:223px;
+    padding:6px 10px;
+  }
+  .home-v3.home-v2 .portal-person .avatar,
+  .compact .home-v3.home-v2 .portal-person .avatar{
+    width:121px;height:137px;
+  }
+  .home-v3.home-v2 .portal-person .family-name,
+  .compact .home-v3.home-v2 .portal-person .family-name{
+    font-size:18px;margin-top:12px;
+  }
+  .home-v3.home-v2 .portal-guest-row{margin-top:5px}
 }
+
 @media(max-width:850px){
   .home-v3.home-v2.atelier-home,
   .compact .home-v3.home-v2.atelier-home{
-    grid-template-rows:54px minmax(0,1fr);
+    grid-template-rows:50px minmax(0,1fr);
   }
   .home-v3.home-v2 .atelier-header{
-    height:54px;
+    height:50px;
     justify-content:flex-end;
   }
   .home-v3.home-v2 .atelier-main,
   .compact .home-v3.home-v2 .atelier-main{
-    min-height:calc(100svh - 54px);
-    width:100%;
+    min-height:calc(100svh - 50px);
     max-width:560px;
-    padding:12px 0 23px!important;
+    width:100%;
+    padding:10px 0 20px!important;
     justify-content:flex-start;
   }
-  .home-v3 .horizon-hero-mark{width:92px;margin-bottom:2px}
+  .home-v3 .horizon-hero-mark{width:82px}
   .home-v3 .horizon-hero-wordmark{
-    font-size:clamp(32px,5.2vw,39px);
-    letter-spacing:.125em;
-    padding-left:.125em;
+    font-size:clamp(31px,5.1vw,39px);
+    letter-spacing:.135em;
+    padding-left:.135em;
   }
-  .home-v3 .atelier-story .horizon-hero-tagline{
-    font-size:clamp(16px,2.6vw,18px);
-    margin-top:3px;
-  }
-  .home-v3 .home-v3-welcome{margin-top:20px}
+  .home-v3 .atelier-story .horizon-hero-tagline{font-size:16px;margin-top:4px}
+  .home-v3 .home-v3-welcome{margin-top:19px}
   .home-v3.home-v2 .atelier-story .home-v3-question,
   .compact .home-v3.home-v2 .atelier-story .home-v3-question{
-    font-size:clamp(29px,4.6vw,36px);
+    font-size:clamp(26px,4.8vw,31px);
+    white-space:normal;
     line-height:1.2;
   }
-  .home-v3.home-v2 .home-v2-intro,
-  .compact .home-v3.home-v2 .home-v2-intro{
-    margin-top:7px;
-    font-size:13px;
-    max-width:430px;
-  }
+  .home-v3.home-v2 .home-v2-intro{margin-top:7px;font-size:12px}
   .home-v3.home-v2 .portal-people,
   .compact .home-v3.home-v2 .portal-people{
-    max-width:540px;
     grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:11px;
-    margin-top:22px;
+    gap:9px;
+    border:0;
+    padding:0;
+    margin-top:21px;
   }
   .home-v3.home-v2 .portal-person,
   .compact .home-v3.home-v2 .portal-person{
-    min-height:181px;
-    padding:14px 8px;
+    min-height:191px;
+    padding:11px 5px 12px;
+    border:1px solid #dfe6de!important;
+    border-radius:17px;
+    background:#fffefa60!important;
+  }
+  .home-v3.home-v2 .portal-person + .portal-person{
+    border-left:1px solid #dfe6de!important;
+  }
+  .home-v3.home-v2 .portal-person .family-photo{
+    border-radius:64px 64px 17px 17px;
   }
   .home-v3.home-v2 .portal-person .avatar,
   .compact .home-v3.home-v2 .portal-person .avatar{
-    width:87px;
-    height:87px;
+    width:108px;
+    height:119px;
+    border-radius:64px 64px 17px 17px!important;
+    box-shadow:0 6px 16px #233c2e0b;
+  }
+  .home-v3.home-v2 .portal-person .family-name,
+  .compact .home-v3.home-v2 .portal-person .family-name{
+    font-size:17px;
+    margin-top:10px;
+  }
+  .home-v3.home-v2 .portal-person-goal,
+  .compact .home-v3.home-v2 .portal-person-goal{
+    font-size:10px;
+    margin-top:4px;
   }
   .home-v3.home-v2 .portal-guest-row,
-  .compact .home-v3.home-v2 .portal-guest-row{margin-top:13px}
+  .compact .home-v3.home-v2 .portal-guest-row{margin-top:12px}
 }
 @media(max-width:430px){
-  .home-v3 .horizon-hero-mark{width:84px}
-  .home-v3 .horizon-hero-wordmark{font-size:33px}
+  .home-v3 .horizon-hero-mark{width:79px}
+  .home-v3 .horizon-hero-wordmark{font-size:32px}
   .home-v3 .atelier-story .horizon-hero-tagline{font-size:15.5px}
   .home-v3 .home-v3-welcome{margin-top:17px}
-  .home-v3.home-v2 .atelier-story .home-v3-question,
-  .compact .home-v3.home-v2 .atelier-story .home-v3-question{
-    font-size:31px;
-  }
+  .home-v3.home-v2 .atelier-story .home-v3-question{font-size:28px}
   .home-v3.home-v2 .portal-people,
-  .compact .home-v3.home-v2 .portal-people{
-    margin-top:19px;
-  }
+  .compact .home-v3.home-v2 .portal-people{margin-top:18px}
   .home-v3.home-v2 .portal-person,
-  .compact .home-v3.home-v2 .portal-person{
-    min-height:177px;
-  }
+  .compact .home-v3.home-v2 .portal-person{min-height:183px}
   .home-v3.home-v2 .portal-person .avatar,
   .compact .home-v3.home-v2 .portal-person .avatar{
-    width:83px;height:83px;
+    width:102px;height:113px;
   }
+  .home-v3.home-v2 .portal-person .family-name,
+  .compact .home-v3.home-v2 .portal-person .family-name{font-size:16px}
 }
-/* Reduced height phones, without hiding user-visible content. */
+/* Let very small phones scroll naturally; do not hide learner options. */
 @media(max-width:850px) and (max-height:740px){
   .home-v3.home-v2 .atelier-main,
   .compact .home-v3.home-v2 .atelier-main{padding-top:5px!important}
-  .home-v3 .horizon-hero-mark{width:72px}
+  .home-v3 .horizon-hero-mark{width:73px}
   .home-v3 .horizon-hero-wordmark{font-size:29px}
-  .home-v3 .home-v3-welcome{margin-top:13px}
+  .home-v3 .home-v3-welcome{margin-top:12px}
   .home-v3.home-v2 .portal-people,
-  .compact .home-v3.home-v2 .portal-people{margin-top:14px}
+  .compact .home-v3.home-v2 .portal-people{margin-top:13px}
   .home-v3.home-v2 .portal-person,
-  .compact .home-v3.home-v2 .portal-person{min-height:162px}
+  .compact .home-v3.home-v2 .portal-person{min-height:163px;padding:8px 4px}
   .home-v3.home-v2 .portal-person .avatar,
-  .compact .home-v3.home-v2 .portal-person .avatar{width:70px;height:70px}
-  .home-v3.home-v2 .portal-guest-row,
-  .compact .home-v3.home-v2 .portal-guest-row{margin-top:6px}
+  .compact .home-v3.home-v2 .portal-person .avatar{
+    width:83px;height:95px;
+  }
+  .home-v3.home-v2 .portal-guest-row{margin-top:5px}
 }
 html[lang=ja] .home-v3.home-v2 .atelier-story .home-v3-question{
   font-family:'Noto Serif JP',Newsreader,serif;
@@ -262,19 +403,48 @@ html[lang=ja] .home-v3.home-v2 .atelier-story .home-v3-question{
 html[lang=ja] .home-v3.home-v2 .atelier-story .home-v3-question em{
   font-style:normal;
 }
-body.dark .home-v3 .horizon-hero-lockup,
-body.dark .home-v3 .horizon-hero-wordmark{
-  color:#ecf2e8;
+body.dark .home-v3.home-v2.atelier-home{
+  background:radial-gradient(ellipse 940px 680px at 50% 47%,#263e33 0%,#1c2f28 86%);
 }
+body.dark .home-v3 .horizon-hero-lockup,
+body.dark .home-v3 .horizon-hero-wordmark{color:#eff3e8}
 body.dark .home-v3 .horizon-hero-mark{
   content:url('assets/horizon-mark-light.svg?v=homev3');
 }
-body.dark .home-v3 .atelier-story .horizon-hero-tagline{
-  color:#c3d4b9;
+body.dark .home-v3 .atelier-story .horizon-hero-tagline{color:#bfceb7}
+body.dark .home-v3.home-v2 .atelier-story .home-v3-question{color:#f1f5eb}
+body.dark .home-v3.home-v2 .atelier-story .home-v3-question em{color:#c5d9bf}
+body.dark .home-v3.home-v2 .home-v2-intro{color:#ccd9c9}
+body.dark .home-v3.home-v2 .portal-people{
+  border-top-color:#4e6655;
+  border-bottom-color:#4e6655;
 }
-body.dark .home-v3.home-v2 .atelier-story .home-v3-question{color:#f2f5ed}
-body.dark .home-v3.home-v2 .atelier-story .home-v3-question em{color:#cadcc4}
-body.dark .home-v3.home-v2 .home-v2-intro{color:#ccdbca}
+body.dark .home-v3.home-v2 .portal-person + .portal-person{
+  border-left-color:#486052!important;
+}
+body.dark .home-v3.home-v2 .portal-person,
+body.dark .home-v3.home-v2 .portal-person:hover,
+body.dark .home-v3.home-v2 .portal-person:focus-visible{
+  box-shadow:none!important;
+}
+body.dark .home-v3.home-v2 .portal-person .family-name{color:#eff3e9}
+body.dark .home-v3.home-v2 .portal-person-goal{color:#bbd2bd}
+body.dark .home-v3.home-v2 .portal-person:hover,
+body.dark .home-v3.home-v2 .portal-person:focus-visible{
+  background:#3452429c!important;
+}
+body.dark .home-v3.home-v2 .portal-guest{color:#d2e4cf}
+@media(max-width:850px){
+  body.dark .home-v3.home-v2 .portal-person{
+    background:#2d47396b!important;
+    border-color:#536c59!important;
+  }
+  body.dark .home-v3.home-v2 .portal-person + .portal-person{
+    border-left-color:#536c59!important;
+  }
+}
 @media(prefers-reduced-motion:reduce){
-  .home-v3 .horizon-hero-mark{transition:none}
+  .home-v3.home-v2 .portal-person,
+  .home-v3.home-v2 .portal-person .family-photo{transition:none}
+  .home-v3.home-v2 .portal-person:hover .family-photo{transform:none}
 }
