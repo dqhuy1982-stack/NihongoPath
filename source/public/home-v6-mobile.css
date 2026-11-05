@@ -197,6 +197,14 @@
     -webkit-tap-highlight-color:transparent;
     touch-action:manipulation;
   }
+  /* V5 hover had a stronger selector. Keep even tapped/hovered portraits frameless. */
+  .home-v4.home-v3.home-v2 .portal-person:hover,
+  .home-v4.home-v3.home-v2 .portal-person:active,
+  .compact .home-v4.home-v3.home-v2 .portal-person:hover,
+  .compact .home-v4.home-v3.home-v2 .portal-person:active{
+    border:0!important;background:transparent!important;
+    box-shadow:none!important;transform:none!important;
+  }
   .home-v4.home-v3.home-v2 .portal-person:nth-child(n)::after,
   .home-v4.home-v3.home-v2 .portal-person:nth-child(n)::before{
     content:none!important;display:none!important;
@@ -389,8 +397,8 @@
   .compact .home-v4 .atelier-header{height:auto!important;min-height:80px!important}
   .home-v4 .atelier-header-actions,
   .compact .home-v4 .atelier-header-actions{flex-wrap:wrap!important}
-  .home-v4 .portal-people,
-  .compact .home-v4 .portal-people{
+  .home-v4.home-v3.home-v2 .portal-people,
+  .compact .home-v4.home-v3.home-v2 .portal-people{
     grid-template-columns:1fr!important;grid-template-rows:none!important;
   }
   .home-v4 .horizon-hero-wordmark{font-size:24px!important}
