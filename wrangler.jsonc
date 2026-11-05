@@ -1,8 +1,21 @@
 {
   "name": "nihongopath",
   "compatibility_date": "2026-11-03",
+  "main": "./workers/nihongopath-api.mjs",
   "assets": {
-    "directory": "./dist/site"
+    "directory": "./dist/site",
+    "binding": "ASSETS",
+    "run_worker_first": [
+      "/api/*"
+    ]
   },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "nihongopath-dev",
+      "database_id": "8504e0d8-c7a5-490d-ab40-a7590cd9af9d",
+      "migrations_dir": "source/drizzle"
+    }
+  ],
   "previews": {}
 }
