@@ -26,6 +26,8 @@ jobs:
           node-version: '24'
       - name: Install dependencies
         run: npm install --no-audit --no-fund
+      - name: Validate contrast and typography regression
+        run: node --test tests/readability.test.mjs
       - name: Build static Nihongo Path for GitHub Pages
         run: |
           unset NP_FAMILY_SYNC_BUILD
