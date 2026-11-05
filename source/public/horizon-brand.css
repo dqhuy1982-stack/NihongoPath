@@ -13,9 +13,12 @@
 .brand .brand-symbol.horizon-symbol{
   display:block;
   flex:0 0 auto;
-  width:41px;
-  height:41px;
+  width:58px;
+  height:48px;
+  max-width:none;
   object-fit:contain;
+  object-position:center;
+  overflow:visible;
   border:0!important;
   box-shadow:none!important;
 }
@@ -48,14 +51,15 @@
 }
 .sidebar .brand-symbol.horizon-symbol,
 .reviewbar .review-brand-icon{
-  content:url('assets/horizon-mark-light.svg');
+  content:url('assets/horizon-mark-light.svg?v=refined2');
 }
+.sidebar .brand-symbol.horizon-symbol{width:51px;height:43px}
 .sidebar .brand .brand-copy.horizon-wordmark strong{
   color:#f0f2ea!important;
   font-size:20px!important;
   letter-spacing:.115em!important;
 }
-.mobile-brand .brand-symbol.horizon-symbol{width:32px;height:32px}
+.mobile-brand .brand-symbol.horizon-symbol{width:42px;height:36px}
 .mobile-brand .brand-copy.horizon-wordmark strong{
   font-size:18px!important;
   letter-spacing:.11em!important;
@@ -70,11 +74,13 @@
 .home-v2 .home-brand{
   display:flex;
   align-items:center;
-  gap:10px;
+  gap:12px;
   min-width:0;
+  overflow:visible;
 }
 .home-v2 .home-brand .brand-symbol.horizon-symbol{
-  width:42px;height:42px;
+  width:64px;height:52px;
+  flex:0 0 64px;
 }
 .home-v2 .home-brand .brand-copy.horizon-wordmark strong{
   font-size:27px!important;
@@ -126,7 +132,7 @@
 body.dark .home-v2 .home-brand .brand-symbol.horizon-symbol,
 body.dark .mobile-brand .brand-symbol.horizon-symbol,
 body.dark .auth-top .brand-symbol.horizon-symbol{
-  content:url('assets/horizon-mark-light.svg');
+  content:url('assets/horizon-mark-light.svg?v=refined2');
 }
 body.dark .home-v2 .home-brand .horizon-wordmark strong,
 body.dark .mobile-brand .horizon-wordmark strong,
@@ -151,7 +157,7 @@ body.dark .home-v2 .portal-person:hover{
   .home-v2 .portal-people{margin-top:24px}
 }
 @media(max-width:850px){
-  .home-v2 .home-brand .brand-symbol.horizon-symbol{width:36px;height:36px}
+  .home-v2 .home-brand .brand-symbol.horizon-symbol{width:54px;height:45px;flex-basis:54px}
   .home-v2 .home-brand .brand-copy.horizon-wordmark strong{font-size:22px!important}
   .home-v2 .atelier-story .horizon-home-slogan{
     margin-top:12px;
@@ -163,8 +169,8 @@ body.dark .home-v2 .portal-person:hover{
   .home-v2 .portal-people,.compact .home-v2 .portal-people{margin-top:26px}
 }
 @media(max-width:430px){
-  .home-v2 .home-brand{gap:6px}
-  .home-v2 .home-brand .brand-symbol.horizon-symbol{width:31px;height:31px}
+  .home-v2 .home-brand{gap:8px}
+  .home-v2 .home-brand .brand-symbol.horizon-symbol{width:46px;height:39px;flex-basis:46px}
   .home-v2 .home-brand .brand-copy.horizon-wordmark strong{
     font-size:18px!important;
     letter-spacing:.095em!important;
