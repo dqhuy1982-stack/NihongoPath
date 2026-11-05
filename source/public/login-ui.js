@@ -19,15 +19,23 @@ window.NPLogin=(function(){
       // HOME V2 is scoped to the static family landing; app and learning flows stay unchanged.
       if(!window.NP_FAMILY_SYNC){
         const home=template.content.querySelector('.atelier-home');
-        home.classList.add('home-v2');
+        home.classList.add('home-v2','home-v3');
+        // This is an entrance/welcome screen. Keep only locale and theme in
+        // the header; a single large lockup belongs to the centered hero.
+        home.querySelector('.home-brand')?.remove();
         home.querySelector('.brand-edition')?.remove();
         home.querySelector('.home-guide')?.remove();
         home.querySelector('.atelier-footer')?.remove();
         const story=home.querySelector('.atelier-story');
-        story.innerHTML=`<div class="home-v2-eyebrow">${tr('HÀNH TRÌNH HỌC TIẾNG NHẬT','YOUR JAPANESE LEARNING JOURNEY','日本語を学ぶ旅')}</div>
-          <p class="horizon-home-slogan" lang="en">A little closer. <em>A world wider.</em></p>
-          <h1><span>${tr('Hôm nay,','Today,','今日は、')}</span> <em>${tr('ai sẽ học?','who is learning?','だれが学ぶ？')}</em></h1>
-          <p class="home-v2-intro">${tr('Chọn hồ sơ để tiếp tục hành trình của bạn.','Choose your profile and continue your journey.','プロフィールを選んで学びの続きを始めましょう。')}</p>`;
+        story.innerHTML=`<div class="horizon-hero-lockup" data-no-translate>
+            <img class="horizon-hero-mark" src="assets/horizon-mark.svg?v=homev3" width="114" height="91" alt="" decoding="async">
+            <div class="horizon-hero-wordmark">HORIZON</div>
+            <p class="horizon-home-slogan horizon-hero-tagline" lang="en">A little closer. <em>A world wider.</em></p>
+          </div>
+          <div class="home-v3-welcome">
+            <h1 class="home-v3-question"><span>${tr('Hôm nay,','Today,','今日は、')}</span> <em>${tr('ai sẽ học?','who is learning?','だれが学ぶ？')}</em></h1>
+            <p class="home-v2-intro">${tr('Chọn hồ sơ để tiếp tục hành trình của bạn.','Choose your profile and continue your journey.','プロフィールを選んで学びの続きを始めましょう。')}</p>
+          </div>`;
         // Four whole-card avatar buttons remain in the same order.
         // The heading above is the sole visual focus, not a second competing headline.
         section.querySelector('.access-heading')?.remove();
