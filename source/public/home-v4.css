@@ -1,0 +1,447 @@
+/* HORIZON / HOME V4 — quiet Japanese luxury; four seasons.
+   Real UI, real profile data; original artwork only in separate SVG backgrounds.
+   No edits to lesson pages, PIN verification, user records or avatar image bytes. */
+.home-v4.home-v3.home-v2.atelier-home{
+  --horizon-season-accent:#9c9580;
+  --horizon-scene:url('assets/horizon-fuji-spring.svg');
+  min-height:100svh;height:auto;
+  grid-template-rows:55px minmax(0,1fr);
+  background-color:#f8f5ee;
+  background-image:var(--horizon-scene);
+  background-position:center top;
+  background-repeat:no-repeat;
+  background-size:cover;
+  color:#274333;
+  overflow:visible;
+}
+.home-v4[data-season="summer"]{--horizon-season-accent:#7b9c8b;--horizon-scene:url('assets/horizon-fuji-summer.svg')}
+.home-v4[data-season="autumn"]{--horizon-season-accent:#b29171;--horizon-scene:url('assets/horizon-fuji-autumn.svg')}
+.home-v4[data-season="winter"]{--horizon-season-accent:#879bac;--horizon-scene:url('assets/horizon-fuji-winter.svg')}
+
+/* Controls are solid and crisp on mobile Safari (no backdrop filtering). */
+.home-v4 .atelier-header,
+.compact .home-v4 .atelier-header{
+  height:55px;
+  position:relative;
+  z-index:2;
+  max-width:1220px;
+  border:0;
+  justify-content:flex-end;
+  overflow:visible;
+  background:transparent;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+.home-v4 .atelier-header-actions{margin-left:auto;gap:9px}
+.home-v4 .atelier-header .language-switch{
+  background:#faf8f1!important;
+  border:1px solid #d6d9cf!important;
+  box-shadow:0 2px 7px #25412c0c;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+  padding:2px;
+}
+.home-v4 .atelier-header .language-switch button{
+  min-height:35px;
+  padding:6px 10px;
+  font-size:11px;
+  color:#4b6354;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+.home-v4 .atelier-header .language-switch button[aria-pressed="true"]{
+  background:#254b38;
+  color:#fffdf6;
+}
+.home-v4 .home-season-control{
+  display:inline-flex;
+  align-items:center;
+  flex-shrink:0;
+  gap:6px;
+  min-height:39px;
+  padding:0 9px 0 12px;
+  border:1px solid #d6d9cf;
+  border-radius:100px;
+  background:#faf8f1;
+  color:#3f5e4d;
+  box-shadow:0 2px 7px #25412c0c;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+.home-v4 .home-season-control .season-control-icon{
+  font:500 16px/1 'Noto Serif JP',Georgia,serif;
+  color:var(--horizon-season-accent);
+}
+.home-v4 .home-season-control select{
+  appearance:none;-webkit-appearance:none;
+  border:0;box-shadow:none;
+  background:transparent;
+  color:#36513e;
+  font:600 11px/1.25 var(--font-readable);
+  min-width:47px;
+  padding:9px 12px 9px 0;
+  cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='%23546c56' stroke-width='1.4'%3E%3Cpath d='m3 4 3 3 3-3'/%3E%3C/svg%3E");
+  background-position:right center;
+  background-size:12px 12px;
+  background-repeat:no-repeat;
+}
+.home-v4 .home-season-control select:focus-visible{
+  outline:2px solid #4a7e59;
+  border-radius:4px;
+  outline-offset:3px;
+}
+
+/* Compact brand and generous—but deliberately measured—vertical rhythm. */
+.home-v4.home-v3.home-v2 .atelier-main,
+.compact .home-v4.home-v3.home-v2 .atelier-main{
+  width:100%;
+  max-width:1260px;
+  min-height:calc(100svh - 55px);
+  padding:17px 28px 27px!important;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;
+}
+.home-v4 .horizon-hero-lockup{max-width:900px;position:relative}
+.home-v4 .horizon-hero-mark{width:95px;height:auto;margin:0 auto 2px}
+.home-v4 .horizon-hero-wordmark{
+  font:520 clamp(39px,3.3vw,47px)/1.04 Newsreader,Georgia,serif;
+  letter-spacing:.165em;padding-left:.165em;
+}
+.home-v4 .atelier-story .horizon-hero-tagline{
+  font:italic 500 clamp(17px,1.4vw,20px)/1.4 Newsreader,Georgia,serif;
+  margin:3px auto 0;color:#5f785d;
+}
+.home-v4 .home-v3-welcome{margin:24px auto 0}
+.home-v4.home-v3.home-v2 .atelier-story .home-v3-question,
+.compact .home-v4.home-v3.home-v2 .atelier-story .home-v3-question{
+  font:500 clamp(31px,2.75vw,40px)/1.19 Newsreader,Georgia,'Noto Serif JP',serif;
+  color:#254331;
+  white-space:normal;
+  letter-spacing:-.018em;
+}
+.home-v4.home-v3.home-v2 .home-v2-intro{
+  margin:7px auto 0;
+  font:500 13px/1.58 var(--font-readable);
+  color:#577160;
+}
+.home-v4.home-v3.home-v2 .atelier-access,
+.compact .home-v4.home-v3.home-v2 .atelier-access{
+  max-width:1160px;width:100%;background:transparent;border:0;padding:0;
+}
+
+/* Four individual light paper cards with circular portraits; no arch or big boxes. */
+.home-v4.home-v3.home-v2 .portal-people,
+.compact .home-v4.home-v3.home-v2 .portal-people{
+  width:100%;
+  max-width:1156px;
+  margin:26px auto 0;
+  padding:0;
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:17px;
+  border:0;
+  background:transparent;
+}
+.home-v4.home-v3.home-v2 .portal-person,
+.compact .home-v4.home-v3.home-v2 .portal-person,
+.home-v4.home-v3.home-v2 .portal-person + .portal-person{
+  display:flex;
+  position:relative;
+  isolation:isolate;
+  align-items:center;justify-content:flex-start;flex-direction:column;
+  min-height:344px;
+  padding:19px 16px 37px;
+  gap:0;
+  border:1px solid #dac7a8!important;
+  border-radius:22px!important;
+  background:linear-gradient(170deg,#fffcf8e8,#fdf9f1ed)!important;
+  box-shadow:0 9px 22px #25352910,0 2px 5px #4e3d2808!important;
+  color:#263f2d;
+  overflow:hidden;
+  text-align:center;
+  transform:translateY(0);
+  transition:transform .34s ease,box-shadow .34s ease,border-color .34s ease,background-color .34s ease;
+}
+.home-v4.home-v3.home-v2 .portal-person:hover,
+.home-v4.home-v3.home-v2 .portal-person:focus-visible{
+  transform:translateY(-4px);
+  background:#fffefb!important;
+  border-color:#bba37a!important;
+  box-shadow:0 18px 30px #243c291a,0 3px 8px #4e3d280c!important;
+}
+.home-v4.home-v3.home-v2 .portal-person:focus-visible{
+  outline:3px solid #406b50;
+  outline-offset:3px;
+}
+.home-v4.home-v3.home-v2 .portal-person:active{transform:translateY(-1px)}
+.home-v4.home-v3.home-v2 .portal-person:nth-child(n)::before{content:none!important;display:none!important}
+.home-v4.home-v3.home-v2 .portal-person:nth-child(n)::after{
+  content:""!important;display:block!important;
+  position:absolute;
+  bottom:0;left:0;right:0;top:auto;
+  width:100%;height:45px;
+  background:transparent url('assets/horizon-waves.svg') center bottom/auto 42px repeat-x;
+  pointer-events:none;
+  opacity:.37;
+  z-index:0;
+}
+
+/* Circular double-ring, natural photos. Gray is optical, not destructive compression. */
+.home-v4.home-v3.home-v2 .portal-person .family-photo{
+  display:block;
+  position:relative;
+  flex:0 0 auto;
+  margin:0;
+  padding:5px;
+  border:1px solid #c4b08c;
+  border-radius:50%!important;
+  background:#fffdfa;
+  overflow:visible;
+  box-shadow:0 0 0 4px #fdf9f2;
+  transform:none;
+  transition:transform .4s ease;
+}
+.home-v4.home-v3.home-v2 .portal-person .family-photo::before{
+  content:none!important;display:none!important;
+}
+.home-v4.home-v3.home-v2 .portal-person .avatar,
+.compact .home-v4.home-v3.home-v2 .portal-person .avatar{
+  display:block;
+  width:151px;height:151px;
+  max-width:none;
+  border-radius:50%!important;
+  border:0;
+  background:#e8e9e3;
+  overflow:hidden;
+  box-shadow:none;
+  filter:none;
+}
+.home-v4.home-v3.home-v2 .portal-person .avatar img,
+.compact .home-v4.home-v3.home-v2 .portal-person .avatar img{
+  width:100%;height:100%;display:block;
+  object-fit:cover;object-position:50% 42%;
+  border-radius:50%!important;
+  image-rendering:auto;
+  filter:grayscale(.75) saturate(.62) brightness(.97);
+  transform:scale(1);
+  transition:filter .48s ease,transform .55s cubic-bezier(.2,.72,.2,1);
+}
+@media(hover:hover) and (pointer:fine){
+  .home-v4.home-v3.home-v2 .portal-person:hover .avatar img,
+  .home-v4.home-v3.home-v2 .portal-person:focus-visible .avatar img{
+    filter:grayscale(0) saturate(1.02) brightness(1.07);
+    transform:scale(1.035);
+  }
+}
+@media(hover:none), (pointer:coarse){
+  .home-v4.home-v3.home-v2 .portal-person .avatar img,
+  .compact .home-v4.home-v3.home-v2 .portal-person .avatar img{
+    filter:grayscale(.2) saturate(.87) brightness(1);
+  }
+}
+.home-v4.home-v3.home-v2 .portal-person:focus-visible .avatar img{
+  filter:grayscale(0) saturate(1.02) brightness(1.05);
+}
+.home-v4.home-v3.home-v2 .portal-person .home-season-emblem{
+  position:absolute;top:13px;right:17px;
+  font:400 16px/1.2 'Noto Serif JP',serif;
+  color:var(--learner-accent,#9a9d8f);
+  opacity:.8;
+}
+.home-v4 .portal-person[data-learner-season="spring"]{--learner-accent:#b29b84;--motif:url('assets/horizon-motif-spring.svg')}
+.home-v4 .portal-person[data-learner-season="summer"]{--learner-accent:#8e9d75;--motif:url('assets/horizon-motif-summer.svg')}
+.home-v4 .portal-person[data-learner-season="autumn"]{--learner-accent:#c09a72;--motif:url('assets/horizon-motif-autumn.svg')}
+.home-v4 .portal-person[data-learner-season="winter"]{--learner-accent:#8d9eac;--motif:url('assets/horizon-motif-winter.svg')}
+.home-v4 .portal-person .home-season-decoration{
+  width:98px;height:48px;
+  position:absolute;
+  right:0;bottom:5px;z-index:1;
+  background-image:var(--motif);
+  background-repeat:no-repeat;background-size:contain;background-position:right bottom;
+  opacity:.48;
+  pointer-events:none;
+}
+.home-v4.home-v3.home-v2 .portal-person .family-name,
+.compact .home-v4.home-v3.home-v2 .portal-person .family-name{
+  color:#28412e;
+  font:550 clamp(22px,1.9vw,26px)/1.15 Newsreader,Georgia,'Noto Serif JP',serif;
+  margin:17px 0 0;
+  white-space:normal;
+  letter-spacing:-.02em;
+}
+.home-v4 .home-learner-rule{
+  width:70%;max-width:155px;height:1px;
+  margin:12px auto 11px;
+  background:linear-gradient(90deg,transparent,#c8ad80 20%,#c8ad80 80%,transparent);
+  position:relative;
+}
+.home-v4 .home-learner-rule::after{
+  content:"";display:block;width:5px;height:5px;
+  border:1px solid #b49665;background:#fffaf3;
+  transform:rotate(45deg);
+  position:absolute;left:calc(50% - 3px);top:-3px;
+}
+.home-v4.home-v3.home-v2 .portal-person-goal,
+.compact .home-v4.home-v3.home-v2 .portal-person-goal{
+  color:#354e3c;
+  font:600 13px/1.5 var(--font-readable);
+  letter-spacing:0;
+  text-transform:none;
+  margin:0;
+  z-index:1;
+}
+.home-v4 .home-learner-focus{
+  color:#677b67;
+  font:500 11px/1.48 var(--font-readable);
+  max-width:100%;min-height:32px;
+  margin:5px auto 0;z-index:1;
+  display:-webkit-box;-webkit-box-orient:vertical;
+  -webkit-line-clamp:2;overflow:hidden;
+  overflow-wrap:anywhere;
+}
+/* Guest is a secondary way in, never a competing CTA. */
+.home-v4.home-v3.home-v2 .portal-guest-row,
+.compact .home-v4.home-v3.home-v2 .portal-guest-row{
+  margin:18px auto 0;padding:0;justify-content:center;border:0;
+}
+.home-v4.home-v3.home-v2 .portal-guest,
+.compact .home-v4.home-v3.home-v2 .portal-guest{
+  min-height:44px;
+  padding:9px 18px;
+  font:600 12px/1.45 var(--font-readable);
+  border:1px solid #b8c8b6;
+  border-radius:100px;
+  background:#fdfbf4db;
+  box-shadow:0 3px 8px #253e2c10;
+  color:#315741;
+  text-decoration:none;
+}
+.home-v4.home-v3.home-v2 .portal-guest:hover{
+  background:#28503a;
+  border-color:#28503a;
+  color:#fffdf6;
+  text-decoration:none;
+}
+
+/* 1366x768 and shorter: all 4 portraits and guest fit, with natural scroll as fallback. */
+@media(min-width:851px) and (max-height:800px){
+  .home-v4.home-v3.home-v2 .atelier-main,
+  .compact .home-v4.home-v3.home-v2 .atelier-main{
+    padding:8px 24px 15px!important;
+  }
+  .home-v4 .horizon-hero-mark{width:72px}
+  .home-v4 .horizon-hero-wordmark{font-size:36px}
+  .home-v4 .atelier-story .horizon-hero-tagline{font-size:16px}
+  .home-v4 .home-v3-welcome{margin-top:13px}
+  .home-v4.home-v3.home-v2 .atelier-story .home-v3-question{font-size:30px}
+  .home-v4.home-v3.home-v2 .portal-people{margin-top:16px}
+  .home-v4.home-v3.home-v2 .portal-person{min-height:281px;padding:12px 10px 30px}
+  .home-v4.home-v3.home-v2 .portal-person .avatar{width:118px;height:118px}
+  .home-v4.home-v3.home-v2 .portal-person .family-name{margin-top:11px;font-size:21px}
+  .home-v4 .home-learner-rule{margin:8px auto 7px}
+  .home-v4.home-v3.home-v2 .portal-guest-row{margin-top:10px}
+}
+/* Tablet: two columns, no sideways scrolling. */
+@media(max-width:850px){
+  .home-v4.home-v3.home-v2.atelier-home,
+  .compact .home-v4.home-v3.home-v2.atelier-home{
+    grid-template-rows:54px minmax(0,1fr);
+    background-size:auto 480px;
+    background-position:83% top;
+  }
+  .home-v4 .atelier-header{height:54px}
+  .home-v4 .atelier-header-actions{gap:5px}
+  .home-v4 .home-season-control{min-height:35px;padding:0 7px;gap:4px}
+  .home-v4 .home-season-control .season-control-icon{font-size:13px}
+  .home-v4 .home-season-control select{font-size:11px;min-width:46px}
+  .home-v4 .atelier-header .language-switch{padding:1px}
+  .home-v4 .atelier-header .language-switch button{min-height:31px;min-width:29px;padding:5px 7px;font-size:10px}
+  .home-v4.home-v3.home-v2 .atelier-main,
+  .compact .home-v4.home-v3.home-v2 .atelier-main{
+    max-width:610px;
+    min-height:calc(100svh - 54px);
+    justify-content:flex-start;
+    padding:6px 16px 25px!important;
+  }
+  .home-v4 .horizon-hero-mark{width:73px}
+  .home-v4 .horizon-hero-wordmark{font-size:32px}
+  .home-v4 .atelier-story .horizon-hero-tagline{font-size:15px}
+  .home-v4 .home-v3-welcome{margin-top:16px}
+  .home-v4.home-v3.home-v2 .atelier-story .home-v3-question{font-size:clamp(25px,4.5vw,30px);line-height:1.17}
+  .home-v4.home-v3.home-v2 .home-v2-intro{font-size:12px;margin-top:5px}
+  .home-v4.home-v3.home-v2 .portal-people,
+  .compact .home-v4.home-v3.home-v2 .portal-people{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:11px;
+    margin-top:18px;
+    padding:0;
+    border:0;
+  }
+  .home-v4.home-v3.home-v2 .portal-person,
+  .compact .home-v4.home-v3.home-v2 .portal-person,
+  .home-v4.home-v3.home-v2 .portal-person + .portal-person{
+    min-height:250px;padding:14px 7px 25px;
+    border:1px solid #dac7a8!important;
+    border-radius:17px!important;
+  }
+  .home-v4.home-v3.home-v2 .portal-person .avatar,
+  .compact .home-v4.home-v3.home-v2 .portal-person .avatar{width:106px;height:106px}
+  .home-v4.home-v3.home-v2 .portal-person .family-name,
+  .compact .home-v4.home-v3.home-v2 .portal-person .family-name{
+    margin-top:10px;font-size:20px;
+  }
+  .home-v4 .home-learner-rule{margin:9px auto 8px}
+  .home-v4.home-v3.home-v2 .portal-person-goal,
+  .compact .home-v4.home-v3.home-v2 .portal-person-goal{font-size:12px}
+  .home-v4 .home-learner-focus{font-size:10px;min-height:29px}
+  .home-v4 .portal-person .home-season-decoration{width:62px;height:33px;bottom:3px}
+  .home-v4.home-v3.home-v2 .portal-guest-row{margin-top:13px}
+}
+@media(max-width:430px){
+  .home-v4.home-v3.home-v2 .atelier-main,
+  .compact .home-v4.home-v3.home-v2 .atelier-main{padding:5px 7px 22px!important}
+  .home-v4 .horizon-hero-mark{width:68px}
+  .home-v4 .horizon-hero-wordmark{font-size:29px}
+  .home-v4 .atelier-story .horizon-hero-tagline{font-size:14px}
+  .home-v4.home-v3.home-v2 .atelier-story .home-v3-question{font-size:26px}
+  .home-v4.home-v3.home-v2 .portal-people{margin-top:14px;gap:9px}
+  .home-v4.home-v3.home-v2 .portal-person{min-height:234px;padding:12px 5px 24px}
+  .home-v4.home-v3.home-v2 .portal-person .avatar{width:98px;height:98px}
+  .home-v4 .portal-person .home-season-emblem{top:9px;right:9px;font-size:13px}
+  .home-v4.home-v3.home-v2 .portal-person .family-name{font-size:18px}
+  .home-v4 .home-learner-focus{-webkit-line-clamp:2}
+}
+@media(max-width:850px) and (max-height:740px){
+  .home-v4.home-v3.home-v2 .atelier-main{padding-top:4px!important}
+  .home-v4 .horizon-hero-mark{width:58px}
+  .home-v4 .horizon-hero-wordmark{font-size:27px}
+  .home-v4 .home-v3-welcome{margin-top:11px}
+  .home-v4.home-v3.home-v2 .portal-person{min-height:221px}
+  .home-v4.home-v3.home-v2 .portal-person .avatar{width:85px;height:85px}
+}
+html[lang="ja"] .home-v4 .home-v3-question{font-family:'Noto Serif JP',Georgia,serif}
+body.dark .home-v4.home-v3.home-v2.atelier-home{background-color:#1d3029;background-image:linear-gradient(#1b3029d9,#1b3029e8),var(--horizon-scene)}
+body.dark .home-v4.home-v3.home-v2 .portal-person,
+body.dark .home-v4.home-v3.home-v2 .portal-person + .portal-person{
+  background:linear-gradient(165deg,#294135f2,#23382ef2)!important;
+  border-color:#72826c!important;
+  color:#eef3e9;
+}
+body.dark .home-v4.home-v3.home-v2 .portal-person:hover,
+body.dark .home-v4.home-v3.home-v2 .portal-person:focus-visible{
+  background:#304e3df2!important;
+  border-color:#aab797!important;
+}
+body.dark .home-v4.home-v3.home-v2 .portal-person .family-name,
+body.dark .home-v4.home-v3.home-v2 .portal-person-goal{color:#eef4e7}
+body.dark .home-v4 .home-learner-focus{color:#cbdac7}
+body.dark .home-v4 .home-season-control,
+body.dark .home-v4 .atelier-header .language-switch{background:#263e32!important;border-color:#6c836e!important}
+body.dark .home-v4 .home-season-control select{color:#eef5e9}
+body.dark .home-v4 .atelier-header .language-switch button{color:#c8d9c2}
+body.dark .home-v4 .atelier-header .language-switch button[aria-pressed="true"]{background:#b7caa9;color:#213a2a}
+body.dark .home-v4.home-v3.home-v2 .portal-guest{background:#2f4e3dbd;color:#eff7eb;border-color:#a5b89d}
+@media(prefers-reduced-motion:reduce){
+  .home-v4 .portal-person,.home-v4 .portal-person .avatar img,.home-v4 .portal-person .family-photo{transition:none!important}
+  .home-v4.home-v3.home-v2 .portal-person:hover{transform:none}
+}
