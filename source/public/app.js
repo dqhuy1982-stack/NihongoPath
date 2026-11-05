@@ -9,14 +9,14 @@ const botanical=`<svg viewBox="0 0 120 180" fill="none" aria-hidden="true"><path
 const familyDemoNotes={
  'demo-a':['Nhóm Hiragana dễ nhầm','Ôn nhận diện は・ま・ら và âm ghép; luyện phản xạ trước khi vào N5.','kana'],
  'demo-b':['N2 · kế hoạch ôn tập','Gợi ý demo: luyện từ vựng trong ngữ cảnh, đọc hiểu và nghe. Khóa N2 đầy đủ chưa phát hành.','course/N2'],
- 'demo-c':['Tiếng Nhật ở trường','Gợi ý demo: mỗi ngày ôn một nhóm từ và thực hành câu dùng trong lớp học.','course/N5'],
- 'demo-d':['Kana · bắt đầu từng nét','Gợi ý demo: nghe và viết あ・い・う・え・お, sau đó thử Katakana.','kana']
+ 'demo-c':['N4 · tiếng Nhật ở trường','Gợi ý demo: luyện mẫu câu ở lớp và từ vựng hướng N4; nội dung N4 còn đang biên soạn.','course/N4'],
+ 'demo-d':['N4 · luyện phản xạ','Gợi ý demo: củng cố Kana, hội thoại ngắn và mẫu câu để hướng tới N4.','course/N4']
 };
 const demoStarterNote=id=>{const [title,body,target]=familyDemoNotes[id]||familyDemoNotes['demo-a'];return {
  id:'sample-note-'+id,type:'note',title,body,target,source:'Gợi ý thử giao diện · demo',demo:true,at:'2026-11-05T00:00:00.000Z'
 };};
 const initialProfiles=[
- ['demo-a','Quang Huy','N5',20,'manager','Ôn Hiragana, Katakana và N5','foundation','Nền tảng Kana → N5'],
+ ['demo-a','Quang Huy','N5',20,'manager','Ôn Hiragana, Katakana và các bài nhập môn N5','N5','N5 · củng cố Kana và ngữ pháp nhập môn'],
  ['demo-b','Vy Anh','N2',30,'learner','Luyện JLPT N2: từ vựng, đọc và nghe','N2','JLPT N2 · lộ trình dự kiến'],
  ['demo-c','Nam Khánh','N4',15,'learner','Củng cố từ vựng và hội thoại ở trường, hướng tới N4','N4','N4 · giao tiếp trường học · lộ trình dự kiến'],
  ['demo-d','Gia Hưng','N4',10,'learner','Luyện phản xạ tiếng Nhật và ngữ pháp hướng tới N4','N4','N4 · luyện phản xạ · lộ trình dự kiến']
@@ -44,7 +44,7 @@ if(window.NP_STATIC_PUBLISH&&db.familyDemoVersion!==5){
      if(!p.studyFocus)p.studyFocus=sample.studyFocus;
    }
    // Keep activity history and custom names; apply the family's requested N4 targets.
-   if((p.id==='demo-c'||p.id==='demo-d')&&db.familyDemoVersion<5){
+   if(['demo-a','demo-c','demo-d'].includes(p.id)&&db.familyDemoVersion<5){
      p.goal=sample.goal;
      p.course=sample.course;
      p.purpose=sample.purpose;
