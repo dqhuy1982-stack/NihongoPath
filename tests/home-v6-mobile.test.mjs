@@ -66,3 +66,19 @@ test('Home V6 retains keyboard, locale, dark mode and reduced motion',()=>{
   assert.ok(mobile.includes('@media(prefers-reduced-motion:reduce)'));
   for(const name of ['VI','EN','日本語'])assert.ok(read('locales.js').includes(name));
 });
+
+test('Safari header is opaque, contrast-rich and has no soft-focus SVG strokes',()=>{
+  assert.ok(mobile.includes('background:#fffdfa!important'));
+  assert.ok(mobile.includes('stroke-width:1.95!important'));
+  assert.ok(mobile.includes('box-shadow:none!important'));
+  assert.ok(mobile.includes('filter:none!important;opacity:1!important'));
+  assert.ok(mobile.includes('font-size:11px!important'));
+  assert.ok(mobile.includes('justify-content:flex-start!important'));
+  assert.ok(mobile.includes('.home-v3-welcome::after'));
+  assert.ok(mobile.includes('border:1px solid #9db5a2!important'));
+  for(const season of ['spring','summer','autumn','winter']){
+    const svg=read('assets/horizon-mobile-'+season+'.svg');
+    assert.ok(svg.includes('M251 255 346 148 439 255'));
+    assert.ok(!svg.includes('<filter')&&!svg.includes('feGaussianBlur'));
+  }
+});
