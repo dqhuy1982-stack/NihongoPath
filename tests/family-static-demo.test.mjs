@@ -9,7 +9,7 @@ const read=name=>readFileSync(new URL(name,root),'utf8');
 
 test('four 320px portraits are individually cached WebP files from the uploaded sources',()=>{
  const script=read('family-portraits.js');
- const json=script.match(/window\\.NP_FAMILY_PHOTOS=(\\{[\\s\\S]*?\\});/)?.[1];
+ const json=script.split('window.NP_FAMILY_PHOTOS=')[1]?.trim().replace(/;$/, '');
  assert.ok(json,'Missing image map');
  const images=JSON.parse(json);
  assert.deepEqual(Object.keys(images),['demo-a','demo-b','demo-c','demo-d']);
