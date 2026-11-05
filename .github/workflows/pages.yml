@@ -1,0 +1,58 @@
+name: Nihongo Path — GitHub Pages
+
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nihongopath-pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout one source
+        uses: actions/checkout@v4
+      - name: Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Build static Nihongo Path for GitHub Pages
+        run: |
+          unset NP_FAMILY_SYNC_BUILD
+          node scripts/build-site.cjs
+      - name: Ensure no server D1 adapter is shipped as active mode
+        run: |
+          if grep -q 'window.NP_FAMILY_SYNC=true' dist/site/index.html; then
+            echo 'Unexpected backend mode in static GitHub Pages build' >&2
+            exit 1
+          fi
+          test -f dist/site/index.html
+          test -f dist/site/kana-studio.js
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Upload validated site
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ./dist/site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publish GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
