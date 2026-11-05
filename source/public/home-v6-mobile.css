@@ -1,0 +1,413 @@
+/* HORIZON HOME V6 — Mobile Portrait Gallery | 2026-11-06
+   Deliberately scoped to static Home only. Desktop V5, PIN, routes, learner data
+   and portraits stay unchanged. A graceful fallback scroll is accessibility,
+   not a hidden overflow trick. */
+
+/* The mobile scenery is independently composed for a tall phone, never a
+   cropped/soft-focused desktop panorama. All four seasons retain the toggle. */
+@media(max-width:600px){
+  .home-v4.home-v3.home-v2.atelier-home,
+  .compact .home-v4.home-v3.home-v2.atelier-home{
+    --horizon-mobile-scene:url('assets/horizon-mobile-spring.svg');
+    --horizon-portrait-size:clamp(84px,min(26vw,13.5svh),112px);
+    box-sizing:border-box;
+    width:100%;
+    height:auto!important;
+    min-height:100svh!important;
+    grid-template-rows:52px minmax(0,1fr)!important;
+    padding:0 14px max(8px,env(safe-area-inset-bottom))!important;
+    background:var(--horizon-mobile-scene) center top/100% 100% no-repeat #faf8f3!important;
+    overflow-x:clip!important;
+    overflow-y:visible!important;
+    color:#284735;
+  }
+  .home-v4.home-v3.home-v2.atelier-home[data-season="summer"]{
+    --horizon-mobile-scene:url('assets/horizon-mobile-summer.svg');
+  }
+  .home-v4.home-v3.home-v2.atelier-home[data-season="autumn"]{
+    --horizon-mobile-scene:url('assets/horizon-mobile-autumn.svg');
+  }
+  .home-v4.home-v3.home-v2.atelier-home[data-season="winter"]{
+    --horizon-mobile-scene:url('assets/horizon-mobile-winter.svg');
+  }
+
+  /* Exactly one clean header line. Undo older <=430px two-row selector. */
+  .home-v4.home-v3.home-v2 .atelier-header,
+  .compact .home-v4.home-v3.home-v2 .atelier-header{
+    box-sizing:border-box;
+    width:100%;max-width:100%;
+    height:52px!important;min-height:52px!important;
+    padding:4px 0 2px!important;
+    margin:0!important;
+    display:flex;align-items:center;justify-content:center!important;
+    border:0!important;
+    overflow:visible;
+  }
+  .home-v4 .atelier-header-actions,
+  .compact .home-v4 .atelier-header-actions{
+    box-sizing:border-box;
+    width:100%;min-width:0;
+    display:flex!important;flex-wrap:nowrap!important;
+    justify-content:center!important;align-items:center!important;
+    gap:6px!important;margin:0!important;
+  }
+  .home-v4 .home-season-control,
+  .compact .home-v4 .home-season-control{
+    box-sizing:border-box;
+    order:0!important;flex:0 0 auto!important;
+    width:auto;max-width:none;
+    justify-content:center;gap:1px!important;
+    padding:2px 3px!important;margin:0!important;
+    background:#fffdf9f2;
+    border:1px solid #e3e2d9!important;
+    box-shadow:0 2px 8px #263c3108;
+    border-radius:999px;
+  }
+  .home-v4 .home-season-button,
+  .compact .home-v4 .home-season-button{
+    flex:0 0 auto;
+    box-sizing:border-box;
+    width:35px!important;height:37px!important;min-height:37px!important;
+    padding:7px!important;border-radius:50%;
+    transition:background-color .2s ease,color .2s ease;
+  }
+  .home-v4 .home-season-button svg{width:20px!important;height:20px!important}
+  .home-v4 .atelier-header .language-switch,
+  .compact .home-v4 .atelier-header .language-switch{
+    order:0!important;flex:0 0 auto;
+    width:auto;min-width:0;max-width:none;
+    display:inline-flex;align-items:center;
+    margin:0!important;padding:2px!important;
+    box-shadow:0 2px 8px #263c3108;
+  }
+  .home-v4 .atelier-header .language-switch button,
+  .compact .home-v4 .atelier-header .language-switch button{
+    box-sizing:border-box;white-space:nowrap;
+    min-width:28px!important;min-height:37px!important;
+    padding:6px 8px!important;font-size:10px!important;
+    letter-spacing:0;
+  }
+  .home-v4 .atelier-header .language-switch button[lang="ja"]{
+    padding-left:7px!important;padding-right:7px!important;
+  }
+
+  /* Balance the entire Home against available browser viewport height.
+     Never impose an overflow hidden or artificially fixed short page. */
+  .home-v4.home-v3.home-v2 .atelier-main,
+  .compact .home-v4.home-v3.home-v2 .atelier-main{
+    box-sizing:border-box;
+    width:100%;max-width:520px;
+    min-height:calc(100svh - 52px - max(8px,env(safe-area-inset-bottom)))!important;
+    height:auto!important;
+    padding:10px 0 14px!important;
+    margin:0 auto!important;
+    display:flex!important;flex-direction:column;
+    align-items:center!important;justify-content:center!important;
+    gap:0!important;overflow:visible!important;
+  }
+  .home-v4.home-v3.home-v2 .atelier-story,
+  .compact .home-v4.home-v3.home-v2 .atelier-story{
+    max-width:100%;width:100%;
+    padding:0!important;margin:0!important;
+    display:flex;flex-direction:column;align-items:center;
+    text-align:center;
+  }
+  .home-v4 .horizon-hero-lockup{
+    margin:0 auto!important;max-width:100%;
+    flex:none;gap:0;
+  }
+  .home-v4 .horizon-hero-mark{
+    display:block;width:clamp(51px,7.3svh,61px)!important;
+    margin:0 auto 0!important;height:auto;
+  }
+  .home-v4 .horizon-hero-wordmark{
+    font-size:clamp(29px,7.7vw,35px)!important;
+    line-height:1.05!important;font-weight:510;
+    letter-spacing:.145em!important;padding-left:.145em!important;
+  }
+  .home-v4 .atelier-story .horizon-hero-tagline{
+    margin:2px auto 0!important;
+    font-size:clamp(12px,3.5vw,14px)!important;
+    line-height:1.25!important;white-space:nowrap;
+    color:#64806c;
+  }
+  .home-v4 .home-v3-welcome{
+    width:100%;max-width:380px;
+    margin:clamp(13px,2.5svh,20px) auto 0!important;
+  }
+  .home-v4.home-v3.home-v2 .atelier-story .home-v3-question,
+  .compact .home-v4.home-v3.home-v2 .atelier-story .home-v3-question{
+    max-width:100%;margin:0!important;
+    font:500 clamp(24px,6.8vw,29px)/1.12 Newsreader,Georgia,'Noto Serif JP',serif!important;
+    white-space:normal!important;text-wrap:balance;
+    letter-spacing:-.018em!important;color:#294934;
+  }
+  .home-v4.home-v3.home-v2 .home-v2-intro,
+  .compact .home-v4.home-v3.home-v2 .home-v2-intro{
+    margin:6px auto 0!important;
+    max-width:320px;
+    font-size:11px!important;line-height:1.35!important;
+    color:#728476;
+  }
+
+  /* Four open portraits, not four framed cards. Each entire area stays
+     keyboard/touch clickable and retains its original PIN identity. */
+  .home-v4.home-v3.home-v2 .atelier-access,
+  .compact .home-v4.home-v3.home-v2 .atelier-access{
+    box-sizing:border-box;
+    width:100%;max-width:450px;min-width:0;
+    margin:0!important;padding:0!important;
+    background:transparent!important;border:0!important;
+    overflow:visible!important;
+  }
+  .home-v4.home-v3.home-v2 .portal-people,
+  .compact .home-v4.home-v3.home-v2 .portal-people{
+    box-sizing:border-box;
+    width:100%;max-width:100%;
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    grid-template-rows:repeat(2,max-content)!important;
+    grid-auto-rows:max-content!important;
+    align-items:center!important;
+    gap:clamp(9px,1.8svh,16px) 10px!important;
+    margin:clamp(13px,2.5svh,22px) auto 0!important;
+    padding:0 4px!important;
+    border:0!important;background:transparent!important;
+  }
+  .home-v4.home-v3.home-v2 .portal-person,
+  .compact .home-v4.home-v3.home-v2 .portal-person,
+  .home-v4.home-v3.home-v2 .portal-person + .portal-person,
+  .compact .home-v4.home-v3.home-v2 .portal-person + .portal-person{
+    box-sizing:border-box!important;
+    display:flex!important;
+    flex-direction:column!important;align-items:center!important;
+    justify-content:center!important;justify-items:initial!important;
+    align-self:center!important;
+    gap:5px!important;
+    min-width:0!important;
+    width:100%!important;
+    height:auto!important;min-height:calc(var(--horizon-portrait-size) + 36px)!important;
+    margin:0!important;padding:3px 2px 5px!important;
+    border:0!important;border-radius:16px!important;
+    background:transparent!important;
+    box-shadow:none!important;
+    overflow:visible!important;
+    transform:none!important;
+    transition:none!important;
+    -webkit-tap-highlight-color:transparent;
+    touch-action:manipulation;
+  }
+  .home-v4.home-v3.home-v2 .portal-person:nth-child(n)::after,
+  .home-v4.home-v3.home-v2 .portal-person:nth-child(n)::before{
+    content:none!important;display:none!important;
+  }
+  .home-v4.home-v3.home-v2 .portal-person .home-learner-rule,
+  .home-v4.home-v3.home-v2 .portal-person .portal-person-goal,
+  .home-v4.home-v3.home-v2 .portal-person .home-learner-focus,
+  .home-v4.home-v3.home-v2 .portal-person .home-season-decoration,
+  .home-v4.home-v3.home-v2 .portal-person .portal-person-arrow{
+    display:none!important;
+  }
+  .home-v4.home-v3.home-v2 .portal-person .family-photo,
+  .compact .home-v4.home-v3.home-v2 .portal-person .family-photo{
+    box-sizing:border-box!important;
+    flex:0 0 auto!important;
+    grid-row:auto!important;grid-column:auto!important;
+    align-self:center!important;justify-self:center!important;
+    width:calc(var(--horizon-portrait-size) + 8px)!important;
+    height:calc(var(--horizon-portrait-size) + 8px)!important;
+    margin:0!important;padding:3px!important;
+    display:grid!important;place-items:center;
+    border:1px solid #c3b392!important;
+    border-radius:50%!important;
+    background:#fffdf8!important;
+    box-shadow:0 0 0 3px #fffdf7a6,0 4px 15px #2842340a!important;
+    overflow:visible!important;
+    transform:none!important;
+    transition:border-color .22s,box-shadow .22s,transform .25s ease!important;
+  }
+  .home-v4.home-v3.home-v2 .portal-person .family-photo::before{content:none!important;display:none!important}
+  .home-v4.home-v3.home-v2 .portal-person .avatar,
+  .compact .home-v4.home-v3.home-v2 .portal-person .avatar{
+    box-sizing:border-box!important;
+    width:var(--horizon-portrait-size)!important;
+    height:var(--horizon-portrait-size)!important;
+    border-radius:50%!important;
+    flex:0 0 auto!important;
+    overflow:hidden!important;
+  }
+  .home-v4.home-v3.home-v2 .portal-person .avatar img,
+  .compact .home-v4.home-v3.home-v2 .portal-person .avatar img{
+    filter:grayscale(.07) saturate(.97) brightness(1)!important;
+    object-fit:cover;object-position:50% 42%;
+    transition:filter .27s ease!important;
+  }
+  .home-v4.home-v3.home-v2 .portal-person .family-name,
+  .compact .home-v4.home-v3.home-v2 .portal-person .family-name{
+    box-sizing:border-box!important;
+    grid-row:auto!important;grid-column:auto!important;
+    flex:0 0 auto;
+    width:100%!important;height:auto!important;min-height:25px!important;
+    max-width:100%!important;
+    margin:0!important;padding:0!important;
+    display:flex!important;justify-content:center!important;align-items:center!important;
+    font:500 clamp(17px,4.8vw,21px)/1.2 Newsreader,Georgia,'Noto Serif JP',serif!important;
+    letter-spacing:-.012em!important;
+    color:#294b3b!important;
+    white-space:normal;text-align:center;
+    overflow-wrap:normal;
+  }
+  @media(hover:hover) and (pointer:fine){
+    .home-v4 .portal-person:hover .family-photo{
+      border-color:#92ae9a!important;
+      box-shadow:0 0 0 4px #f4f9f1,0 5px 18px #28423412!important;
+      transform:translateY(-2px)!important;
+    }
+    .home-v4 .portal-person:hover .avatar img{filter:none!important}
+  }
+  .home-v4.home-v3.home-v2 .portal-person:focus-visible{
+    outline:2px solid #547b5f!important;
+    outline-offset:1px!important;
+    background:#eaf0e653!important;
+  }
+  .home-v4 .portal-person:focus-visible .family-photo{
+    border-color:#7da78a!important;
+    box-shadow:0 0 0 4px #e9f3e9!important;
+  }
+
+  /* The guest action must fit *inside* the Home view, not underneath it. */
+  .home-v4.home-v3.home-v2 .portal-guest-row,
+  .compact .home-v4.home-v3.home-v2 .portal-guest-row{
+    width:100%;margin:clamp(13px,2.5svh,20px) auto 0!important;
+    padding:0!important;border:0!important;
+    display:flex;justify-content:center;
+  }
+  .home-v4.home-v3.home-v2 .portal-guest,
+  .compact .home-v4.home-v3.home-v2 .portal-guest{
+    box-sizing:border-box;max-width:100%;
+    min-height:43px!important;
+    padding:9px 18px!important;
+    display:inline-flex;align-items:center;justify-content:center;
+    gap:9px;
+    background:#fffdfa7d!important;
+    border:1px solid #b4c7b4!important;
+    border-radius:999px!important;
+    box-shadow:0 2px 9px #2b453005!important;
+    font:600 11px/1.3 var(--font-readable)!important;
+    color:#325844!important;
+    white-space:nowrap;
+    text-decoration:none!important;
+  }
+  .home-v4.home-v3.home-v2 .portal-guest:hover{
+    background:#eaf0e5!important;border-color:#8eab90!important;
+  }
+  .home-v4.home-v3.home-v2 .portal-guest:focus-visible{
+    outline:2px solid #49785c;outline-offset:3px;
+  }
+
+  /* No blurred glass or saturated decorations over the wordmark. */
+  .home-v4 .atelier-header .language-switch,
+  .home-v4 .home-season-control{
+    -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  }
+  body.dark .home-v4.home-v3.home-v2.atelier-home,
+  body.dark .compact .home-v4.home-v3.home-v2.atelier-home{
+    background:linear-gradient(#172d26e6,#172d26f3),var(--horizon-mobile-scene) center top/100% 100% no-repeat #1c3029!important;
+    background-size:100% 100%,100% 100%!important;
+  }
+  body.dark .home-v4.home-v3.home-v2 .portal-person,
+  body.dark .home-v4.home-v3.home-v2 .portal-person + .portal-person{
+    border:0!important;background:transparent!important;box-shadow:none!important;
+  }
+  body.dark .home-v4.home-v3.home-v2 .portal-person .family-name{color:#eff3e8!important}
+  body.dark .home-v4.home-v3.home-v2 .portal-person .family-photo{
+    background:#2b4437!important;border-color:#afbdab!important;
+    box-shadow:0 0 0 3px #213629!important;
+  }
+  body.dark .home-v4.home-v3.home-v2 .portal-guest{
+    color:#edf3e9!important;background:#2b4536d9!important;border-color:#9ab5a0!important;
+  }
+  body.dark .home-v4.home-v3.home-v2 .portal-guest:hover{background:#355641!important}
+}
+
+/* On smaller iPhones, preserve a ONE-row toolbar without tiny unreadable labels. */
+@media(max-width:370px){
+  .home-v4.home-v3.home-v2.atelier-home,
+  .compact .home-v4.home-v3.home-v2.atelier-home{
+    --horizon-portrait-size:clamp(78px,min(25vw,13svh),98px);
+    padding-left:10px!important;padding-right:10px!important;
+  }
+  .home-v4 .home-season-control{padding:2px 2px!important;gap:0!important}
+  .home-v4 .home-season-button,
+  .compact .home-v4 .home-season-button{width:32px!important;height:34px!important;min-height:34px!important;padding:6px!important}
+  .home-v4 .atelier-header .language-switch button,
+  .compact .home-v4 .atelier-header .language-switch button{padding:5px 6px!important;min-height:34px!important;min-width:25px!important;font-size:10px!important}
+  .home-v4 .atelier-header .language-switch button[lang="ja"]{padding:5px 5px!important}
+  .home-v4 .horizon-hero-wordmark{font-size:28px!important}
+  .home-v4.home-v3.home-v2 .atelier-story .home-v3-question{font-size:23px!important}
+}
+
+/* Short browser viewports, e.g. Safari chrome visible or older iPhone SE:
+   truly compact spacing, keeping the same 2x2 portrait identity. */
+@media(max-width:600px) and (max-height:740px){
+  .home-v4.home-v3.home-v2.atelier-home,
+  .compact .home-v4.home-v3.home-v2.atelier-home{
+    --horizon-portrait-size:clamp(79px,min(24vw,13svh),98px);
+    grid-template-rows:46px minmax(0,1fr)!important;
+  }
+  .home-v4.home-v3.home-v2 .atelier-header,
+  .compact .home-v4.home-v3.home-v2 .atelier-header{height:46px!important;min-height:46px!important}
+  .home-v4.home-v3.home-v2 .atelier-main,
+  .compact .home-v4.home-v3.home-v2 .atelier-main{
+    min-height:calc(100svh - 46px - max(8px,env(safe-area-inset-bottom)))!important;
+    padding:7px 0 9px!important;
+  }
+  .home-v4 .horizon-hero-mark{width:48px!important}
+  .home-v4 .horizon-hero-wordmark{font-size:28px!important}
+  .home-v4 .atelier-story .horizon-hero-tagline{font-size:12px!important}
+  .home-v4 .home-v3-welcome{margin-top:11px!important}
+  .home-v4.home-v3.home-v2 .atelier-story .home-v3-question,
+  .compact .home-v4.home-v3.home-v2 .atelier-story .home-v3-question{
+    font-size:23px!important;line-height:1.1!important;
+  }
+  .home-v4.home-v3.home-v2 .home-v2-intro,
+  .compact .home-v4.home-v3.home-v2 .home-v2-intro{display:none!important}
+  .home-v4.home-v3.home-v2 .portal-people,
+  .compact .home-v4.home-v3.home-v2 .portal-people{
+    margin-top:12px!important;gap:8px 8px!important;
+  }
+  .home-v4.home-v3.home-v2 .portal-guest-row,
+  .compact .home-v4.home-v3.home-v2 .portal-guest-row{margin-top:11px!important}
+}
+
+/* 200% zoom / very narrow devices: fallback to one column and natural scroll,
+   rather than clipping text, controls or portrait hit targets. */
+@media(max-width:310px){
+  .home-v4.home-v3.home-v2.atelier-home,
+  .compact .home-v4.home-v3.home-v2.atelier-home{grid-template-rows:auto minmax(0,1fr)!important}
+  .home-v4 .atelier-header,
+  .compact .home-v4 .atelier-header{height:auto!important;min-height:80px!important}
+  .home-v4 .atelier-header-actions,
+  .compact .home-v4 .atelier-header-actions{flex-wrap:wrap!important}
+  .home-v4 .portal-people,
+  .compact .home-v4 .portal-people{
+    grid-template-columns:1fr!important;grid-template-rows:none!important;
+  }
+  .home-v4 .horizon-hero-wordmark{font-size:24px!important}
+  .home-v4 .atelier-story .horizon-hero-tagline{white-space:normal}
+  .home-v4.home-v3.home-v2 .portal-guest{white-space:normal!important;text-align:center}
+}
+
+/* Landscape phone: four portraits in a row; scrolling is permitted at low heights. */
+@media(max-width:850px) and (orientation:landscape) and (max-height:540px){
+  .home-v4.home-v3.home-v2 .portal-people,
+  .compact .home-v4.home-v3.home-v2 .portal-people{
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    grid-template-rows:max-content!important;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .home-v4 .portal-person .family-photo,
+  .home-v4 .portal-person .avatar img{transition:none!important}
+}
