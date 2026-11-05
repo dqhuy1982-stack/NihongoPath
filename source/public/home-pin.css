@@ -37,7 +37,15 @@ body.np-pin-active{overflow:hidden}
 .np-pin-visible .np-pin-window{
   border-radius:28px;
   box-shadow:0 30px 88px #071c1552;
+  /* Never enable a scrollbar while the card is growing into the PIN panel. */
+  overflow:hidden;
+}
+/* Only a genuinely short viewport needs internal scrolling after the morph settles. */
+.np-pin-settled.np-pin-scrollable .np-pin-window{
   overflow-y:auto;
+  overscroll-behavior:contain;
+  scrollbar-width:thin;
+  scrollbar-color:#a8b9aa transparent;
 }
 .np-pin-close{
   position:absolute;right:13px;top:12px;z-index:2;
