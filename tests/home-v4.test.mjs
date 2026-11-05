@@ -30,7 +30,7 @@ test('Four seasonal choices are direct icon buttons with explicit active state',
  assert.ok(!login.includes('home-season-select'),'old native dropdown removed');
  assert.ok(css.includes('.home-season-button:focus-visible'));
  assert.ok(css.includes('.home-season-button[aria-pressed="true"]'));
- assert.ok(css.includes('seasonLabels[Locale.code]'),'localized accessible titles');
+ assert.ok(login.includes('seasonLabels[Locale.code]'),'localized accessible titles');
  for(const season of seasons){
   assert.ok(css.includes('horizon-fuji-'+season+'.svg'));
   const artwork=read('assets/horizon-fuji-'+season+'.svg');
