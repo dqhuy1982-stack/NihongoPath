@@ -24,13 +24,12 @@ window.NPLogin=(function(){
         home.querySelector('.home-guide')?.remove();
         home.querySelector('.atelier-footer')?.remove();
         const story=home.querySelector('.atelier-story');
-        story.innerHTML=`<div class="home-v2-eyebrow">${tr('HỌC TIẾNG NHẬT CÙNG GIA ĐÌNH','JAPANESE, LEARNED TOGETHER','家族で学ぶ日本語')}</div>
-          <h1>${tr('Mỗi người một','Your own pace.','自分のペースで')}<br><em>${tr('nhịp học.','One shared journey.','一歩ずつ。')}</em></h1>
-          <p class="home-v2-intro">${tr('Một nơi để học tiếng Nhật theo mục tiêu riêng, từng ngày một bước.','A personal Japanese learning space. One small step every day.','それぞれの目標で日本語を学ぶ。今日も一歩ずつ。')}</p>
-          <div class="home-v2-accent" aria-hidden="true"><span></span><span lang="ja">一歩 · IPPŌ</span></div>`;
-        section.querySelector('.access-heading .atelier-kicker')?.remove();
-        const heading=section.querySelector('.access-heading>p');
-        if(heading)heading.textContent=tr('Chọn hồ sơ để vào học ngay.','Choose a profile to start learning.','プロフィールを選んで学習を始めましょう。');
+        story.innerHTML=`<div class="home-v2-eyebrow">${tr('NHỊP HỌC CỦA GIA ĐÌNH','OUR FAMILY LEARNING SPACE','家族の学び')}</div>
+          <h1>${tr('Hôm nay, ai sẽ học?','Who is learning today?','今日は、だれが学びますか。')}</h1>
+          <p class="home-v2-intro">${tr('Mỗi người một hành trình. Mỗi ngày một bước.','Your own journey. One small step every day.','自分のペースで、一歩ずつ。')}</p>`;
+        // Four whole-card avatar buttons remain in the same order.
+        // The heading above is the sole visual focus, not a second competing headline.
+        section.querySelector('.access-heading')?.remove();
         section.querySelector('.portal-entry-hint')?.remove();
         const guest=section.querySelector('[data-action="portal-guest"]');
         if(guest){
