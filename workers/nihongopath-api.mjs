@@ -6,12 +6,20 @@
  */
 import {handle} from '../source/server/pilot.js';
 import {verifiedIdentity} from './access-identity.mjs';
+import {verifiedFamilyIdentity} from './family-identity.mjs';
+
+async function identityForDeployment(request,env){
+  // The household sandbox explicitly opts into secret-based authentication.
+  // Other deployments keep existing cryptographic Cloudflare Access checks.
+  return Object.hasOwn(env,'FAMILY_SYNC_KEY')
+    ? verifiedFamilyIdentity(request,env) : verifiedIdentity(request,env);
+}
 
 const json=(value,status)=>Response.json(value,{status,headers:{
   'cache-control':'no-store','x-content-type-options':'nosniff'
 }});
 
-export function createWorker({identity=verifiedIdentity,pilot=handle}={}) {
+export function createWorker({identity=identityForDeployment,pilot=handle}={}) {
   return {
     async fetch(request,env,ctx) {
       const pathname=new URL(request.url).pathname;
@@ -23,8 +31,8 @@ export function createWorker({identity=verifiedIdentity,pilot=handle}={}) {
         return json({error:'Method not allowed.'},405);
       const result=await identity(request,env);
       if(result.error)return result.error;
-      // Explicitly overwrite spoofable legacy Sites identity headers; downstream
-      // pilot handler can only see identity derived from verified Access JWT.
+      // Strip spoofed legacy identity headers. Only the verified deployment
+      // identity (Access JWT or household capability) may reach the pilot API.
       const headers=new Headers(request.headers);
       headers.delete('oai-authenticated-user-id');
       headers.delete('oai-authenticated-user-email');

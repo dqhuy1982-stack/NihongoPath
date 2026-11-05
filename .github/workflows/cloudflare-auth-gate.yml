@@ -26,14 +26,23 @@ jobs:
       - name: JS syntax and data contract checks
         run: |
           node --check workers/access-identity.mjs
+          node --check workers/family-identity.mjs
+          node --check source/public/pilot-online.js
           node --check workers/nihongopath-api.mjs
           node --check tests/cloudflare-access-gateway.test.mjs
           node tools/audit-learning-data.mjs
       - name: Verified Access identity and real SQLite-backed API tests
-        run: node --test tests/cloudflare-access-gateway.test.mjs source/tests/pilot-api.test.mjs
+        run: node --test tests/cloudflare-access-gateway.test.mjs tests/family-sync-gate.test.mjs source/tests/pilot-api.test.mjs
       - name: Validate D1 development binding and family schema proposal
         run: node --test tests/d1-dev-config.test.mjs
       - name: Static site regression build
         run: node scripts/build-site.cjs
-      - name: Dry-run bundle only; no Cloudflare deploy
+      - name: Build optional D1 sandbox assets without publishing
+        run: NP_FAMILY_SYNC_BUILD=1 node scripts/build-site.cjs
+      - name: Verify backend-only bundle flag is present in sandbox build
+        run: |
+          grep -q 'window.NP_FAMILY_SYNC=true;' dist/site/index.html
+          grep -q 'window.NP_STATIC_PUBLISH=true;' dist/site/index.html
+          grep -q 'x-nihongo-family-key' dist/site/pilot-online.js
+      - name: Dry-run family D1 Worker bundle only; no Cloudflare deploy
         run: npx --yes wrangler@4.157.0 deploy --dry-run --config wrangler.backend.jsonc

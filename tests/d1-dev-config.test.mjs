@@ -11,6 +11,7 @@ test('Dev D1 binding uses provided ID and cannot overwrite live Worker by defaul
   const main=jsonc('wrangler.jsonc'),dev=jsonc('wrangler.backend.jsonc');
   assert.equal(main.name,'nihongopath');
   assert.ok(!main.d1_databases?.length,'public static deploy must remain D1-free');
+  assert.ok(main.previews && Object.keys(main.previews).length===0,'PR static preview requires an empty previews block and no backend bindings');
   assert.equal(dev.name,'nihongopath-d1-sandbox','development backend must have different Worker name');
   assert.equal(dev.workers_dev,false,'never expose an unauthenticated sandbox workers.dev route');
   assert.equal(dev.preview_urls,false,'preview URL must stay disabled until Access is configured');

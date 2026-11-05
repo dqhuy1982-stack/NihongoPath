@@ -149,3 +149,34 @@ test('Real D1 pilot only sees JWT-verified owner, with isolation across accounts
   const denied=await worker.fetch(req('/api/pilot/learners/adult/state',token2),state,{});
   assert.equal(denied.status,404);
 });
+
+
+test('Household key can bootstrap four learner profiles through the real D1 pilot',async()=>{
+  const {DB}=database();
+  const secret='family-shared-test-key-32-or-more-characters';
+  const state={DB,FAMILY_SYNC_KEY:secret};
+  const worker=createWorker();
+  const familyHeaders={'x-nihongo-family-key':secret};
+  const before=await worker.fetch(req('/api/pilot/bootstrap',null,familyHeaders),state,{});
+  assert.equal(before.status,200);
+  assert.equal((await before.json()).profiles.length,0);
+  const profiles=['adult','child-a','child-b','child-c'].map((id,i)=>({
+    id,name:'Learner '+i,goal:i===0?'N5':'Nền tảng',minutes:15,prefs:{}
+  }));
+  const initialized=await worker.fetch(new Request(url('/api/pilot/setup'),{
+    method:'POST',headers:{...familyHeaders,Origin:host,'Content-Type':'application/json',
+      'oai-authenticated-user-id':'forged-owner'},
+    body:JSON.stringify({profiles})
+  }),state,{});
+  assert.equal(initialized.status,201,await initialized.text().catch(()=>''));
+  const family=await worker.fetch(req('/api/pilot/bootstrap',null,familyHeaders),state,{});
+  const result=await family.json();
+  assert.deepEqual(result.profiles.map(p=>p.id),profiles.map(p=>p.id));
+  assert.equal(Object.keys(result.states).length,4);
+  const anonymous=await worker.fetch(req('/api/pilot/bootstrap'),state,{});
+  assert.equal(anonymous.status,401);
+  const outsider=await worker.fetch(req('/api/pilot/learners/adult/state',null,{
+    'x-nihongo-family-key':'wrong-family-secret-at-least-32-characters'
+  }),state,{});
+  assert.equal(outsider.status,403);
+});

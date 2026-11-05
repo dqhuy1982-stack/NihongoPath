@@ -5,3 +5,10 @@
 .env.*
 !.env.example
 .DS_Store
+
+# Local Wrangler secrets and emulated D1 state
+.dev.vars*
+.wrangler/
+
+# Confidential local and remote D1 SQL backups (not for GitHub)
+.private-backups/
