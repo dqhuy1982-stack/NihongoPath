@@ -1,26 +1,28 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
 <defs>
- <linearGradient id="paper" x2="0" y2="1"><stop stop-color="#fbf6ee"/><stop offset=".42" stop-color="#fffdf7"/><stop offset="1" stop-color="#faf8f3"/></linearGradient>
- <linearGradient id="fuji" x1=".5" y1="0" x2=".5" y2="1"><stop stop-color="#f8f9f8"/><stop offset=".43" stop-color="#b7adb0" stop-opacity=".64"/><stop offset="1" stop-color="#b7adb0" stop-opacity=".12"/></linearGradient>
- <linearGradient id="softRidge" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#d9cdc3" stop-opacity=".36"/><stop offset="1" stop-color="#fffdf7" stop-opacity="0"/></linearGradient>
- <radialGradient id="sun"><stop stop-color="#f5dfc5" stop-opacity=".63"/><stop offset="1" stop-color="#f5dfc5" stop-opacity="0"/></radialGradient>
+ <linearGradient id="paper" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#faf6f0"/><stop offset=".48" stop-color="#fbf9f4"/><stop offset="1" stop-color="#fbf9f4"/></linearGradient>
+ <radialGradient id="warm" cx=".95" cy=".22" r=".38"><stop stop-color="#f1e0c6" stop-opacity=".36"/><stop offset="1" stop-color="#f1e0c6" stop-opacity="0"/></radialGradient>
+ <linearGradient id="mountain" x1=".25" y1=".15" x2=".8" y2="1"><stop stop-color="#b0b0af" stop-opacity=".48"/><stop offset="1" stop-color="#b0b0af" stop-opacity=".12"/></linearGradient>
 </defs>
 <rect width="390" height="844" fill="url(#paper)"/>
-<!-- All scenery is crisp vector artwork: no text, people, soft-focus filters or blur. -->
-<circle cx="300" cy="141" r="142" fill="url(#sun)"/>
-<path d="M165 267 314 95 463 267Z" fill="url(#fuji)"/>
-<path d="M257 163 314 95 374 165 355 154 344 166 330 149 314 165 302 145 285 161 275 150Z" fill="#f8f9f6" opacity=".96"/>
-<path d="M287 129 314 95 349 135 332 129 319 143 308 126 297 140Z" fill="#fffdf9"/>
-<path d="M199 226 314 95 423 224" fill="none" stroke="#b7adb0" stroke-width=".7" opacity=".20"/>
-<path d="M-40 272Q62 238 137 256T288 249Q348 243 430 256V336H-40Z" fill="url(#softRidge)"/>
-<path d="M-45 282Q54 265 107 281T232 277Q309 260 436 284V326H-45Z" fill="#d9cdc3" opacity=".13"/>
-<path d="M-30 301Q48 285 126 303T271 303Q341 290 430 304" fill="none" stroke="#baa28c" stroke-width=".8" opacity=".20"/>
-<path d="M-20 316Q97 302 171 316T398 316" fill="none" stroke="#baa28c" stroke-width=".65" opacity=".12"/>
-<!-- Delicate low-contrast end flourish stays behind the guest action. -->
-<g fill="none" stroke="#c59e78" stroke-linecap="round" opacity=".18">
- <path d="M-30 756Q53 731 116 752T249 749Q317 739 421 757" stroke-width=".9"/>
- <path d="M-30 765Q53 740 116 761T249 758Q317 748 421 766" stroke-width=".7"/>
- <path d="M-30 773Q53 748 116 769T249 766Q317 756 421 774" stroke-width=".6"/>
- <path d="M320 744q6-15 5-32M325 736q15-13 23-14M325 729q-10-11-17-15" stroke-width="1.1"/>
+<rect width="390" height="355" fill="url(#warm)"/>
+<!-- Restrained offset Fuji: crisp contours, deliberately smaller than HORIZON signature. -->
+<path d="M251 255 346 148 439 255Z" fill="url(#mountain)"/>
+<path d="M305 196 346 148 387 196 371 186 363 201 352 186 343 199 334 184 324 199 317 187Z" fill="#fffdf8" opacity=".94"/>
+<path d="M304 197 346 148 380 188" fill="none" stroke="#b0b0af" stroke-width=".85" stroke-linecap="round" opacity=".30"/>
+<path d="M270 232 346 148 416 231" fill="none" stroke="#b1a493" stroke-width=".6" stroke-linecap="round" opacity=".27"/>
+<!-- Two quiet horizon layers read as premium ink wash, not a blurred photograph. -->
+<path d="M-30 266 Q52 242 126 258 T252 258 Q328 250 421 266 L421 316 L-30 316Z" fill="#cbbfb2" opacity=".14"/>
+<path d="M-25 280 Q55 267 121 282 T261 280 Q336 268 418 281" fill="none" stroke="#b1a493" stroke-width=".75" opacity=".25"/>
+<path d="M-20 291 Q65 282 124 294 T265 290 Q335 284 414 294" fill="none" stroke="#b1a493" stroke-width=".55" opacity=".18"/>
+<!-- Hairline signature near footer, intentionally very subtle. -->
+<g fill="none" stroke="#c0a78b" stroke-linecap="round">
+ <path d="M-20 777 Q68 756 145 774 T288 773 Q347 760 410 775" stroke-width=".85" opacity=".32"/>
+ <path d="M-20 786 Q68 765 145 783 T288 782 Q347 769 410 784" stroke-width=".65" opacity=".22"/>
+ <path d="M-20 794 Q68 773 145 791 T288 790 Q347 777 410 792" stroke-width=".5" opacity=".17"/>
+</g>
+<g fill="none" stroke="#b1a493" stroke-width="1" stroke-linecap="round" opacity=".27">
+ <path d="M335 768q7-13 6-28"/>
+ <path d="M341 754q-9-8-14-9M342 749q8-8 15-9"/>
 </g>
 </svg>
