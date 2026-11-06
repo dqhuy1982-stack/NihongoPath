@@ -108,7 +108,7 @@ test('Selected option and feedback appear without mutating learning schema',()=>
  html=x.render();
  assert.ok(html.includes('n5-feedback good'));
  assert.ok(html.includes('data-action="n5-next"'));
- assert.ok(html.includes('n5-option correct'));
+ assert.match(html,/n5-option[^\"]*correct/);
  assert.equal(x.session.completedUnits.length,3);
 });
 test('Three-language lesson controls and progress counters are rendered from one UI pack',()=>{
