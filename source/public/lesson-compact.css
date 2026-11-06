@@ -203,6 +203,9 @@ body.dark .n5-player-compact .n5-session-hero::after{opacity:.11}
  .n5-player-compact .n5-hero-main{padding-bottom:9px}
  .n5-player-compact .n5-hero-main .eyebrow{font-size:9px;letter-spacing:.5px;line-height:1.5}
  .n5-player-compact .n5-hero-main h1{font-size:clamp(20px,5.3vw,27px);max-width:100%;line-height:1.28}
+ /* On a phone, the question itself is the heading; avoid repeating the generic lesson slogan. */
+ .n5-player-compact[data-active-type="question"] .n5-hero-main h1{display:none}
+
  .n5-player-compact .n5-hero-progress{padding-top:9px;gap:7px;flex-wrap:wrap}
  .n5-player-compact .n5-hero-progress>span{flex:1 1 calc(100% - 118px);font-size:10px}
  .n5-player-compact .n5-hero-progress>strong{font-size:10px}
