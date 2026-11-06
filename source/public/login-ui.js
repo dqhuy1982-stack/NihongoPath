@@ -10,13 +10,17 @@ window.NPLogin=(function(){
     en:['Spring','Summer','Autumn','Winter'],
     ja:['春','夏','秋','冬']
   };
-  // Four original line-art icons. SVG is presentation only; buttons carry
-  // accessible localized names and aria-pressed states.
+  // Guest and seasonal themes have separate pictograms.
+  const guestIcon='<svg class="home-guest-entry-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 27V5.8A1.8 1.8 0 0 1 8.3 4h13.4a1.8 1.8 0 0 1 1.8 1.8V27"/><path d="M10.5 27V7.8l9 2.8V27"/><circle cx="17.1" cy="18" r=".8" fill="currentColor" stroke="none"/><path d="M4 27h23M25 15.7h3m-2-2 2 2-2 2" opacity=".8"/></svg>';
   const seasonArtwork=[
-    '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 14C12 9 13 5 16 5c3 0 4 4 0 9Zm2 2c5-4 9-2 8 1-1 3-5 3-8-1Zm-3 2c-2 6-6 8-8 5-2-3 1-6 8-5Zm-2-3c-6 1-9-3-7-5 2-3 6-2 7 5Zm5 3c6 0 8 5 5 7-3 1-6-2-5-7Z"/><circle cx="16" cy="16" r="2.3"/><path d="M8 28l5-6" opacity=".55"/></svg>',
-    '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 25C7 12 17 7 27 6c0 11-6 22-20 20"/><path d="M8 25 24 10M13 19l-2-8M18 15l8 3"/></svg>',
-    '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M16 4l3.4 6 6-2-2.4 6 4.8 4-7.1 1.2-1.7 7.4-3-3-3 3-1.7-7.4L4.2 18 9 14 6.6 8l6 2z"/><path d="M16 15v13M11 18l5 5 5-5"/></svg>',
-    '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><path d="M16 3v26M3 16h26M7 7l18 18M25 7 7 25M12 6l4 4 4-4M12 26l4-4 4 4M6 12l4 4-4 4M26 12l-4 4 4 4"/></svg>'
+    // Spring / sakura
+    '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 14c-3-4.6-2.4-8.2 0-9.1 2.5.9 3.2 4.5 0 9.1Zm3 1.4c5.5-1.4 8.2.4 8.1 3.1-1.1 2.3-4.6 2.6-8.1-3.1Zm-1 4c1.8 5.3-.3 8.3-3.1 8-2.3-1.2-2.5-4.6 3.1-8Zm-4.2 0c-5.2 1.9-8.3-.2-8-3 1.2-2.4 4.7-2.8 8 3Zm-1.7-4.7c-4.7-3.2-4.7-6.8-2.2-8.3 2.6-.1 4.5 2.8 2.2 8.3Z"/><circle cx="16" cy="16.5" r="2.2"/></svg>',
+    // Summer / sun (no leaf)
+    '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" aria-hidden="true"><circle cx="16" cy="16" r="6.3"/><path d="M16 3v3.5M16 25.5V29M3 16h3.5M25.5 16H29M6.8 6.8l2.6 2.6m13.2 13.2 2.6 2.6m0-18.4-2.6 2.6M9.4 22.6l-2.6 2.6"/></svg>',
+    // Autumn / maple
+    '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="m16 3 3.3 6.5 6.2-1.9-2.6 6.2 5 3.8-7.2 1.3-1.5 6.2-3.2-2.7-3.2 2.7-1.5-6.2-7.2-1.3 5-3.8-2.6-6.2 6.2 1.9Z"/><path d="M16 16.5v11.8m-4.3-10.2 4.3 4.3 4.3-4.3"/></svg>',
+    // Winter / six-point snowflake
+    '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3v26M4.7 9.5l22.6 13M4.7 22.5l22.6-13M12.5 6.5 16 10l3.5-3.5M12.5 25.5 16 22l3.5 3.5M7.5 14l4.9-.9-.9-4.9m9 15.6-.9-4.9 4.9-.9M7.5 18l4.9.9-.9 4.9m9-15.6-.9 4.9 4.9.9"/></svg>'
   ];
   function preferredSeason(){
     try{const value=localStorage.getItem('np-home-season-v1');return seasons.includes(value)?value:'spring';}
@@ -47,7 +51,7 @@ window.NPLogin=(function(){
     section.innerHTML=`<div class="access-heading"><span class="atelier-kicker">${tr('CHÀO MỪNG TRỞ LẠI','WELCOME BACK','おかえりなさい')}</span><h2>${tr('Hôm nay, ai sẽ học?','Who is learning today?','今日は、だれが学びますか。')}</h2><p>${tr('Chạm vào ảnh. Bước vào nhịp học của bạn.','Choose your portrait. Return to your own pace.','写真を選んで、自分のペースへ。')}</p></div>
       <div class="portal-people family-picker" role="group" aria-label="${tr('Chọn người học','Choose a learner','学習者を選ぶ')}">${people.map((p,i)=>`<button type="button" class="family-choice portal-person" data-action="loginprofile" data-learner-season="${seasons[i%4]}" data-id="${esc(p.id)}" aria-haspopup="dialog" aria-label="${esc(tr('Mở khung nhập mã cho ','Open access code for ','アクセスコードを入力：')+p.name)}"><span class="family-photo">${avatar(p,true)}<span class="portal-person-arrow" aria-hidden="true">${icon('arrow')}</span></span><span class="family-name" data-no-translate>${esc(p.name)}</span><span class="home-learner-rule" aria-hidden="true"></span><span class="portal-person-goal">${esc(currentStage(p))}</span><span class="home-learner-focus" data-no-translate>${esc(currentFocus(p))}</span><span class="home-season-decoration" aria-hidden="true"></span><span class="home-v7-chevron" aria-hidden="true">›</span></button>`).join('')}</div>
       <p class="portal-entry-hint">${icon('lock')} ${tr('Chọn ảnh để nhập mã truy cập.','Select a portrait to enter your code.','写真を選ぶと入力画面が開きます。')}</p>
-      <div class="portal-guest-row">${button(icon('leaf')+`<span>${tr('Khám phá với tư cách khách','Explore as a guest','ゲストとして体験')}</span>`,'portal-guest','portal-guest')}${link(tr('Hồ sơ khác','Other profiles','ほかのプロフィール'),'profiles','textlink')}</div>
+      <div class="portal-guest-row">${button(guestIcon+`<span>${tr('Khám phá với tư cách khách','Explore as a guest','ゲストとして体験')}</span>`,'portal-guest','portal-guest')}${link(tr('Hồ sơ khác','Other profiles','ほかのプロフィール'),'profiles','textlink')}</div>
       <div class="atelier-access-links portal-access-links">${link(tr('Tôi có mã mời','I have an invitation','招待コードを持っています')+icon('arrow'),'invite','')}<span>${tr('Bản trải nghiệm · dùng mã mẫu','Prototype · sample access code','体験版・サンプルコード')}</span></div>`;
     if(window.NP_STATIC_PUBLISH){
       // Public GitHub Pages demo: card expands to a local-only PIN prompt.
@@ -73,7 +77,7 @@ window.NPLogin=(function(){
           const seasonSummary=document.createElement('summary');
           seasonSummary.setAttribute('aria-label',tr('Đổi mùa','Choose season','季節を変更'));
           seasonSummary.setAttribute('title',tr('Đổi mùa','Choose season','季節を変更'));
-          seasonSummary.innerHTML=icon('leaf');
+          seasonSummary.innerHTML='<span class="home-season-summary-glyph" aria-hidden="true">'+seasonArtwork[seasons.indexOf(home.dataset.season)]+'</span>';
           seasonControl.replaceWith(seasonMenu);
           seasonMenu.append(seasonSummary,seasonControl);
         }
@@ -114,7 +118,7 @@ window.NPLogin=(function(){
         if(learnerList)learnerList.id='horizon-learner-list';
         const guest=section.querySelector('[data-action="portal-guest"]');
         if(guest){
-          guest.innerHTML=icon('leaf')+'<span>'+tr('Vào thử với tư cách khách','Try as a guest','ゲストとして試す')+'</span>';
+          guest.innerHTML=guestIcon+'<span>'+tr('Vào thử với tư cách khách','Try as a guest','ゲストとして試す')+'</span>';
           guest.setAttribute('aria-label',tr('Vào thử với tư cách khách','Try as a guest','ゲストとして試す'));
         }
       }
@@ -164,6 +168,15 @@ window.NPLogin=(function(){
     home.querySelectorAll('[data-season-choice]').forEach(item=>{
       item.setAttribute('aria-pressed',String(item.dataset.seasonChoice===selected));
     });
+    const menu=button.closest('.home-v7-seasons');
+    const summary=menu?.querySelector('summary');
+    if(summary){
+      summary.innerHTML='<span class="home-season-summary-glyph" aria-hidden="true">'+seasonArtwork[seasons.indexOf(selected)]+'</span>';
+      const labels=seasonLabels[Locale.code]||seasonLabels.vi;
+      summary.setAttribute('aria-label',tr('Đổi mùa','Choose season','季節を変更')+' · '+labels[seasons.indexOf(selected)]);
+      menu.open=false;
+      if(event.detail===0)summary.focus({preventScroll:true});
+    }
     try{localStorage.setItem('np-home-season-v1',selected);}catch{}
   });
   document.addEventListener('click',event=>{
