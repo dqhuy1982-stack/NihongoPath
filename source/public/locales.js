@@ -44,6 +44,17 @@ const Locale=(()=>{
   [/^(\d+) lượt kiểm tra thử đã ghi nhận\.$/,m=>`${m[1]} demo attempts recorded.`,m=>`体験中のテストを${m[1]}回記録しました。`],
   [/^Khóa (N[1-5])$/,m=>`${m[1]} course`,m=>`${m[1]}コース`],
   [/^BẢN REVIEW TƯƠNG TÁC · (\d+)$/,m=>`INTERACTIVE DESIGN REVIEW · ${m[1]}`,m=>`インタラクティブな試作版 · ${m[1]}`]
+  ,[/^(\d+) nét · Dữ liệu có sẵn$/,m=>`${m[1]} strokes · Data available`,m=>`${m[1]}画・データあり`]
+  ,[/^Nét (\d+) \/ (\d+)$/,m=>`Stroke ${m[1]} / ${m[2]}`,m=>`第${m[1]}画 / ${m[2]}画`]
+  ,[/^Vừa sức trong (\d+) phút\.$/,m=>`Manageable in ${m[1]} minutes.`,m=>`${m[1]}分で無理なく取り組む。`]
+  ,[/^Còn (\d+) lỗi cấu trúc\.$/,m=>`${m[1]} structural issues remain.`,m=>`構成上の問題が${m[1]}件残っています。`]
+  ,[/^Furigana · (\d+) mục$/,m=>`Furigana · ${m[1]} items`,m=>`ふりがな・${m[1]}項目`]
+  ,[/^(\d+) câu & biến thể · (\d+) khối giải thích$/,m=>`${m[1]} questions & variants · ${m[2]} explanation blocks`,m=>`問題・バリエーション${m[1]}件・解説ブロック${m[2]}件`]
+  ,[/^(\d+) \/ (\d+) đúng · (\d+) có gợi ý$/,m=>`${m[1]} / ${m[2]} correct · ${m[3]} with hints`,m=>`${m[1]} / ${m[2]}正解・ヒントあり${m[3]}件`]
+  ,[/^Chỉ xóa mục này của hồ sơ (.+) trên trình duyệt đang mở\.$/,m=>`Delete this item only from ${m[1]}'s profile in this browser.`,m=>`このブラウザーの${m[1]}さんのプロフィールから、この項目のみ削除します。`]
+  ,[/^Lượt này: (.+) · v(.+) · tối đa (\d+) mẫu\.$/,m=>`This attempt: ${m[1]} · v${m[2]} · up to ${m[3]} patterns.`,m=>`今回：${m[1]}・v${m[2]}・最大${m[3]}パターン。`]
+  ,[/^Lần trả lời: (.+)\. Câu sửa ngay được giữ riêng trong tổng kết\.$/,m=>`Attempt: ${m[1]}. Immediate corrections are recorded separately.`,m=>`回答：${m[1]}。直後の訂正は総括で別に記録します。`]
+  ,[/^(.+) · thuộc nhóm (.+)\.$/,m=>`${m[1]} · Category: ${m[2]}`,m=>`${m[1]}・グループ：${m[2]}`]
  ];
  function t(text){
   const source=clean(text),row=lookup.get(source)||reverse.get(source);
@@ -63,7 +74,7 @@ const Locale=(()=>{
   doc.documentElement.lang=current;
   for(const b of doc.querySelectorAll('[data-locale]'))b.setAttribute('aria-pressed',String(b.dataset.locale===current));
   for(const el of doc.querySelectorAll('.language-switch'))el.setAttribute('aria-label',t('Ngôn ngữ giao diện'));
-  if(doc.title!==lastTitle)titleSource=doc.title;const titleBase=titleSource.replace(/ · Nihongo Path$/,'');lastTitle=t(titleBase)+' · Nihongo Path';doc.title=lastTitle;
+  if(doc.title!==lastTitle)titleSource=doc.title;const titleBase=titleSource.replace(/ · (?:Nihongo Path|HORIZON)$/,'');lastTitle=t(titleBase)+' · HORIZON';doc.title=lastTitle;
  }
  function switcher(){return `<div class="language-switch" role="group" aria-label="Ngôn ngữ giao diện" data-no-translate>${[['vi','VI','Tiếng Việt'],['en','EN','English'],['ja','日本語','日本語']].map(([c,l,n])=>`<button type="button" data-locale="${c}" lang="${c}" aria-label="${n}" aria-pressed="${c===current}">${l}</button>`).join('')}</div>`;}
  function set(c){
