@@ -1,6 +1,6 @@
 /* Reusable preference fields. Safe to render before app.js has initialized. */
 window.NPStudyPreferences=(function(){
-  const tr=(vi,en,ja)=>[vi,en,ja][{vi:0,en:1,ja:2}[Locale.code]||0];
+  const tr=(vi,en,ja)=>Locale.register(vi,en,ja);
   function label(mode){return {
     adaptive:tr('Linh hoạt · đề xuất','Adaptive · recommended','状況に合わせる・おすすめ'),
     resume:tr('Học tiếp trước','Continue first','続きの学習を優先'),
