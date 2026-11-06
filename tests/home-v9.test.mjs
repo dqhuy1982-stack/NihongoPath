@@ -112,3 +112,25 @@ test('Laptop entry uses height-aware composition rather than a fake hidden overf
   assert.ok(!css.includes('overflow-y:hidden!important'), 'do not conceal learner or Guest content');
   assert.ok(html.includes('href="home-v9.css?v=9.2"'), 'Safari and Chrome load fresh refinements');
 });
+
+test('V9.2 Guest entry icon and season icons have distinct semantics and states',()=>{
+  const seasonMarkup=ui.match(/const seasonArtwork=\[([\s\S]*?)\n  \];/)?.[1]||'';
+  assert.ok(ui.includes('const guestIcon='));
+  assert.ok(ui.includes('class="home-guest-entry-icon"'));
+  assert.ok(ui.includes("guest.innerHTML=guestIcon"));
+  assert.ok(ui.includes('button(guestIcon+'));
+  assert.ok(!ui.includes("guest.innerHTML=icon('leaf')"));
+  assert.equal((seasonMarkup.match(/<svg viewBox/g)||[]).length,4,'4 seasons remain visually distinct');
+  assert.ok(seasonMarkup.includes('circle cx="16" cy="16" r="6.3"'),'summer is sun, not leaf');
+  assert.ok(seasonMarkup.includes('M16 3v26'),'winter is snowflake');
+  assert.ok(seasonMarkup.includes('m16 3 3.3 6.5'),'autumn is maple');
+  assert.ok(seasonMarkup.includes('M16 14c-3-4.6'),'spring is sakura');
+  assert.ok(ui.includes("seasonSummary.innerHTML='<span"),'selector shows active season');
+  assert.ok(ui.includes('menu.open=false'),'selection closes menu');
+  assert.ok(ui.includes("localStorage.setItem('np-home-season-v1',selected)"),'preference persists');
+  assert.ok(css.includes('home-guest-entry-icon'),'guest icon styled distinctly');
+  assert.ok(css.includes('home-season-summary-glyph'),'theme trigger styled');
+  assert.ok(css.includes('body.dark .home-v9 .home-season-control'),'dark theme remains legible');
+  assert.ok(css.includes('@media(max-width:600px)'),'mobile has touch-sized choices');
+  assert.ok(html.includes('src="login-ui.js?v=9.2"'),'Safari picks up new SVG semantics');
+});
