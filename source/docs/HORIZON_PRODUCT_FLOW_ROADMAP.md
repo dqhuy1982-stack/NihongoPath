@@ -17,6 +17,8 @@ Use the **information architecture / learner workflow** as inspiration. Do not c
 
 **Foundation detail:** see [HORIZON_FOUNDATION_KANA_JOURNEY_SPEC.md](HORIZON_FOUNDATION_KANA_JOURNEY_SPEC.md) for the connected **Learn → Practice → Check → Review → N5** flow, current module reuse, progress/evidence semantics, and PC/iPhone layout. This design is documented but not yet deployed as UI.
 
+**JLPT examination integration:** see [HORIZON_JLPT_PRACTICE_EXAM_CENTRE_SPEC.md](HORIZON_JLPT_PRACTICE_EXAM_CENTRE_SPEC.md). Lesson Check, topic-based JLPT Practice and timed Mock Exam are separate assessment experiences sharing learner evidence and review. Historical source permissions, answer validation and non-official raw scoring are required before import. This plan does not modify live functionality.
+
 ## Product principles
 
 1. Learner sees **one useful next step** first, not the entire feature catalog.
