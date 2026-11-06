@@ -3,6 +3,7 @@
    Legacy phrase translation remains for backward-compatible older screens. */
 'use strict';
 const NP_UI_PACK=Object.freeze({
+  "map.demoGroup": {"vi":"07 · Mô hình với dữ liệu giả lập","en":"07 · Simulation with sample data","ja":"07・サンプルデータによるシミュレーション"},
   "profile.heading": {"vi":"Hồ sơ học viên","en":"Learner profile","ja":"学習者プロフィール"},
   "profile.subtitle": {"vi":"Thông tin được lấy từ dữ liệu hồ sơ và có thể chỉnh sửa.","en":"Details come from your profile and can be edited.","ja":"プロフィール情報は編集できます。"},
   "profile.eyebrow": {"vi":"CÁ NHÂN","en":"PERSONAL PROFILE","ja":"個人プロフィール"},
