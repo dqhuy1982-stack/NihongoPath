@@ -13,7 +13,7 @@ const manifest=JSON.parse(read('manifest.webmanifest'));
 
 test('HORIZON web brand is consistent from Home through the learning shell',()=>{
  assert.match(page,/<title>HORIZON · A little closer\. A world wider\.<\/title>/);
- assert.match(page,/href="assets\/horizon-app\.svg\?v=homev3"/);
+ assert.match(page,/href="assets\/horizon-app\.svg\?v=11"/);
  assert.match(page,/href="horizon-brand\.css"/);
  assert.ok(page.indexOf('href="horizon-brand.css"')>page.indexOf('href="home-pin.css"'),
    'brand layer should not override PIN dialog/learning behavior');
