@@ -183,6 +183,18 @@ body.np-season-shell .pagehead .eyebrow,
 body.np-season-shell .today-head .eyebrow{
   color:var(--season-ink)!important;
 }
+/* Dashboard states the current season without turning it into learning content. */
+body.np-season-shell .np-season-context{
+  display:inline-flex;align-items:center;
+  margin-left:8px;padding:3px 8px;
+  border:1px solid var(--season-hairline);
+  background:var(--season-highlight);
+  color:var(--season-ink);
+  border-radius:999px;
+  font:600 10px/1.3 Manrope,Arial,sans-serif;
+  text-transform:none;letter-spacing:.01em;
+  vertical-align:middle;
+}
 body.np-season-shell .pagehead h1{
   color:var(--text);
 }
