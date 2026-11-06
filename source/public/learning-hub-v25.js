@@ -15,10 +15,10 @@ const activities=[
 /* Scenario seeds: only input observations; displayed percentages and states are derived below.
    These fixtures are not written to localStorage and never count as real learner mastery. */
 const examples={
- 'demo-a':{done:['vowels','writing','recognition'],current:'intro',step:2,steps:6,results:[true,true,false,true,true,true,false,true,true,true],minutes:[20,15,20,10],weekGoal:5,weak:['Âm ghép','Cách đọc Kana']},
- 'demo-b':{done:['vowels','writing','recognition','intro','revision'],current:'exam',step:1,steps:5,results:[true,true,true,true,true,true,true,true,false,true,true,true],minutes:[30,30,25,20,20],weekGoal:5,weak:['Đọc hiểu N2','Từ vựng N2']},
- 'demo-c':{done:['vowels','writing'],current:'recognition',step:1,steps:4,results:[true,false,true,false,true,true],minutes:[15,15,10],weekGoal:4,weak:['Nhận diện Kana','Âm đục']},
- 'demo-d':{done:['vowels'],current:'writing',step:1,steps:5,results:[true,true,false,true],minutes:[10,10],weekGoal:4,weak:['Tập viết','Hình dạng Kana']}
+ 'demo-a':{done:['vowels','writing','recognition'],current:'intro',step:2,steps:6,results:[true,true,false,true,true,true,false,true,true,true],minutes:[20,15,20,10],weekGoal:5,reviewDue:['kana-recognition','kana-reading'],weak:['Âm ghép','Cách đọc Kana']},
+ 'demo-b':{done:['vowels','writing','recognition','intro','revision'],current:'exam',step:1,steps:5,results:[true,true,true,true,true,true,true,true,false,true,true,true],minutes:[30,30,25,20,20],weekGoal:5,reviewDue:['vocabulary'],weak:['Đọc hiểu N2','Từ vựng N2']},
+ 'demo-c':{done:['vowels','writing'],current:'recognition',step:1,steps:4,results:[true,false,true,false,true,true],minutes:[15,15,10],weekGoal:4,reviewDue:['kana-recognition','kana-voiced'],weak:['Nhận diện Kana','Âm đục']},
+ 'demo-d':{done:['vowels'],current:'writing',step:1,steps:5,results:[true,true,false,true],minutes:[10,10],weekGoal:4,reviewDue:['kana-writing'],weak:['Tập viết','Hình dạng Kana']}
 };
 const pct=(part,total)=>total>0?Math.min(100,Math.round(part/total*100)):0;
 const status=(data,id)=>data.done.has(id)?'done':data.current===id?'current':'future';
@@ -34,7 +34,7 @@ function model(){
   const minutes=toMinutes(seed.minutes),goal=seed.weekGoal;
   return {learner,sample:true,done:completed,current,step:seed.step,steps:seed.steps,answered,correct,
    count:done,total,percent:pct(done,total),minutes,days:seed.minutes.length,weekGoal:goal,weekly:pct(seed.minutes.length,goal),
-   weak:seed.weak,due:Math.max(0,answered-correct),actualPending:false,actualContent:null,
+   weak:seed.weak,due:seed.reviewDue.length,actualPending:false,actualContent:null,
    info:'Dữ liệu mô phỏng theo hồ sơ — không ghi vào kết quả học thật.'};
  }
  const completedSessions=sessions.filter(x=>x.status==='completed');
@@ -63,7 +63,7 @@ function header(){
  ].map(([id,title,ic])=>href('learn/'+id,I(ic)+'<span>'+title+'</span>','v25-tab '+(id==='overview'?'active':''))).join('')+'</nav>';
 }
 function progressBar(value){return '<span class="v25-progress-track" role="progressbar" aria-label="Tiến độ" aria-valuenow="'+value+'" aria-valuemin="0" aria-valuemax="100"><span style="width:'+value+'%"></span></span>'}
-function ring(value){return '<div class="v25-ring" role="img" aria-label="'+value+'% tiến độ" style="--v25-progress:'+value+'"><div class="v25-ring-center"><strong>'+value+'%</strong></div></div>'}
+function ring(value){return '<div class="v25-ring" role="img" aria-label="'+value+'% tiến độ" style="--v25-progress:'+value+'%"><div class="v25-ring-center"><strong>'+value+'%</strong></div></div>'}
 function sectionHead(iconName,title,link,labelText='Xem tất cả'){
  return '<header class="v25-section-head"><h2>'+I(iconName)+' '+title+'</h2>'+(link?href(link,labelText+' '+I('arrow'),'v25-text-cta'):'')+'</header>';
 }
