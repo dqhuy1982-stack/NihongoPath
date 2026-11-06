@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 66" role="img" aria-label="HORIZON summer">
+<defs><linearGradient id="sun" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f2d792"/><stop offset="1" stop-color="#d6a458"/></linearGradient></defs>
+<path d="M51 33a19 19 0 0 1 38 0" fill="url(#sun)"/>
+<path d="M9 51C30 34 48 36 69 44S111 46 131 54" fill="none" stroke="#416c52" stroke-width="2.35" stroke-linecap="round"/>
+<path d="M15 54C42 46 60 47 83 52s28 5 42 2" fill="none" stroke="#b59d75" stroke-width=".85" stroke-linecap="round" opacity=".85"/>
+<g fill="none" stroke="#d0ab60" stroke-width="1.1" stroke-linecap="round" opacity=".82"><path d="M70 7v5M48 15l4 3M92 15l-4 3M43 30l4 1M97 30l-4 1"/></g>
+</svg>
