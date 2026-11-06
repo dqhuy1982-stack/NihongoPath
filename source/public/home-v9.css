@@ -639,3 +639,149 @@ body.dark .np-pin-submit{background:#d1e5c3!important;border-color:#d1e5c3!impor
     justify-content:flex-start!important;
   }
 }
+
+/* HOME V9.2 — Icon semantics and final polish (desktop + Safari).
+   Guest is a doorway; the season selector shows the selected season.
+   Icon language must remain recognisable in light/dark and at 320px. */
+.home-v9 .home-v7-seasons{z-index:32}
+.home-v9 .home-v7-seasons>summary{
+  display:grid!important;place-items:center!important;
+  width:40px!important;height:40px!important;
+  padding:8px!important;
+  background:#fffdf9!important;
+  border:1px solid #cfd9cb!important;
+  border-radius:50%!important;
+  box-shadow:none!important;
+  color:#536d58!important;
+  -webkit-tap-highlight-color:transparent;
+}
+.home-v9 .home-v7-seasons>summary .home-season-summary-glyph,
+.home-v9 .home-v7-seasons>summary svg{
+  display:block;width:23px!important;height:23px!important;
+  stroke:currentColor;fill:none;
+}
+.home-v9[data-season="spring"] .home-season-summary-glyph{color:#b17d78}
+.home-v9[data-season="summer"] .home-season-summary-glyph{color:#b48a49}
+.home-v9[data-season="autumn"] .home-season-summary-glyph{color:#b07b51}
+.home-v9[data-season="winter"] .home-season-summary-glyph{color:#7694a8}
+.home-v9 .home-v7-seasons>summary:hover{
+  border-color:#a9bba7!important;background:#f4f7ef!important;
+}
+.home-v9 .home-v7-seasons[open]>summary{
+  border-color:#89a18d!important;
+  background:#edf2e8!important;
+}
+.home-v9 .home-v7-seasons>summary:focus-visible{
+  outline:2px solid #4a795a!important;outline-offset:3px!important;
+}
+.home-v9 .home-season-control,
+.compact .home-v9 .home-season-control{
+  padding:6px!important;gap:3px!important;
+  border:1px solid #d8decf!important;
+  border-radius:20px!important;
+  background:#fffdf8!important;
+  box-shadow:0 8px 24px #1f3d2817!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+.home-v9 .home-season-button,
+.compact .home-v9 .home-season-button{
+  display:grid;place-items:center;
+  box-sizing:border-box;
+  width:43px!important;height:43px!important;min-height:43px!important;
+  padding:9px!important;border-radius:13px!important;
+  background:transparent!important;border:1px solid transparent!important;
+  box-shadow:none!important;
+  transition:background-color .18s ease,border-color .18s ease;
+}
+.home-v9 .home-season-button svg{
+  display:block;width:23px!important;height:23px!important;
+  overflow:visible;stroke-width:1.5;
+}
+.home-v9 .home-season-button[data-season-choice="spring"]{color:#b17d78!important}
+.home-v9 .home-season-button[data-season-choice="summer"]{color:#b48a49!important}
+.home-v9 .home-season-button[data-season-choice="autumn"]{color:#b07b51!important}
+.home-v9 .home-season-button[data-season-choice="winter"]{color:#7694a8!important}
+.home-v9 .home-season-button[aria-pressed="true"],
+.compact .home-v9 .home-season-button[aria-pressed="true"]{
+  background:#f0f3e9!important;border-color:#c9d6c4!important;
+}
+.home-v9 .home-season-button[aria-pressed="true"]::after{
+  bottom:3px;left:50%;height:2px;width:11px;
+  border-radius:2px;background:#426d51!important;
+}
+.home-v9 .home-season-button:hover{background:#f4f4ee!important}
+.home-v9 .portal-guest .home-guest-entry-icon{
+  display:block;width:19px!important;height:19px!important;
+  flex:none;stroke-width:1.55;
+  vertical-align:middle;color:currentColor;
+}
+.home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .portal-guest,
+.compact .home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .portal-guest{
+  color:#326148!important;
+  display:inline-flex!important;gap:9px!important;
+  align-items:center!important;
+  text-decoration-color:#83a08a!important;
+}
+.home-v9 .portal-guest:hover .home-guest-entry-icon{
+  transform:translateX(1px);transition:transform .2s ease;
+}
+
+/* Dark mode: subdued layers, not chunky outlined controls. */
+body.dark .home-v9 .home-v7-seasons>summary{
+  background:#254537!important;border:1px solid #789780!important;
+  box-shadow:none!important;
+}
+body.dark .home-v9 .home-season-control,
+body.dark .compact .home-v9 .home-season-control{
+  background:#274536!important;border:1px solid #6c8973!important;
+  box-shadow:0 8px 23px #0d24171f!important;
+}
+body.dark .home-v9 .home-season-button,
+body.dark .compact .home-v9 .home-season-button{
+  background:transparent!important;border-color:transparent!important;
+}
+body.dark .home-v9 .home-season-button[data-season-choice="spring"],
+body.dark .home-v9[data-season="spring"] .home-season-summary-glyph{color:#e0ae9f!important}
+body.dark .home-v9 .home-season-button[data-season-choice="summer"],
+body.dark .home-v9[data-season="summer"] .home-season-summary-glyph{color:#e3c07a!important}
+body.dark .home-v9 .home-season-button[data-season-choice="autumn"],
+body.dark .home-v9[data-season="autumn"] .home-season-summary-glyph{color:#dfab76!important}
+body.dark .home-v9 .home-season-button[data-season-choice="winter"],
+body.dark .home-v9[data-season="winter"] .home-season-summary-glyph{color:#a7cde0!important}
+body.dark .home-v9 .home-season-button[aria-pressed="true"],
+body.dark .compact .home-v9 .home-season-button[aria-pressed="true"]{
+  background:#395c45!important;border-color:#6f9a78!important;
+}
+body.dark .home-v9 .home-season-button[aria-pressed="true"]::after{
+  background:#e4eadb!important;
+}
+body.dark .home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .portal-guest,
+body.dark .compact .home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .portal-guest{
+  color:#d3e7d2!important;
+  text-decoration-color:#a8c3ab!important;
+  background:transparent!important;
+}
+@media(max-width:600px){
+  .home-v9 .home-v7-seasons>summary{
+    width:39px!important;height:39px!important;padding:8px!important;
+  }
+  .home-v9 .home-season-control,
+  .compact .home-v9 .home-season-control{
+    right:-62px!important;
+    padding:5px!important;
+    max-width:calc(100vw - 24px)!important;
+    border-radius:17px!important;
+  }
+  .home-v9 .home-season-button,
+  .compact .home-v9 .home-season-button{
+    width:42px!important;height:42px!important;min-height:42px!important;
+    padding:8px!important;
+  }
+  .home-v9 .portal-guest .home-guest-entry-icon{
+    width:18px!important;height:18px!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .home-v9 .home-season-button,
+  .home-v9 .portal-guest .home-guest-entry-icon{transition:none!important}
+}
