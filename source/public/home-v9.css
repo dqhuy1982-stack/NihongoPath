@@ -496,6 +496,11 @@ body.dark .home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .home-v2-intro{color:
 .np-pin-window :is(button,input):focus-visible{
   outline:2px solid #51865e!important;outline-offset:3px!important;
 }
+/* The legacy dark-mode stylesheet swaps to an older brush mark; prevent it. */
+body.dark .np-pin-brand img{
+  content:url('assets/horizon-v7-sunmark.svg?v=9')!important;
+  filter:brightness(1.35) saturate(.78);
+}
 body.dark .np-pin-window{
   background:linear-gradient(145deg,#243f31,#1d3428)!important;
   border-color:#8b9e80!important;
