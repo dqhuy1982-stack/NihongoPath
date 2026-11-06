@@ -165,6 +165,11 @@ body.dark .compact .home-v10.home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .po
 body.dark .home-v10.home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .portal-person .family-photo{
   border-color:var(--h10-outline)!important;
 }
+/* Preserve the low-opacity Fuji from V9 in dark mode; the brighter
+   seasonal light-scene treatment must never wash out dark-mode headings. */
+body.dark .home-v10.home-v9.home-v8.home-v7.home-v4.home-v3.home-v2.atelier-home::before{
+  opacity:.13!important;
+}
 body.dark .home-v10 .home-controls-tip{
   background:#294436!important;border-color:var(--h10-outline);
   color:#edf3e8;box-shadow:0 6px 17px #0f231a40;
