@@ -38,7 +38,7 @@ function reviewHTML(language,withLessonReview){
   ...base,Locale:locale(language),
   getMistakes:()=>[],michiCard:text=>'<aside>Michi: '+text+'</aside>'
  });
- vm.runInContext(region(app,'function legacyReviewPage()','const hira=['),ctx);
+ vm.runInContext(region(app,'function legacyReviewPage(','const hira=['),ctx);
  return vm.runInContext('legacyReviewPage('+Boolean(withLessonReview)+')',ctx);
 }
 function reviewPanelHTML(language){
@@ -86,8 +86,10 @@ test('The standalone UI language pack is complete, three-language, and uniquely 
   }
  }
  const src=[app,lesson].join('\n');
- for(const [,key] of src.matchAll(/Locale\.ui\('([^']+)'/g))
+ for(const [,key] of src.matchAll(/Locale\.ui\('([^']+)'/g)){
+  if(key.endsWith('.'))continue; // dynamic journal.type.<type> validated by route tests
   assert.ok(messages[key],key);
+ }
 });
 
 test('Review screen is truly English/Japanese, even with dynamic N5 review panel',()=>{
