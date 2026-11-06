@@ -73,7 +73,7 @@ test('Image pixels stay untouched, desktop portraits subtly reveal color on hove
 });
 test('Refined PIN dialog retains original authentication, input rules and scroll guard',()=>{
  assert.ok(pin.includes('class="np-pin-brand"'),'PIN panel displays HORIZON identity');
- assert.ok(pin.includes('assets/horizon-mark.svg'));
+ assert.ok(pin.includes('assets/horizon-v7-sunmark.svg?v=9'));
  assert.ok(pinCss.includes('.np-pin-window::before'));
  assert.ok(pinCss.includes('.np-pin-window::after'));
  assert.ok(pinCss.includes('.np-pin-brand span'));
