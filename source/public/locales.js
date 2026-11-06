@@ -15,6 +15,14 @@ const Locale=(()=>{
    addRow(vi,en,ja);
    return current==='en'?en:current==='ja'?ja:vi;
  }
+ const missingUIKeys=new Set();
+ function ui(id,params={}){
+  const entry=typeof NP_UI_PACK!=='undefined'?NP_UI_PACK[id]:null;
+  if(!entry){missingUIKeys.add(id);return '[ui:'+id+']';}
+  const template=entry[current]||entry.vi;
+  return template.replace(/\{([a-zA-Z][a-zA-Z0-9]*)\}/g,(match,name)=>
+    Object.prototype.hasOwnProperty.call(params,name)?String(params[name]):match);
+ }
  const nodeSources=new WeakMap(),attributeSources=new WeakMap();let titleSource='',lastTitle='';
  const format=[
   [/^([\u3040-\u30ff\s]+) · (.+)$/,m=>`${m[1]} · ${t(m[2])}`,m=>`${m[1]} · ${t(m[2])}`],
@@ -88,5 +96,5 @@ const Locale=(()=>{
  document.addEventListener('click',e=>{const b=e.target.closest('[data-locale]');if(b){set(b.dataset.locale);return;}queueMicrotask(()=>translate(document));});
  document.addEventListener('input',()=>queueMicrotask(()=>translate(document)));
  document.addEventListener('change',()=>queueMicrotask(()=>translate(document)));
- return{t,translate,switcher,set,register,diagnostics:()=>[...missing],get code(){return current;}};
+ return{t,ui,translate,switcher,set,register,diagnostics:()=>[...missing],missingUIKeys:()=>[...missingUIKeys],get code(){return current;}};
 })();
