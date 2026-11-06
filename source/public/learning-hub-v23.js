@@ -1,7 +1,7 @@
 /* HORIZON Guided Hub v23: presentation only. Progress stays in existing learner stores. */
 (function(){
  'use strict';
- const mark='v23';
+ const mark='v24';
  const E=window.NPLessonEngine;
  const escText=value=>String(value==null?'':value).replace(/[&<>"']/g,function(x){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]});
  const levels=[
@@ -47,12 +47,12 @@
   return '<div class="lh-crumb">'+parts.map(function(p,i){return (i?'<span aria-hidden="true">/</span>':'')+(p[1]?'<a href="#'+p[1]+'">'+p[0]+'</a>':'<strong>'+p[0]+'</strong>')}).join('')+'</div>';
  }
  function commonHead(title,sub,selected,parts){
-  return '<div class="lh-hero"><div class="lh-hero-text"><span class="lh-eyebrow">HORIZON · LEARNING WORKSPACE</span><h1>'+title+'</h1><p>'+sub+'</p></div><div class="lh-hero-kanji" lang="ja" aria-hidden="true">学</div></div>'+
+  return '<div class="lh-hero"><div class="lh-hero-text"><span class="lh-eyebrow">学びの道 · HORIZON LEARNING</span><h1>'+title+'</h1><p>'+sub+'</p></div><div class="lh-hero-kanji" lang="ja" aria-hidden="true">学</div></div>'+
     navRow(selected)+(parts?crumb(parts):'');
  }
  function pill(label,kind){return '<span class="lh-pill lh-pill-'+kind+'">'+label+'</span>'}
  function anchor(title,href,cls){return '<a class="'+(cls||'lh-button')+'" href="#'+href+'">'+title+' '+icon('arrow')+'</a>'}
- function title(text,href){return '<div class="lh-section-title"><h2>'+text+'</h2>'+(href?anchor('Xem chi tiết',href,'lh-text-link'):'')+'</div>'}
+ function title(text,href){return '<div class="lh-section-title"><h2>'+text+'</h2>'+(href?anchor('Xem tất cả',href,'lh-text-link'):'')+'</div>'}
  function action(s){
   if(s.pending.length){
    const active=s.pending[0],loc=active.mode==='review'?'lesson/review':active.mode==='practice'?'quiz':'lesson/resume';
@@ -66,28 +66,28 @@
   const a=action(s),completed=s.completed.length,first=s.attempts.filter(x=>x.kind!=='repair'),independent=first.filter(x=>x.correct&&!x.hintUsed).length;
   return '<div class="lh-grid"><div class="lh-main">'+
    '<section class="lh-panel lh-focus"><div class="lh-section-title"><h2>'+icon('calendar')+' Hôm nay nên học gì?</h2>'+pill(a.tag,'highlight')+'</div>'+
-    '<div class="lh-focus-body"><div class="lh-focus-glyph" lang="ja">あ</div><div class="lh-focus-copy"><small>Hành động ưu tiên</small><h3>'+escText(a.title)+'</h3><p>'+escText(a.context)+'</p></div>'+anchor(a.label,a.href,'lh-button lh-button-primary')+'</div>'+
+    '<div class="lh-focus-body"><div class="lh-focus-glyph" lang="ja">あ</div><div class="lh-focus-copy"><small>NỘI DUNG ƯU TIÊN</small><h3>'+escText(a.title)+'</h3><p>'+escText(a.context)+'</p></div>'+anchor(a.label,a.href,'lh-button lh-button-primary')+'</div>'+
     '<p class="lh-hint">Đề xuất theo trạng thái bài dở và lịch ôn; không phải đánh giá trình độ tự động.</p></section>'+
-   '<section class="lh-panel"><div class="lh-section-title"><h2>'+icon('route')+' Lộ trình học</h2>'+anchor('Xem lộ trình','journey','lh-text-link')+'</div>'+
+   '<section class="lh-panel lh-path-section"><div class="lh-section-title"><h2>'+icon('route')+' Lộ trình học theo cấp độ</h2>'+anchor('Xem lộ trình','journey','lh-text-link')+'</div>'+
     '<div class="lh-path">'+levels.map(function(level){const active=s.p.goal===level.name;return '<a href="#course/'+level.id+'" class="'+(active?'selected':'')+'"><span class="lh-path-mark">'+level.mark+'</span><strong>'+level.name+'</strong><small>'+ (level.status==='planned'?'Dự kiến':active?'Mục tiêu hiện tại':'Có bản mẫu')+'</small></a>'}).join('')+'</div></section>'+
-   '<section class="lh-panel"><div class="lh-section-title"><h2>'+icon('book')+' Nội dung có thể học</h2>'+anchor('Toàn bộ bài học','learn/lessons','lh-text-link')+'</div>'+
+   '<section class="lh-panel lh-course-preview"><div class="lh-section-title"><h2>'+icon('book')+' Khám phá nội dung học</h2>'+anchor('Toàn bộ bài học','learn/lessons','lh-text-link')+'</div>'+
     '<div class="lh-learning-cards">'+
       '<a href="#course/foundation" class="lh-learning-card"><span class="lh-learning-symbol" lang="ja">あ</span><strong>Nền tảng · Hiragana</strong><small>Nhận mặt chữ, luyện viết, kiểm tra</small>'+pill('Bài mẫu & công cụ','ready')+'</a>'+
       '<a href="#course/N5" class="lh-learning-card"><span class="lh-learning-symbol" lang="ja">日本語</span><strong>N5 · Giới thiệu bản thân</strong><small>Mẫu câu và luyện nhớ lại</small>'+pill('Bài mẫu','ready')+'</a>'+
       '<a href="#exams" class="lh-learning-card"><span class="lh-learning-symbol" lang="ja">試験</span><strong>Luyện đề JLPT</strong><small>Bộ câu hỏi minh họa theo cấp độ</small>'+pill('Bộ mẫu','preview')+'</a>'+
     '</div></section></div>'+
-   '<aside class="lh-side"><section class="lh-panel"><h2>'+icon('chart')+' Tiến độ đã ghi nhận</h2>'+
+   '<aside class="lh-side"><section class="lh-panel lh-progress-panel"><h2>'+icon('chart')+' Tiến độ đã ghi nhận</h2>'+
      '<div class="lh-stat"><strong>'+completed+'</strong><span>Phiên học hoàn tất</span></div><div class="lh-stat"><strong>'+independent+' / '+first.length+'</strong><span>Câu đúng độc lập / câu đã trả lời</span></div>'+
      '<div class="lh-stat"><strong>'+s.due.length+'</strong><span>Nội dung đến hạn ôn</span></div>'+
      '<p class="lh-hint">Đúng một lần không đồng nghĩa đã ghi nhớ lâu dài.</p></section>'+
-    '<section class="lh-panel"><h2>'+icon('spark')+' Gợi ý dựa trên kết quả</h2>'+
+    '<section class="lh-panel lh-recommendations"><h2>'+icon('spark')+' Gợi ý dựa trên kết quả</h2>'+
      (s.due.length?'<div class="lh-advice">Bạn có '+s.due.length+' nội dung đến hạn. Hãy thử nhớ lại trước khi xem đáp án.</div>':s.weak.length?'<div class="lh-advice">Có câu cần xem lại từ lần luyện gần nhất. Mở danh sách lỗi để luyện đúng phần còn yếu.</div>':'<div class="lh-advice">Chưa có đủ bằng chứng để xác định điểm yếu. Bắt đầu bằng một bài ngắn.</div>')+
      '<div class="lh-quick-actions">'+anchor('Ôn tập','review','lh-secondary-link')+anchor('Lỗi cần ôn','mistakes','lh-secondary-link')+anchor('Luyện đề JLPT','exams','lh-secondary-link')+'</div></section>'+
-    '<section class="lh-panel"><h2>'+icon('compass')+' Mục tiêu hiện tại</h2><strong class="lh-current-goal">'+escText(s.p.goal)+'</strong><p>Đây là mục tiêu tự chọn, không phải trình độ đã kiểm tra.</p>'+anchor('Điều chỉnh mục tiêu','settings/goals','lh-text-link')+'</section></aside></div>';
+    '<section class="lh-panel lh-goal-panel"><h2>'+icon('compass')+' Mục tiêu hiện tại</h2><strong class="lh-current-goal">'+escText(s.p.goal)+'</strong><p>Đây là mục tiêu tự chọn, không phải trình độ đã kiểm tra.</p>'+anchor('Điều chỉnh mục tiêu','settings/goals','lh-text-link')+'</section></aside></div>';
  }
  function catalog(s){
   return '<div class="lh-panel">'+title('Khám phá khóa học')+'<p class="lh-hint">Chọn một khóa để xem module và bài hiện có. Khóa chưa phát hành chỉ hiển thị kế hoạch.</p>'+
-   '<div class="lh-course-grid">'+levels.map(function(x){return '<a class="lh-course-card" href="#course/'+x.id+'"><span class="lh-course-symbol" lang="ja">'+x.mark+'</span><h3>'+x.name+'</h3><p>'+x.desc+'</p>'+pill(x.status==='planned'?'Chưa phát hành':x.id==='foundation'?'Có bài mẫu & công cụ':'Có bài mẫu',x.status==='planned'?'pending':'ready')+'<span class="lh-course-arrow">'+icon('arrow')+'</span></a>'}).join('')+'</div></div>';
+   '<div class="lh-course-grid">'+levels.map(function(x,i){return '<a class="lh-course-card lh-course-'+x.id.toLowerCase()+'" href="#course/'+x.id+'"><div class="lh-course-art"><span class="lh-course-symbol" lang="ja">'+x.mark+'</span><span class="lh-course-ordinal">'+String(i+1).padStart(2,'0')+'</span></div><div class="lh-course-body"><h3>'+x.name+'</h3><p>'+x.desc+'</p>'+pill(x.status==='planned'?'Chưa phát hành':x.id==='foundation'?'Có bài mẫu & công cụ':'Có bài mẫu',x.status==='planned'?'pending':'ready')+'<span class="lh-card-action">'+(x.status==='planned'?'Xem lộ trình':'Mở khóa học')+' '+icon('arrow')+'</span></div></a>'}).join('')+'</div></div>';
  }
  function moduleRows(){
   return [{name:'Hiragana',desc:'Nguyên âm và luyện nhận dạng',href:'course/foundation',status:'Có bài mẫu'},
@@ -97,34 +97,34 @@
  }
  function modules(){
   return '<section class="lh-panel">'+title('Module có nội dung để trải nghiệm')+
-   '<div class="lh-row-list">'+moduleRows().map(function(x,i){return '<a href="#'+x.href+'" class="lh-module-row"><span class="lh-row-num">'+String(i+1).padStart(2,'0')+'</span><span><strong>'+x.name+'</strong><small>'+x.desc+'</small></span>'+pill(x.status,'ready')+icon('chevron')+'</a>'}).join('')+'</div>'+
+   '<div class="lh-row-list lh-module-list">'+moduleRows().map(function(x,i){return '<a href="#'+x.href+'" class="lh-module-row"><span class="lh-row-num lh-row-glyph" lang="ja">'+(['あ','書','読','日'][i])+'</span><span><span class="lh-mini-eyebrow">MODULE '+String(i+1).padStart(2,'0')+'</span><strong>'+x.name+'</strong><small>'+x.desc+'</small></span>'+pill(x.status,'ready')+icon('chevron')+'</a>'}).join('')+'</div>'+
    '<p class="lh-hint">Katakana đầy đủ, từ vựng, nghe hiểu và các module N4–N1 sẽ bổ sung khi có nội dung đã kiểm tra.</p></section>';
  }
  function lessons(s){
   const all=[{title:'Năm chữ đầu tiên · あ・い・う・え・お',meta:'Nền tảng / Hiragana',href:'lesson/foundation-vowels',id:'foundation-vowels'},
    {title:'Giới thiệu bản thân',meta:'N5 / Mẫu câu',href:'lesson/n5-introduction',id:'n5-introduction'}];
-  return '<section class="lh-panel">'+title('Bài học đã có')+'<div class="lh-row-list">'+all.map(function(x,i){
+  return '<section class="lh-panel">'+title('Bài học đã có')+'<div class="lh-row-list lh-lessons-list">'+all.map(function(x,i){
    const relevant=s.sessions.filter(a=>a.contentId===x.id),last=relevant.at(-1);
    const status=last?.status==='completed'?'Đã hoàn thành phiên':last?'Đang học':'Có bài mẫu';
-   return '<a href="#'+x.href+'" class="lh-module-row"><span class="lh-row-num">'+String(i+1).padStart(2,'0')+'</span><span><strong>'+x.title+'</strong><small>'+x.meta+'</small></span>'+pill(status,last?.status==='completed'?'done':'ready')+icon('chevron')+'</a>';
+   return '<a href="#'+(last&&last.status!=='completed'?(last.mode==='practice'?'quiz':'lesson/resume'):x.href)+'" class="lh-module-row"><span class="lh-row-num lh-row-glyph" lang="ja">'+(i===0?'あ':'日')+'</span><span><span class="lh-mini-eyebrow">'+x.meta+'</span><strong>'+x.title+'</strong><small>'+(last&&last.status!=='completed'?'Tiếp tục tại bước '+(last.index+1)+' / '+last.units.length:'Mở bài học và luyện theo từng bước')+'</small></span>'+pill(status,last?.status==='completed'?'done':'ready')+icon('chevron')+'</a>';
   }).join('')+'</div><p class="lh-hint">Những bài chưa được phát hành không xuất hiện như bài có thể bắt đầu.</p></section>';
  }
  function practice(s){
   return '<div class="lh-grid"><section class="lh-panel lh-main">'+title('Ôn đúng nội dung cần nhớ')+
    '<p class="lh-hint">Gợi ý dựa trên câu trả lời và lịch ôn thật của hồ sơ. Không tự gán trình độ.</p>'+
-   '<div class="lh-row-list">'+[
+   '<div class="lh-row-list lh-practice-list">'+[
     ['Đến hạn ôn',s.due.length+' nội dung từ lịch giãn cách','review'],
     ['Lỗi gần đây',s.weak.length+' câu sai trong danh sách gần nhất','mistakes'],
     ['Luyện nhận diện Kana','Luyện chữ và kiểm tra nhận diện','kana/check'],
     ['Luyện đề JLPT','Bộ câu hỏi mẫu N5–N1, chưa phải đề thi đầy đủ','exams']
-   ].map(function(x,i){return '<a href="#'+x[2]+'" class="lh-module-row"><span class="lh-row-num">'+String(i+1).padStart(2,'0')+'</span><span><strong>'+x[0]+'</strong><small>'+x[1]+'</small></span>'+icon('arrow')+'</a>'}).join('')+'</div></section>'+
+   ].map(function(x,i){return '<a href="#'+x[2]+'" class="lh-module-row"><span class="lh-row-num lh-row-glyph">'+icon(['review','target','pen','book'][i])+'</span><span><span class="lh-mini-eyebrow">'+(['LỊCH ÔN','ĐIỂM CẦN CỦNG CỐ','KANA','JLPT'][i])+'</span><strong>'+x[0]+'</strong><small>'+x[1]+'</small></span>'+icon('arrow')+'</a>'}).join('')+'</div></section>'+
    '<aside class="lh-panel lh-side"><h2>'+icon('brain')+' Quy tắc gợi ý</h2><p>Ưu tiên bài đang dở, sau đó nội dung đến hạn ôn, rồi mới đề xuất học bài mới.</p><p class="lh-hint">Chưa có tính năng AI đánh giá phát âm hoặc chấm viết tự động.</p></aside></div>';
  }
  function learningPage(){
   const s=state();if(!s)return '<section class="lh-panel">Không đọc được hồ sơ hiện tại.</section>';
   const selected=(route().split('/')[1]||'overview'),valid=nav.some(x=>x[0]===selected),tab=valid?selected:'overview';
   let body=tab==='catalog'?catalog(s):tab==='modules'?modules():tab==='lessons'?lessons(s):tab==='practice'?practice(s):overview(s);
-  return '<div class="lh-page" data-learning-hub="'+mark+'">'+commonHead('Không gian học tập','Biết mình đang ở đâu, cần học gì và nên làm gì tiếp theo.',tab)+
+  return '<div class="lh-page" data-learning-hub="'+mark+'">'+commonHead('Không gian học tập','Học có định hướng, hiểu từng bước, nhớ lâu hơn mỗi ngày.',tab)+
   (s.reason?'<p class="lh-warning">'+escText(s.reason)+'</p>':'')+body+'<div class="lh-footer-version">HORIZON · Learning Hub '+mark+' · Dữ liệu theo hồ sơ hiện tại · Giao diện demo</div></div>';
  }
  function coursePageV23(id){
