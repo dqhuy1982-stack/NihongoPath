@@ -95,7 +95,7 @@
       <section class="n5-side-panel n5-side-quick">
         <h3><span class="n5-side-icon" aria-hidden="true">ϟ</span>${U('quick')}</h3>
         <div class="n5-side-buttons">
-          <a href="#notebook" class="n5-side-action">${icon('note')}${U('notes')}</a>
+          <button type="button" class="n5-side-action" data-action="n5-note-open">${icon('note')}${U('notes')}</button>
           <a href="#quiz" class="n5-side-action">${icon('review')}${U('practice')}</a>
         </div>
       </section>
@@ -109,7 +109,7 @@
     const destination=s.contentId==='foundation-vowels'?'course/foundation':'course/N5';
     return before+`<footer class="n5-stage-footer">
       <a class="n5-stage-back" href="#${destination}">${icon('back')} ${Locale.ui('lesson.mockup.back')}</a>
-      <span class="n5-stage-flower" aria-hidden="true">✿</span>
+      
       ${actions}
     </footer>`;
   }
@@ -145,7 +145,7 @@
     return wrap(state,`<div class="n5-player-compact n5-player-mockup" data-foundation="${content.id==='foundation-vowels'}"
       data-compact-choices="${shortOptions}" data-choice-count="${q?.options?.length||0}" data-active-type="${esc(u.type)}">
       <header class="n5-session-hero">
-        <div class="n5-hero-art" aria-hidden="true"></div>
+        
         <div class="n5-hero-content">
           <div class="n5-topline">${link(U('today'),'today','textlink','back')}${b(U('pause'),'pause','textlink',s)}</div>
           <div class="n5-hero-main">
@@ -165,13 +165,21 @@
            data-question="${u.type==='question'}" data-reading="${visibleReading(s,u)?'show':'hide'}">
           <div class="n5-stage-kicker">
             <span class="n5-stage-number">${u.type==='question'?U('question',{current:questionNo,total:totalQuestions}):U('step',{current:currentNo,total})}</span>
-            <a href="#notebook" class="n5-stage-bookmark" title="${U('notes')}" aria-label="${U('notes')}">${icon('note')}</a>
+            <button type="button" class="n5-stage-bookmark" data-action="n5-note-open" title="${U('notes')}" aria-label="${U('notes')}">${icon('note')}</button>
           </div>
           ${staged}
         </article>
         ${sessionOutline(state,s)}
       </div>
       <div class="n5-player-meta">${statusLine(s)}<p class="n5-footnote">${U('sample')}</p></div>
+      <dialog class="n5-inline-notes" data-n5-note-dialog aria-labelledby="n5-note-title">
+        <div class="n5-note-head"><div><span class="eyebrow">SỔ HỌC TẬP · GHI CHÚ NHANH</span><h2 id="n5-note-title">Ghi chú cho bước ${currentNo}</h2></div>
+          <button type="button" class="n5-note-close" data-action="n5-note-close" aria-label="Đóng">×</button></div>
+        <p>Ghi lại điều cần nhớ ngay tại bài học. Bạn sẽ không mất vị trí đang học.</p>
+        <label for="n5-note-body">Nội dung ghi chú</label>
+        <textarea id="n5-note-body" rows="5" maxlength="2000" placeholder="Ví dụ: あ đọc là a. Dễ nhầm với お…"></textarea>
+        <div class="n5-note-actions"><button type="button" class="btn" data-action="n5-note-close">Tiếp tục học</button><button type="button" class="btn primary" data-action="n5-note-save">Lưu ghi chú</button></div>
+      </dialog>
     </div>`);
   }
   function resultPage(state,id){
@@ -254,6 +262,23 @@
   document.addEventListener('click',event=>{
     const anchor=event.target.closest('a[href]');if(isPreview()&&anchor){event.preventDefault();event.stopImmediatePropagation();toast('Đang xem trước: dùng câu hỏi và nút chạy lại trong khung.');return;}
     const el=event.target.closest('[data-action^="n5-"]');if(!el)return;event.preventDefault();event.stopImmediatePropagation();const view=window.NPLessonInteractions?.capture(),action=el.dataset.action.slice(3),expected=el.dataset.session?{session:el.dataset.session,unit:el.dataset.unit}:null;
+    if(action==='note-open'){
+      const dlg=document.querySelector('[data-n5-note-dialog]');
+      if(dlg&&typeof dlg.showModal==='function'){dlg.showModal();dlg.querySelector('textarea')?.focus();}
+      return;
+    }
+    if(action==='note-close'){document.querySelector('[data-n5-note-dialog]')?.close();return;}
+    if(action==='note-save'){
+      if(isPreview()){toast('Bản xem trước không lưu ghi chú.');return;}
+      const dlg=document.querySelector('[data-n5-note-dialog]'),value=dlg?.querySelector('textarea')?.value.trim();
+      if(!value){dlg?.querySelector('textarea')?.focus();return;}
+      const state=read(),s=state&&E.active(state),unit=s&&E.unit(s);
+      if(!s||!unit)return;
+      addNote({type:'note',title:'Bước '+(s.index+1)+' · '+Locale.t(unit.label||s.definition.title),
+        body:value,source:s.definition.level+' · '+s.definition.title+' · v'+s.contentVersion,
+        target:'lesson/resume'});
+      dlg.close();toast('Đã lưu ghi chú. Tiếp tục ngay tại bước đang học.');return;
+    }
     if(action==='preview-restart'){initPreview();storageError='';go('lesson');render(false);return;}
     if(isPreview()&&['save-personal','save-summary','export'].includes(action)){toast('Xem trước không ghi vào hồ sơ hoặc sổ học tập.');return;}
     if(action==='export'){exportState();return;}
