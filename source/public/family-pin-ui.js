@@ -3,7 +3,7 @@
    No server account is created; local PINs only guard the demo interface. */
 window.NPFamilyPinUI=(function(){
  'use strict';
- const tr=(vi,en,ja)=>[vi,en,ja][{vi:0,en:1,ja:2}[window.Locale?.code]||0];
+ const tr=(vi,en,ja)=>Locale.register(vi,en,ja);
  const motionOff=()=>window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
  const touchLike=()=>window.matchMedia?.('(pointer:coarse)').matches;
  let current=null;
