@@ -12,7 +12,7 @@ const css=read('home-v9.css');
 const photos=read('family-portraits.js');
 
 test('V9 is activated only for the static family landing, after V8 CSS',()=>{
-  assert.ok(html.includes('href="home-v9.css"'));
+  assert.ok(html.includes('href="home-v9.css?v=9.1"'));
   assert.ok(html.indexOf('href="home-v9.css"')>html.indexOf('href="home-v8.css"'));
   assert.ok(ui.includes("if(!window.NP_FAMILY_SYNC){"));
   assert.ok(ui.includes("home.classList.add('home-v9')"));
@@ -98,4 +98,17 @@ test('Season and language controls remain operational and accessible',()=>{
   assert.ok(ui.includes('aria-pressed'));
   for(const season of ['spring','summer','autumn','winter'])assert.ok(css.includes('data-season="'+season+'"'));
   for(const language of ['vi','en','ja'])assert.ok(read('locales.js').includes(language));
+});
+
+test('Laptop entry uses height-aware composition rather than a fake hidden overflow',()=>{
+  assert.ok(css.includes('@media (min-width:851px) and (max-height:930px)'));
+  assert.ok(css.includes('@media (min-width:851px) and (max-height:740px)'));
+  assert.ok(css.includes('@media (min-width:851px) and (max-height:575px)'));
+  assert.ok(css.includes('justify-content:center!important'), 'short laptop page has centered composition');
+  assert.ok(css.includes('width:clamp(106px,16svh,132px)!important'));
+  assert.ok(css.includes('height:clamp(106px,16svh,132px)!important'));
+  assert.ok(css.includes('margin:clamp(10px,1.8svh,16px) auto 0!important'));
+  assert.ok(css.includes('justify-content:flex-start!important'), 'ultra-short screens may naturally scroll');
+  assert.ok(!css.includes('overflow-y:hidden!important'), 'do not conceal learner or Guest content');
+  assert.ok(html.includes('href="home-v9.css?v=9.1"'), 'Safari and Chrome load fresh refinements');
 });
