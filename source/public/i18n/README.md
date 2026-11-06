@@ -52,6 +52,32 @@ earlier pages during the gradual migration. The UI pack is now the
 authoritative source for Review and Learning Journal; do not add new UI copy
 to scattered module files.
 
+
+## Coverage status (V17)
+
+Central keyed UI pack covers these high-visibility routes and controls:
+
+| UI area | Status | Boundaries |
+| --- | --- | --- |
+| Review / review schedule / Michi | Keyed | Learning concepts and example questions remain separate |
+| Learning Journal | Keyed | User-authored title, text and source are not translated |
+| Learner Profile | Keyed | Names and custom purpose are preserved; known sample purpose has a localized display label |
+| My Space — navigation / Account & Security | Keyed | Other settings panels still have legacy dictionary-backed text |
+| Screen map — simulation group 07 | Keyed phrases via Locale.t | Static map metadata outside this group still uses the legacy dictionary |
+| N5 versioned report widget | Keyed metrics | Learning record values and lesson titles remain unchanged |
+| Kana Writing Studio — counts, save state, selected actions | Keyed | Learning prompts and older runtime status messages still use legacy translation |
+
+This is a **migration baseline, not a claim that every legacy page is 100% localized**.
+Some older screens still depend on `locale-data.js`, `locale-coverage.js`, and
+module-local `tr(vi,en,ja)`. Those components remain supported during migration,
+but all newly introduced UI should use `Locale.ui` with a key in this pack.
+
+Regression gate: `tests/i18n-ui-pack.test.mjs` and
+`tests/i18n-v17-pages.test.mjs` render important VI/EN/JA cases. This does not
+replace manual visual testing in Chrome and Safari. Use
+`Locale.diagnostics()` and `Locale.missingUIKeys()` when auditing remaining
+legacy untranslated text.
+
 ## QA acceptance
 
 1. Switch VI → EN → 日本語 → VI on Home, Dashboard, Review, Journal.
