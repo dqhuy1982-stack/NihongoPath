@@ -1,0 +1,70 @@
+/* FOUNDATION · Kana Journey / Phase A
+   Extends seasonal shell tokens; does not override existing Studio screens. */
+.fj-page{max-width:1160px;margin:0 auto;padding-bottom:24px;min-width:0}
+.fj-back{display:inline-flex;align-items:center;margin:0 0 14px;gap:7px}
+.fj-heading{display:flex;gap:20px;align-items:center;justify-content:space-between;margin:2px 0 22px}
+.fj-heading h1{font:500 clamp(29px,4vw,42px)/1.15 'Newsreader','Noto Serif JP',Georgia,serif;color:var(--text);letter-spacing:-.02em;margin:4px 0 8px}
+.fj-heading p{margin:0;line-height:1.6;color:var(--muted);max-width:640px;font-size:14px}
+.fj-symbol{font:400 32px/1.3 'Noto Serif JP',serif;white-space:nowrap;color:var(--season-ink,var(--green));opacity:.6}
+.fj-symbol span{font-family:'Manrope',sans-serif;font-size:16px;padding:0 10px}
+.fj-intro{display:flex;align-items:center;justify-content:space-between;gap:24px;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:25px 26px}
+.fj-intro-copy{flex:1;min-width:0}
+.fj-kicker{font:700 10px/1.4 'Manrope',sans-serif;letter-spacing:.07em;text-transform:uppercase;color:var(--season-ink,var(--green))}
+.fj-intro h2{font:500 clamp(22px,2.6vw,28px)/1.2 'Newsreader','Noto Serif JP',Georgia,serif;letter-spacing:-.01em;margin:7px 0 7px}
+.fj-intro p{margin:0;max-width:650px;font-size:13px;line-height:1.6;color:var(--muted)}
+.fj-hero-action{white-space:normal;max-width:205px;text-align:center;justify-content:center;flex:0 0 auto}
+.fj-flow{margin:18px 0}
+.fj-flow-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.fj-stage{min-width:0;border:1px solid var(--line);border-radius:16px;background:var(--surface);padding:18px;display:flex;flex-direction:column;gap:10px;transition:border-color .18s ease}
+.fj-stage:hover,.fj-stage:focus-within{border-color:var(--season-ink,var(--green))}
+.fj-stage-label{display:flex;align-items:center;gap:9px;min-width:0}
+.fj-stage-number{font:600 11px/1.3 'Manrope',sans-serif;color:var(--season-ink,var(--green));display:inline-flex;align-items:center;justify-content:center;flex:0 0 30px;height:30px;border-radius:50%;border:1px solid var(--line);background:var(--season-highlight,var(--sage))}
+.fj-stage h3{font:700 14px/1.35 'Manrope','Noto Sans JP',sans-serif;margin:0;color:var(--text)}
+.fj-stage p{font:400 12px/1.55 'Manrope','Noto Sans JP',sans-serif;color:var(--muted);margin:0;flex:1}
+.fj-stage-action{color:var(--season-ink,var(--green));font:700 12px/1.4 'Manrope','Noto Sans JP',sans-serif;display:inline-flex;align-items:center;gap:7px;align-self:start;text-decoration:none}
+.fj-stage-action:hover{text-decoration:underline}
+.fj-inline-note{margin:11px 3px 0;color:var(--muted);font-size:11px;line-height:1.55}
+.fj-unit-list{border:1px solid var(--line);background:var(--surface);border-radius:16px;overflow:hidden;margin:20px 0 0}
+.fj-unit-list>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;list-style:none;padding:17px 20px}
+.fj-unit-list>summary::-webkit-details-marker{display:none}
+.fj-unit-list>summary strong{display:block;font-size:14px;color:var(--text)}
+.fj-unit-list>summary small{display:block;font-size:11px;color:var(--muted);line-height:1.55;margin-top:5px}
+.fj-expand{font-size:22px;line-height:1;transition:transform .18s ease;color:var(--season-ink,var(--green))}
+.fj-unit-list[open] .fj-expand{transform:rotate(180deg)}
+.fj-unit-list ol{list-style:none;padding:0 18px 14px;margin:0}
+.fj-unit{display:grid;grid-template-columns:45px minmax(0,1fr) auto;gap:14px;align-items:center;padding:12px 3px;border-top:1px solid var(--line);min-width:0}
+.fj-unit-code{font:700 11px/1.3 'Manrope',sans-serif;color:var(--season-ink,var(--green))}
+.fj-unit-description{display:grid;gap:5px;min-width:0}
+.fj-unit-description strong{font-size:12px;color:var(--text);font-weight:650}
+.fj-status{font-size:10px;color:var(--season-ink,var(--green))}
+.fj-status.fj-pending{color:var(--muted)}
+.fj-unit-end{font-size:11px;text-align:right}
+.fj-unit-action{color:var(--season-ink,var(--green));text-decoration:none;font-weight:650}
+.fj-unit-action:hover{text-decoration:underline}
+.fj-unit-muted{color:var(--muted);font-size:10px}
+.fj-next{margin:18px 0 12px;padding:19px 22px;border-radius:17px;border:1px solid var(--line);background:var(--season-highlight,var(--sage));display:flex;align-items:center;justify-content:space-between;gap:18px}
+.fj-next h2{margin:4px 0 7px;font:500 23px/1.18 'Newsreader','Noto Serif JP',Georgia,serif}
+.fj-next p{margin:0 0 6px;color:var(--text);font-size:12px;line-height:1.6;max-width:680px}
+.fj-next small{font-size:11px;color:var(--season-ink,var(--green))}
+.fj-next-links{display:flex;flex-direction:column;align-items:center;gap:10px;flex:0 0 180px}
+.fj-next-links a{max-width:100%;text-align:center;justify-content:center}
+.fj-footnote{font-size:10px;line-height:1.6;color:var(--muted);margin:14px 4px 0}
+.fj-page a:focus-visible,.fj-unit-list summary:focus-visible{outline:2px solid var(--season-ink,var(--green));outline-offset:3px}
+@media(max-width:850px){.fj-intro{padding:20px}.fj-next{align-items:flex-start}.fj-next-links{flex:0 0 160px}}
+@media(max-width:620px){
+ .fj-heading{margin-bottom:13px}.fj-heading h1{font-size:30px}.fj-heading p{font-size:12px}
+ .fj-symbol{font-size:24px}.fj-symbol span{font-size:12px;padding:0 4px}
+ .fj-intro{display:block;padding:18px;border-radius:16px}.fj-intro h2{font-size:23px}
+ .fj-hero-action{margin-top:14px;max-width:none;width:100%;min-height:43px}
+ .fj-flow{margin:13px 0}.fj-flow-cards{grid-template-columns:1fr;gap:7px}
+ .fj-stage{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:10px;row-gap:3px;padding:12px 14px;border-radius:13px;align-items:center}
+ .fj-stage-label{grid-column:1}.fj-stage-label h3{font-size:13px}
+ .fj-stage p{grid-column:1;color:var(--muted);font-size:11px;padding-left:40px}
+ .fj-stage-action{grid-column:2;grid-row:1/span 2;max-width:115px;white-space:normal;font-size:11px;line-height:1.4;text-align:right}
+ .fj-unit-list>summary{padding:14px}.fj-unit-list ol{padding:0 12px 10px}
+ .fj-unit{grid-template-columns:38px minmax(0,1fr);column-gap:8px}
+ .fj-unit-end{grid-column:2;text-align:left}
+ .fj-next{display:block;padding:16px}.fj-next-links{align-items:stretch;flex-direction:row;justify-content:space-between;flex-wrap:wrap;margin-top:13px}
+ .fj-next-links .btn{flex:1;min-width:160px}
+}
+@media(prefers-reduced-motion:reduce){.fj-stage,.fj-expand{transition:none}}
