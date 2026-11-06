@@ -129,7 +129,7 @@
 
     else if(u.type==='personal')body=personal(s);
     else body=question(state,s,u);
-    const U=(key,args)=>Locale.ui('lesson.player.'+key,args);
+    const U=(key,args)=>Locale.ui('lesson.mockup.'+key,args);
     const total=s.units.length,completed=s.completedUnits.length,currentNo=s.index+1;
     const q=u.type==='question'?E.definition(s,u.questionId):null;
     const questionNo=u.type==='question'?s.units.slice(0,currentNo).filter(x=>x.type==='question').length:0;
@@ -137,27 +137,41 @@
     const shortOptions=!!(q?.type==='choice'&&q.options?.length<=5&&q.options.every(o=>String(o.text).length<=14));
     const headingText=s.mode==='review'?(s.earlyReview?'Thử lại. Giữ nguyên lịch ôn.':'Ôn lại, để nhớ xa hơn.'):s.mode==='practice'?'Thử nhớ bằng chính mình.':'Một bước nhỏ, dùng được ngay.';
     const stepCaption=U('step',{current:currentNo,total})+' · '+Locale.t(u.label||'Luyện nhớ');
-    return wrap(state,`<div class="n5-player-compact" data-foundation="${content.id==='foundation-vowels'}" data-compact-choices="${shortOptions}" data-active-type="${esc(u.type)}">
+    const nonQuestionActions=u.type==='question'?'':`<div class="n5-step-actions">
+      ${b(u.type==='personal'?'Tôi đã thử dùng câu này '+icon('arrow'):u.type==='story'?'Hiểu mẫu câu '+icon('arrow'):'Thử bước tiếp theo '+icon('arrow'),'next','btn primary',s)}
+      ${u.type==='personal'?b('Bỏ qua lúc này','next','textlink',s,'data-skipped="true"'):''}
+    </div>`;
+    const staged=framedStage(body+nonQuestionActions,s);
+    return wrap(state,`<div class="n5-player-compact n5-player-mockup" data-foundation="${content.id==='foundation-vowels'}"
+      data-compact-choices="${shortOptions}" data-choice-count="${q?.options?.length||0}" data-active-type="${esc(u.type)}">
       <header class="n5-session-hero">
-        <div class="n5-topline">${link(U('today'),'today','textlink','back')}${b(U('pause'),'pause','textlink',s)}</div>
-        <div class="n5-hero-main"><span class="eyebrow">${esc(content.level)} · ${esc(Locale.t(content.title))} · v${s.contentVersion}</span>
-          <h1>${esc(Locale.t(headingText))}</h1></div>
+        <div class="n5-hero-art" aria-hidden="true"></div>
+        <div class="n5-hero-content">
+          <div class="n5-topline">${link(U('today'),'today','textlink','back')}${b(U('pause'),'pause','textlink',s)}</div>
+          <div class="n5-hero-main">
+            <span class="eyebrow">${esc(Locale.t(content.level))} · ${esc(Locale.t(content.title))} · v${s.contentVersion}</span>
+            <h1>${esc(Locale.t(headingText))}</h1>
+            <p class="n5-hero-intro">${icon('leaf')} ${esc(Locale.t(content.lead||'Học một mẫu nhỏ, thử nhớ lại và dùng cho chính mình.'))}</p>
+          </div>
+        </div>
         <div class="n5-hero-progress">
-          <span>${esc(stepCaption)}</span>
-          <div class="n5-hero-progress-track"><div class="n5-progress" role="progressbar" aria-label="${U('progress')}" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${completed}"><span style="width:${completed/Math.max(1,total)*100}%"></span></div></div>
-          <strong>${U('completed',{completed,total})}</strong>
+          <span class="n5-hero-progress-current">${esc(stepCaption)}</span>
+          ${stepRail(s)}
           <div class="n5-hero-reading">${readingButton(s)}</div>
         </div>
       </header>
       <div class="n5-player-grid">
-        <article class="card n5-stage" data-session="${esc(s.id)}" data-unit="${esc(u.id)}" data-question="${u.type==='question'}" data-reading="${s.reading}">
-          <div class="n5-stage-kicker"><span class="n5-stage-number">${u.type==='question'?U('question',{current:questionNo,total:totalQuestions}):U('step',{current:currentNo,total})}</span></div>
-          ${body}
-          ${u.type!=='question'?`<div class="n5-step-actions">${b(u.type==='personal'?'Tôi đã thử dùng câu này '+icon('arrow'):u.type==='story'?'Hiểu mẫu câu '+icon('arrow'):'Thử bước tiếp theo '+icon('arrow'),'next','btn primary',s)}${u.type==='personal'?b('Bỏ qua lúc này','next','textlink',s,'data-skipped="true"'):''}</div>`:''}
+        <article class="card n5-stage" data-session="${esc(s.id)}" data-unit="${esc(u.id)}"
+           data-question="${u.type==='question'}" data-reading="${visibleReading(s,u)?'show':'hide'}">
+          <div class="n5-stage-kicker">
+            <span class="n5-stage-number">${u.type==='question'?U('question',{current:questionNo,total:totalQuestions}):U('step',{current:currentNo,total})}</span>
+            <a href="#notebook" class="n5-stage-bookmark" title="${U('notes')}" aria-label="${U('notes')}">${icon('note')}</a>
+          </div>
+          ${staged}
         </article>
-        ${sessionOutline(s)}
+        ${sessionOutline(state,s)}
       </div>
-      <div class="n5-player-meta">${statusLine(s)}<p class="n5-footnote">${Locale.t('Không cần bật âm thanh. Có thể tạm dừng bất cứ lúc nào; lần sau vẫn giữ đúng câu đang làm.')}</p></div>
+      <div class="n5-player-meta">${statusLine(s)}<p class="n5-footnote">${U('sample')}</p></div>
     </div>`);
   }
   function resultPage(state,id){
