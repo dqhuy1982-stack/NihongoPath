@@ -127,6 +127,12 @@ window.NPFamilyPinUI=(function(){
      else if(!event.shiftKey&&document.activeElement===items[items.length-1]){event.preventDefault();items[0].focus();}
    }
  }
+ function seasonMarkForPin(){
+   let season='spring';
+   try{season=document.querySelector('.home-v10')?.dataset.season||localStorage.getItem('np-home-season-v1')||'spring';}catch{}
+   if(!['spring','summer','autumn','winter'].includes(season))season='spring';
+   return 'assets/horizon-mark-'+season+'.svg?v=10';
+ }
  function open(id,source){
    if(!window.NP_STATIC_PUBLISH||window.NP_FAMILY_SYNC)return false;
    const person=db.profiles.find(p=>p.id===id&&!p.archived&&p.role!=='guest');
@@ -142,7 +148,7 @@ window.NPFamilyPinUI=(function(){
      <section class="np-pin-window" role="dialog" aria-modal="true" aria-labelledby="np-pin-title" aria-describedby="np-pin-description">
        <button type="button" class="np-pin-close" aria-label="${tr('Đóng','Close','閉じる')}">×</button>
        <div class="np-pin-brand" aria-hidden="true">
-         <img src="assets/horizon-v7-sunmark.svg?v=9" width="66" height="32" alt="">
+         <img src="${seasonMarkForPin()}" width="66" height="32" alt="">
          <span>HORIZON</span>
          <small class="np-pin-tagline" lang="en">A little closer. A world wider.</small>
        </div>
