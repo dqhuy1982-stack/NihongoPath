@@ -18,7 +18,7 @@
     autumn:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="m16 3 3.3 6.5 6.2-1.9-2.6 6.2 5 3.8-7.2 1.3-1.5 6.2-3.2-2.7-3.2 2.7-1.5-6.2-7.2-1.3 5-3.8-2.6-6.2 6.2 1.9Z"/><path d="M16 16.5v11.8m-4.3-10.2 4.3 4.3 4.3-4.3"/></svg>',
     winter:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3v26M4.7 9.5l22.6 13M4.7 22.5l22.6-13M12.5 6.5 16 10l3.5-3.5M12.5 25.5 16 22l3.5 3.5M7.5 14l4.9-.9-.9-4.9m9 15.6-.9-4.9 4.9-.9M7.5 18l4.9.9-.9 4.9m9-15.6-.9 4.9 4.9.9"/></svg>'
   };
-  function language(){const c=window.Locale?.code;return c==='en'||c==='ja'?c:'vi';}
+  function language(){const c=typeof Locale!=='undefined'?Locale.code:window.Locale?.code;return c==='en'||c==='ja'?c:'vi';}
   function current(){
     try{const v=localStorage.getItem(KEY);return seasons.includes(v)?v:'spring';}
     catch{return 'spring';}
@@ -79,6 +79,7 @@
     const open=document.querySelector('.np-inner-seasons[open]');
     if(open){open.open=false;open.querySelector('summary')?.focus({preventScroll:true});}
   });
+  document.addEventListener('np:localechange',()=>sync());
   window.addEventListener('storage',event=>{
     if(event.key===KEY)sync();
   });
