@@ -20,7 +20,23 @@
   function errorBox(){return storageError?`<div class="notice n5-error" role="alert"><div><strong>Chưa lưu được thay đổi.</strong><p>${esc(storageError)}</p>${b('Xuất bản lưu để kiểm tra','export','textlink')}</div></div>`:'';}
   function wrap(state,html){const ribbon=isPreview()?`<header class="n5-preview-ribbon"><div><strong>Xem trước bản nháp · ${esc(C.title)}</strong><span>Đáp án thử không lưu vào hồ sơ học viên.</span></div>${b('Chạy lại','preview-restart','textlink')}</header>`:'';return ribbon+`<div class="n5-reader${html.includes('n5-player-compact')?' n5-reader-playing':''}" data-n5-root data-revision="${state?.revision??-1}">${errorBox()}${html}</div>`;}
   function statusLine(s){return `<div class="n5-save"><span class="n5-save-dot" aria-hidden="true"></span>${isPreview()?'Phiên thử trong bộ nhớ · không lưu kết quả':storageError?'Có thay đổi chưa lưu':'Đã lưu trên trình duyệt này'}<span>·</span>${s?`${s.minutes} phút đã chọn`:'Chưa bắt đầu phiên'}</div>`;}
-  function readingButton(s){return b(icon('eye')+(s.reading==='show'?' Ẩn cách đọc':' Hiện cách đọc'),'reading','btn sm',s,`aria-pressed="${s.reading==='show'}"`);}
+  /* Hiragana pilot has no furigana entries: resolve its genuine Kana-to-romaji
+     reading without changing lesson content or writing a fake assessment. */
+  function kanaReading(s,u=E.unit(s),q=null){
+    if(s?.contentId!=='foundation-vowels')return '';
+    const concepts=s.definition?.concepts||[];
+    const c=concepts.find(item=>item.id==='kana-'+(u?.cardId||'')||(q&&item.questionId===q.id));
+    return c?.reading||'';
+  }
+  function visibleReading(s,u=E.unit(s)){
+    // An unaided question never inherits the Learn-stage "show" preference.
+    return s?.reading==='show'&&!(u?.type==='question'&&!s.current?.hintUsed&&!s.current?.feedbackId);
+  }
+  function readingButton(s){
+    const visible=visibleReading(s),U=(key)=>Locale.ui('lesson.mockup.'+key);
+    return b(icon(visible?'eye-off':'eye')+' '+U(visible?'readHide':'readShow'),'reading','btn sm n5-reading-switch',s,
+      `aria-pressed="${visible}" aria-label="${U(visible?'readHide':'readShow')}"`);
+  }
   function startOptions(p=P()){const ctx=context(p);return{minutes:ctx.minutes,priority:NPAdvicePolicy.normalize(p.prefs.studyPriority),context:ctx,reading:p.prefs.furigana==='always'?'show':'hide',name:p.name};}
   function landing(state,mode='lesson'){
     const pending=E.pending(state).find(s=>s.contentId===C.id&&s.mode===mode),last=E.latest(state),ctx=context(),minutes=ctx.minutes<=5?5:15,headline=C.headline?.length?C.headline:C.id===catalog.base.id?['Một lời chào.','Một kết nối mới.']:[C.title],introVisual=C.id==='foundation-vowels'?'<span lang="ja">あ · い<br>う · え · お</span><small>FIVE HIRAGANA VOWELS.</small>':'<span lang="ja">はじめ<br>まして。</span><small>FIRST WORDS, NEW WORLDS.</small>';
@@ -179,8 +195,17 @@
       if(action==='select')return E.select(state,el.dataset.option);
       if(action==='token')return E.token(state,el.dataset.token);
       if(action==='hint')return E.hint(state);
-      if(action==='check')return E.check(state);
-      if(action==='reading'){const s=E.active(state);s.reading=s.reading==='show'?'hide':'show';return;}
+      if(action==='check'){const s=E.active(state);if(E.unit(s)?.type==='question'&&!s.current.hintUsed)s.reading='hide';return E.check(state);}
+      if(action==='reading'){
+        const s=E.active(state),u=E.unit(s);
+        if(!s||!u)return;
+        const currentlyVisible=visibleReading(s,u);
+        // Explicitly revealing an answer reading during an unsubmitted check is a hint,
+        // so a correct answer cannot be counted as independent recall.
+        if(!currentlyVisible&&u.type==='question'&&!s.current.feedbackId)E.hint(state);
+        s.reading=currentlyVisible?'hide':'show';
+        return;
+      }
       if(action==='pause')return E.pause(state);
       if(action==='next')return E.advance(state,{repair:el.dataset.repair?el.dataset.repair==='true':undefined,skipped:el.dataset.skipped==='true'});
     },action==='resume'?null:expected,!['start','resume','pause','next','select','token'].includes(action));
