@@ -27,11 +27,11 @@ function harness(language='vi',source='foundation'){
   explanation:'あ → a. Hãy thử nhớ lại ở lượt ôn sau; một lần đúng chưa đủ kết luận đã thuộc.'
  };
  const units=[
-  {id:'u1',type:'learn',label:'Làm quen'},
-  {id:'u2',type:'learn',label:'Nghe và nhận diện'},
-  {id:'u3',type:'learn',label:'Ghi nhớ hình dạng'},
+  {id:'u1',type:'learn',cardId:'a',label:'Làm quen'},
+  {id:'u2',type:'learn',cardId:'a',label:'Nghe và nhận diện'},
+  {id:'u3',type:'learn',cardId:'a',label:'Ghi nhớ hình dạng'},
   {id:'u4',type:'question',questionId:'q-a',label:'Nhớ chữ あ',optionOrder:['i','a','u','e']},
-  {id:'u5',type:'learn',label:'Luyện thêm'},
+  {id:'u5',type:'learn',cardId:'a',label:'Luyện thêm'},
   {id:'u6',type:'question',questionId:'q-a',label:'Kiểm tra nhanh',optionOrder:['u','e','a','i']}
  ];
  const session={
