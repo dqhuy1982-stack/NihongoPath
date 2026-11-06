@@ -15,6 +15,8 @@ Public Honki de Nihongo documentation and other Japanese learning-platform patte
 
 Use the **information architecture / learner workflow** as inspiration. Do not copy proprietary wording, assets, lessons, interface styling, copyrighted teaching content, or brand features.
 
+**Foundation detail:** see [HORIZON_FOUNDATION_KANA_JOURNEY_SPEC.md](HORIZON_FOUNDATION_KANA_JOURNEY_SPEC.md) for the connected **Learn → Practice → Check → Review → N5** flow, current module reuse, progress/evidence semantics, and PC/iPhone layout. This design is documented but not yet deployed as UI.
+
 ## Product principles
 
 1. Learner sees **one useful next step** first, not the entire feature catalog.
