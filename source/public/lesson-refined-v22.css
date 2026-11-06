@@ -1,0 +1,91 @@
+/* HORIZON Lesson UI v22 · reviewed mockup · real engine interaction */
+.n5-reader.n5-reader-playing{max-width:1250px!important}
+.n5-player-mockup{--v22-rose:var(--season-ink,#754958);--v22-stroke:var(--season-hairline,#e8cbcc)}
+.n5-player-mockup .n5-session-hero{background:var(--lp-paper)!important;border-radius:20px!important}
+.n5-player-mockup .n5-hero-content{padding:17px 30px 14px!important;min-height:0!important;background:linear-gradient(110deg,var(--lp-paper) 10%,color-mix(in srgb,var(--lp-soft) 44%,var(--lp-paper)) 95%)}
+.n5-player-mockup .n5-hero-main{max-width:78%!important}
+.n5-player-mockup .n5-hero-main h1{font-family:'Newsreader','Noto Serif JP',serif!important;font-weight:620!important;font-size:clamp(27px,2.45vw,36px)!important;line-height:1.15!important;letter-spacing:-.025em}
+.n5-player-mockup .n5-hero-main .eyebrow{font-size:10px;letter-spacing:.07em}
+.n5-player-mockup .n5-hero-progress{padding:10px 29px!important}
+.n5-player-mockup .n5-hero-progress-current{font-weight:700!important}
+.n5-player-mockup .n5-stage{min-height:0!important;border-radius:18px!important;padding:18px 27px 20px!important}
+.n5-player-mockup .n5-stage-kicker{display:flex;align-items:center;margin-bottom:8px!important}
+.n5-player-mockup .n5-stage>.eyebrow{font-size:12px!important;font-weight:750!important;letter-spacing:.04em;margin:0 0 6px!important;line-height:1.4!important}
+.n5-player-mockup .n5-stage>h2{font-family:'Newsreader','Noto Serif JP',serif!important;font-weight:650!important;font-size:clamp(28px,2.6vw,37px)!important;line-height:1.22!important;margin:4px 0 9px!important}
+.n5-player-mockup .n5-stimulus-wrap{min-height:175px!important;margin:4px auto 8px!important}
+.n5-player-mockup[data-foundation="true"] .n5-stage[data-question="true"] .n5-stimulus{
+ width:248px!important;height:174px!important;max-width:100%;border:0!important;border-radius:0!important;
+ background:transparent!important;position:relative;isolation:isolate;overflow:visible;
+}
+.n5-player-mockup[data-foundation="true"] .n5-stage[data-question="true"] .n5-stimulus::before{
+ content:"";position:absolute;z-index:-1;inset:3px 31px 3px 31px;border-radius:50%;
+ border:3px solid color-mix(in srgb,var(--v22-rose) 25%,transparent);
+ outline:1px solid color-mix(in srgb,var(--v22-rose) 14%,transparent);outline-offset:7px;
+ background:radial-gradient(circle at 46% 42%,color-mix(in srgb,var(--lp-soft) 30%,var(--lp-paper)),transparent 78%);
+ transform:rotate(-8deg);
+}
+.n5-player-mockup[data-foundation="true"] .n5-stage[data-question="true"] .n5-stimulus::after{
+ content:"";position:absolute;z-index:-2;left:-67px;right:-67px;top:54px;height:68px;opacity:.26;
+ background:repeating-radial-gradient(ellipse at 50% 90%, transparent 0 15px,var(--v22-rose) 16px 17px,transparent 18px 30px);
+ mask-image:linear-gradient(90deg,transparent,black 24%,transparent 40%,transparent 61%,black 78%,transparent);
+ pointer-events:none;
+}
+.n5-player-mockup[data-foundation="true"] .n5-stage .n5-stimulus .n5-jp:has([lang="ja"]){
+ font-family:'Noto Serif JP',serif!important;font-size:96px!important;line-height:1.1!important;color:var(--text)!important;
+ filter:drop-shadow(0 2px 1px #00000009)
+}
+.n5-player-mockup .n5-kana-reading{bottom:-4px}
+.n5-player-mockup .n5-options{gap:12px!important;margin:8px 0 10px!important}
+.n5-player-mockup .n5-option{border-radius:11px!important;min-height:57px!important;padding:9px 14px!important}
+.n5-player-mockup .n5-option.correct{border-color:#638e54!important;background:color-mix(in srgb,#a8c79c 22%,var(--lp-paper))!important}
+.n5-player-mockup .n5-option.incorrect{background:color-mix(in srgb,var(--lesson-warn) 11%,var(--lp-paper))!important}
+.n5-player-mockup .n5-feedback{
+ border:1px solid var(--v22-stroke)!important;border-radius:12px!important;
+ padding:13px 15px!important;margin:5px 0 8px!important;font-size:12px!important;line-height:1.55!important;
+}
+.n5-player-mockup .n5-feedback.good{background:color-mix(in srgb,#b9d8aa 26%,var(--lp-paper))!important;border-color:#c8dbbc!important}
+.n5-player-mockup .n5-feedback.bad{background:color-mix(in srgb,#ecd2c6 33%,var(--lp-paper))!important;border-color:#dcb6ab!important}
+.n5-player-mockup .n5-feedback strong{font-size:14px;font-weight:750}
+.n5-player-mockup .n5-feedback p{margin:3px 0!important;font-size:12px!important}
+.n5-player-mockup .n5-feedback small{font-size:10px!important;color:var(--lp-mutetext)}
+.n5-player-mockup .n5-stage-footer{border-top:1px solid var(--v22-stroke)!important;min-height:51px!important;margin-top:12px!important}
+.n5-player-mockup .n5-stage-footer .n5-step-actions>.btn.primary{font-size:12px!important}
+.n5-player-mockup .n5-mockup-side{gap:10px!important}
+.n5-player-mockup .n5-side-panel{border-radius:15px;padding:12px 16px!important}
+.n5-player-mockup .n5-side-outline .n5-outline-list{
+ max-height:260px!important;overflow:auto;padding-right:4px!important;scrollbar-width:thin;scrollbar-color:var(--v22-stroke) transparent;
+}
+.n5-player-mockup .n5-outline-list li{font-size:12px!important;line-height:1.38;min-height:31px!important;margin:2px 0!important}
+.n5-player-mockup .n5-outline-list .n5-outline-title{display:flex;align-items:baseline;gap:8px;min-width:0}
+.n5-player-mockup .n5-outline-list .n5-outline-index{font-weight:700;font-variant-numeric:tabular-nums;color:var(--lp-mutetext);flex:0 0 15px}
+.n5-player-mockup .n5-outline-list .is-current{background:var(--lp-soft);border-radius:9px;color:var(--v22-rose)}
+.n5-player-mockup .n5-side-progress .n5-side-metrics strong{font-variant-numeric:tabular-nums}
+.n5-player-mockup .n5-player-meta{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;font-size:10px}
+.n5-player-mockup .n5-build-version{
+ margin-left:auto;display:inline-flex;align-items:center;border:1px solid var(--v22-stroke);
+ background:var(--lp-paper);border-radius:999px;padding:5px 11px;font-weight:650;color:var(--v22-rose);white-space:nowrap;
+}
+.n5-player-mockup .n5-build-version::before{content:"✓";margin-right:6px;color:#538047}
+@media(min-width:1100px) and (min-height:700px){
+ .n5-player-mockup .n5-player-grid{grid-template-columns:minmax(0,2.2fr) minmax(290px,.98fr)!important}
+}
+@media(max-width:900px){
+ .n5-player-mockup .n5-hero-main{max-width:100%!important}
+ .n5-player-mockup .n5-stage{padding:17px 18px!important}
+ .n5-player-mockup .n5-stage>h2{font-size:clamp(25px,4vw,32px)!important}
+ .n5-player-mockup .n5-mockup-side{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .n5-player-mockup .n5-side-outline{display:block!important}
+}
+@media(max-width:600px){
+ .n5-player-mockup .n5-hero-content{padding:12px 15px!important}
+ .n5-player-mockup .n5-hero-main h1{font-size:25px!important}
+ .n5-player-mockup .n5-hero-progress{padding:9px 12px!important}
+ .n5-player-mockup .n5-stage>h2{font-size:26px!important}
+ .n5-player-mockup .n5-stimulus-wrap{min-height:140px!important}
+ .n5-player-mockup[data-foundation="true"] .n5-stage[data-question="true"] .n5-stimulus{height:140px!important;width:210px!important}
+ .n5-player-mockup[data-foundation="true"] .n5-stage .n5-stimulus .n5-jp:has([lang="ja"]){font-size:81px!important}
+ .n5-player-mockup .n5-mockup-side{grid-template-columns:1fr!important}
+ .n5-player-mockup .n5-side-outline{display:block!important}
+ .n5-player-mockup .n5-feedback{padding:11px!important}
+ .n5-player-mockup .n5-player-meta{justify-content:flex-end}
+}
