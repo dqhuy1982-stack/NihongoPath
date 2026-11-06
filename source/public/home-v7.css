@@ -539,3 +539,22 @@ body.dark .home-v7 .atelier-header .language-switch{background:#294638!important
  .home-v7 .portal-person,.home-v7 .family-photo,.home-v7 .home-v7-start{transition:none!important}
  .home-v7 .home-v7-start:hover,.home-v7 .portal-person:hover .family-photo{transform:none!important}
 }
+
+/* Original profile image sources remain in DOM and in account/PIN screens.
+   Home alone shows the illustrated, matching-gaze portraits from a compact
+   2 × 2 optimized WebP sprite. Each quadrant has its own character. */
+.home-v7.home-v4.home-v3.home-v2 .portal-person .avatar,
+.compact .home-v7.home-v4.home-v3.home-v2 .portal-person .avatar{
+  background-image:url('assets/horizon-family-illustrated.webp')!important;
+  background-repeat:no-repeat!important;
+  background-size:200% 200%!important;
+  background-color:#f9f7f1!important;
+}
+.home-v7.home-v4.home-v3.home-v2 .portal-person:nth-child(1) .avatar{background-position:left top!important}
+.home-v7.home-v4.home-v3.home-v2 .portal-person:nth-child(2) .avatar{background-position:right top!important}
+.home-v7.home-v4.home-v3.home-v2 .portal-person:nth-child(3) .avatar{background-position:left bottom!important}
+.home-v7.home-v4.home-v3.home-v2 .portal-person:nth-child(4) .avatar{background-position:right bottom!important}
+.home-v7.home-v4.home-v3.home-v2 .portal-person .avatar img,
+.compact .home-v7.home-v4.home-v3.home-v2 .portal-person .avatar img{
+  opacity:0!important;
+}
