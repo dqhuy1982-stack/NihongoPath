@@ -1,7 +1,7 @@
 /* HORIZON v25 · Mockup fidelity. Read-only view model; no writes to learner storage. */
 (function(){
 'use strict';
-const VERSION='v29', safe=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const VERSION='v30', safe=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const featureIcons={
  'bulb':'M9 18h6M10 21h4M9.5 14.5C7.5 13.2 6.5 11.6 6.5 9a5.5 5.5 0 0 1 11 0c0 2.6-1 4.2-3 5.5-.5.4-.7 1-.7 1.5h-3.6c0-.5-.2-1.1-.7-1.5ZM4.5 4.5l-1.5-1.5M19.5 4.5 21 3M12 1v1.6M3 10.5H1.5M22.5 10.5H21',
  'target':'M12 3a9 9 0 1 0 9 9M12 6a6 6 0 1 0 6 6M12 9a3 3 0 1 0 3 3M12 12l9-9M16.5 3H21v4.5',
@@ -158,11 +158,11 @@ function mini(m){
 }
 function overview(){
  const m=model();if(!m)return '<p>Không thể đọc hồ sơ.</p>';
- return '<div class="v25-wrap" data-learning-hub="v29">'+header()+
+ return '<div class="v25-wrap" data-learning-hub="v30">'+header()+
  '<nav class="v25-breadcrumb" aria-label="Vị trí học tập">'+href('learn','Học')+'<span aria-hidden="true">›</span>'+href('settings/goals','Mục tiêu: '+safe(m.learner.goal))+'<span aria-hidden="true">›</span>'+href('course/'+(activities.find(a=>a.id===m.current)?.course||'foundation'),'Khóa: '+(activities.find(a=>a.id===m.current)?.course==='N5'?'N5':'Nền tảng'))+'<span aria-hidden="true">›</span><span aria-current="page">Tổng quan</span></nav>'+
  (m.sample?'<div class="v25-fixture-notice">'+I('info')+' DỮ LIỆU MẪU · Mô phỏng theo hồ sơ '+safe(m.learner.name)+'. Tất cả tỷ lệ tính từ hoạt động giả lập, không phải kết quả học thực tế.</div>':'')+
  '<div class="v25-dashboard"><div class="v25-left">'+focus(m)+hierarchy(m)+'</div><div class="v25-right">'+progress(m)+weekly(m)+recommendations(m)+'</div></div>'+
- mini(m)+'<div class="v25-version">HORIZON · Learning Hub v29 · '+(m.sample?'Scenario preview':'Recorded progress')+'</div></div>';
+ mini(m)+'<div class="v25-version">HORIZON · Learning Hub v30 · '+(m.sample?'Scenario preview':'Recorded progress')+'</div></div>';
 }
 
 function tabTop(selected,m){
@@ -207,23 +207,23 @@ function practiceTab(m){
 }
 function otherTab(tab){
  const m=model();const content=tab==='catalog'?catalogueTab(m):tab==='modules'?modulesTab(m):tab==='lessons'?lessonsTab(m):practiceTab(m);
- return '<div class="v25-wrap" data-learning-hub="v29">'+tabTop(tab,m)+content+
- '<div class="v25-version">HORIZON · Learning Hub v29 · '+(m.sample?'Scenario preview':'Recorded progress')+'</div></div>';
+ return '<div class="v25-wrap" data-learning-hub="v30">'+tabTop(tab,m)+content+
+ '<div class="v25-version">HORIZON · Learning Hub v30 · '+(m.sample?'Scenario preview':'Recorded progress')+'</div></div>';
 }
 function detail(id){
  const m=model(),foundation=id==='foundation',n5=id==='N5';
  const levelNames={foundation:'Nền tảng',N5:'N5',N4:'N4',N3:'N3',N2:'N2',N1:'N1'};
  if(!levelNames[id])return originalCourse(id);
  const name=levelNames[id],act=activities.filter(a=>a.course===id),done=act.filter(a=>m.done.has(a.id)).length;
- return '<div class="v25-wrap" data-learning-hub="v29">'+
- '<div class="v28-header-shell"><header class="v25-header"><div class="v25-hero-copy"><h1>'+name+' · Lộ trình học</h1><p>'+(act.length?'Chọn hoạt động để bắt đầu hoặc tiếp tục học.':'Khung chương trình dự kiến · Nội dung chưa phát hành.')+'</p></div></header>'+
+ return '<div class="v25-wrap" data-learning-hub="v30">'+
+ '<div class="v28-header-shell"><header class="v25-header"><div class="v25-hero-copy"><h1>'+safe(Locale.t(name))+' · '+safe(Locale.t('Lộ trình học'))+'</h1><p>'+(act.length?'Chọn hoạt động để bắt đầu hoặc tiếp tục học.':'Khung chương trình dự kiến · Nội dung chưa phát hành.')+'</p></div></header>'+
  navigation('catalog')+'</div>'+
  '<nav class="v25-breadcrumb" aria-label="Vị trí học tập">'+href('learn/overview','Tổng quan')+'<span aria-hidden="true">›</span>'+href('learn/catalog','Khóa học')+'<span aria-hidden="true">›</span><span aria-current="page">'+name+'</span></nav>'+
  (m.sample?'<div class="v25-fixture-notice">'+I('info')+' Trạng thái mô phỏng cho '+safe(m.learner.name)+' · không phải điểm bài học thật.</div>':'')+
  '<section class="v25-panel">'+sectionHead('book-open','Module & bài học')+
  '<div class="v25-detail-summary"><span>'+label(act.length?'Nội dung mẫu':'Chưa phát hành',act.length?'ready':'planned')+'</span><span>'+(act.length?done+' / '+act.length+' hoạt động minh họa':'Chưa có bài học được phát hành')+'</span>'+(act.length?progressBar(pct(done,act.length)):'')+'</div>'+
  '<div class="v25-lesson-cards">'+(act.length?act.map((a,i)=>href(cellRoute(a,m),'<span class="v25-module-symbol" lang="ja">'+a.icon+'</span><span><small>HOẠT ĐỘNG '+(i+1)+' · '+a.module+'</small><strong>'+a.title+'</strong><em>'+a.desc+'</em></span>'+label(status(m,a.id)==='done'?'Đã hoàn tất':status(m,a.id)==='current'?'Đang học':'Sẵn sàng',status(m,a.id))+'<span class="v25-module-go">'+I('arrow')+'</span>','v25-module-card')).join(''):'<div class="v27-empty"><strong>Chưa có nội dung để bắt đầu</strong><p>Khóa học này đang ở giai đoạn lập lộ trình. Bạn có thể trở lại các khóa đã có nội dung mẫu.</p>'+href('learn/catalog','Trở lại danh sách khóa học '+I('arrow'),'v25-text-cta')+'</div>')+'</div></section>'+
- '<div class="v25-version">HORIZON · Learning Hub v29</div></div>';
+ '<div class="v25-version">HORIZON · Learning Hub v30</div></div>';
 }
 
 const originalLearn=learnPage,originalCourse=coursePage,originalTitle=titleOf;
