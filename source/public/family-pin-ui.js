@@ -14,7 +14,7 @@ window.NPFamilyPinUI=(function(){
    const visibleHeight=vp?.height||window.innerHeight;
    const offsetX=vp?.offsetLeft||0,offsetY=vp?.offsetTop||0;
    const margin=Math.min(14,Math.max(8,visibleHeight*.025));
-   const w=Math.min(416,Math.max(240,width-2*margin));
+   const w=Math.min(416,Math.max(0,width-2*margin));
    const h=Math.min(height,Math.max(160,visibleHeight-2*margin));
    return {left:offsetX+(width-w)/2,top:offsetY+Math.max(margin,(visibleHeight-h)/2),width:w,height:h};
  }
@@ -92,6 +92,8 @@ window.NPFamilyPinUI=(function(){
  function reposition(){
    if(!current||!current.expanded)return;
    const {panel,overlay}=current;
+   const visibleHeight=window.visualViewport?.height||window.innerHeight;
+   overlay.classList.toggle('np-pin-keyboard',visibleHeight<window.innerHeight-140);
    // Recalculate actual content height when changing the PIN step or viewport.
    overlay.classList.remove('np-pin-scrollable');
    current.naturalHeight=Math.max(300,panel.scrollHeight);
@@ -188,6 +190,8 @@ window.NPFamilyPinUI=(function(){
    document.body.appendChild(overlay);
    const state={overlay,panel,person,source,origin,stage:'',pending:'',busy:false,expanded:false,settled:false,naturalHeight:455};
    current=state;
+   const vpHeight=window.visualViewport?.height||window.innerHeight;
+   overlay.classList.toggle('np-pin-keyboard',vpHeight<window.innerHeight-140);
    // Measure at the destination width before starting the morph.
    panel.style.transition='none';
    const dest=targetRect(455);
