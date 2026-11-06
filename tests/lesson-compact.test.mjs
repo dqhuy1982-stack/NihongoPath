@@ -12,7 +12,9 @@ const dict=vm.runInContext('NP_UI_PACK',dictContext);
 const start=lesson.indexOf('  function question(state,s,u){');
 const end=lesson.indexOf('  function resultPage(state,id){',start);
 assert.ok(start>=0&&end>start,'Original question, session outline, and player are present');
-const playerSource=lesson.slice(start,end);
+const helpers=lesson.slice(lesson.indexOf('  function kanaReading('),lesson.indexOf('  function startOptions('));
+assert.ok(helpers.includes('function visibleReading('));
+const playerSource=helpers+'\n'+lesson.slice(start,end);
 
 function harness(language='vi',source='foundation'){
  const kana=source==='foundation';
@@ -36,11 +38,11 @@ function harness(language='vi',source='foundation'){
  ];
  const session={
   id:'session-1',mode:'lesson',reading:'hide',contentId:kana?'foundation-vowels':'n5-introduction',
-  contentVersion:1,index:3,completedUnits:['u1','u2','u3'],units,current:{
+  contentVersion:1,index:3,completedUnits:[{id:'u1'},{id:'u2'},{id:'u3'}],units,current:{
    selected:null,order:[],hintUsed:false,feedbackId:null
   },
   definition:{id:kana?'foundation-vowels':'n5-introduction',level:'Nền tảng',title:'Năm chữ đầu tiên: あ・い・う・え・お',
-    cards:{a:{title:'Nhận mặt chữ あ',example:'あ',meaning:'Cách đọc theo romaji: a',
+    concepts:[{id:'kana-a',questionId:'q-a',reading:'a'}],cards:{a:{title:'Nhận mặt chữ あ',example:'あ',meaning:'Cách đọc theo romaji: a',
     pattern:'あ → a',points:[],pitfall:''}},story:[]}
  };
  const state={attempts:[],sessions:[session]};
@@ -79,15 +81,15 @@ function harness(language='vi',source='foundation'){
 test('Compact layout retains one real question and action, honest step count, session pause',()=>{
  const {render}=harness();
  const html=render();
- assert.ok(html.includes('class="n5-player-compact"'));
+ assert.ok(html.includes('class="n5-player-compact n5-player-mockup"'));
  assert.ok(html.includes('class="n5-session-hero"'));
  assert.ok(html.includes('class="n5-player-grid"'));
  assert.ok(html.includes('class="card n5-stage"'));
- assert.ok(html.includes('class="n5-player-aside"'));
+ assert.ok(html.includes('class="n5-player-aside n5-mockup-side"'));
  assert.ok(html.includes('data-question="true"'));
  assert.ok(html.includes('aria-valuenow="3"'));
  assert.ok(html.includes('aria-valuemax="6"'));
- assert.ok(html.includes('3/6 bước đã hoàn tất'));
+ assert.ok(html.includes('3 / 6 bước'));
  assert.ok(html.includes('data-action="n5-pause"'));
  assert.ok(html.includes('data-action="n5-check"'));
  assert.ok(html.includes('disabled'));
@@ -113,9 +115,9 @@ test('Selected option and feedback appear without mutating learning schema',()=>
 });
 test('Three-language lesson controls and progress counters are rendered from one UI pack',()=>{
  const expected=[
-  ['vi','Tiến độ bài học','3/6 bước đã hoàn tất','Câu 1/2'],
-  ['en','Lesson progress','3/6 steps completed','Question 1/2'],
-  ['ja','レッスンの進捗','6ステップ中3ステップ完了','問題1/2']
+  ['vi','Tiến độ bài học','3 / 6 bước','Câu 1/2'],
+  ['en','Lesson progress','3 / 6 steps','Question 1/2'],
+  ['ja','レッスンの進捗','3 / 6 ステップ','問題 1/2']
  ];
  for(const [language,...labels] of expected){
   const html=harness(language).render();
@@ -153,14 +155,15 @@ test('Desktop column, narrower breakpoints and existing mobile action dock remai
  assert.ok(actions.includes("document.body.classList.toggle('n5-question-docked'"));
  assert.ok(actions.includes("const source=el.querySelector('.n5-step-actions')"));
  assert.ok(lesson.includes("if(action==='select')return E.select(state,el.dataset.option)"));
- assert.ok(lesson.includes("if(action==='check')return E.check(state)"));
+ assert.ok(lesson.includes("if(action==='check'){const s=E.active(state)"));
  assert.ok(lesson.includes("if(action==='next')return E.advance(state"));
 });
 test('Lesson player styles are the last cascade layer and do not replace lesson storage',()=>{
  assert.ok(index.includes('href="lesson-compact.css?v=19.1"'));
- assert.ok(index.includes('src="i18n/ui-pack.js?v=19"'));
- assert.ok(index.includes('src="lesson-ui.js?v=19"'));
- assert.ok(index.indexOf('href="lesson-compact.css?v=19.1"')>
+ assert.ok(index.includes('src="i18n/ui-pack.js?v=20"'));
+ assert.ok(index.includes('src="lesson-ui.js?v=20"'));
+ assert.ok(index.includes('href="lesson-mockup.css?v=20"'));
+ assert.ok(index.indexOf('href="lesson-mockup.css?v=20"')>
    index.indexOf('href="foundation-journey.css?v=18"'));
  assert.ok(lesson.includes("html.includes('n5-player-compact')"));
  assert.ok(!playerSource.includes('localStorage.setItem'));
