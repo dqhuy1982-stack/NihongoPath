@@ -81,7 +81,7 @@ test('Inner season selector is accessible and localized in Vietnamese, English a
 });
 
 test('Route render sets shared season before constructing shell; login and lesson share symbol',()=>{
- assert.ok(page.indexOf('src="season-system.js?v=12"')<page.indexOf('src="login-ui.js?v=10"'));
+ assert.ok(page.indexOf('src="season-system.js?v=12"')<page.indexOf('src="login-ui.js?v=13"'));
  assert.ok(page.indexOf('href="season-shell.css?v=12"')>page.indexOf('href="home-v11.css?v=11"'));
  assert.ok(app.includes('window.NPSeason?.apply(route().split(\'/\')[0])'));
  assert.ok(app.includes('window.NPSeason?.controls()'));
