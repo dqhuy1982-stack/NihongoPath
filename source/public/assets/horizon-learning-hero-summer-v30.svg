@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 250" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Phong cảnh núi Phú Sĩ và tháp Nhật Bản">
+<defs>
+ <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fcfbf4"/><stop offset=".57" stop-color="#f3f8f2"/><stop offset="1" stop-color="#e8f1eb"/></linearGradient>
+ <linearGradient id="fuji" x1=".25" y1="0" x2=".75" y2="1"><stop stop-color="#d4e4df"/><stop offset=".46" stop-color="#a1c5c0"/><stop offset=".85" stop-color="#8caaa6" stop-opacity=".54"/><stop offset="1" stop-color="#aec9bb" stop-opacity=".07"/></linearGradient>
+ <linearGradient id="mist" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff5f7" stop-opacity=".1"/><stop offset="1" stop-color="#fff5f7" stop-opacity=".94"/></linearGradient>
+ <linearGradient id="tree" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#dd96aa"/><stop offset="1" stop-color="#a8677d"/></linearGradient>
+ <linearGradient id="fade" x1="0" x2="1"><stop stop-color="#fcfbf4"/><stop offset=".28" stop-color="#fcfbf4" stop-opacity=".98"/><stop offset=".52" stop-color="#fcfbf4" stop-opacity=".4"/><stop offset="1" stop-color="#fcfbf4" stop-opacity="0"/></linearGradient>
+ <g id="blossom"><g fill="#d1dec8" stroke="#9ebdaf" stroke-width=".4">
+  <ellipse rx="4.2" ry="9" cy="-9"/><ellipse rx="4.2" ry="9" cy="-9" transform="rotate(72)"/><ellipse rx="4.2" ry="9" cy="-9" transform="rotate(144)"/><ellipse rx="4.2" ry="9" cy="-9" transform="rotate(216)"/><ellipse rx="4.2" ry="9" cy="-9" transform="rotate(288)"/>
+ </g><circle r="3" fill="#f8dfab"/></g>
+ <g id="cloud" fill="#d6e7df"><ellipse cx="0" cy="0" rx="56" ry="22"/><ellipse cx="49" cy="6" rx="45" ry="17"/><ellipse cx="-55" cy="10" rx="43" ry="15"/></g>
+ <g id="roof" fill="#667d73" stroke="#66364b" stroke-width="1"><path d="M-59 0H58l18 8Q31 12 0 11-35 11-77 8Z"/><path d="M-40-12H38L59-2Q18 2 0 0-28 2-59-2Z" fill="#798d76"/></g>
+</defs>
+<rect width="1600" height="250" fill="url(#sky)"/>
+<!-- low-contrast Japanese wave pattern -->
+<g transform="translate(0,3)">
+ <path d="M756 235 Q875 180 951 106 Q1008 55 1060 29 Q1118 82 1195 147 Q1275 208 1389 235 Z" fill="url(#fuji)"/>
+ <path d="M952 107 Q1014 55 1060 29 Q1114 72 1170 118 L1142 111 1123 121 1103 109 1083 117 1061 108 1039 122 1014 112 992 121 977 109Z" fill="#fafdfa" opacity=".94"/>
+ 
+ <path d="M815 212Q929 173 1021 197T1185 204Q1320 172 1405 204V250H815Z" fill="#decad9" opacity=".23"/>
+</g>
+<g opacity=".62">
+ <use href="#cloud" x="903" y="189"/><use href="#cloud" x="1085" y="209" transform="scale(1.02 1)"/><use href="#cloud" x="1260" y="205"/><use href="#cloud" x="1480" y="201"/>
+</g>
+<!-- five-storey pagoda, deliberately positioned in the far-right illustration zone -->
+<g transform="translate(1470 194) scale(.90)" stroke-linejoin="round" opacity=".85">
+ <path d="M-40 0H40V-111H-40Z" fill="#f3d4d2" stroke="#bd7375" stroke-width="2"/>
+ <path d="M-27 0V-109M-9 0V-109M9 0V-109M27 0V-109" stroke="#b04e62" stroke-width="3"/>
+ <path d="M-38-17H38M-38-38H38M-38-60H38M-38-82H38" stroke="#9d4959" stroke-width="5"/>
+ <g transform="translate(0,-1)"><use href="#roof"/></g>
+ <g transform="translate(0,-24) scale(.86)"><use href="#roof"/></g>
+ <g transform="translate(0,-47) scale(.75)"><use href="#roof"/></g>
+ <g transform="translate(0,-70) scale(.65)"><use href="#roof"/></g>
+ <g transform="translate(0,-92) scale(.53)"><use href="#roof"/></g>
+ <path d="M0-109V-142" stroke="#885060" stroke-width="2.5"/>
+ <path d="M-8-131H8M-6-124H6" stroke="#b17a61" stroke-width="1.5"/>
+ <circle cy="-143" r="3" fill="#bd9b73"/>
+</g>
+<!-- Summer: clean foliage-free sky to keep focus on Fuji. -->
+<rect width="920" height="250" fill="url(#fade)" opacity=".82"/>
+<path d="M0 232Q135 216 280 229T580 230Q740 216 900 230T1200 226Q1400 211 1600 232V250H0Z" fill="url(#mist)"/>
+</svg>
