@@ -101,7 +101,7 @@ test('Language change rebuilds Dashboard content but protects unsaved forms',()=
 });
 
 test('Versioned site files load the patched sources, not stale cached scripts',()=>{
- for(const file of ['app.js?v=15','lesson-ui.js?v=15','season-system.js?v=15','locale-coverage.js?v=15'])
+ for(const file of ['app.js?v=16','lesson-ui.js?v=16','season-system.js?v=15','locale-coverage.js?v=15'])
   assert.ok(page.includes('src="'+file+'"'),file);
  assert.ok(page.includes('href="season-shell.css?v=15"'));
 });
