@@ -10,7 +10,7 @@ test('V10 CSS last, scripts cache-busted and static family demo only',()=>{
  assert.ok(html.includes('href="home-v10.css?v=10"'));
  assert.ok(html.indexOf('home-v10.css?v=10')>html.indexOf('home-v9.css?v=9.2'));
  assert.ok(html.includes('src="login-ui.js?v=10"'));
- assert.ok(html.includes('src="family-pin-ui.js?v=10"'));
+ assert.ok(html.includes('src="family-pin-ui.js?v=11"'));
  assert.ok(js.includes("home.classList.add('home-v9','home-v10')"));
  assert.ok(js.includes('if(!window.NP_FAMILY_SYNC)'));
 });
