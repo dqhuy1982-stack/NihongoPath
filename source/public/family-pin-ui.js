@@ -13,8 +13,10 @@ window.NPFamilyPinUI=(function(){
    const width=vp?.width||window.innerWidth;
    const visibleHeight=vp?.height||window.innerHeight;
    const offsetX=vp?.offsetLeft||0,offsetY=vp?.offsetTop||0;
-   const w=Math.min(416,width-28),h=Math.min(height,visibleHeight-28);
-   return {left:offsetX+(width-w)/2,top:offsetY+Math.max(14,(visibleHeight-h)/2),width:w,height:h};
+   const margin=Math.min(14,Math.max(8,visibleHeight*.025));
+   const w=Math.min(416,Math.max(240,width-2*margin));
+   const h=Math.min(height,Math.max(160,visibleHeight-2*margin));
+   return {left:offsetX+(width-w)/2,top:offsetY+Math.max(margin,(visibleHeight-h)/2),width:w,height:h};
  }
  function setGeometry(panel,box){
    for(const k of ['left','top','width','height'])panel.style[k]=Math.round(box[k])+'px';
@@ -74,7 +76,7 @@ window.NPFamilyPinUI=(function(){
    showError('');
    // On desktop, focusing while the card is still small can force an early
    // scroll container and flash the scrollbar. Keep gesture-time focus on iOS.
-   if(stage!=='reset'&&(current.expanded||touchLike()))focusInput();
+   if(stage!=='reset'&&current.expanded&&document.activeElement?.closest?.('.np-pin-form'))focusInput();
    if(current.expanded)reposition();
  }
  function updateScrollability(){
@@ -83,13 +85,16 @@ window.NPFamilyPinUI=(function(){
    overlay.classList.remove('np-pin-scrollable');
    const needsScroll=panel.scrollHeight>panel.clientHeight+2;
    overlay.classList.toggle('np-pin-scrollable',needsScroll);
+   if(needsScroll&&overlay.contains(document.activeElement)){
+     document.activeElement?.scrollIntoView?.({block:'nearest',inline:'nearest'});
+   }
  }
  function reposition(){
    if(!current||!current.expanded)return;
    const {panel,overlay}=current;
    // Recalculate actual content height when changing the PIN step or viewport.
    overlay.classList.remove('np-pin-scrollable');
-   current.naturalHeight=Math.max(400,panel.scrollHeight);
+   current.naturalHeight=Math.max(300,panel.scrollHeight);
    setGeometry(panel,targetRect(current.naturalHeight));
    if(current.settled)requestAnimationFrame(updateScrollability);
  }
@@ -100,6 +105,7 @@ window.NPFamilyPinUI=(function(){
    current=null;
    window.removeEventListener('resize',onResize);
    window.visualViewport?.removeEventListener('resize',onResize);
+   window.visualViewport?.removeEventListener('scroll',onResize);
    window.removeEventListener('hashchange',onHashChange);
    document.removeEventListener('keydown',onKeydown,true);
    document.body.classList.remove('np-pin-active');
@@ -133,6 +139,10 @@ window.NPFamilyPinUI=(function(){
    if(!['spring','summer','autumn','winter'].includes(season))season='spring';
    return 'assets/horizon-mark-'+season+'.svg?v=10';
  }
+ function activeSeasonForPin(){
+   const match=seasonMarkForPin().match(/horizon-mark-(spring|summer|autumn|winter)/);
+   return match?.[1]||'spring';
+ }
  function open(id,source){
    if(!window.NP_STATIC_PUBLISH||window.NP_FAMILY_SYNC)return false;
    const person=db.profiles.find(p=>p.id===id&&!p.archived&&p.role!=='guest');
@@ -144,6 +154,7 @@ window.NPFamilyPinUI=(function(){
    const origin=sourceRect?.width?sourceRect:approx;
    const overlay=document.createElement('div');
    overlay.className='np-pin-overlay';
+   overlay.dataset.season=activeSeasonForPin();
    overlay.innerHTML=`<button type="button" class="np-pin-backdrop" aria-label="${tr('Đóng khung PIN','Close PIN panel','PIN画面を閉じる')}"></button>
      <section class="np-pin-window" role="dialog" aria-modal="true" aria-labelledby="np-pin-title" aria-describedby="np-pin-description">
        <button type="button" class="np-pin-close" aria-label="${tr('Đóng','Close','閉じる')}">×</button>
@@ -183,7 +194,7 @@ window.NPFamilyPinUI=(function(){
    panel.style.left='-9999px';panel.style.top='-9999px';panel.style.width=dest.width+'px';
    panel.style.height='auto';panel.style.maxHeight='none';
    renderStage(window.NPFamilyAccess.hasPin(id)?'unlock':'create');
-   state.naturalHeight=Math.max(400,panel.scrollHeight);
+   state.naturalHeight=Math.max(300,panel.scrollHeight);
    panel.style.maxHeight='';
    setGeometry(panel,{left:origin.left,top:origin.top,width:origin.width,height:origin.height});
    // Avoid moving focus out of a user gesture on iOS.
@@ -242,6 +253,7 @@ window.NPFamilyPinUI=(function(){
    });
    window.addEventListener('resize',onResize);
    window.visualViewport?.addEventListener('resize',onResize);
+   window.visualViewport?.addEventListener('scroll',onResize);
    window.addEventListener('hashchange',onHashChange);
    document.addEventListener('keydown',onKeydown,true);
    // The morph begins from the clicked card bounds. Only after it finishes do
