@@ -11,7 +11,7 @@ const app=read('app.js'),brand=read('horizon-brand.css');
 
 test('V11 PIN layer remains ahead of V12 seasonal shell; PIN data contracts unchanged',()=>{
  assert.ok(html.includes('href="home-v11.css?v=11"'));
- assert.ok(html.indexOf('href="season-shell.css?v=12"')>html.indexOf('href="home-v11.css?v=11"'));
+ assert.ok(html.indexOf('href="season-shell.css?v=15"')>html.indexOf('href="home-v11.css?v=11"'));
  assert.ok(html.indexOf('home-v11.css?v=11')>html.indexOf('home-v10.css?v=10'));
  assert.ok(html.includes('src="family-pin-ui.js?v=13"'));
  assert.ok(pin.includes('window.NPFamilyAccess.createPin(id,value)'));
