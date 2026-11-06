@@ -1,7 +1,7 @@
 /* Avatar-first entry. Static demo morphs a learner card into a local PIN panel; backend remains separate. */
 window.NPLogin=(function(){
   'use strict';
-  const tr=(vi,en,ja)=>[vi,en,ja][{vi:0,en:1,ja:2}[Locale.code]||0];
+  const tr=(vi,en,ja)=>Locale.register(vi,en,ja);
   let opener=null;
   const isBaseline=()=>new URLSearchParams(location.search).get('login-view')==='before';
   const seasons=['spring','summer','autumn','winter'];
