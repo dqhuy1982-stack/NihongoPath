@@ -29,7 +29,7 @@ jobs:
       - name: Validate Home PIN JavaScript syntax
         run: node --check source/public/family-demo-auth.js && node --check source/public/login-ui.js && node --check source/public/family-pin-ui.js && node --check source/public/i18n/ui-pack.js && node --check source/public/locales.js && node --check source/public/locale-coverage.js && node --check source/public/lesson-locale.js && node --check source/public/foundation-locale.js && node --check source/public/season-system.js && node --check source/public/lesson-ui.js && node --check source/public/app.js && node --check source/public/kana-studio.js && node --check source/public/foundation-journey.js
       - name: Validate Home V2 and typography regressions
-        run: node --test tests/readability.test.mjs tests/home-v2.test.mjs tests/family-static-demo.test.mjs tests/horizon-brand.test.mjs tests/home-v4.test.mjs tests/home-v5.test.mjs tests/home-v6-mobile.test.mjs tests/home-v7.test.mjs tests/home-v8.test.mjs tests/home-v9.test.mjs tests/home-v10.test.mjs tests/home-v11.test.mjs tests/season-shell.test.mjs tests/i18n-consistency.test.mjs tests/i18n-authored-content.test.mjs tests/i18n-v15-regression.test.mjs tests/i18n-ui-pack.test.mjs tests/i18n-v17-pages.test.mjs tests/foundation-journey.test.mjs tests/lesson-compact.test.mjs
+        run: node --test tests/readability.test.mjs tests/home-v2.test.mjs tests/family-static-demo.test.mjs tests/horizon-brand.test.mjs tests/home-v4.test.mjs tests/home-v5.test.mjs tests/home-v6-mobile.test.mjs tests/home-v7.test.mjs tests/home-v8.test.mjs tests/home-v9.test.mjs tests/home-v10.test.mjs tests/home-v11.test.mjs tests/season-shell.test.mjs tests/i18n-consistency.test.mjs tests/i18n-authored-content.test.mjs tests/i18n-v15-regression.test.mjs tests/i18n-ui-pack.test.mjs tests/i18n-v17-pages.test.mjs tests/foundation-journey.test.mjs tests/lesson-compact.test.mjs tests/lesson-mockup-v20.test.mjs
       - name: Build static Nihongo Path for GitHub Pages
         run: |
           unset NP_FAMILY_SYNC_BUILD
@@ -44,6 +44,9 @@ jobs:
           test -f dist/site/kana-studio.js
           test -f dist/site/foundation-journey.js
           test -f dist/site/lesson-compact.css
+          test -f dist/site/lesson-mockup.css
+          test -f dist/site/assets/lesson-sakura-branch.svg
+          test -f dist/site/assets/lesson-enso-sakura.svg
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload validated site
