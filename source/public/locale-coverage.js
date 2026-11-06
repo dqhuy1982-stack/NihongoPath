@@ -191,3 +191,12 @@ NP_LOCALE_ROWS.push(
  ["Lượt học mới dùng bản này. Phiên đang dở và kết quả cũ giữ nội dung gốc. Chỉ cập nhật trên trình duyệt hiện tại.","New sessions use this version. Sessions in progress and older results retain the original content. Changes apply only to this browser.","新しいセッションはこのバージョンを使用します。進行中のセッションや以前の結果は元の教材を保持します。変更は現在のブラウザーにのみ反映されます。"],
  ["Quay lại kiểm tra","Return to validation","検証に戻る"]
 );
+
+/* V15: account actions and compact sidebar slogan (source strings only). */
+NP_LOCALE_ROWS.push(
+ ["Khóa hồ sơ / Đổi người học","Lock profile / Switch learner","プロフィールをロック／学習者を切り替える"],
+ ["Một bước nhỏ mỗi ngày.","One small step each day.","毎日、小さな一歩。"],
+ ["Từng bước.","One step.","一歩ずつ。"],
+ ["a little further.","a little further.","少しずつ前へ。"],
+ ["Mẫu vừa học","Pattern just studied","学習した文型"]
+);
