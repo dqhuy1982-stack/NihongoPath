@@ -15,7 +15,7 @@ test('V9 is activated only for the static family landing, after V8 CSS',()=>{
   assert.ok(html.includes('href="home-v9.css?v=9.2"'));
   assert.ok(html.indexOf('href="home-v9.css?v=9.2"')>html.indexOf('href="home-v8.css"'));
   assert.ok(ui.includes("if(!window.NP_FAMILY_SYNC){"));
-  assert.ok(ui.includes("home.classList.add('home-v9')"));
+  assert.ok(ui.includes("home.classList.add('home-v9','home-v10')"));
   assert.ok(css.includes('.home-v9.home-v8.home-v7.home-v4.home-v3.home-v2'));
 });
 
