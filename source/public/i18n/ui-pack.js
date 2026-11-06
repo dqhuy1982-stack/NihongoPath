@@ -3,6 +3,22 @@
    Legacy phrase translation remains for backward-compatible older screens. */
 'use strict';
 const NP_UI_PACK=Object.freeze({
+  "lesson.player.path": {"vi":"Lộ trình buổi học","en":"Session outline","ja":"今回の学習の流れ"},
+  "lesson.player.progress": {"vi":"Tiến độ bài học","en":"Lesson progress","ja":"レッスンの進捗"},
+  "lesson.player.completed": {"vi":"{completed}/{total} bước đã hoàn tất","en":"{completed}/{total} steps completed","ja":"{total}ステップ中{completed}ステップ完了"},
+  "lesson.player.step": {"vi":"Bước {current}/{total}","en":"Step {current}/{total}","ja":"ステップ{current}/{total}"},
+  "lesson.player.question": {"vi":"Câu {current}/{total}","en":"Question {current}/{total}","ja":"問題{current}/{total}"},
+  "lesson.player.learningGoal": {"vi":"Mục tiêu của buổi học","en":"Session focus","ja":"今回の学習目標"},
+  "lesson.player.focusKana": {"vi":"Nhận diện các chữ Kana đầu tiên","en":"Recognize the first Kana characters","ja":"最初の仮名を見分ける"},
+  "lesson.player.focusN5": {"vi":"Học một mẫu câu và thử nhớ lại","en":"Learn a sentence pattern and recall it","ja":"文型を学んで思い出す"},
+  "lesson.player.save": {"vi":"Tiến độ lưu theo hồ sơ","en":"Progress saved to your profile","ja":"学習記録はプロフィールごとに保存"},
+  "lesson.player.next": {"vi":"Tiếp tục từ bước đang học","en":"Continue from your current step","ja":"現在のステップから続ける"},
+  "lesson.player.reading": {"vi":"Có thể ẩn cách đọc để tự nhớ","en":"Hide readings to test your recall","ja":"読み仮名を隠して思い出す"},
+  "lesson.player.sample": {"vi":"Bản mẫu, chưa đánh giá trình độ tổng thể","en":"Sample lesson; not an overall proficiency assessment","ja":"サンプル教材・総合的な習熟度評価ではありません"},
+  "lesson.player.pause": {"vi":"Tạm dừng","en":"Pause session","ja":"一時停止"},
+  "lesson.player.today": {"vi":"Hôm nay","en":"Today","ja":"今日"},
+  "lesson.player.glyph": {"vi":"Chữ đang học","en":"Current character","ja":"学習中の文字"},
+  "lesson.player.savedBrowser": {"vi":"Lưu trên trình duyệt này","en":"Saved in this browser","ja":"このブラウザーに保存"},
  "foundation.title":{"vi":"Kana Journey","en":"Kana Journey","ja":"かなの学習ジャーニー"},
  "foundation.eyebrow":{"vi":"FOUNDATION · NỀN TẢNG","en":"FOUNDATION · GETTING STARTED","ja":"FOUNDATION・基礎"},
  "foundation.subtitle":{"vi":"Học chữ, luyện phản xạ rồi tự kiểm tra. Một hành trình nối tiếp đến N5.","en":"Learn the characters, build recall and check yourself. One connected path toward N5.","ja":"文字を学び、思い出す練習をして確認する。N5へつながる学習の道筋です。"},
