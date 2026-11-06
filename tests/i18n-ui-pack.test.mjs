@@ -161,5 +161,5 @@ test('All UI pack resources load before runtime and route modules',()=>{
  assert.ok(ui>=0);
  assert.ok(ui<html.indexOf('src="locales.js?v=16"'));
  assert.ok(html.includes('src="app.js?v=18"'));
- assert.ok(html.includes('src="lesson-ui.js?v=20"'));
+ assert.ok(html.includes('src="lesson-ui.js?v=22"'));
 });
