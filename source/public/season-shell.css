@@ -1,0 +1,359 @@
+/* HORIZON SEASON SHELL V12
+   A single season (np-home-season-v1) governs Home, PIN and every
+   authenticated preview page. Season affects presentation, not learning data.
+   Semantic success/error feedback is preserved independently of seasonal hues.
+*/
+body.np-season-shell{
+  --season-ink:#754958;--season-muted:#75666a;
+  --season-highlight:#f6e7e9;--season-hairline:#dfc5c8;
+  --season-nav:#3c343a;--season-nav-active:#62444e;
+  --season-nav-ink:#faf3f1;--season-button-ink:#fffafa;
+  --season-top:#fffaf9;--season-mark-url:url('assets/horizon-mark-spring.svg?v=12');
+  --learning-success:#397454;
+  --learning-warn:#a04c42;
+  --bg:#fbf6f6;--surface:#fffcfb;--paper:#fffefd;
+  --text:#383b38;--muted:#686864;--navy:#754958;
+  --green:#81515f;--sage:#f7e9ea;--soft:#f8eeed;
+  --line:#e5d8d7;--gold:#be9d86;--accent:#a56d75;
+  --lavender:#f8edef;--ink:#754958;
+  background:var(--bg);
+}
+body.np-season-shell[data-season="summer"]{
+  --season-ink:#37664b;--season-muted:#577461;
+  --season-highlight:#e9f2e6;--season-hairline:#c7dcc7;
+  --season-nav:#254a39;--season-nav-active:#416e53;
+  --season-nav-ink:#f5f9f0;--season-top:#fafdf8;
+  --season-mark-url:url('assets/horizon-mark-summer.svg?v=12');
+  --bg:#f5f9f3;--surface:#fbfdf8;--paper:#ffffff;
+  --text:#2a4032;--muted:#5e7465;--navy:#37664b;
+  --green:#436f51;--sage:#ebf3e7;--soft:#edf5e9;
+  --line:#d6e4d5;--gold:#c1a76c;--accent:#6e9060;
+  --lavender:#edf4e9;--ink:#37664b;
+}
+body.np-season-shell[data-season="autumn"]{
+  --season-ink:#885c40;--season-muted:#7e6b5e;
+  --season-highlight:#faeee0;--season-hairline:#e3c7ad;
+  --season-nav:#47392f;--season-nav-active:#805a3c;
+  --season-nav-ink:#fcf1e4;--season-top:#fffbf5;
+  --season-mark-url:url('assets/horizon-mark-autumn.svg?v=12');
+  --bg:#fbf5ed;--surface:#fffbf6;--paper:#fffefd;
+  --text:#43372f;--muted:#7b6d61;--navy:#885c40;
+  --green:#8a603e;--sage:#faeddf;--soft:#fcf2e8;
+  --line:#e9d8c6;--gold:#c39965;--accent:#af784c;
+  --lavender:#f8eee2;--ink:#885c40;
+}
+body.np-season-shell[data-season="winter"]{
+  --season-ink:#406b83;--season-muted:#607787;
+  --season-highlight:#e7f0f6;--season-hairline:#c1d7e3;
+  --season-nav:#273e4c;--season-nav-active:#476f84;
+  --season-nav-ink:#edf7fc;--season-top:#f9fcfe;
+  --season-mark-url:url('assets/horizon-mark-winter.svg?v=12');
+  --bg:#f2f7fa;--surface:#fafcfd;--paper:#ffffff;
+  --text:#30434d;--muted:#607582;--navy:#406b83;
+  --green:#507b94;--sage:#e9f2f8;--soft:#edf5f9;
+  --line:#d5e3eb;--gold:#9ab5c3;--accent:#7194ad;
+  --lavender:#edf4f8;--ink:#406b83;
+}
+
+/* A learner's light/dark preference remains independent of season choice. */
+body.dark.np-season-shell{
+  --season-ink:#ebbdc8;--season-muted:#d4bdc6;
+  --season-highlight:#4d3d45;--season-hairline:#6c535d;
+  --season-nav:#282831;--season-nav-active:#5a3c4a;
+  --season-nav-ink:#fbf0f2;--season-button-ink:#302630;
+  --season-top:#373039;
+  --bg:#29272d;--surface:#353139;--paper:#3a343c;
+  --text:#f2eaf0;--muted:#ccbfc7;--navy:#ebbdc8;
+  --green:#e2b1bd;--sage:#493b46;--soft:#453b43;
+  --line:#5d515c;--gold:#d5b398;--accent:#e5b5bf;--ink:#e9bec5;
+}
+body.dark.np-season-shell[data-season="summer"]{
+  --season-ink:#bfdfb5;--season-muted:#ceddc9;
+  --season-highlight:#3b5540;--season-hairline:#58765d;
+  --season-nav:#1f3229;--season-nav-active:#3a6145;
+  --season-nav-ink:#edf7e8;--season-button-ink:#1b3426;
+  --season-top:#253b2e;
+  --bg:#1c2e25;--surface:#294033;--paper:#2c4437;
+  --text:#e8f2e7;--muted:#c1d4c0;--navy:#c4e0b2;
+  --green:#b8d3ab;--sage:#324f3b;--soft:#34503e;
+  --line:#506c57;--gold:#c6bc85;--accent:#a9cb9b;--ink:#c6e2ba;
+}
+body.dark.np-season-shell[data-season="autumn"]{
+  --season-ink:#efc4a0;--season-muted:#dfc9b7;
+  --season-highlight:#594334;--season-hairline:#82644c;
+  --season-nav:#302a27;--season-nav-active:#6e4e36;
+  --season-nav-ink:#fff2e5;--season-button-ink:#30271f;
+  --season-top:#403229;
+  --bg:#302922;--surface:#43362d;--paper:#4a3b30;
+  --text:#f5e9de;--muted:#d9c7b7;--navy:#e9bf95;
+  --green:#e8b58b;--sage:#534131;--soft:#564636;
+  --line:#78604e;--gold:#dbb07d;--accent:#e6b480;--ink:#eed1ab;
+}
+body.dark.np-season-shell[data-season="winter"]{
+  --season-ink:#c3e0ec;--season-muted:#c8dbe6;
+  --season-highlight:#344e60;--season-hairline:#617d91;
+  --season-nav:#20313d;--season-nav-active:#3e647c;
+  --season-nav-ink:#edf8fc;--season-button-ink:#213a48;
+  --season-top:#283e4f;
+  --bg:#1c2c39;--surface:#294253;--paper:#304959;
+  --text:#e9f2f8;--muted:#bdd2df;--navy:#c0e0ef;
+  --green:#b7d4e4;--sage:#355264;--soft:#345062;
+  --line:#557489;--gold:#adcad5;--accent:#b6d7e8;--ink:#c6e3ef;
+}
+
+/* Global app surfaces and reading hierarchy. */
+body.np-season-shell .appframe,
+body.np-season-shell .shell,
+body.np-season-shell main{
+  background:var(--bg);
+}
+body.np-season-shell .sidebar{
+  background:linear-gradient(161deg,var(--season-nav),color-mix(in srgb,var(--season-nav) 83%,#0b1714) 100%)!important;
+  color:var(--season-nav-ink)!important;
+}
+body.np-season-shell .sidebar .nav-caption,
+body.np-season-shell .sidebar .sidebar-moment{
+  color:color-mix(in srgb,var(--season-nav-ink) 79%,transparent)!important;
+}
+body.np-season-shell .sidebar .brand .horizon-wordmark strong{
+  color:var(--season-nav-ink)!important;
+}
+body.np-season-shell .sidebar .navlink,
+body.np-season-shell .bottomnav a{
+  color:var(--season-nav-ink)!important;
+}
+body.np-season-shell .sidebar .navlink.active,
+body.np-season-shell .sidebar .navlink:hover{
+  background:var(--season-nav-active)!important;
+  color:var(--season-nav-ink)!important;
+}
+body.np-season-shell .sidebar .navlink.active{border-left-color:var(--gold)!important}
+body.np-season-shell .sidebar-moment::before{
+  content:"";display:block;width:74px;height:42px;
+  background:var(--season-mark-url) center/contain no-repeat;
+  opacity:.8;margin:4px 0 7px;
+  filter:brightness(1.7) saturate(.65);
+}
+body.np-season-shell .topbar{
+  position:relative;z-index:50;
+  background:var(--season-top)!important;
+  border-bottom:1px solid var(--season-hairline)!important;
+  color:var(--text);
+}
+body.np-season-shell .topbar .breadcrumb b{color:var(--season-ink)}
+body.np-season-shell .topbar .profile-button{
+  background:var(--season-highlight)!important;
+  border:1px solid var(--season-hairline)!important;
+  color:var(--text)!important;
+}
+body.np-season-shell .topbar .iconbutton{color:var(--season-ink)!important}
+body.np-season-shell .topbar .iconbutton:hover{
+  background:var(--season-highlight)!important;
+}
+body.np-season-shell .topbar .language-switch{
+  background:var(--surface)!important;
+  border-color:var(--season-hairline)!important;
+  box-shadow:none!important;
+}
+body.np-season-shell .topbar .language-switch button:not([aria-pressed="true"]){
+  color:var(--muted)!important;
+  background:transparent!important;
+  opacity:1!important;
+}
+body.np-season-shell .topbar .language-switch button[aria-pressed="true"]{
+  background:var(--season-ink)!important;
+  color:var(--season-button-ink)!important;
+}
+body.np-season-shell .brand-symbol.horizon-symbol{
+  content:normal!important;
+  object-fit:contain!important;
+  box-shadow:none!important;
+  border-radius:0!important;
+}
+body.np-season-shell .sidebar .brand-symbol.horizon-symbol{
+  filter:brightness(1.7) saturate(.68);
+}
+body.np-season-shell .mobile-brand .brand-symbol.horizon-symbol{
+  filter:none!important;
+}
+body.dark.np-season-shell .mobile-brand .brand-symbol.horizon-symbol{
+  filter:brightness(1.35) saturate(.9)!important;
+}
+body.np-season-shell .pagehead .eyebrow,
+body.np-season-shell .today-head .eyebrow{
+  color:var(--season-ink)!important;
+}
+body.np-season-shell .pagehead h1{
+  color:var(--text);
+}
+body.np-season-shell .today-head{
+  border-bottom-color:var(--season-hairline)!important;
+}
+body.np-season-shell .card,
+body.np-season-shell .settings-form,
+body.np-season-shell .ks-toolbar{
+  background:var(--surface);
+  border-color:var(--line)!important;
+}
+body.np-season-shell .btn.primary{
+  background:var(--season-ink)!important;
+  border-color:var(--season-ink)!important;
+  color:var(--season-button-ink)!important;
+}
+body.np-season-shell .btn.primary:hover{
+  background:color-mix(in srgb,var(--season-ink) 82%,var(--bg))!important;
+}
+body.np-season-shell .badge.sage,
+body.np-season-shell .goal,
+body.np-season-shell .chip.active,
+body.np-season-shell .settings-menu a.active{
+  background:var(--season-highlight)!important;
+  color:var(--season-ink)!important;
+  border-color:var(--season-hairline)!important;
+}
+body.np-season-shell .textlink{
+  color:var(--season-ink)!important;
+}
+body.np-season-shell .topbar,
+body.np-season-shell .card,
+body.np-season-shell .sidebar{
+  transition:background-color .23s ease,border-color .23s ease,color .23s ease;
+}
+body.np-season-shell .bottomnav{
+  background:var(--season-nav)!important;
+  border-top:1px solid var(--season-hairline)!important;
+}
+body.np-season-shell .bottomnav a.active,
+body.np-season-shell .bottomnav a[aria-current="page"]{
+  color:#fff!important;
+  background:var(--season-nav-active)!important;
+}
+/* Semantic success and error retain predictable contrast independently of season. */
+body.np-season-shell .answer-option.correct,
+body.np-season-shell .n5-option.correct{
+  border-color:var(--learning-success)!important;
+  background:color-mix(in srgb,var(--learning-success) 12%,var(--surface))!important;
+}
+body.np-season-shell .answer-option.incorrect,
+body.np-season-shell .n5-option.incorrect{
+  border-color:var(--learning-warn)!important;
+}
+body.np-season-shell .n5-feedback:not(.bad){
+  border-color:var(--learning-success)!important;
+}
+body.np-season-shell .n5-feedback.bad{
+  border-color:var(--learning-warn)!important;
+}
+body.dark.np-season-shell{
+  --learning-success:#9cd5ad;
+  --learning-warn:#edb0a5;
+}
+
+/* Inner season control: selected motif and name, contextual 4-way switch. */
+body.np-season-shell .np-inner-seasons{
+  position:relative;flex:0 0 auto;z-index:80;
+}
+body.np-season-shell .np-inner-seasons>summary{
+  display:flex;align-items:center;justify-content:center;
+  gap:7px;min-width:82px;min-height:38px;
+  padding:7px 11px;
+  border:1px solid var(--season-hairline);
+  border-radius:24px;
+  background:var(--season-highlight);
+  color:var(--season-ink);
+  font:600 11px/1.2 Manrope,Arial,sans-serif;
+  list-style:none;cursor:pointer;white-space:nowrap;
+}
+body.np-season-shell .np-inner-seasons>summary::-webkit-details-marker{display:none}
+body.np-season-shell .np-inner-seasons>summary::marker{content:""}
+body.np-season-shell .np-inner-seasons>summary svg{
+  width:19px;height:19px;flex:none;
+}
+body.np-season-shell .np-inner-seasons[open]>summary,
+body.np-season-shell .np-inner-seasons>summary:hover{
+  background:var(--surface);
+  border-color:var(--season-ink);
+}
+body.np-season-shell .np-inner-seasons>summary:focus-visible,
+body.np-season-shell .np-season-option:focus-visible{
+  outline:2px solid var(--season-ink);
+  outline-offset:3px;
+}
+body.np-season-shell .np-inner-season-options{
+  position:absolute;right:0;top:calc(100% + 8px);
+  min-width:178px;max-width:calc(100vw - 30px);
+  display:grid;gap:4px;
+  padding:7px;
+  background:var(--surface);
+  border:1px solid var(--season-hairline);
+  border-radius:15px;
+  box-shadow:0 11px 24px #142a251c;
+  z-index:85;
+}
+body.np-season-shell .np-season-option{
+  width:100%;min-height:43px;
+  display:flex;align-items:center;gap:10px;
+  padding:8px 11px;
+  border:1px solid transparent;
+  border-radius:10px;
+  background:transparent;color:var(--text);
+  font:600 12px/1.3 Manrope,Arial,sans-serif;
+  text-align:left;cursor:pointer;
+}
+body.np-season-shell .np-season-option svg{
+  width:22px;height:22px;
+  color:var(--season-ink);
+}
+body.np-season-shell .np-season-option[aria-pressed="true"]{
+  background:var(--season-highlight);
+  border-color:var(--season-hairline);
+  color:var(--season-ink);
+}
+body.np-season-shell .np-season-option:hover{
+  background:var(--season-highlight);
+}
+
+@media(max-width:1190px) and (min-width:760px){
+  body.np-season-shell .topbar .search-short{display:none}
+  body.np-season-shell .topbar{padding:0 18px}
+}
+@media(max-width:760px){
+  body.np-season-shell .topbar{
+    padding:0 10px;
+    gap:4px;
+  }
+  body.np-season-shell .topbar .top-actions{gap:4px}
+  body.np-season-shell .np-inner-seasons>summary{
+    width:36px;min-width:36px;min-height:36px;
+    padding:7px;border-radius:50%;
+  }
+  body.np-season-shell .np-inner-seasons>summary span{display:none}
+  body.np-season-shell .np-inner-seasons>summary svg{width:21px;height:21px}
+  body.np-season-shell .np-inner-season-options{
+    right:-35px;min-width:164px;
+  }
+  body.np-season-shell .mobile-brand .brand-symbol.horizon-symbol{
+    width:37px!important;height:32px!important;
+  }
+  body.np-season-shell .bottomnav a{
+    color:var(--season-nav-ink)!important;
+  }
+}
+@media(max-width:380px){
+  body.np-season-shell .topbar .top-actions>.iconbutton{
+    display:none!important;
+  }
+  body.np-season-shell .topbar .language-switch button{
+    min-width:27px;padding:5px 6px;
+  }
+  body.np-season-shell .topbar .mobile-brand .brand-symbol.horizon-symbol{
+    width:32px!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  body.np-season-shell .topbar,
+  body.np-season-shell .card,
+  body.np-season-shell .sidebar{
+    transition:none!important;
+  }
+}
