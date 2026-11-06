@@ -18,7 +18,7 @@
   const attr=s=>s?`data-session="${esc(s.id)}" data-unit="${esc(E.unit(s)?.id||'')}"`:'';
   const b=(label,action,cls='btn',s=null,extra='')=>button(label,'n5-'+action,cls,`${attr(s)} ${action==='start'&&!extra.includes('data-content=')?'data-content="'+esc(C.id)+'"':''} ${extra}`);
   function errorBox(){return storageError?`<div class="notice n5-error" role="alert"><div><strong>Chưa lưu được thay đổi.</strong><p>${esc(storageError)}</p>${b('Xuất bản lưu để kiểm tra','export','textlink')}</div></div>`:'';}
-  function wrap(state,html){const ribbon=isPreview()?`<header class="n5-preview-ribbon"><div><strong>Xem trước bản nháp · ${esc(C.title)}</strong><span>Đáp án thử không lưu vào hồ sơ học viên.</span></div>${b('Chạy lại','preview-restart','textlink')}</header>`:'';return ribbon+`<div class="n5-reader" data-n5-root data-revision="${state?.revision??-1}">${errorBox()}${html}</div>`;}
+  function wrap(state,html){const ribbon=isPreview()?`<header class="n5-preview-ribbon"><div><strong>Xem trước bản nháp · ${esc(C.title)}</strong><span>Đáp án thử không lưu vào hồ sơ học viên.</span></div>${b('Chạy lại','preview-restart','textlink')}</header>`:'';return ribbon+`<div class="n5-reader${html.includes('n5-player-compact')?' n5-reader-playing':''}" data-n5-root data-revision="${state?.revision??-1}">${errorBox()}${html}</div>`;}
   function statusLine(s){return `<div class="n5-save"><span class="n5-save-dot" aria-hidden="true"></span>${isPreview()?'Phiên thử trong bộ nhớ · không lưu kết quả':storageError?'Có thay đổi chưa lưu':'Đã lưu trên trình duyệt này'}<span>·</span>${s?`${s.minutes} phút đã chọn`:'Chưa bắt đầu phiên'}</div>`;}
   function readingButton(s){return b(icon('eye')+(s.reading==='show'?' Ẩn cách đọc':' Hiện cách đọc'),'reading','btn sm',s,`aria-pressed="${s.reading==='show'}"`);}
   function startOptions(p=P()){const ctx=context(p);return{minutes:ctx.minutes,priority:NPAdvicePolicy.normalize(p.prefs.studyPriority),context:ctx,reading:p.prefs.furigana==='always'?'show':'hide',name:p.name};}
@@ -34,6 +34,22 @@
     const offer=E.repairOffer(state),chosen=q.type==='choice'&&a?q.options.find(o=>o.id===a.selected):null;
     return `<span class="eyebrow">${u.repairFor?'GỠ MỘT CHỖ VƯỚNG · CÂU MỚI':s.mode==='review'?(s.earlyReview?'LUYỆN SỚM · CHƯA ĐẾN HẠN ÔN':'THỬ NHỚ SAU MỘT KHOẢNG NGHỈ'):q.id==='transfer'?'THỬ TRONG MỘT TÌNH HUỐNG KHÁC':'THỬ NHỚ LẠI'}</span><h2>${esc(q.prompt)}</h2><p class="n5-stimulus">${jp(q.stimulus,s.definition)}</p>${choices}${current.hintUsed?`<aside class="n5-hint"><strong>Một gợi ý nhỏ</strong><p>${esc(q.hint)}</p></aside>`:locked?'':b(icon('help')+' Cần một gợi ý','hint','textlink',s)}${a?`<section class="n5-feedback ${a.correct?'good':'bad'}" tabindex="-1" data-n5-feedback role="status"><strong>${a.correct?a.hintUsed?'Đúng, với một chút hỗ trợ.':'Đúng trong câu này.':'Cùng gỡ chỗ vướng này.'}</strong>${chosen?`<p>${esc(chosen.why)}</p>`:''}<p>${esc(q.explanation)}</p><small>${u.repairFor?'Câu luyện sửa lỗi được ghi riêng; kết quả đầu tiên vẫn giữ nguyên.':a.hintUsed?'Đã ghi có dùng gợi ý; chưa tính là tự nhớ độc lập.':'Đã giữ kết quả lần trả lời đầu tiên.'}</small></section><div class="n5-step-actions">${b(offer?.automatic?'Thử một câu tương tự · 30 giây '+icon('arrow'):s.index===s.units.length-1?'Xem tổng kết '+icon('arrow'):'Tiếp tục '+icon('arrow'),'next','btn primary',s)}${offer?.automatic?b('Để ôn sau','next','textlink',s,'data-repair="false"'):offer?.fits?b('Luyện thêm một câu · 30 giây','next','btn',s,'data-repair="true"'):''}</div>`:`<div class="n5-step-actions">${b('Kiểm tra & xem lý do '+icon('arrow'),'check','btn primary',s,E.canCheck(s)?'':'disabled')}</div>`}`;
   }
+  /* UI-only progress: visited steps are NOT evidence of mastery. */
+  function sessionOutline(s){
+    const U=(key,args)=>Locale.ui('lesson.player.'+key,args);
+    const done=new Set(s.completedUnits),total=s.units.length;
+    return `<aside class="n5-player-aside" aria-label="${U('path')}">
+      <div class="n5-aside-head"><span class="eyebrow">${U('progress')}</span><strong>${U('completed',{completed:done.size,total})}</strong></div>
+      <div class="n5-aside-bar" aria-hidden="true"><span style="width:${Math.min(100,done.size/Math.max(1,total)*100)}%"></span></div>
+      <div class="n5-aside-section"><h3>${U('path')}</h3><ol class="n5-outline-list">
+        ${s.units.map((unit,index)=>`<li class="${done.has(unit.id)?'is-complete':index===s.index?'is-current':'is-upcoming'}" ${index===s.index?'aria-current="step"':''}>
+           <span class="n5-outline-number" aria-hidden="true">${done.has(unit.id)?'✓':index+1}</span>
+           <span class="n5-outline-title">${esc(Locale.t(unit.label||unit.type||''))}</span>
+         </li>`).join('')}
+      </ol></div>
+      <div class="n5-aside-footer"><span class="eyebrow">${U('learningGoal')}</span><p>${U(s.contentId==='foundation-vowels'?'focusKana':'focusN5')}</p><small>${U('sample')}</small></div>
+    </aside>`;
+  }
   function player(state,s){
     const u=E.unit(s);if(!u)return resultPage(state,s.id);
     const content=s.definition;
@@ -43,7 +59,36 @@
     else if(u.type==='personal')body=personal(s);
     else body=question(state,s,u);
     const completed=s.completedUnits.length;
-    return wrap(state,`<div class="n5-topline">${link('Hôm nay','today','textlink','back')}${b('Tạm dừng','pause','textlink',s)}</div><header class="n5-player-heading"><span class="eyebrow">${esc(content.level)} · ${esc(content.title)} · v${s.contentVersion}</span><div class="inline spread"><h1>${s.mode==='review'?(s.earlyReview?'Thử lại. Giữ nguyên lịch ôn.':'Ôn lại, để nhớ xa hơn.'):s.mode==='practice'?'Thử nhớ bằng chính mình.':'Một bước nhỏ, dùng được ngay.'}</h1>${readingButton(s)}</div><div class="n5-progress-caption"><span>Bước ${s.index+1}/${s.units.length} · ${esc(u.label||'Luyện nhớ')}</span><span>${completed} bước đã hoàn tất</span></div><div class="n5-progress" role="progressbar" aria-label="Các bước đã hoàn tất" aria-valuemin="0" aria-valuemax="${s.units.length}" aria-valuenow="${completed}"><span style="width:${completed/s.units.length*100}%"></span></div></header><article class="card n5-stage" data-session="${esc(s.id)}" data-unit="${esc(u.id)}" data-question="${u.type==='question'}" data-reading="${s.reading}">${body}${u.type!=='question'?`<div class="n5-step-actions">${b(u.type==='personal'?'Tôi đã thử dùng câu này '+icon('arrow'):u.type==='story'?'Hiểu mẫu câu '+icon('arrow'):'Thử bước tiếp theo '+icon('arrow'),'next','btn primary',s)}${u.type==='personal'?b('Bỏ qua lúc này','next','textlink',s,'data-skipped="true"'):''}</div>`:''}</article>${statusLine(s)}<p class="n5-footnote">Không cần bật âm thanh. Có thể tạm dừng bất cứ lúc nào; lần sau vẫn giữ đúng câu đang làm.</p>`);
+    const U=(key,args)=>Locale.ui('lesson.player.'+key,args);
+    const total=s.units.length,completed=s.completedUnits.length,currentNo=s.index+1;
+    const q=u.type==='question'?E.definition(s,u.questionId):null;
+    const questionNo=u.type==='question'?s.units.slice(0,currentNo).filter(x=>x.type==='question').length:0;
+    const totalQuestions=s.units.filter(x=>x.type==='question').length;
+    const shortOptions=!!(q?.type==='choice'&&q.options?.length<=5&&q.options.every(o=>String(o.text).length<=14));
+    const headingText=s.mode==='review'?(s.earlyReview?'Thử lại. Giữ nguyên lịch ôn.':'Ôn lại, để nhớ xa hơn.'):s.mode==='practice'?'Thử nhớ bằng chính mình.':'Một bước nhỏ, dùng được ngay.';
+    const stepCaption=U('step',{current:currentNo,total})+' · '+Locale.t(u.label||'Luyện nhớ');
+    return wrap(state,`<div class="n5-player-compact" data-foundation="${content.id==='foundation-vowels'}" data-compact-choices="${shortOptions}" data-active-type="${esc(u.type)}">
+      <header class="n5-session-hero">
+        <div class="n5-topline">${link(U('today'),'today','textlink','back')}${b(U('pause'),'pause','textlink',s)}</div>
+        <div class="n5-hero-main"><span class="eyebrow">${esc(content.level)} · ${esc(Locale.t(content.title))} · v${s.contentVersion}</span>
+          <h1>${esc(Locale.t(headingText))}</h1></div>
+        <div class="n5-hero-progress">
+          <span>${esc(stepCaption)}</span>
+          <div class="n5-hero-progress-track"><div class="n5-progress" role="progressbar" aria-label="${U('progress')}" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${completed}"><span style="width:${completed/Math.max(1,total)*100}%"></span></div></div>
+          <strong>${U('completed',{completed,total})}</strong>
+          <div class="n5-hero-reading">${readingButton(s)}</div>
+        </div>
+      </header>
+      <div class="n5-player-grid">
+        <article class="card n5-stage" data-session="${esc(s.id)}" data-unit="${esc(u.id)}" data-question="${u.type==='question'}" data-reading="${s.reading}">
+          <div class="n5-stage-kicker"><span class="n5-stage-number">${u.type==='question'?U('question',{current:questionNo,total:totalQuestions}):U('step',{current:currentNo,total})}</span></div>
+          ${body}
+          ${u.type!=='question'?`<div class="n5-step-actions">${b(u.type==='personal'?'Tôi đã thử dùng câu này '+icon('arrow'):u.type==='story'?'Hiểu mẫu câu '+icon('arrow'):'Thử bước tiếp theo '+icon('arrow'),'next','btn primary',s)}${u.type==='personal'?b('Bỏ qua lúc này','next','textlink',s,'data-skipped="true"'):''}</div>`:''}
+        </article>
+        ${sessionOutline(s)}
+      </div>
+      <div class="n5-player-meta">${statusLine(s)}<p class="n5-footnote">${Locale.t('Không cần bật âm thanh. Có thể tạm dừng bất cứ lúc nào; lần sau vẫn giữ đúng câu đang làm.')}</p></div>
+    </div>`);
   }
   function resultPage(state,id){
     const sum=E.summary(state,id);if(!sum)return landing(state);
