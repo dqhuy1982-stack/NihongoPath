@@ -96,7 +96,7 @@ function focus(m){
 }
 function progress(m){
  const title=m.sample?'Tiến độ lộ trình mẫu':'Tiến độ phiên đã ghi nhận';
- return '<section class="v25-panel v25-statpanel">'+sectionHead('chart',title,'reports','Chi tiết')+
+ return '<section class="v25-panel v25-statpanel">'+sectionHead('progress',title,'reports','Chi tiết')+
  '<div class="v25-statmain">'+ring(m.percent)+'<dl>'+
  '<div><dt>'+I('book')+' '+(m.sample?'Hoạt động hoàn tất':'Bước hoàn tất')+'</dt><dd>'+m.count+' / '+m.total+'</dd></div>'+
  '<div><dt>'+I('clock')+' Thời gian</dt><dd>'+m.minutes+' phút</dd></div>'+
@@ -148,8 +148,8 @@ function mini(m){
  const tiles=[
   ['play','Tiếp tục học',current.title,cellRoute(current,m),m.percent+'%'],
   ['book','Bài đang học',current.module,cellRoute(current,m),m.sample?m.step+' / '+m.steps+' bước':'Xem bài'],
-  ['review','Ôn lại hôm nay',m.due+' nội dung cần xem', 'review',m.sample?'Mô phỏng':'Theo lịch'],
-  ['compass','Bước tiếp theo',next.title,next.route,'Xem bài']
+  ['repeat','Ôn lại hôm nay',m.due+' nội dung cần xem', 'review',m.sample?'Mô phỏng':'Theo lịch'],
+  ['flag','Bước tiếp theo',next.title,next.route,'Xem bài']
  ];
  return '<div class="v25-minis">'+tiles.map(([ic,name,val,dest,meta])=>href(dest,
  '<span class="v25-mini-title">'+I(ic)+' '+name+'</span><strong>'+safe(val)+'</strong><span class="v25-mini-bottom"><small>'+safe(meta)+'</small>'+I('arrow')+'</span>','v25-mini')).join('')+'</div>';
@@ -218,7 +218,7 @@ function detail(id){
  '<div class="v25-header"><div class="v25-hero-copy"><h1>'+name+' · Lộ trình học</h1><p>Chọn bài phù hợp và tiếp tục theo từng bước.</p></div></div>'+
  '<nav class="v25-breadcrumb" aria-label="Vị trí học tập">'+href('learn','Học')+'<span aria-hidden="true">›</span>'+href('learn/catalog','Khóa học')+'<span aria-hidden="true">›</span><span aria-current="page">'+name+'</span></nav>'+
  (m.sample?'<div class="v25-fixture-notice">'+I('info')+' Trạng thái mô phỏng cho '+safe(m.learner.name)+' · không phải điểm bài học thật.</div>':'')+
- '<section class="v25-panel">'+sectionHead('book','Module & bài học')+
+ '<section class="v25-panel">'+sectionHead('book-open','Module & bài học')+
  '<div class="v25-detail-summary"><span>'+label('Nội dung mẫu','ready')+'</span><span>'+done+' / '+act.length+' hoạt động minh họa</span>'+progressBar(pct(done,act.length))+'</div>'+
  '<div class="v25-lesson-cards">'+act.map((a,i)=>href(cellRoute(a,m),'<span class="v25-module-symbol" lang="ja">'+a.icon+'</span><span><small>HOẠT ĐỘNG '+(i+1)+' · '+a.module+'</small><strong>'+a.title+'</strong><em>'+a.desc+'</em></span>'+label(status(m,a.id)==='done'?'Đã hoàn tất':status(m,a.id)==='current'?'Đang học':'Sẵn sàng',status(m,a.id))+'<span class="v25-module-go">'+I('arrow')+'</span>','v25-module-card')).join('')+'</div></section>'+
  '<div class="v25-version">HORIZON · Learning Hub v26</div></div>';
