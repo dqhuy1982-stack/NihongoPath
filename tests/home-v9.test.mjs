@@ -12,8 +12,8 @@ const css=read('home-v9.css');
 const photos=read('family-portraits.js');
 
 test('V9 is activated only for the static family landing, after V8 CSS',()=>{
-  assert.ok(html.includes('href="home-v9.css?v=9.1"'));
-  assert.ok(html.indexOf('href="home-v9.css?v=9.1"')>html.indexOf('href="home-v8.css"'));
+  assert.ok(html.includes('href="home-v9.css?v=9.2"'));
+  assert.ok(html.indexOf('href="home-v9.css?v=9.2"')>html.indexOf('href="home-v8.css"'));
   assert.ok(ui.includes("if(!window.NP_FAMILY_SYNC){"));
   assert.ok(ui.includes("home.classList.add('home-v9')"));
   assert.ok(css.includes('.home-v9.home-v8.home-v7.home-v4.home-v3.home-v2'));
@@ -110,5 +110,5 @@ test('Laptop entry uses height-aware composition rather than a fake hidden overf
   assert.ok(css.includes('margin:clamp(10px,1.8svh,16px) auto 0!important'));
   assert.ok(css.includes('justify-content:flex-start!important'), 'ultra-short screens may naturally scroll');
   assert.ok(!css.includes('overflow-y:hidden!important'), 'do not conceal learner or Guest content');
-  assert.ok(html.includes('href="home-v9.css?v=9.1"'), 'Safari and Chrome load fresh refinements');
+  assert.ok(html.includes('href="home-v9.css?v=9.2"'), 'Safari and Chrome load fresh refinements');
 });
