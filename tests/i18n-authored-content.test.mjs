@@ -55,7 +55,7 @@ test('Japanese source examples are never rewritten by UI locale sidecars',()=>{
 
 test('Authored sample translations load before UI engine, regardless of selected language',()=>{
  const html=read('index.html');
- for(const file of ['locale-data.js','locale-coverage.js?v=14','lesson-locale.js?v=14','foundation-locale.js?v=14','locales.js?v=14'])
+ for(const file of ['locale-data.js','locale-coverage.js?v=15','lesson-locale.js?v=14','foundation-locale.js?v=14','locales.js?v=14'])
    assert.ok(html.includes('src="'+file+'"'));
  assert.ok(html.indexOf('src="lesson-locale.js?v=14"')<html.indexOf('src="locales.js?v=14"'));
  assert.ok(html.indexOf('src="foundation-locale.js?v=14"')<html.indexOf('src="locales.js?v=14"'));
