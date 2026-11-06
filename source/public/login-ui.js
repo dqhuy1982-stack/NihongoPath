@@ -45,7 +45,7 @@ window.NPLogin=(function(){
     template.content.querySelector('.atelier-home').classList.add('portal-home');
     const section=template.content.querySelector('.atelier-access');
     section.innerHTML=`<div class="access-heading"><span class="atelier-kicker">${tr('CHÀO MỪNG TRỞ LẠI','WELCOME BACK','おかえりなさい')}</span><h2>${tr('Hôm nay, ai sẽ học?','Who is learning today?','今日は、だれが学びますか。')}</h2><p>${tr('Chạm vào ảnh. Bước vào nhịp học của bạn.','Choose your portrait. Return to your own pace.','写真を選んで、自分のペースへ。')}</p></div>
-      <div class="portal-people family-picker" role="group" aria-label="${tr('Chọn người học','Choose a learner','学習者を選ぶ')}">${people.map((p,i)=>`<button type="button" class="family-choice portal-person" data-action="loginprofile" data-learner-season="${seasons[i%4]}" data-id="${esc(p.id)}" aria-haspopup="dialog" aria-label="${esc(tr('Mở khung nhập mã cho ','Open access code for ','アクセスコードを入力：')+p.name)}"><span class="family-photo">${avatar(p,true)}<span class="portal-person-arrow" aria-hidden="true">${icon('arrow')}</span></span><span class="family-name" data-no-translate>${esc(p.name)}</span><span class="home-learner-rule" aria-hidden="true"></span><span class="portal-person-goal">${esc(currentStage(p))}</span><span class="home-learner-focus" data-no-translate>${esc(currentFocus(p))}</span><span class="home-season-decoration" aria-hidden="true"></span></button>`).join('')}</div>
+      <div class="portal-people family-picker" role="group" aria-label="${tr('Chọn người học','Choose a learner','学習者を選ぶ')}">${people.map((p,i)=>`<button type="button" class="family-choice portal-person" data-action="loginprofile" data-learner-season="${seasons[i%4]}" data-id="${esc(p.id)}" aria-haspopup="dialog" aria-label="${esc(tr('Mở khung nhập mã cho ','Open access code for ','アクセスコードを入力：')+p.name)}"><span class="family-photo">${avatar(p,true)}<span class="portal-person-arrow" aria-hidden="true">${icon('arrow')}</span></span><span class="family-name" data-no-translate>${esc(p.name)}</span><span class="home-learner-rule" aria-hidden="true"></span><span class="portal-person-goal">${esc(currentStage(p))}</span><span class="home-learner-focus" data-no-translate>${esc(currentFocus(p))}</span><span class="home-season-decoration" aria-hidden="true"></span><span class="home-v7-chevron" aria-hidden="true">›</span></button>`).join('')}</div>
       <p class="portal-entry-hint">${icon('lock')} ${tr('Chọn ảnh để nhập mã truy cập.','Select a portrait to enter your code.','写真を選ぶと入力画面が開きます。')}</p>
       <div class="portal-guest-row">${button(icon('leaf')+`<span>${tr('Khám phá với tư cách khách','Explore as a guest','ゲストとして体験')}</span>`,'portal-guest','portal-guest')}${link(tr('Hồ sơ khác','Other profiles','ほかのプロフィール'),'profiles','textlink')}</div>
       <div class="atelier-access-links portal-access-links">${link(tr('Tôi có mã mời','I have an invitation','招待コードを持っています')+icon('arrow'),'invite','')}<span>${tr('Bản trải nghiệm · dùng mã mẫu','Prototype · sample access code','体験版・サンプルコード')}</span></div>`;
@@ -56,6 +56,7 @@ window.NPLogin=(function(){
         const home=template.content.querySelector('.atelier-home');
         home.classList.add('home-v2','home-v3');
         home.classList.add('home-v4');
+        home.classList.add('home-v7');
         home.dataset.season=preferredSeason();
         const headerActions=home.querySelector('.atelier-header-actions');
         if(headerActions){
@@ -66,27 +67,56 @@ window.NPLogin=(function(){
           const options=seasonLabels[Locale.code]||seasonLabels.vi;
           seasonControl.innerHTML=seasons.map((season,i)=>`<button class="home-season-button" type="button" data-season-choice="${season}" aria-label="${options[i]}" title="${options[i]}" aria-pressed="${season===home.dataset.season}">${seasonArtwork[i]}</button>`).join('');
           headerActions.prepend(seasonControl);
+          const seasonMenu=document.createElement('details');
+          seasonMenu.className='home-v7-seasons';
+          const seasonSummary=document.createElement('summary');
+          seasonSummary.setAttribute('aria-label',tr('Đổi mùa','Choose season','季節を変更'));
+          seasonSummary.setAttribute('title',tr('Đổi mùa','Choose season','季節を変更'));
+          seasonSummary.innerHTML=icon('leaf');
+          seasonControl.replaceWith(seasonMenu);
+          seasonMenu.append(seasonSummary,seasonControl);
         }
         // This is an entrance/welcome screen. Keep only locale and theme in
         // the header; a single large lockup belongs to the centered hero.
         home.querySelector('.home-brand')?.remove();
+        const header=home.querySelector('.atelier-header');
+        if(header){
+          const brand=document.createElement('a');
+          brand.className='home-v7-header-brand';
+          brand.href='#login';
+          brand.setAttribute('aria-label','HORIZON');
+          brand.innerHTML='<img src="assets/horizon-v7-sunmark.svg" alt="" width="42" height="26"><span>HORIZON</span>';
+          header.prepend(brand);
+        }
         home.querySelector('.brand-edition')?.remove();
         home.querySelector('.home-guide')?.remove();
         home.querySelector('.atelier-footer')?.remove();
         const story=home.querySelector('.atelier-story');
         story.innerHTML=`<div class="horizon-hero-lockup" data-no-translate>
-            <img class="horizon-hero-mark" src="assets/horizon-mark.svg?v=homev3" width="114" height="91" alt="" decoding="async">
+            <img class="horizon-hero-mark" src="assets/horizon-v7-sunmark.svg?v=7" width="114" height="62" alt="" decoding="async">
             <div class="horizon-hero-wordmark">HORIZON</div>
             <p class="horizon-home-slogan horizon-hero-tagline" lang="en">A little closer. <em>A world wider.</em></p>
           </div>
           <div class="home-v3-welcome">
             <h1 class="home-v3-question"><span>${tr('Hôm nay,','Today,','今日は、')}</span> <em>${tr('ai sẽ tiếp tục hành trình?','who continues the journey?','だれが旅を続けますか？')}</em></h1>
-            <p class="home-v2-intro">${tr('Chọn hồ sơ để trở lại nhịp học của mình.','Choose your profile to pick up where you left off.','プロフィールを選んで、学びの続きを始めましょう。')}</p>
+            <p class="home-v2-intro">${tr('Mỗi người một nhịp riêng, mỗi ngày một bước gần hơn.','Your own pace, a little further each day.','自分のペースで、毎日少しずつ前へ。')}</p>
           </div>`;
         // Four whole-card avatar buttons remain in the same order.
         // The heading above is the sole visual focus, not a second competing headline.
         section.querySelector('.access-heading')?.remove();
         section.querySelector('.portal-entry-hint')?.remove();
+        const learnerList=section.querySelector('.portal-people');
+        if(learnerList)learnerList.id='horizon-learner-list';
+        const guestRow=section.querySelector('.portal-guest-row');
+        if(guestRow){
+          const startButton=document.createElement('button');
+          startButton.type='button';
+          startButton.className='home-v7-start';
+          startButton.dataset.action='home-start';
+          startButton.setAttribute('aria-controls','horizon-learner-list');
+          startButton.innerHTML=icon('arrow')+'<span>'+tr('Chọn người học','Choose learner','学習者を選ぶ')+'</span>';
+          guestRow.before(startButton);
+        }
         const guest=section.querySelector('[data-action="portal-guest"]');
         if(guest){
           guest.innerHTML=icon('leaf')+'<span>'+tr('Vào thử với tư cách khách','Try as a guest','ゲストとして試す')+'</span>';
@@ -159,6 +189,11 @@ window.NPLogin=(function(){
       render(false);document.querySelector(`.atelier-header [data-locale="${Locale.code}"]`)?.focus({preventScroll:true});
     });
     const button=event.target.closest('[data-action]');if(!button)return;
+    if(button.dataset.action==='home-start'){
+      event.preventDefault();
+      const first=document.querySelector('.home-v7 .portal-person');
+      if(first){first.focus({preventScroll:true});first.scrollIntoView({block:'center',behavior:'smooth'});}
+    }
     if(button.dataset.action==='portal-close'){event.preventDefault();closeModal();}
     if(button.dataset.action==='portal-guest'){event.preventDefault();if(window.NP_STATIC_PUBLISH&&!window.NP_FAMILY_SYNC&&window.NPFamilyAccess)window.NPFamilyAccess.enterGuest();else{loginSelected='guest';go('guest');}}
   });
