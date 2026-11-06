@@ -76,7 +76,7 @@ test('The standalone UI language pack is complete, three-language, and uniquely 
  const ids=Object.keys(messages);
  assert.equal(ids.length,new Set(ids).size);
  for(const [key,message] of Object.entries(messages)){
-  assert.match(key,/^(review|journal)\.[a-zA-Z0-9.]+$/);
+  assert.match(key,/^(review|journal|profile|settings|map|reports|kana)\.[a-zA-Z0-9.]+$/);
   assert.equal(Object.keys(message).sort().join(','),'en,ja,vi',key);
   for(const [lang,text] of Object.entries(message)){
    assert.equal(typeof text,'string',key+' '+lang);
