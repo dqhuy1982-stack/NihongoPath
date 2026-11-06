@@ -523,3 +523,119 @@ body.dark .np-pin-submit{background:#d1e5c3!important;border-color:#d1e5c3!impor
   .np-pin-tagline{display:none}
   .np-pin-identity::before{height:108px;opacity:.12}
 }
+
+/* Desktop/laptop height-aware editorial fit — V9.1, 2026-11-06.
+   Screenshots at laptop browser viewport ~800px showed the last learner chips
+   at the fold and Guest below it. Reduce accumulated gaps and portrait scale
+   together, maintaining a legible single-screen entry without hiding overflow.
+   Wider desktop >=931px retains the original spacious composition.
+   iPhone/tablet and the PIN modal are deliberately outside these queries. */
+@media (min-width:851px) and (max-height:930px){
+  .home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .atelier-main,
+  .compact .home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .atelier-main{
+    padding:clamp(8px,1.4svh,14px) 12px clamp(9px,1.6svh,15px)!important;
+    justify-content:center!important;
+  }
+  .home-v9 .horizon-hero-mark{
+    width:clamp(63px,9svh,82px)!important;
+  }
+  .home-v9 .horizon-hero-wordmark{
+    font-size:clamp(35px,5.1svh,46px)!important;
+  }
+  .home-v9 .atelier-story .horizon-hero-tagline{
+    font-size:clamp(14px,2.2svh,18px)!important;
+    margin-top:2px!important;
+  }
+  .home-v9 .home-v3-welcome{
+    margin:clamp(16px,2.9svh,26px) auto 0!important;
+  }
+  .home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .atelier-story .home-v3-question,
+  .compact .home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .atelier-story .home-v3-question{
+    font-size:clamp(29px,4.3svh,38px)!important;
+    line-height:1.13!important;
+  }
+  .home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .home-v2-intro,
+  .compact .home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .home-v2-intro{
+    margin-top:6px!important;
+    font-size:12px!important;
+  }
+  .home-v9 .home-v3-welcome::after{
+    margin:12px auto 0!important;
+    width:108px!important;
+  }
+  .home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .portal-people,
+  .compact .home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .portal-people{
+    margin:clamp(14px,2.2svh,21px) auto 0!important;
+    gap:clamp(12px,1.5vw,22px)!important;
+  }
+  .home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .portal-person,
+  .compact .home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .portal-person{
+    padding:2px 4px 4px!important;
+  }
+  .home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .portal-person .family-photo,
+  .compact .home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .portal-person .family-photo{
+    width:clamp(106px,16svh,132px)!important;
+    height:clamp(106px,16svh,132px)!important;
+  }
+  .home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .portal-person .avatar,
+  .compact .home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .portal-person .avatar{
+    width:clamp(98px,calc(16svh - 8px),124px)!important;
+    height:clamp(98px,calc(16svh - 8px),124px)!important;
+  }
+  .home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .portal-person .family-name,
+  .compact .home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .portal-person .family-name{
+    margin:7px auto 0!important;
+    font-size:clamp(18px,2.9svh,23px)!important;
+  }
+  .home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .portal-person .portal-person-goal,
+  .compact .home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .portal-person .portal-person-goal{
+    margin:5px auto 0!important;
+    min-height:23px!important;
+    padding:3px 11px!important;
+    font-size:10px!important;
+  }
+  .home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .portal-guest-row,
+  .compact .home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .portal-guest-row{
+    margin:clamp(10px,1.8svh,16px) auto 0!important;
+  }
+  .home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .portal-guest,
+  .compact .home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .portal-guest{
+    min-height:34px!important;
+  }
+}
+
+/* Short laptop window after browser toolbars — compress rhythm once more,
+   but NEVER hide overflow or shrink text below accessible minimums. */
+@media (min-width:851px) and (max-height:740px){
+  .home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .atelier-main,
+  .compact .home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .atelier-main{
+    padding:7px 12px 10px!important;
+  }
+  .home-v9 .horizon-hero-mark{width:58px!important}
+  .home-v9 .horizon-hero-wordmark{font-size:35px!important}
+  .home-v9 .home-v3-welcome{margin:14px auto 0!important}
+  .home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .atelier-story .home-v3-question{
+    font-size:29px!important;
+  }
+  .home-v9 .home-v3-welcome::after{margin:8px auto 0!important}
+  .home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .portal-people{
+    margin:10px auto 0!important;
+  }
+  .home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .portal-person .family-photo{
+    width:106px!important;height:106px!important;
+  }
+  .home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .portal-person .avatar{
+    width:98px!important;height:98px!important;
+  }
+  .home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .portal-guest-row{
+    margin:7px auto 0!important;
+  }
+}
+
+/* At unusually low browser height the content may scroll naturally; clipping
+   the final Guest/PIN entry is never acceptable. */
+@media (min-width:851px) and (max-height:575px){
+  .home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .atelier-main{
+    justify-content:flex-start!important;
+  }
+}
