@@ -76,7 +76,7 @@ test('The standalone UI language pack is complete, three-language, and uniquely 
  const ids=Object.keys(messages);
  assert.equal(ids.length,new Set(ids).size);
  for(const [key,message] of Object.entries(messages)){
-  assert.match(key,/^(review|journal|profile|settings|map|reports|kana)\.[a-zA-Z0-9.]+$/);
+  assert.match(key,/^(review|journal|profile|settings|map|reports|kana|foundation)\.[a-zA-Z0-9.]+$/);
   assert.equal(Object.keys(message).sort().join(','),'en,ja,vi',key);
   for(const [lang,text] of Object.entries(message)){
    assert.equal(typeof text,'string',key+' '+lang);
@@ -157,9 +157,9 @@ test('Locale engine has keyed access and language change is propagated to routes
 });
 test('All UI pack resources load before runtime and route modules',()=>{
  const html=read('index.html');
- const ui=html.indexOf('src="i18n/ui-pack.js?v=17"');
+ const ui=html.indexOf('src="i18n/ui-pack.js?v=18"');
  assert.ok(ui>=0);
  assert.ok(ui<html.indexOf('src="locales.js?v=16"'));
- assert.ok(html.includes('src="app.js?v=17"'));
+ assert.ok(html.includes('src="app.js?v=18"'));
  assert.ok(html.includes('src="lesson-ui.js?v=17"'));
 });
