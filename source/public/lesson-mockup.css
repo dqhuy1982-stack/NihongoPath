@@ -252,6 +252,7 @@ body.dark .n5-player-mockup[data-foundation="true"] .n5-stage .n5-stimulus .n5-j
  background:#66765c!important;border-color:#66765c!important;color:white!important;
 }
 .n5-player-mockup .n5-outline-title{overflow-wrap:break-word}
+.n5-player-mockup .n5-side-quick{margin-top:auto;}
 .n5-player-mockup .n5-side-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:12px}
 .n5-player-mockup .n5-side-action{
  display:flex;gap:7px;align-items:center;justify-content:center;min-height:43px;
