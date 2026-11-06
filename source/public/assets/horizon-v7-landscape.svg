@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+<defs>
+ <linearGradient id="paper" x2="0" y2="1"><stop stop-color="#fbf8f2"/><stop offset=".65" stop-color="#faf9f5"/><stop offset="1" stop-color="#f8f6f0"/></linearGradient>
+ <radialGradient id="glow"><stop stop-color="#eac6a1" stop-opacity=".48"/><stop offset="1" stop-color="#f4d9b7" stop-opacity="0"/></radialGradient>
+ <linearGradient id="fuji" x1=".25" y1=".2" x2=".7" y2="1"><stop stop-color="#d6dde0"/><stop offset=".54" stop-color="#a7bbc2" stop-opacity=".70"/><stop offset="1" stop-color="#b5c6bf" stop-opacity=".08"/></linearGradient>
+ <linearGradient id="mist" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#b7c4b7" stop-opacity=".24"/><stop offset=".8" stop-color="#faf9f4" stop-opacity=".07"/><stop offset="1" stop-color="#faf9f4" stop-opacity="0"/></linearGradient>
+</defs>
+<rect width="1600" height="700" fill="url(#paper)"/>
+<circle cx="1284" cy="208" r="222" fill="url(#glow)"/>
+<!-- A quiet watercolor-like Fuji silhouette on right: vector crisp, no blur. -->
+<path d="M978 365 1321 116 1680 366Z" fill="url(#fuji)" opacity=".90"/>
+<path d="M1191 210 1321 116 1454 215 1423 201 1390 223 1368 202 1343 223 1319 200 1291 221 1265 198 1239 217Z" fill="#fdfcf8" opacity=".95"/>
+<path d="M1175 242 1321 116 1469 250" fill="none" stroke="#9bafb5" stroke-width="1" opacity=".22"/>
+<path d="M0 379Q145 327 287 368T580 369Q715 336 867 371T1203 365Q1379 327 1600 372V548H0Z" fill="#aabbb1" opacity=".18"/>
+<path d="M0 414Q178 372 323 404T648 397Q849 362 1027 405T1600 407V548H0Z" fill="url(#mist)"/>
+<path d="M0 459Q192 443 362 454T731 453Q909 444 1082 458T1600 451" stroke="#819c8d" stroke-opacity=".18" stroke-width="1.2" fill="none"/>
+<path d="M0 471Q192 458 362 468T731 465Q909 455 1082 469T1600 464" stroke="#819c8d" stroke-opacity=".12" stroke-width=".8" fill="none"/>
+<g stroke="#c9a77e" fill="none" stroke-linecap="round" opacity=".40">
+<path d="M-40 641Q161 600 346 641T723 637Q917 603 1114 639T1660 641" stroke-width="1"/>
+<path d="M-40 651Q161 610 346 651T723 647Q917 613 1114 649T1660 651" stroke-width=".7"/>
+</g>
+</svg>
