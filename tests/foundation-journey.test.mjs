@@ -54,7 +54,7 @@ test('UI pack has consistent language placeholders for new Foundation namespace'
  const entries=Object.entries(messages).filter(([k])=>k.startsWith('foundation.'));
  assert.ok(entries.length>=35);
  for(const [name,row] of entries){
-  assert.deepEqual(Object.keys(row).sort(),['en','ja','vi']);
+  assert.equal(Object.keys(row).sort().join(','),'en,ja,vi');
   for(const text of Object.values(row))assert.ok(text.trim(),name);
  }
 });
