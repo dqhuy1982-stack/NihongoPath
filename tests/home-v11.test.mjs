@@ -9,15 +9,16 @@ const css=read('home-v11.css'),pin=read('family-pin-ui.js'),html=read('index.htm
 const manifest=JSON.parse(read('manifest.webmanifest'));
 const app=read('app.js'),brand=read('horizon-brand.css');
 
-test('V11 is last stylesheet; native public PIN and old data contracts unchanged',()=>{
+test('V11 PIN layer remains ahead of V12 seasonal shell; PIN data contracts unchanged',()=>{
  assert.ok(html.includes('href="home-v11.css?v=11"'));
+ assert.ok(html.indexOf('href="season-shell.css?v=12"')>html.indexOf('href="home-v11.css?v=11"'));
  assert.ok(html.indexOf('home-v11.css?v=11')>html.indexOf('home-v10.css?v=10'));
  assert.ok(html.includes('src="family-pin-ui.js?v=11"'));
  assert.ok(pin.includes('window.NPFamilyAccess.createPin(id,value)'));
  assert.ok(pin.includes('window.NPFamilyAccess.unlock(id,value)'));
  assert.ok(pin.includes('window.NPFamilyAccess.resetPin(id)'));
  assert.ok(pin.includes('if(!window.NP_STATIC_PUBLISH||window.NP_FAMILY_SYNC)return false'));
- assert.ok(app.includes('src="assets/horizon-v7-sunmark.svg?v=11"'));
+ assert.ok(app.includes('data-season-mark src='));
  assert.ok(brand.includes('horizon-v7-sunmark.svg?v=11'));
 });
 
