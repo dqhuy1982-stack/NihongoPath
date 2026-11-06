@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 250" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Phong cảnh núi Phú Sĩ và tháp Nhật Bản">
+<defs>
+ <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fffbf5"/><stop offset=".57" stop-color="#faf0e5"/><stop offset="1" stop-color="#f6e7d7"/></linearGradient>
+ <linearGradient id="fuji" x1=".25" y1="0" x2=".75" y2="1"><stop stop-color="#e9d6c9"/><stop offset=".46" stop-color="#c6a58f"/><stop offset=".85" stop-color="#b58e80" stop-opacity=".54"/><stop offset="1" stop-color="#dbc0a4" stop-opacity=".07"/></linearGradient>
+ <linearGradient id="mist" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff5f7" stop-opacity=".1"/><stop offset="1" stop-color="#fff5f7" stop-opacity=".94"/></linearGradient>
+ <linearGradient id="tree" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#dd96aa"/><stop offset="1" stop-color="#a8677d"/></linearGradient>
+ <linearGradient id="fade" x1="0" x2="1"><stop stop-color="#fffbf5"/><stop offset=".28" stop-color="#fffbf5" stop-opacity=".98"/><stop offset=".52" stop-color="#fffbf5" stop-opacity=".4"/><stop offset="1" stop-color="#fffbf5" stop-opacity="0"/></linearGradient>
+ <g id="blossom"><g fill="#cc9268" stroke="#ac6f59" stroke-width=".4">
+  <ellipse rx="4.2" ry="9" cy="-9"/><ellipse rx="4.2" ry="9" cy="-9" transform="rotate(72)"/><ellipse rx="4.2" ry="9" cy="-9" transform="rotate(144)"/><ellipse rx="4.2" ry="9" cy="-9" transform="rotate(216)"/><ellipse rx="4.2" ry="9" cy="-9" transform="rotate(288)"/>
+ </g><circle r="3" fill="#f8dfab"/></g>
+ <g id="cloud" fill="#f0d6c2"><ellipse cx="0" cy="0" rx="56" ry="22"/><ellipse cx="49" cy="6" rx="45" ry="17"/><ellipse cx="-55" cy="10" rx="43" ry="15"/></g>
+ <g id="roof" fill="#815a4d" stroke="#66364b" stroke-width="1"><path d="M-59 0H58l18 8Q31 12 0 11-35 11-77 8Z"/><path d="M-40-12H38L59-2Q18 2 0 0-28 2-59-2Z" fill="#a86851"/></g>
+</defs>
+<rect width="1600" height="250" fill="url(#sky)"/>
+<!-- low-contrast Japanese wave pattern -->
+<g transform="translate(0,3)">
+ <path d="M756 235 Q875 180 951 106 Q1008 55 1060 29 Q1118 82 1195 147 Q1275 208 1389 235 Z" fill="url(#fuji)"/>
+ <path d="M952 107 Q1014 55 1060 29 Q1114 72 1170 118 L1142 111 1123 121 1103 109 1083 117 1061 108 1039 122 1014 112 992 121 977 109Z" fill="#fff9ee" opacity=".94"/>
+ 
+ <path d="M815 212Q929 173 1021 197T1185 204Q1320 172 1405 204V250H815Z" fill="#decad9" opacity=".23"/>
+</g>
+<g opacity=".62">
+ <use href="#cloud" x="903" y="189"/><use href="#cloud" x="1085" y="209" transform="scale(1.02 1)"/><use href="#cloud" x="1260" y="205"/><use href="#cloud" x="1480" y="201"/>
+</g>
+<!-- five-storey pagoda, deliberately positioned in the far-right illustration zone -->
+<g transform="translate(1470 194) scale(.90)" stroke-linejoin="round" opacity=".85">
+ <path d="M-40 0H40V-111H-40Z" fill="#f3d4d2" stroke="#bd7375" stroke-width="2"/>
+ <path d="M-27 0V-109M-9 0V-109M9 0V-109M27 0V-109" stroke="#b04e62" stroke-width="3"/>
+ <path d="M-38-17H38M-38-38H38M-38-60H38M-38-82H38" stroke="#9d4959" stroke-width="5"/>
+ <g transform="translate(0,-1)"><use href="#roof"/></g>
+ <g transform="translate(0,-24) scale(.86)"><use href="#roof"/></g>
+ <g transform="translate(0,-47) scale(.75)"><use href="#roof"/></g>
+ <g transform="translate(0,-70) scale(.65)"><use href="#roof"/></g>
+ <g transform="translate(0,-92) scale(.53)"><use href="#roof"/></g>
+ <path d="M0-109V-142" stroke="#885060" stroke-width="2.5"/>
+ <path d="M-8-131H8M-6-124H6" stroke="#b17a61" stroke-width="1.5"/>
+ <circle cy="-143" r="3" fill="#bd9b73"/>
+</g>
+<!-- sparse blossoms, contained to the outer edge -->
+<g stroke="url(#tree)" stroke-width="4" stroke-linecap="round" fill="none" opacity=".65">
+ <path d="M1580 8Q1543 32 1494 40T1370 30"/>
+ <path d="M1535 27Q1500 5 1479-6"/>
+ <path d="M1496 41Q1476 58 1458 70"/>
+ <path d="M1550 32Q1581 44 1590 64"/>
+</g>
+<g opacity=".28"><use href="#blossom" x="1392" y="32" transform="rotate(22 1392 32) scale(.78)"/><use href="#blossom" x="1434" y="37" transform="rotate(-20 1434 37) scale(.86)"/><use href="#blossom" x="1475" y="40" transform="rotate(10 1475 40)"/><use href="#blossom" x="1517" y="28" transform="rotate(24 1517 28) scale(.8)"/><use href="#blossom" x="1559" y="20" transform="rotate(-30 1559 20) scale(.82)"/><use href="#blossom" x="1458" y="69" transform="rotate(11 1458 69) scale(.75)"/><use href="#blossom" x="1581" y="57" transform="rotate(21 1581 57) scale(.77)"/></g>
+<rect width="920" height="250" fill="url(#fade)" opacity=".82"/>
+<path d="M0 232Q135 216 280 229T580 230Q740 216 900 230T1200 226Q1400 211 1600 232V250H0Z" fill="url(#mist)"/>
+</svg>
