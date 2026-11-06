@@ -26,6 +26,24 @@ window.NPLogin=(function(){
     try{const value=localStorage.getItem('np-home-season-v1');return seasons.includes(value)?value:'spring';}
     catch{return 'spring';}
   }
+  // Four related marks share the same HORIZON geometry. Seasonal accents
+  // update the header, hero and PIN without touching saved learner avatars.
+  const seasonMarkSrc=season=>'assets/horizon-mark-'+(seasons.includes(season)?season:'spring')+'.svg?v=10';
+  const tipKey='np-home-controls-tip-v1';
+  function updateSeasonMarks(home,season){
+    home?.querySelectorAll('[data-season-mark]').forEach(img=>{
+      img.src=seasonMarkSrc(season);
+    });
+  }
+  function dismissControlTip(home){
+    const tip=home?.querySelector('.home-controls-tip');
+    if(tip){
+      tip.remove();
+      home.querySelector('.home-v7-seasons>summary')?.removeAttribute('aria-describedby');
+      home.querySelector('.atelier-header .language-switch')?.removeAttribute('aria-describedby');
+    }
+    try{localStorage.setItem(tipKey,'dismissed');}catch{}
+  }
   // Both labels are live profile fields. Neither the JLPT grade nor future
   // exam dates are hard-coded into the landing page.
   function currentFocus(person){
@@ -61,7 +79,7 @@ window.NPLogin=(function(){
         home.classList.add('home-v2','home-v3');
         home.classList.add('home-v4');
         home.classList.add('home-v7','home-v8');
-        home.classList.add('home-v9');
+        home.classList.add('home-v9','home-v10');
         home.dataset.season=preferredSeason();
         const headerActions=home.querySelector('.atelier-header-actions');
         if(headerActions){
@@ -90,8 +108,22 @@ window.NPLogin=(function(){
           brand.className='home-v7-header-brand';
           brand.href='#login';
           brand.setAttribute('aria-label','HORIZON');
-          brand.innerHTML='<img src="assets/horizon-v7-sunmark.svg" alt="" width="42" height="26"><span>HORIZON</span>';
+          brand.innerHTML='<img data-season-mark src="'+seasonMarkSrc(home.dataset.season)+'" alt="" width="42" height="26"><span>HORIZON</span>';
           header.prepend(brand);
+          // A one-time, non-blocking hint sits near the two controls and
+          // disappears as soon as the user makes a choice or closes it.
+          let showTip=true;
+          try{showTip=localStorage.getItem(tipKey)!=='dismissed';}catch{}
+          if(showTip){
+            const tip=document.createElement('div');
+            tip.className='home-controls-tip';
+            tip.id='home-controls-tip';
+            tip.setAttribute('role','note');
+            tip.innerHTML='<span>'+tr('Thử đổi mùa và ngôn ngữ','Explore seasons & languages','季節と言語を切り替えてみましょう')+'</span><button type="button" data-home-tip-dismiss aria-label="'+tr('Đóng hướng dẫn','Dismiss tip','ヒントを閉じる')+'">×</button>';
+            header.append(tip);
+            header.querySelector('.home-v7-seasons>summary')?.setAttribute('aria-describedby',tip.id);
+            header.querySelector('.language-switch')?.setAttribute('aria-describedby',tip.id);
+          }
         }
         home.querySelector('.brand-edition')?.remove();
         home.querySelector('.home-guide')?.remove();
@@ -102,7 +134,7 @@ window.NPLogin=(function(){
         home.querySelector('.atelier-main')?.prepend(scenic);
         const story=home.querySelector('.atelier-story');
         story.innerHTML=`<div class="horizon-hero-lockup" data-no-translate>
-            <img class="horizon-hero-mark" src="assets/horizon-v7-sunmark.svg?v=7" width="114" height="62" alt="" decoding="async">
+            <img class="horizon-hero-mark" data-season-mark src="${seasonMarkSrc(home.dataset.season)}" width="114" height="62" alt="" decoding="async">
             <div class="horizon-hero-wordmark">HORIZON</div>
             <p class="horizon-home-slogan horizon-hero-tagline" lang="en">A little closer. <em>A world wider.</em></p>
           </div>
@@ -165,6 +197,8 @@ window.NPLogin=(function(){
     if(!home)return;
     const selected=button.dataset.seasonChoice;
     home.dataset.season=selected;
+    updateSeasonMarks(home,selected);
+    dismissControlTip(home);
     home.querySelectorAll('[data-season-choice]').forEach(item=>{
       item.setAttribute('aria-pressed',String(item.dataset.seasonChoice===selected));
     });
@@ -193,9 +227,18 @@ window.NPLogin=(function(){
     else modal('Chưa mở được hồ sơ demo','<p>Vui lòng tải lại trang rồi chọn avatar.</p>');
   },true);
   document.addEventListener('click',event=>{
+    if(event.target.closest('[data-locale]')&&route()==='login'){
+      dismissControlTip(document.querySelector('.home-v10'));
+    }
     if(event.target.closest('[data-locale]')&&route()==='login')queueMicrotask(()=>{
       render(false);document.querySelector(`.atelier-header [data-locale="${Locale.code}"]`)?.focus({preventScroll:true});
     });
+    const dismiss=event.target.closest?.('[data-home-tip-dismiss]');
+    if(dismiss){
+      event.preventDefault();
+      dismissControlTip(dismiss.closest('.home-v10'));
+      return;
+    }
     const button=event.target.closest('[data-action]');if(!button)return;
     if(button.dataset.action==='portal-close'){event.preventDefault();closeModal();}
     if(button.dataset.action==='portal-guest'){event.preventDefault();if(window.NP_STATIC_PUBLISH&&!window.NP_FAMILY_SYNC&&window.NPFamilyAccess)window.NPFamilyAccess.enterGuest();else{loginSelected='guest';go('guest');}}
