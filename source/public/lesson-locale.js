@@ -100,3 +100,34 @@ NP_LOCALE_ROWS.push(
  ["Không thêm さん vào tên của chính mình.","Do not add さん to your own name.","自分の名前に「さん」を付けないでください。"],
  ["マイです。 là đủ để tự nói tên. Câu này là lượt luyện sửa lỗi mới; kết quả đầu tiên được giữ nguyên.","マイです。 is enough to give your name. This is a new correction attempt; your first result remains unchanged.","「マイです。」だけで名前を伝えられます。これは新しい訂正練習で、最初の結果はそのまま保持されます。"]
 );
+
+/* N5 transfer and corrective review questions. */
+NP_LOCALE_ROWS.push(
+ ["Đổi câu, giữ cùng một vai trò của は. Đọc thế nào?","The sentence has changed, but は has the same role. How do you read it?","文が変わっても「は」の役割は同じです。どう読みますか。"],
+ ["Vẫn là trợ từ nêu chủ đề, nên đọc wa.","It is still the topic particle, so read wa.","今も話題を示す助詞なのでwaと読みます。"],
+ ["Ở đây は không phải một phần từ vựng.","Here は is not part of a vocabulary word.","ここでの「は」は単語の一部ではありません。"],
+ ["ma là cách đọc ま, không phải は.","ma is the pronunciation of ま, not は.","maは「ま」の読みで、「は」ではありません。"],
+ ["Vai trò của は giống câu vừa học, dù thông tin phía sau thay đổi.","は has the same role as before, even though the information that follows has changed.","後ろの情報が変わっても「は」の役割は先ほどと同じです。"],
+ ["Nội dung phía sau đổi từ 学生 sang マイ; vai trò của は không đổi. Hãy nhận ra chức năng, không chỉ nhớ cả câu.","The following word changed from 学生 to マイ, but は still marks the topic. Notice the function, not only the memorized sentence.","後ろが「学生」から「マイ」に変わっても「は」の役割は同じです。文全体の暗記だけでなく、助詞の働きを理解しましょう。"],
+ ["Người đối diện vừa nhắc tới việc đi học. Bạn muốn hỏi lại, không khẳng định.","Someone has just mentioned studying. You want to ask a question, not make a statement.","相手が学校の話をしました。断定せず、質問したい場面です。"],
+ ["Chủ đề đã rõ, có thể lược phần đứng trước.","The topic is clear, so the beginning may be omitted.","話題が明らかなので、前の部分は省略できます。"],
+ ["Có か nên là câu hỏi lịch sự trong mẫu này.","It has か, so it is a polite question in this pattern.","「か」があるので、この文型では丁寧な質問です。"],
+ ["Đây là lời khẳng định, không phải điều cần hỏi.","This is a statement, not the question you need.","これは断定文で、求める質問ではありません。"],
+ ["Nói xuất xứ, không hỏi vai trò.","It describes origin, not someone's role.","来た場所についてで、立場を尋ねていません。"],
+ ["Chú ý phần cuối です…","Pay attention to what follows です…","「です」の後に注目しましょう…"],
+ ["Khi chủ đề đã rõ, 学生ですか。 vẫn là câu hỏi tự nhiên. か làm rõ ý hỏi của mẫu này.","When the topic is clear, 学生ですか。 is still a natural question. か makes the question explicit.","話題が明らかな場合、「学生ですか。」は自然な質問です。「か」が疑問の意味を明確にします。"],
+ ["Mai được hỏi mình đến từ đâu. Câu nào trả lời đúng hướng?","Mai is asked where she comes from. Which answer matches?","マイはどこから来たか尋ねられました。正しい答えはどれですか。"],
+ ["Nói về nơi xuất phát, không nói nơi sắp đi.","Describe the starting point, not where you plan to go.","これから行く場所ではなく、来た場所を伝えます。"],
+ ["Đúng: đến từ Việt Nam.","Correct: came from Vietnam.","正解：ベトナムから来ました。"],
+ ["Đây là đi tới Việt Nam.","This means going to Vietnam.","これはベトナムへ行くという意味です。"],
+ ["Câu này nói tên.","This gives a name.","この文は名前を伝えています。"],
+ ["から chỉ nơi xuất phát.","から marks the starting point.","「から」は出発点を示します。"],
+ ["Giữ cụm から来ました khi muốn nói “đến từ”. Lượt sửa lỗi không thay thế câu trả lời đầu tiên.","Use から来ました as a phrase when saying where you come from. A correction attempt does not replace the first answer.","来た場所を伝えるときは「から来ました」をまとまりとして使います。訂正練習の結果は最初の回答を置き換えません。"],
+ ["Chọn thứ tự đúng để nói “Tôi là nhân viên công ty”.","Choose the correct word order for 'I'm an office worker.'","「私は会社員です。」の正しい語順を選びましょう。"],
+ ["Lần này vai trò là 会社員, không phải 学生.","This time the role is 会社員, not 学生.","今回は「学生」ではなく「会社員」です。"],
+ ["Chủ đề わたし đứng trước は, rồi đến thông tin 会社員 và です.","The topic わたし comes before は, followed by 会社員 and です.","話題の「わたし」を「は」の前に置き、「会社員」「です」と続けます。"],
+ ["です kết thúc mẫu câu; は theo sau chủ đề, không đặt cuối câu như vậy.","です ends the pattern; は follows the topic and does not go at the end like that.","「です」は文末に置き、「は」は話題の後に続けます。ここでは文末に置きません。"],
+ ["は là trợ từ đi sau chủ đề わたし, không đặt trước nó.","は is a particle placed after the topic わたし, not before it.","「は」は話題の「わたし」の後に置く助詞で、前には置きません。"],
+ ["Tìm thứ tự: chủ đề → は → thông tin → です.","Use this order: topic → は → information → です.","話題 → は → 情報 → です の順に並べましょう。"],
+ ["わたしは会社員です。 Giữ đúng thứ tự vừa học dù thay 学生 bằng 会社員. Đây là câu luyện sửa lỗi mới, không thay kết quả ghép câu trước đó.","わたしは会社員です。 Keep the same word order when replacing 学生 with 会社員. This is a new correction question, not a replacement for the previous ordering result.","「わたしは会社員です。」学生を会社員に変えても語順は同じです。これは新しい訂正練習で、前の並べ替え結果を置き換えるものではありません。"]
+);
