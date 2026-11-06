@@ -56,7 +56,7 @@ window.NPLogin=(function(){
         const home=template.content.querySelector('.atelier-home');
         home.classList.add('home-v2','home-v3');
         home.classList.add('home-v4');
-        home.classList.add('home-v7');
+        home.classList.add('home-v7','home-v8');
         home.dataset.season=preferredSeason();
         const headerActions=home.querySelector('.atelier-header-actions');
         if(headerActions){
@@ -107,16 +107,6 @@ window.NPLogin=(function(){
         section.querySelector('.portal-entry-hint')?.remove();
         const learnerList=section.querySelector('.portal-people');
         if(learnerList)learnerList.id='horizon-learner-list';
-        const guestRow=section.querySelector('.portal-guest-row');
-        if(guestRow){
-          const startButton=document.createElement('button');
-          startButton.type='button';
-          startButton.className='home-v7-start';
-          startButton.dataset.action='home-start';
-          startButton.setAttribute('aria-controls','horizon-learner-list');
-          startButton.innerHTML=icon('arrow')+'<span>'+tr('Chọn người học','Choose learner','学習者を選ぶ')+'</span>';
-          guestRow.before(startButton);
-        }
         const guest=section.querySelector('[data-action="portal-guest"]');
         if(guest){
           guest.innerHTML=icon('leaf')+'<span>'+tr('Vào thử với tư cách khách','Try as a guest','ゲストとして試す')+'</span>';
@@ -189,11 +179,6 @@ window.NPLogin=(function(){
       render(false);document.querySelector(`.atelier-header [data-locale="${Locale.code}"]`)?.focus({preventScroll:true});
     });
     const button=event.target.closest('[data-action]');if(!button)return;
-    if(button.dataset.action==='home-start'){
-      event.preventDefault();
-      const first=document.querySelector('.home-v7 .portal-person');
-      if(first){first.focus({preventScroll:true});first.scrollIntoView({block:'center',behavior:'smooth'});}
-    }
     if(button.dataset.action==='portal-close'){event.preventDefault();closeModal();}
     if(button.dataset.action==='portal-guest'){event.preventDefault();if(window.NP_STATIC_PUBLISH&&!window.NP_FAMILY_SYNC&&window.NPFamilyAccess)window.NPFamilyAccess.enterGuest();else{loginSelected='guest';go('guest');}}
   });
