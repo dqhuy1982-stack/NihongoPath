@@ -1,0 +1,205 @@
+/* HORIZON HOME V10 — four-season atmosphere and one-time discovery hint.
+   PC / Mobile / PIN. Keeps V9.2 geometry, original photos and learning flows.
+   Restrained editorial hues: season is visible, but text stays high-contrast. */
+
+/* Season palettes are coherent throughout paper, mountain, caption, chips
+   and hairline. They are intentionally more distinct than V9's near-identical
+   ivory backgrounds, without turning Home into four separate layouts. */
+.home-v10.home-v9.home-v8.home-v7.home-v4.home-v3.home-v2.atelier-home{
+  --h10-ink:#294c3a;
+  --h10-accent:#a67581;
+  --h10-soft:#f9e8e8;
+  --h10-outline:#dfc0c2;
+  --h10-highlight:#f1dce3;
+  --h10-scenery-filter:sepia(.10) hue-rotate(-12deg) saturate(1.2);
+  background:
+    radial-gradient(ellipse 55% 31% at 3% 12%,#f4d5d4b5,transparent 87%),
+    radial-gradient(ellipse 44% 38% at 97% 26%,#ffe4d4ad,transparent 95%),
+    linear-gradient(155deg,#fff9f7,#fff8f6 60%,#faf4f2)!important;
+  transition:background-color .25s ease;
+}
+.home-v10.home-v9.home-v8.home-v7.home-v4.home-v3.home-v2.atelier-home[data-season="spring"]{
+  --h10-accent:#a77583;--h10-soft:#f9e8e8;--h10-outline:#dfc0c2;
+  --h10-scenery-filter:sepia(.12) hue-rotate(-13deg) saturate(1.25);
+}
+.home-v10.home-v9.home-v8.home-v7.home-v4.home-v3.home-v2.atelier-home[data-season="summer"]{
+  --h10-accent:#547e58;--h10-soft:#e4f1e0;--h10-outline:#b6d1b6;
+  --h10-scenery-filter:sepia(.05) hue-rotate(-25deg) saturate(1.42);
+  background:
+    radial-gradient(ellipse 55% 34% at 7% 14%,#d6eac8d4,transparent 88%),
+    radial-gradient(ellipse 46% 35% at 98% 20%,#f8edb7b3,transparent 90%),
+    linear-gradient(150deg,#f8fcf3,#f5faf1 58%,#edf5eb)!important;
+}
+.home-v10.home-v9.home-v8.home-v7.home-v4.home-v3.home-v2.atelier-home[data-season="autumn"]{
+  --h10-accent:#a46d47;--h10-soft:#fae7d4;--h10-outline:#dcb998;
+  --h10-scenery-filter:sepia(.28) saturate(1.38) hue-rotate(-13deg);
+  background:
+    radial-gradient(ellipse 55% 30% at 6% 10%,#f2d5b6d9,transparent 90%),
+    radial-gradient(ellipse 45% 35% at 96% 24%,#efc69ac9,transparent 95%),
+    linear-gradient(155deg,#fff9f0,#fdf4e9 60%,#faecde)!important;
+}
+.home-v10.home-v9.home-v8.home-v7.home-v4.home-v3.home-v2.atelier-home[data-season="winter"]{
+  --h10-accent:#6289a2;--h10-soft:#e2eef5;--h10-outline:#b2ccd9;
+  --h10-scenery-filter:sepia(.02) hue-rotate(14deg) saturate(.82);
+  background:
+    radial-gradient(ellipse 60% 35% at 4% 12%,#d5e7f1d9,transparent 88%),
+    radial-gradient(ellipse 45% 34% at 98% 23%,#dee9f3cb,transparent 95%),
+    linear-gradient(155deg,#f9fcfd,#f3f9fc 60%,#eaf2f8)!important;
+}
+
+/* The Fuji scene remains a subordinate illustration, but its tint changes
+   with each selected season on both widescreen and Safari mobile. */
+.home-v10.home-v9.home-v8.home-v7.home-v4.home-v3.home-v2.atelier-home::before{
+  filter:var(--h10-scenery-filter,none)!important;
+  opacity:.85!important;
+}
+.home-v10 .home-v9-landscape{
+  filter:var(--h10-scenery-filter,none)!important;
+}
+.home-v10.home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .atelier-story .home-v3-question em{
+  color:var(--h10-accent)!important;
+}
+.home-v10 .atelier-story .horizon-hero-tagline{
+  color:var(--h10-accent)!important;
+}
+.home-v10 .home-v3-welcome::after{
+  background:linear-gradient(90deg,transparent,var(--h10-accent) 25%,var(--h10-accent) 75%,transparent)!important;
+  opacity:.56!important;
+}
+.home-v10.home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .portal-person .portal-person-goal,
+.compact .home-v10.home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .portal-person .portal-person-goal{
+  background:var(--h10-soft)!important;
+  border-color:var(--h10-outline)!important;
+  color:var(--h10-ink)!important;
+}
+.home-v10.home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .portal-person .family-photo,
+.compact .home-v10.home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .portal-person .family-photo{
+  border-color:var(--h10-outline)!important;
+}
+.home-v10 .home-v7-seasons>summary{
+  border-color:var(--h10-outline)!important;
+}
+.home-v10 .home-v7-seasons[open]>summary{
+  background:var(--h10-soft)!important;border-color:var(--h10-accent)!important;
+}
+
+/* A single, dismissible discovery cue for first-time visitors, not a tour.
+   It sits below the controls, outside layout flow and never affects fit. */
+.home-v10 .atelier-header{position:relative;overflow:visible!important}
+.home-v10 .home-controls-tip{
+  position:absolute;z-index:40;
+  top:calc(100% + 11px);right:0;
+  box-sizing:border-box;
+  width:max-content;max-width:min(300px,calc(100vw - 26px));
+  min-height:36px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:8px 10px 8px 14px;
+  border:1px solid var(--h10-outline);
+  border-radius:13px;
+  background:#fffdf9f6;
+  color:#365943;
+  box-shadow:0 5px 18px #203e2917;
+  -webkit-backdrop-filter:none;backdrop-filter:none;
+  font:600 11px/1.35 Manrope,Arial,sans-serif;
+  text-align:left;
+}
+.home-v10 .home-controls-tip::before{
+  content:"";position:absolute;top:-5px;right:114px;
+  width:8px;height:8px;transform:rotate(45deg);
+  background:#fffdf9;border-top:1px solid var(--h10-outline);
+  border-left:1px solid var(--h10-outline);
+}
+.home-v10 .home-controls-tip>span{
+  display:block;flex:1;min-width:0;letter-spacing:.005em;
+}
+.home-v10 .home-controls-tip button{
+  flex:0 0 auto;display:grid;place-items:center;
+  width:25px;height:25px;min-width:25px;
+  padding:0;
+  appearance:none;cursor:pointer;
+  border:0;border-radius:50%;
+  background:transparent;color:#4e6655;
+  font:400 20px/1 Arial,sans-serif;
+}
+.home-v10 .home-controls-tip button:hover{background:var(--h10-soft)}
+.home-v10 .home-controls-tip button:focus-visible{
+  outline:2px solid #52795b;outline-offset:2px;
+}
+
+/* Dark palette remains controlled and legible. Season identity should still
+   be visible without bright cards or heavy borders. */
+body.dark .home-v10.home-v9.home-v8.home-v7.home-v4.home-v3.home-v2.atelier-home{
+  --h10-ink:#f2eee8;
+  --h10-accent:#e7b6bd;
+  --h10-soft:#5b4149;
+  --h10-outline:#996975;
+  background:radial-gradient(ellipse 68% 40% at 90% 15%,#5039419c,transparent 87%),
+             linear-gradient(155deg,#302b30,#29292d 66%,#282a2d)!important;
+  color:#f0f1ea;
+}
+body.dark .home-v10.home-v9.home-v8.home-v7.home-v4.home-v3.home-v2.atelier-home[data-season="summer"]{
+  --h10-accent:#b5d99f;--h10-soft:#36533e;--h10-outline:#688f6d;
+  background:radial-gradient(ellipse 58% 40% at 88% 17%,#355b3c9c,transparent 90%),
+             linear-gradient(155deg,#20382c,#193328 66%,#1e3129)!important;
+}
+body.dark .home-v10.home-v9.home-v8.home-v7.home-v4.home-v3.home-v2.atelier-home[data-season="autumn"]{
+  --h10-accent:#e5b281;--h10-soft:#57402f;--h10-outline:#9e7856;
+  background:radial-gradient(ellipse 64% 40% at 89% 17%,#7250358a,transparent 90%),
+             linear-gradient(155deg,#3b3028,#332a24 65%,#302a25)!important;
+}
+body.dark .home-v10.home-v9.home-v8.home-v7.home-v4.home-v3.home-v2.atelier-home[data-season="winter"]{
+  --h10-accent:#b8d9e8;--h10-soft:#314b5b;--h10-outline:#678fa5;
+  background:radial-gradient(ellipse 63% 42% at 88% 17%,#41677997,transparent 90%),
+             linear-gradient(155deg,#223642,#1b2e3b 66%,#1c2b37)!important;
+}
+body.dark .home-v10.home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .atelier-story .home-v3-question em,
+body.dark .compact .home-v10.home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .atelier-story .home-v3-question em{
+  color:var(--h10-accent)!important;
+}
+body.dark .home-v10 .atelier-story .horizon-hero-tagline{color:var(--h10-accent)!important}
+body.dark .home-v10.home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .portal-person .portal-person-goal,
+body.dark .compact .home-v10.home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .portal-person .portal-person-goal{
+  background:var(--h10-soft)!important;
+  color:#f8f5ef!important;border-color:var(--h10-outline)!important;
+}
+body.dark .home-v10.home-v9.home-v8.home-v7.home-v4.home-v3.home-v2 .portal-person .family-photo{
+  border-color:var(--h10-outline)!important;
+}
+body.dark .home-v10 .home-controls-tip{
+  background:#294436!important;border-color:var(--h10-outline);
+  color:#edf3e8;box-shadow:0 6px 17px #0f231a40;
+}
+body.dark .home-v10 .home-controls-tip::before{
+  background:#294436;border-color:var(--h10-outline);
+}
+body.dark .home-v10 .home-controls-tip button{color:#edf3e8}
+body.dark .home-v10 .home-controls-tip button:hover{background:#41634a}
+body.dark .home-v10 .home-v7-header-brand img,
+body.dark .home-v10 .horizon-hero-mark{
+  filter:brightness(1.55) saturate(.9)!important;
+}
+/* V9 hard-coded the old logo as a CSS content override in dark PIN.
+   Reset so the popup always uses its actual selected-season img src. */
+body.dark .np-pin-brand img{
+  content:normal!important;
+  filter:brightness(1.52) saturate(.9)!important;
+}
+
+/* Even on a small phone the hint only covers a little scenery, never the
+   profiles or the actual control hit targets. */
+@media(max-width:600px){
+  .home-v10 .home-controls-tip{
+    top:calc(100% + 8px);right:0;
+    max-width:min(263px,calc(100vw - 25px));
+    padding:7px 8px 7px 11px;
+    font-size:10px;min-height:33px;
+    border-radius:11px;
+  }
+  .home-v10 .home-controls-tip::before{right:91px}
+}
+@media(max-width:350px){
+  .home-v10 .home-controls-tip{max-width:228px}
+}
+@media(prefers-reduced-motion:reduce){
+  .home-v10 .home-controls-tip button{transition:none!important}
+}
