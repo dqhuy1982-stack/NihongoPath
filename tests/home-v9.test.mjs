@@ -13,7 +13,7 @@ const photos=read('family-portraits.js');
 
 test('V9 is activated only for the static family landing, after V8 CSS',()=>{
   assert.ok(html.includes('href="home-v9.css?v=9.1"'));
-  assert.ok(html.indexOf('href="home-v9.css"')>html.indexOf('href="home-v8.css"'));
+  assert.ok(html.indexOf('href="home-v9.css?v=9.1"')>html.indexOf('href="home-v8.css"'));
   assert.ok(ui.includes("if(!window.NP_FAMILY_SYNC){"));
   assert.ok(ui.includes("home.classList.add('home-v9')"));
   assert.ok(css.includes('.home-v9.home-v8.home-v7.home-v4.home-v3.home-v2'));
