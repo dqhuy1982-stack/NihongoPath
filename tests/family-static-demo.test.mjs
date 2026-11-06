@@ -35,7 +35,7 @@ test('family demo retains N5/N2/N4/N4, morphing PIN access and Guest',()=>{
  assert.ok(login.includes("window.NPFamilyAccess.open"),'Avatar PIN open route missing');
  assert.ok(login.includes("aria-haspopup','dialog"),'Avatar must announce PIN dialog');
  assert.ok(read('family-pin-ui.js').includes('np-pin-window'),'Missing morphing dialog');
- assert.ok(index.includes('src="family-pin-ui.js?v=11"'));
+ assert.ok(index.includes('src="family-pin-ui.js?v=13"'));
  assert.ok(index.includes('href="home-pin.css"'));
  assert.ok(read('family-demo-auth.js').includes("hash:'SHA-256'"),'PIN should be derived, not embedded in public source');
  assert.ok(login.includes("window.NPFamilyAccess.enterGuest"),'Guest entry missing');
