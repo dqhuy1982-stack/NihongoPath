@@ -89,7 +89,7 @@ test('Route render sets shared season before constructing shell; login and lesso
  assert.ok(app.includes('data-season-mark'));
  assert.ok(app.includes('window.NPSeason?.sync();applyDevice()'));
  assert.ok(app.includes("window.NPFamilyAccess.open(id,b)"));
- assert.ok(app.includes('window.NPFamilyAccess.unlock'));
+ assert.ok(read('family-pin-ui.js').includes('window.NPFamilyAccess.unlock'));
 });
 
 test('Four seasonal palettes are applied to navigation, dashboard, studying and mobile',()=>{
