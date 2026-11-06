@@ -1,7 +1,20 @@
 'use strict';
 const Locale=(()=>{
  const key='nihongo-path-ui-locale',codes=['vi','en','ja'];let current='vi';try{const x=localStorage.getItem(key);if(codes.includes(x))current=x;}catch{}
- const clean=x=>String(x).normalize('NFC').trim().replace(/\s+/g,' '),lookup=new Map(NP_LOCALE_ROWS.map(r=>[clean(r[0]),r]));
+ const clean=x=>String(x).normalize('NFC').trim().replace(/\s+/g,' '),
+       lookup=new Map(),reverse=new Map(),missing=new Set();
+ const addRow=(vi,en,ja)=>{
+   if(typeof vi!=='string'||typeof en!=='string'||typeof ja!=='string')return;
+   const row=[clean(vi),clean(en),clean(ja)];
+   lookup.set(row[0],row);
+   if(row[1]!==row[0])reverse.set(row[1],row);
+   if(row[2]!==row[0])reverse.set(row[2],row);
+ };
+ NP_LOCALE_ROWS.forEach(r=>addRow(...r));
+ function register(vi,en,ja){
+   addRow(vi,en,ja);
+   return current==='en'?en:current==='ja'?ja:vi;
+ }
  const nodeSources=new WeakMap(),attributeSources=new WeakMap();let titleSource='',lastTitle='';
  const format=[
   [/^([\u3040-\u30ff\s]+) · (.+)$/,m=>`${m[1]} · ${t(m[2])}`,m=>`${m[1]} · ${t(m[2])}`],
@@ -32,7 +45,14 @@ const Locale=(()=>{
   [/^Khóa (N[1-5])$/,m=>`${m[1]} course`,m=>`${m[1]}コース`],
   [/^BẢN REVIEW TƯƠNG TÁC · (\d+)$/,m=>`INTERACTIVE DESIGN REVIEW · ${m[1]}`,m=>`インタラクティブな試作版 · ${m[1]}`]
  ];
- function t(text){if(current==='vi')return text;const source=clean(text),row=lookup.get(source);if(row)return row[current==='en'?1:2];for(const [re,en,ja]of format){const m=source.match(re);if(m)return(current==='en'?en:ja)(m);}return text;}
+ function t(text){
+  const source=clean(text),row=lookup.get(source)||reverse.get(source);
+  if(row)return row[current==='vi'?0:current==='en'?1:2];
+  if(current==='vi')return text;
+  for(const [re,en,ja]of format){const m=source.match(re);if(m)return(current==='en'?en:ja)(m);}
+  if(current!=='vi'&&/[À-ỹĐđ]/u.test(source)&&source.length>3)missing.add(source);
+  return text;
+ }
  function preserveSpace(original,translated){if(original===translated)return original;return(original.match(/^\s*/)?.[0]||'')+translated+(original.match(/\s*$/)?.[0]||'');}
  function translate(root=document){
   const doc=root.ownerDocument||document;
@@ -46,9 +66,16 @@ const Locale=(()=>{
   if(doc.title!==lastTitle)titleSource=doc.title;const titleBase=titleSource.replace(/ · Nihongo Path$/,'');lastTitle=t(titleBase)+' · Nihongo Path';doc.title=lastTitle;
  }
  function switcher(){return `<div class="language-switch" role="group" aria-label="Ngôn ngữ giao diện" data-no-translate>${[['vi','VI','Tiếng Việt'],['en','EN','English'],['ja','日本語','日本語']].map(([c,l,n])=>`<button type="button" data-locale="${c}" lang="${c}" aria-label="${n}" aria-pressed="${c===current}">${l}</button>`).join('')}</div>`;}
- function set(c){if(!codes.includes(c))return;current=c;try{localStorage.setItem(key,c);}catch{}translate(document);}
+ function set(c){
+  if(!codes.includes(c))return;
+  const previous=current;
+  current=c;
+  try{localStorage.setItem(key,c);}catch{}
+  translate(document);
+  if(previous!==c)document.dispatchEvent(new CustomEvent('np:localechange',{detail:{code:c,previous}}));
+ }
  document.addEventListener('click',e=>{const b=e.target.closest('[data-locale]');if(b){set(b.dataset.locale);return;}queueMicrotask(()=>translate(document));});
  document.addEventListener('input',()=>queueMicrotask(()=>translate(document)));
  document.addEventListener('change',()=>queueMicrotask(()=>translate(document)));
- return{t,translate,switcher,set,get code(){return current;}};
+ return{t,translate,switcher,set,register,diagnostics:()=>[...missing],get code(){return current;}};
 })();
