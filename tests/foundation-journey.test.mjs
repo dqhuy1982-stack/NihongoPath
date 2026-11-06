@@ -73,8 +73,8 @@ test('Site loads route modules and CSS in an appropriate versioned order',()=>{
  assert.ok(html.indexOf('foundation-journey.css?v=18')>html.indexOf('season-shell.css?v=15'));
  assert.ok(html.includes('src="foundation-journey.js?v=18"'));
  assert.ok(html.includes('src="app.js?v=18"'));
- assert.ok(html.includes('src="i18n/ui-pack.js?v=18"'));
- assert.ok(html.indexOf('src="i18n/ui-pack.js?v=18"')<html.indexOf('src="foundation-journey.js?v=18"'));
+ assert.ok(html.includes('src="i18n/ui-pack.js?v=19"'));
+ assert.ok(html.indexOf('src="i18n/ui-pack.js?v=19"')<html.indexOf('src="foundation-journey.js?v=18"'));
  assert.ok(css.includes('@media(max-width:620px)'));
  assert.ok(css.includes('prefers-reduced-motion:reduce'));
  assert.ok(css.includes('outline:2px solid'));
