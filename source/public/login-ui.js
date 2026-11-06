@@ -75,7 +75,7 @@ window.NPLogin=(function(){
           const seasonMenu=document.createElement('details');
           seasonMenu.className='home-v7-seasons';
           const seasonSummary=document.createElement('summary');
-          seasonSummary.setAttribute('aria-label',tr('Đổi mùa','Choose season','季節を変更'));
+          seasonSummary.setAttribute('aria-label',tr('Đổi mùa','Choose season','季節を変更')+' · '+options[seasons.indexOf(home.dataset.season)]);
           seasonSummary.setAttribute('title',tr('Đổi mùa','Choose season','季節を変更'));
           seasonSummary.innerHTML='<span class="home-season-summary-glyph" aria-hidden="true">'+seasonArtwork[seasons.indexOf(home.dataset.season)]+'</span>';
           seasonControl.replaceWith(seasonMenu);
