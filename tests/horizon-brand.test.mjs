@@ -17,7 +17,7 @@ test('HORIZON web brand is consistent from Home through the learning shell',()=>
  assert.match(page,/href="horizon-brand\.css"/);
  assert.ok(page.indexOf('href="horizon-brand.css"')>page.indexOf('href="home-pin.css"'),
    'brand layer should not override PIN dialog/learning behavior');
- assert.ok(app.includes('src="assets/horizon-mark.svg?v=homev3"'));
+ assert.ok(app.includes('src="assets/horizon-v7-sunmark.svg?v=11"'));
  assert.ok(app.includes('horizon-wordmark'));
  assert.ok(app.includes('<strong>HORIZON</strong>'));
  assert.ok(app.includes('HORIZON — Hôm nay'));
@@ -30,17 +30,22 @@ test('HORIZON web brand is consistent from Home through the learning shell',()=>
  assert.ok(ui.includes('window.NPFamilyAccess.enterGuest()'),'Guest unchanged');
 });
 test('Minimal vector identity: H pillars, horizon arc and rising dot',()=>{
- for(const name of ['horizon-mark.svg','horizon-mark-light.svg','horizon-app.svg']){
+ for(const name of ['horizon-mark.svg','horizon-mark-light.svg']){
   const svg=read('assets/'+name);
   assert.ok(svg.startsWith('<svg')&&svg.includes('</svg>'),name);
   assert.ok(svg.includes('viewBox='),name);
   assert.ok(svg.includes('circle'),name+' must contain the progress dot');
   assert.ok(svg.includes('path'),name+' must contain the horizon line');
  }
+ const icon=read('assets/horizon-app.svg');
+ assert.ok(icon.includes('viewBox="0 0 192 192"'));
+ assert.ok(icon.includes('M69 102a27 27'),'app symbol must show rising sun');
+ assert.ok(icon.includes('M25 130c29-24'),'app icon and site crest must share horizon arc');
+ assert.ok(!icon.includes('M40 14 C31.5'),'old H mark must not survive in installed icon');
  assert.ok(css.includes('--horizon-ink:#284b3b'));
  assert.ok(css.includes('.home-v2 .atelier-story .horizon-home-slogan'));
  assert.ok(css.includes('.sidebar .brand-symbol.horizon-symbol'));
- assert.ok(css.includes('assets/horizon-mark-light.svg'));
+ assert.ok(css.includes('assets/horizon-v7-sunmark.svg?v=11'));
  assert.ok(css.includes('@media(max-width:430px)'));
  assert.ok(css.includes('@media(prefers-reduced-motion:reduce)'));
 });
@@ -66,11 +71,11 @@ test('iPhone and installable application icons are real readable PNG assets',()=
   const unpacked=inflateSync(Buffer.concat(compressed));
   assert.equal(unpacked.length,size*(size+1),path+' valid image data');
  }
- assert.ok(page.includes('href="assets/horizon-icon-180.png?v=refined2"'));
+ assert.ok(page.includes('href="assets/horizon-icon-180.png?v=11"'));
  assert.equal(manifest.short_name,'HORIZON');
- assert.ok(manifest.icons.some(i=>i.src==='assets/horizon-app.svg?v=homev3'));
- assert.ok(manifest.icons.some(i=>i.src==='assets/horizon-icon-192.png?v=refined2'));
- assert.ok(manifest.icons.some(i=>i.src==='assets/horizon-icon-512.png?v=refined2'));
+ assert.ok(manifest.icons.some(i=>i.src==='assets/horizon-app.svg?v=11'));
+ assert.ok(manifest.icons.some(i=>i.src==='assets/horizon-icon-192.png?v=11'));
+ assert.ok(manifest.icons.some(i=>i.src==='assets/horizon-icon-512.png?v=11'));
 });
 
 test('HORIZON mark uses correct horizontal proportions and avoids a clipped H at small sizes',()=>{
@@ -86,5 +91,5 @@ test('HORIZON mark uses correct horizontal proportions and avoids a clipped H at
  assert.ok(css.includes('width:64px;height:52px'),'Home PC logo needs horizontal aspect ratio and room');
  assert.ok(css.includes('width:54px;height:45px'),'tablet logo needs horizontal aspect ratio');
  assert.ok(css.includes('width:46px;height:39px'),'phone logo needs sufficient room');
- assert.ok(css.includes("assets/horizon-mark-light.svg?v=homev3"),'dark-mode imagery should not use old cached mark');
+ assert.ok(css.includes("assets/horizon-v7-sunmark.svg?v=11"),'dark-mode imagery should not use old cached mark');
 });
