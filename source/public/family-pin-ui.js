@@ -142,8 +142,9 @@ window.NPFamilyPinUI=(function(){
      <section class="np-pin-window" role="dialog" aria-modal="true" aria-labelledby="np-pin-title" aria-describedby="np-pin-description">
        <button type="button" class="np-pin-close" aria-label="${tr('Đóng','Close','閉じる')}">×</button>
        <div class="np-pin-brand" aria-hidden="true">
-         <img src="assets/horizon-mark.svg?v=homev3" width="41" height="33" alt="">
+         <img src="assets/horizon-v7-sunmark.svg?v=9" width="66" height="32" alt="">
          <span>HORIZON</span>
+         <small class="np-pin-tagline" lang="en">A little closer. A world wider.</small>
        </div>
        <div class="np-pin-identity">
          <div class="np-pin-photo">${avatar(person,true)}</div>
