@@ -19,7 +19,7 @@
 .n5-player-mockup .n5-session-hero::before,
 .n5-player-mockup .n5-session-hero::after{display:none!important}
 .n5-player-mockup .n5-hero-art{
- position:absolute;inset:0 0 64px 0;z-index:-1;pointer-events:none;
+ position:absolute;inset:0 0 64px 0;z-index:0;pointer-events:none;
  background:linear-gradient(102deg,var(--lp-paper) 0%,color-mix(in srgb,var(--lp-paper) 95%,var(--lp-soft)) 49%,color-mix(in srgb,var(--lp-paper) 78%,var(--lp-soft)) 100%);
 }
 .n5-player-mockup .n5-hero-art::before{
