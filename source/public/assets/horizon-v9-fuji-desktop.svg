@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 420" preserveAspectRatio="xMidYMin slice" aria-hidden="true">
+<defs>
+ <linearGradient id="fuji" x1=".24" y1=".02" x2=".66" y2=".97">
+  <stop offset="0" stop-color="#f4f7f4" stop-opacity=".98"/>
+  <stop offset=".27" stop-color="#cbd9d5" stop-opacity=".68"/>
+  <stop offset=".68" stop-color="#9db5ae" stop-opacity=".46"/>
+  <stop offset="1" stop-color="#a6b9ac" stop-opacity=".05"/>
+ </linearGradient>
+ <linearGradient id="hills" x1="0" y1="0" x2="0" y2="1">
+  <stop stop-color="#98afa0" stop-opacity=".32"/>
+  <stop offset="1" stop-color="#b4c5b0" stop-opacity="0"/>
+ </linearGradient>
+ <linearGradient id="valley" x1="0" y1="0" x2="0" y2="1">
+  <stop stop-color="#a6bbaf" stop-opacity=".24"/>
+  <stop offset="1" stop-color="#faf8f3" stop-opacity="0"/>
+ </linearGradient>
+ <radialGradient id="haze">
+  <stop stop-color="#f0e3d3" stop-opacity=".23"/>
+  <stop offset="1" stop-color="#fffdf7" stop-opacity="0"/>
+ </radialGradient>
+</defs>
+<!-- An editorial Fuji scene, with its complete summit safely within SVG bounds. -->
+<circle cx="1310" cy="132" r="170" fill="url(#haze)"/>
+<path d="M1002 283L1284 54L1586 283Z" fill="url(#fuji)"/>
+<path d="M1164 153L1284 54L1405 158L1381 146L1356 166L1338 144L1317 165L1291 146L1267 167L1245 147L1220 168L1200 151L1184 169Z" fill="#fcfdf9" opacity=".91"/>
+<path d="M1179 146L1284 54L1366 130" fill="none" stroke="#afc3c1" stroke-width=".8" stroke-linecap="round" opacity=".38"/>
+<path d="M1058 251L1284 54L1525 251" fill="none" stroke="#819e98" stroke-width=".75" stroke-linecap="round" opacity=".14"/>
+<!-- Three separated contours use fine transitions, no blur or translucent blocking panel. -->
+<path d="M0 279Q103 226 234 265T520 266Q648 232 793 264T1070 260Q1253 218 1436 262T1600 258V382H0Z" fill="url(#hills)" opacity=".72"/>
+<path d="M0 308Q144 279 294 302T596 304Q734 282 890 304T1195 304Q1418 273 1600 303V398H0Z" fill="url(#valley)"/>
+<path d="M0 321Q136 301 273 317T546 315Q679 294 813 317T1100 314Q1357 300 1600 315" fill="none" stroke="#92aa9b" stroke-width="1" opacity=".2"/>
+<path d="M0 333Q139 314 284 328T558 328Q698 307 840 328T1142 325Q1370 307 1600 328" fill="none" stroke="#a6b9a8" stroke-width=".7" opacity=".12"/>
+</svg>
