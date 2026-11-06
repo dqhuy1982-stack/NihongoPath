@@ -157,10 +157,10 @@ test('Desktop column, narrower breakpoints and existing mobile action dock remai
  assert.ok(lesson.includes("if(action==='next')return E.advance(state"));
 });
 test('Lesson player styles are the last cascade layer and do not replace lesson storage',()=>{
- assert.ok(index.includes('href="lesson-compact.css?v=19"'));
+ assert.ok(index.includes('href="lesson-compact.css?v=19.1"'));
  assert.ok(index.includes('src="i18n/ui-pack.js?v=19"'));
  assert.ok(index.includes('src="lesson-ui.js?v=19"'));
- assert.ok(index.indexOf('href="lesson-compact.css?v=19"')>
+ assert.ok(index.indexOf('href="lesson-compact.css?v=19.1"')>
    index.indexOf('href="foundation-journey.css?v=18"'));
  assert.ok(lesson.includes("html.includes('n5-player-compact')"));
  assert.ok(!playerSource.includes('localStorage.setItem'));
