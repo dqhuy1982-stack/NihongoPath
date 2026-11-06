@@ -71,7 +71,7 @@ function label(text,cl=''){return '<span class="v25-badge '+cl+'">'+text+'</span
 function navigation(selected){
  return '<nav class="v25-tabs" aria-label="Điều hướng trong mục Học">'+[
  ['overview','Tổng quan học','home'],['catalog','Khóa học','book-open'],['modules','Module','layers'],['lessons','Bài học','play-circle'],['practice','Ôn thông minh','target']
- ].map(([id,title,ic])=>href('learn/'+id,I(ic)+'<span>'+title+'</span>','v25-tab '+(id===selected?'active':'')+(id===selected?'" aria-current="page':'') )).join('')+'</nav>';
+ ].map(([id,title,ic])=>href('learn/'+id,I(ic)+'<span>'+title+'</span>','v25-tab '+(id===selected?'active':'')+'' )).join('')+'</nav>';
 }
 function header(){
  return '<header class="v25-header"><div class="v25-hero-copy"><h1>Không gian học tập</h1><p>Học tiếng Nhật có lộ trình, đúng trọng tâm, mỗi ngày một bước tiến.</p></div></header>'+navigation('overview');
