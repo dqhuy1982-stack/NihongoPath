@@ -1,0 +1,87 @@
+/* HORIZON Learning Hub v30 — one calm landscape across seasons.
+   Season lives on html/body from NPSeason; locale remains owned by Locale. */
+.v25-wrap{
+ --v30-hero-art:url('assets/horizon-learning-hero-spring-v30.svg');
+}
+html[data-season="spring"] .v25-wrap,
+body[data-season="spring"] .v25-wrap{
+ --v30-hero-art:url('assets/horizon-learning-hero-spring-v30.svg');
+}
+html[data-season="summer"] .v25-wrap,
+body[data-season="summer"] .v25-wrap{
+ --v30-hero-art:url('assets/horizon-learning-hero-summer-v30.svg');
+}
+html[data-season="autumn"] .v25-wrap,
+body[data-season="autumn"] .v25-wrap{
+ --v30-hero-art:url('assets/horizon-learning-hero-autumn-v30.svg');
+}
+html[data-season="winter"] .v25-wrap,
+body[data-season="winter"] .v25-wrap{
+ --v30-hero-art:url('assets/horizon-learning-hero-winter-v30.svg');
+}
+/* A quiet editorial panorama rather than a colorful illustration panel. */
+.v25-wrap .v28-header-shell .v25-header{
+ height:114px!important;
+ min-height:114px!important;
+ background-color:var(--v25-bg)!important;
+ background-image:var(--v30-hero-art)!important;
+ background-size:auto 143px!important;
+ background-position:right center!important;
+ background-repeat:no-repeat!important;
+}
+.v25-wrap .v28-header-shell .v25-hero-copy{
+ width:min(65%,690px)!important;
+ padding:16px 19px!important;
+}
+.v25-wrap .v28-header-shell .v25-hero-copy h1{
+ font-size:clamp(25px,2.35vw,34px)!important;
+ font-weight:610!important;
+ letter-spacing:-.028em!important;
+ line-height:1.16!important;
+}
+.v25-wrap .v28-header-shell .v25-hero-copy p{
+ font-size:11.5px!important;
+ max-width:570px!important;
+}
+.v25-wrap .v28-header-shell .v25-tabs{
+ height:44px!important;
+ min-height:44px!important;
+ padding:2px 8px!important;
+ background:transparent!important;
+ border-bottom:1px solid color-mix(in srgb,var(--v25-ink) 17%,var(--v25-bg))!important;
+}
+.v25-wrap .v28-header-shell .v25-tab{
+ height:39px!important;
+ min-height:39px!important;
+ font-size:11.5px;
+ font-weight:680;
+}
+.v25-wrap .v28-header-shell .v25-tab.active{
+ background:color-mix(in srgb,var(--v25-rose) 66%,var(--v25-bg))!important;
+ border-bottom:2px solid var(--v25-ink)!important;
+}
+.v25-wrap .v25-breadcrumb{margin:10px 4px 16px!important}
+@media(max-width:850px){
+ .v25-wrap .v28-header-shell .v25-header{
+  height:106px!important;min-height:106px!important;
+  background-size:auto 116px!important;
+  background-position:right -26px center!important;
+ }
+ .v25-wrap .v28-header-shell .v25-hero-copy{width:min(80%,590px)!important;padding:14px 13px!important}
+ .v25-wrap .v28-header-shell .v25-hero-copy h1{font-size:27px!important}
+}
+@media(max-width:600px){
+ .v25-wrap .v28-header-shell .v25-header{
+  height:94px!important;min-height:94px!important;
+  background-size:auto 102px!important;
+  background-position:right -62px center!important;
+ }
+ .v25-wrap .v28-header-shell .v25-hero-copy{width:83%!important;padding:11px 9px!important}
+ .v25-wrap .v28-header-shell .v25-hero-copy h1{font-size:22px!important}
+ .v25-wrap .v28-header-shell .v25-hero-copy p{
+  max-width:265px!important;font-size:10px!important;line-height:1.4!important;
+ }
+ .v25-wrap .v28-header-shell .v25-tabs{height:43px!important;min-height:43px!important;padding:2px 5px!important}
+ .v25-wrap .v28-header-shell .v25-tab{height:38px!important;min-height:38px!important}
+ .v25-wrap .v25-breadcrumb{margin:9px 2px 14px!important}
+}
