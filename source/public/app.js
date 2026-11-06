@@ -301,7 +301,7 @@ document.addEventListener('np:localechange',()=>{
     return;
   }
   const routeName=route().split('/')[0];
-  if(['login','today','learn','course','map','guide','profiles','reports','review','journey','settings','assistant','library','discover','achievements','notebook','characters','character','family'].includes(routeName)){
+  if(['login','today','learn','course','map','guide','profiles','profile','reports','review','journey','settings','assistant','library','discover','achievements','notebook','characters','character','family','kana','demo','demo-compare','demo-data'].includes(routeName)){
     render(false);
     document.querySelector('[data-locale="'+Locale.code+'"]')?.focus({preventScroll:true});
   }else{
