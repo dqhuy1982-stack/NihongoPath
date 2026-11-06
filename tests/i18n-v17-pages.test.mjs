@@ -127,6 +127,6 @@ test('Versioned UI assets load before consumers and production backend remains u
  assert.ok(html.indexOf('src="i18n/ui-pack.js?v=20"')>=0);
  assert.ok(html.indexOf('src="i18n/ui-pack.js?v=20"')<html.indexOf('src="locales.js?v=16"'));
  assert.ok(html.includes('src="app.js?v=18"'));
- assert.ok(html.includes('src="lesson-ui.js?v=20"'));
+ assert.ok(html.includes('src="lesson-ui.js?v=22"'));
  assert.ok(html.includes('src="kana-studio.js"')); // exporter fingerprints canonical asset
 });
