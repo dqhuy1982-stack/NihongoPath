@@ -58,7 +58,6 @@
     else if(u.type==='learn'){const c=content.cards[u.cardId];body=`<span class="eyebrow">HIỂU MẪU CÂU</span><h2>${esc(c.title)}</h2><div class="n5-example">${jp(c.example,content)}<p>${esc(c.meaning)}</p></div><p class="n5-pattern">${jp(c.pattern,content)}</p><ul class="n5-learning-points">${c.points.map(p=>`<li>${esc(p)}</li>`).join('')}</ul><aside class="n5-tip">${icon('leaf')}<p>${esc(c.pitfall)}</p></aside>`;}
     else if(u.type==='personal')body=personal(s);
     else body=question(state,s,u);
-    const completed=s.completedUnits.length;
     const U=(key,args)=>Locale.ui('lesson.player.'+key,args);
     const total=s.units.length,completed=s.completedUnits.length,currentNo=s.index+1;
     const q=u.type==='question'?E.definition(s,u.questionId):null;
