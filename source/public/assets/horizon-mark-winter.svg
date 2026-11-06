@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 66" role="img" aria-label="HORIZON winter">
+<defs><linearGradient id="sun" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#dfe8ed"/><stop offset="1" stop-color="#a9c1cd"/></linearGradient></defs>
+<path d="M51 33a19 19 0 0 1 38 0" fill="url(#sun)"/>
+<path d="M9 51C30 34 48 36 69 44S111 46 131 54" fill="none" stroke="#536c70" stroke-width="2.35" stroke-linecap="round"/>
+<path d="M15 54C42 46 60 47 83 52s28 5 42 2" fill="none" stroke="#acbdc4" stroke-width=".85" stroke-linecap="round" opacity=".85"/>
+<path d="M20 46q17-10 31-8 17-2 32 3 21 3 33 9" fill="none" stroke="#fdfefe" stroke-width="3.7" stroke-linecap="round" opacity=".95"/><path d="M13 49q7-3 15-5M113 51q9 1 15 5" fill="none" stroke="#e3eff3" stroke-width="2" stroke-linecap="round"/><g stroke="#9db9c8" stroke-width="1.05" stroke-linecap="round" fill="none" opacity=".92"><path d="M104 19v8m-3.4-6 6.8 4m-6.8 0 6.8-4"/><path d="M35 18v5m-2-3 4 1m-4 0 4-1"/></g>
+</svg>
