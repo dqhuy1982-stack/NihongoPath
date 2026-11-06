@@ -1,6 +1,6 @@
 /* Atelier 07: additive improvements to the approved Atelier 06 reference. */
 'use strict';
-const I=(vi,en,ja)=>[vi,en,ja][{vi:0,en:1,ja:2}[Locale.code]||0];
+const I=(vi,en,ja)=>Locale.register(vi,en,ja);
 const orgById=id=>NP_WORLD.organizations.find(o=>o.id===id);
 characters.splice(0,characters.length,...NP_WORLD.characters);
 const environments=[
