@@ -34,6 +34,27 @@
   background:linear-gradient(0deg,#e9e9de77,transparent)!important;
 }
 
+/* Four genuine, restrained seasonal palettes: theme switching is functional,
+   not merely an icon state. Do not recolor learner identities. */
+.home-v8.home-v7.home-v4.home-v3.home-v2.atelier-home{
+  --h8-scene-filter:none;
+}
+.home-v8.home-v7.home-v4.home-v3.home-v2.atelier-home[data-season="spring"]{
+  --h8-paper:#faf8f3;--h8-scene-filter:none;
+}
+.home-v8.home-v7.home-v4.home-v3.home-v2.atelier-home[data-season="summer"]{
+  --h8-paper:#f7f9f4;--h8-scene-filter:hue-rotate(-17deg) saturate(1.14);
+}
+.home-v8.home-v7.home-v4.home-v3.home-v2.atelier-home[data-season="autumn"]{
+  --h8-paper:#fbf7ef;--h8-scene-filter:sepia(.17) saturate(1.14);
+}
+.home-v8.home-v7.home-v4.home-v3.home-v2.atelier-home[data-season="winter"]{
+  --h8-paper:#f7f9fa;--h8-scene-filter:hue-rotate(13deg) saturate(.78);
+}
+.home-v8.home-v7.home-v4.home-v3.home-v2.atelier-home::before{
+  filter:var(--h8-scene-filter,none)!important;
+}
+
 /* One aligned header; remove translucent/frosted chrome. */
 .home-v8.home-v7.home-v4.home-v3.home-v2 .atelier-header,
 .compact .home-v8.home-v7.home-v4.home-v3.home-v2 .atelier-header{
@@ -510,6 +531,27 @@ body.dark .home-v8 .home-v3-question,
 body.dark .home-v8 .portal-person .family-name,
 body.dark .home-v8 .home-v7-header-brand{color:#eef1e7!important}
 body.dark .home-v8 .home-v2-intro{color:#d1dfcf!important}
+/* Equal or stronger specificity than layered V7/V8 light selectors. */
+body.dark .home-v8.home-v7.home-v4.home-v3.home-v2 .atelier-story .home-v3-question,
+body.dark .compact .home-v8.home-v7.home-v4.home-v3.home-v2 .atelier-story .home-v3-question{
+  color:#edf2e7!important;
+}
+body.dark .home-v8.home-v7.home-v4.home-v3.home-v2 .home-v2-intro,
+body.dark .compact .home-v8.home-v7.home-v4.home-v3.home-v2 .home-v2-intro{
+  color:#c5d5c4!important;
+}
+body.dark .home-v8.home-v7.home-v4.home-v3.home-v2 .portal-person .family-name,
+body.dark .compact .home-v8.home-v7.home-v4.home-v3.home-v2 .portal-person .family-name{
+  color:#eef3e8!important;
+}
+body.dark .home-v8.home-v7.home-v4.home-v3.home-v2 .portal-person .portal-person-goal,
+body.dark .compact .home-v8.home-v7.home-v4.home-v3.home-v2 .portal-person .portal-person-goal{
+  background:#3e5943!important;color:#f3eddb!important;border-color:#81977a!important;
+}
+body.dark .home-v8.home-v7.home-v4.home-v3.home-v2 .portal-person:hover,
+body.dark .home-v8.home-v7.home-v4.home-v3.home-v2 .portal-person:focus-visible{
+  background:#2e4a38!important;border-color:#59735a!important;
+}
 body.dark .home-v8 .portal-person-goal{background:#3e5943!important;color:#f3eddb!important;border-color:#81977a!important}
 body.dark .home-v8 .portal-guest{color:#e4eedd!important}
 @media(prefers-reduced-motion:reduce){
