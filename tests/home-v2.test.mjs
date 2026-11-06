@@ -20,7 +20,7 @@ test('Home V2 stylesheet is loaded last, after shared readability rules',()=>{
  assert.ok(page.indexOf(link)>page.indexOf('href="readability.css"'));
  assert.ok(page.indexOf(link)<page.indexOf('</head>'));
  assert.ok(page.indexOf('href="home-pin.css"')>page.indexOf(link));
- assert.ok(page.indexOf('src="family-pin-ui.js?v=11"')>page.indexOf('src="login-ui.js?v=10"'));
+ assert.ok(page.indexOf('src="family-pin-ui.js?v=13"')>page.indexOf('src="login-ui.js?v=13"'));
 });
 
 test('Home V2 only changes static home/login and removes visual clutter',()=>{
