@@ -67,3 +67,21 @@ test('Safari contrast, zoom and accessibility fallbacks are maintained',()=>{
   assert.ok(ui.includes('seasonMenu.append(seasonSummary,seasonControl)'));
   assert.ok(read('locales.js').includes('日本語'));
 });
+
+test('Four seasonal themes update actual Home palette without changing profile images',()=>{
+  for(const season of ['spring','summer','autumn','winter']){
+    assert.ok(css.includes('data-season="'+season+'"'),season);
+  }
+  assert.ok(css.includes('filter:var(--h8-scene-filter,none)!important'));
+  assert.ok(ui.includes('home.dataset.season=selected'));
+  assert.ok(ui.includes("localStorage.setItem('np-home-season-v1',selected)"));
+});
+
+test('Dark-mode contrast overrides high-specificity light rules across layers',()=>{
+  for(const x of [
+    'body.dark .home-v8.home-v7.home-v4.home-v3.home-v2 .atelier-story .home-v3-question',
+    'body.dark .home-v8.home-v7.home-v4.home-v3.home-v2 .home-v2-intro',
+    'body.dark .home-v8.home-v7.home-v4.home-v3.home-v2 .portal-person .family-name',
+    'body.dark .home-v8.home-v7.home-v4.home-v3.home-v2 .portal-person .portal-person-goal'
+  ])assert.ok(css.includes(x),x);
+});
