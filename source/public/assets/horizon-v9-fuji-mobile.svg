@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 430 192" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+<defs>
+ <linearGradient id="m" x1=".3" y1=".05" x2=".7" y2="1"><stop stop-color="#f6f9f8"/><stop offset=".37" stop-color="#b5c9c5" stop-opacity=".76"/><stop offset="1" stop-color="#b0c2b3" stop-opacity=".08"/></linearGradient>
+ <linearGradient id="r" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#9eafa4" stop-opacity=".27"/><stop offset="1" stop-color="#f9f8f2" stop-opacity="0"/></linearGradient>
+</defs>
+<!-- Mobile-specific summit is centered, never cropped against navigation. -->
+<path d="M92 143L222 12L367 143Z" fill="url(#m)"/>
+<path d="M166 74L222 12L281 78L266 70L252 87L241 70L226 84L214 69L199 86L187 70L177 84Z" fill="#fcfdf8" opacity=".97"/>
+<path d="M165 79L222 12L291 89" fill="none" stroke="#9fb8b4" opacity=".24" stroke-width=".8"/>
+<path d="M-8 144Q45 124 90 142T186 143Q248 127 306 144T440 139V187H-8Z" fill="url(#r)"/>
+<path d="M-8 158Q55 143 112 158T221 159Q290 143 361 158T440 154" fill="none" stroke="#9daea0" stroke-width=".8" opacity=".21"/>
+<path d="M-8 171Q55 157 112 171T221 171Q290 158 361 172T440 169" fill="none" stroke="#9daea0" stroke-width=".65" opacity=".13"/>
+</svg>
