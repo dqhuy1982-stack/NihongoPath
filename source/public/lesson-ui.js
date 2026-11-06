@@ -55,20 +55,63 @@
     return `<span class="eyebrow">${u.repairFor?'GỠ MỘT CHỖ VƯỚNG · CÂU MỚI':s.mode==='review'?(s.earlyReview?'LUYỆN SỚM · CHƯA ĐẾN HẠN ÔN':'THỬ NHỚ SAU MỘT KHOẢNG NGHỈ'):q.id==='transfer'?'THỬ TRONG MỘT TÌNH HUỐNG KHÁC':'THỬ NHỚ LẠI'}</span><h2>${esc(Locale.t(q.prompt))}</h2><div class="n5-stimulus-wrap"><div class="n5-stimulus" role="group" aria-label="${esc(Locale.t(q.prompt))}">${jp(q.stimulus,s.definition)}${kanaCue}</div></div>${choices}${readingNotice}${current.hintUsed?`<aside class="n5-hint"><strong>Một gợi ý nhỏ</strong><p>${esc(Locale.t(q.hint))}</p></aside>`:locked?'':b(icon('help')+' Cần một gợi ý','hint','textlink',s)}${a?`<section class="n5-feedback ${a.correct?'good':'bad'}" tabindex="-1" data-n5-feedback role="status"><strong>${a.correct?a.hintUsed?'Đúng, với một chút hỗ trợ.':'Đúng trong câu này.':'Cùng gỡ chỗ vướng này.'}</strong>${chosen?`<p>${esc(Locale.t(chosen.why))}</p>`:''}<p>${esc(Locale.t(q.explanation))}</p><small>${u.repairFor?'Câu luyện sửa lỗi được ghi riêng; kết quả đầu tiên vẫn giữ nguyên.':a.hintUsed?'Đã ghi có dùng gợi ý; chưa tính là tự nhớ độc lập.':'Đã giữ kết quả lần trả lời đầu tiên.'}</small></section><div class="n5-step-actions">${b(offer?.automatic?'Thử một câu tương tự · 30 giây '+icon('arrow'):s.index===s.units.length-1?'Xem tổng kết '+icon('arrow'):'Tiếp tục '+icon('arrow'),'next','btn primary',s)}${offer?.automatic?b('Để ôn sau','next','textlink',s,'data-repair="false"'):offer?.fits?b('Luyện thêm một câu · 30 giây','next','btn',s,'data-repair="true"'):''}</div>`:`<div class="n5-step-actions">${b('Kiểm tra & xem lý do '+icon('arrow'),'check','btn primary',s,E.canCheck(s)?'':'disabled')}</div>`}`;
   }
   /* UI-only progress: visited steps are NOT evidence of mastery. */
-  function sessionOutline(s){
-    const U=(key,args)=>Locale.ui('lesson.player.'+key,args);
-    const done=new Set(s.completedUnits),total=s.units.length;
-    return `<aside class="n5-player-aside" aria-label="${U('path')}">
-      <div class="n5-aside-head"><span class="eyebrow">${U('progress')}</span><strong>${U('completed',{completed:done.size,total})}</strong></div>
-      <div class="n5-aside-bar" aria-hidden="true"><span style="width:${Math.min(100,done.size/Math.max(1,total)*100)}%"></span></div>
-      <div class="n5-aside-section"><h3>${U('path')}</h3><ol class="n5-outline-list">
-        ${s.units.map((unit,index)=>`<li class="${done.has(unit.id)?'is-complete':index===s.index?'is-current':'is-upcoming'}" ${index===s.index?'aria-current="step"':''}>
-           <span class="n5-outline-number" aria-hidden="true">${done.has(unit.id)?'✓':index+1}</span>
-           <span class="n5-outline-title">${esc(Locale.t(unit.label||unit.type||''))}</span>
-         </li>`).join('')}
-      </ol></div>
-      <div class="n5-aside-footer"><span class="eyebrow">${U('learningGoal')}</span><p>${U(s.contentId==='foundation-vowels'?'focusKana':'focusN5')}</p><small>${U('sample')}</small></div>
+  /* Stage rail is informational: no step skipping and no fabricated completion. */
+  function stepRail(s){
+    const done=new Set(s.completedUnits.map(item=>typeof item==='string'?item:item.id));
+    return `<ol class="n5-mockup-step-rail" aria-label="${Locale.ui('lesson.mockup.outline')}">
+      ${s.units.map((u,i)=>`<li class="${done.has(u.id)?'is-complete':i===s.index?'is-current':'is-pending'}" ${i===s.index?'aria-current="step"':''}
+        aria-label="${esc(Locale.ui('lesson.mockup.step',{current:i+1,total:s.units.length})+' · '+Locale.t(u.label||''))}">
+        <span aria-hidden="true">${done.has(u.id)?'✓':i+1}</span>
+      </li>`).join('')}
+    </ol>`;
+  }
+  function sessionOutline(state,s){
+    const U=(key,args)=>Locale.ui('lesson.mockup.'+key,args);
+    const done=new Set(s.completedUnits.map(item=>typeof item==='string'?item:item.id));
+    const total=s.units.length;
+    const first=state.attempts.filter(a=>a.sessionId===s.id&&a.kind!=='repair');
+    const independentlyCorrect=first.filter(a=>a.correct&&!a.hintUsed).length;
+    const accuracy=first.length?Math.round(independentlyCorrect/first.length*100):null;
+    return `<aside class="n5-player-aside n5-mockup-side" aria-label="${U('progress')}">
+      <section class="n5-side-panel n5-side-progress">
+        <header><h3><span class="n5-side-icon" aria-hidden="true">☷</span>${U('progress')}</h3><span>${U('completed',{completed:done.size,total})}</span></header>
+        <div class="n5-side-bar" role="progressbar" aria-label="${U('progress')}" aria-valuenow="${done.size}" aria-valuemin="0" aria-valuemax="${total}">
+          <span style="width:${Math.min(100,done.size/Math.max(1,total)*100)}%"></span>
+        </div>
+        <div class="n5-side-metrics">
+          <div><span class="n5-side-metric-icon" aria-hidden="true">◎</span><span class="n5-side-metric-copy"><small>${U('correct')}</small><strong>${independentlyCorrect}</strong></span></div>
+          <div><span class="n5-side-metric-icon" aria-hidden="true">▥</span><span class="n5-side-metric-copy"><small>${U('accuracy')}</small><strong>${accuracy===null?U('unknown'):accuracy+'%'}</strong></span></div>
+        </div>
+      </section>
+      <section class="n5-side-panel n5-side-outline">
+        <h3><span class="n5-side-icon" aria-hidden="true">☷</span>${U('outline')}</h3>
+        <ol class="n5-outline-list">
+          ${s.units.map((u,index)=>`<li class="${done.has(u.id)?'is-complete':index===s.index?'is-current':'is-pending'}" ${index===s.index?'aria-current="step"':''}>
+            <span class="n5-outline-number" aria-hidden="true">${done.has(u.id)?'✓':index+1}</span>
+            <span class="n5-outline-title">${esc(Locale.t(u.label||u.type||''))}</span>
+          </li>`).join('')}
+        </ol>
+      </section>
+      <section class="n5-side-panel n5-side-quick">
+        <h3><span class="n5-side-icon" aria-hidden="true">ϟ</span>${U('quick')}</h3>
+        <div class="n5-side-buttons">
+          <a href="#notebook" class="n5-side-action">${icon('note')}${U('notes')}</a>
+          <a href="#quiz" class="n5-side-action">${icon('review')}${U('practice')}</a>
+        </div>
+      </section>
     </aside>`;
+  }
+  /* The back action is navigation, never a silent reversal of answered results. */
+  function framedStage(body,s){
+    const marker='<div class="n5-step-actions">',position=body.lastIndexOf(marker);
+    if(position===-1)return body;
+    const before=body.slice(0,position),actions=body.slice(position);
+    const destination=s.contentId==='foundation-vowels'?'course/foundation':'course/N5';
+    return before+`<footer class="n5-stage-footer">
+      <a class="n5-stage-back" href="#${destination}">${icon('back')} ${Locale.ui('lesson.mockup.back')}</a>
+      <span class="n5-stage-flower" aria-hidden="true">✿</span>
+      ${actions}
+    </footer>`;
   }
   function player(state,s){
     const u=E.unit(s);if(!u)return resultPage(state,s.id);
