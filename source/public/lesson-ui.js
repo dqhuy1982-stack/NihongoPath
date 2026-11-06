@@ -52,7 +52,7 @@
     const kanaCue=reading&&showReading?`<span class="n5-kana-reading" aria-live="polite" lang="en">${esc(reading)}</span>`:'';
     const readingNotice=reading&&s.current.hintUsed&&!a?`<p class="n5-reading-supported">${Locale.ui('lesson.mockup.readSupport')}</p>`:'';
     
-    return `<span class="eyebrow">${u.repairFor?'GỠ MỘT CHỖ VƯỚNG · CÂU MỚI':s.mode==='review'?(s.earlyReview?'LUYỆN SỚM · CHƯA ĐẾN HẠN ÔN':'THỬ NHỚ SAU MỘT KHOẢNG NGHỈ'):q.id==='transfer'?'THỬ TRONG MỘT TÌNH HUỐNG KHÁC':'THỬ NHỚ LẠI'}</span><h2>${esc(Locale.t(q.prompt))}</h2><div class="n5-stimulus-wrap"><div class="n5-stimulus" role="group" aria-label="${esc(Locale.t(q.prompt))}">${jp(q.stimulus,s.definition)}${kanaCue}</div></div>${choices}${readingNotice}${current.hintUsed?`<aside class="n5-hint"><strong>Một gợi ý nhỏ</strong><p>${esc(Locale.t(q.hint))}</p></aside>`:locked?'':b(icon('help')+' Cần một gợi ý','hint','textlink',s)}${a?`<section class="n5-feedback ${a.correct?'good':'bad'}" tabindex="-1" data-n5-feedback role="status"><strong>${a.correct?a.hintUsed?'Đúng, với một chút hỗ trợ.':'Đúng trong câu này.':'Cùng gỡ chỗ vướng này.'}</strong>${chosen?`<p>${esc(Locale.t(chosen.why))}</p>`:''}<p>${esc(Locale.t(q.explanation))}</p><small>${u.repairFor?'Câu luyện sửa lỗi được ghi riêng; kết quả đầu tiên vẫn giữ nguyên.':a.hintUsed?'Đã ghi có dùng gợi ý; chưa tính là tự nhớ độc lập.':'Đã giữ kết quả lần trả lời đầu tiên.'}</small></section><div class="n5-step-actions">${b(offer?.automatic?'Thử một câu tương tự · 30 giây '+icon('arrow'):s.index===s.units.length-1?'Xem tổng kết '+icon('arrow'):'Tiếp tục '+icon('arrow'),'next','btn primary',s)}${offer?.automatic?b('Để ôn sau','next','textlink',s,'data-repair="false"'):offer?.fits?b('Luyện thêm một câu · 30 giây','next','btn',s,'data-repair="true"'):''}</div>`:`<div class="n5-step-actions">${b('Kiểm tra & xem lý do '+icon('arrow'),'check','btn primary',s,E.canCheck(s)?'':'disabled')}</div>`}`;
+    return `<span class="eyebrow">${u.repairFor?'GỠ MỘT CHỖ VƯỚNG · CÂU MỚI':s.mode==='review'?(s.earlyReview?'LUYỆN SỚM · CHƯA ĐẾN HẠN ÔN':'THỬ NHỚ SAU MỘT KHOẢNG NGHỈ'):q.id==='transfer'?'THỬ TRONG MỘT TÌNH HUỐNG KHÁC':'THỬ NHỚ LẠI'}</span><h2>${esc(Locale.t(q.prompt))}</h2><div class="n5-stimulus-wrap"><div class="n5-stimulus" role="group" aria-label="${esc(Locale.t(q.prompt))}">${jp(q.stimulus,s.definition)}${kanaCue}</div></div>${choices}${readingNotice}${current.hintUsed?`<aside class="n5-hint"><strong>Một gợi ý nhỏ</strong><p>${esc(Locale.t(q.hint))}</p></aside>`:locked?'':b(icon('help')+' Cần một gợi ý','hint','textlink',s)}${a?`<section class="n5-feedback ${a.correct?'good':'bad'}" tabindex="-1" data-n5-feedback role="status"><strong>${a.correct?a.hintUsed?'Đúng, với một chút hỗ trợ.':'Đúng trong câu này.':'Cùng gỡ chỗ vướng này.'}</strong>${chosen?`<p>${esc(Locale.t(chosen.why))}</p>`:''}<p>${esc(Locale.t(q.explanation))}</p><small>${u.repairFor?'Câu luyện sửa lỗi được ghi riêng; kết quả đầu tiên vẫn giữ nguyên.':a.hintUsed?'Đã ghi có dùng gợi ý; chưa tính là tự nhớ độc lập.':'Đã giữ kết quả lần trả lời đầu tiên.'}</small></section><div class="n5-step-actions">${b(offer?.automatic?'Thử một câu tương tự · 30 giây '+icon('arrow'):s.index===s.units.length-1?'Xem tổng kết '+icon('arrow'):'Câu tiếp theo '+icon('arrow'),'next','btn primary',s)}${offer?.automatic?b('Để ôn sau','next','textlink',s,'data-repair="false"'):offer?.fits?b('Luyện thêm một câu · 30 giây','next','btn',s,'data-repair="true"'):''}</div>`:`<div class="n5-step-actions">${b('Kiểm tra & xem lý do '+icon('arrow'),'check','btn primary',s,E.canCheck(s)?'':'disabled')}</div>`}`;
   }
   /* UI-only progress: visited steps are NOT evidence of mastery. */
   /* Stage rail is informational: no step skipping and no fabricated completion. */
@@ -88,7 +88,7 @@
         <ol class="n5-outline-list">
           ${s.units.map((u,index)=>`<li class="${done.has(u.id)?'is-complete':index===s.index?'is-current':'is-pending'}" ${index===s.index?'aria-current="step"':''}>
             <span class="n5-outline-number" aria-hidden="true">${done.has(u.id)?'✓':index+1}</span>
-            <span class="n5-outline-title">${esc(Locale.t(u.label||u.type||''))}</span>
+            <span class="n5-outline-title"><span class="n5-outline-index">${index+1}.</span>${esc(Locale.t(u.label||u.type||''))}</span>
           </li>`).join('')}
         </ol>
       </section>
@@ -171,7 +171,7 @@
         </article>
         ${sessionOutline(state,s)}
       </div>
-      <div class="n5-player-meta">${statusLine(s)}<p class="n5-footnote">${U('sample')}</p></div>
+      <div class="n5-player-meta">${statusLine(s)}<p class="n5-footnote">${U('sample')}</p><span class="n5-build-version" title="Phiên bản giao diện (khác phiên bản nội dung bài học)">Lesson UI · v22</span></div>
       <dialog class="n5-inline-notes" data-n5-note-dialog aria-labelledby="n5-note-title">
         <div class="n5-note-head"><div><span class="eyebrow">SỔ HỌC TẬP · GHI CHÚ NHANH</span><h2 id="n5-note-title">Ghi chú cho bước ${currentNo}</h2></div>
           <button type="button" class="n5-note-close" data-action="n5-note-close" aria-label="Đóng">×</button></div>
@@ -286,7 +286,7 @@
     const outcome=transact(state=>{
       if(action==='start'){const s=E.start(state,isPreview()?C:el.dataset.mode==='review'?reviewDefinition(state,el.dataset.early==='true'):catalog.get(el.dataset.content||catalog.base.id),{...startOptions(),mode:el.dataset.mode||'lesson',minutes:Number(el.dataset.minutes),includeEarly:el.dataset.early==='true'});if(!s)throw new Error('Không còn mẫu đến hạn cho lượt này.');return s;}
       if(action==='resume')return E.resume(state,el.dataset.session);
-      if(action==='select')return E.select(state,el.dataset.option);
+      if(action==='select'){E.select(state,el.dataset.option);const s=E.active(state);if(E.unit(s)?.type==='question'&&!s.current.hintUsed)s.reading='hide';return E.check(state);}
       if(action==='token')return E.token(state,el.dataset.token);
       if(action==='hint')return E.hint(state);
       if(action==='check'){const s=E.active(state);if(E.unit(s)?.type==='question'&&!s.current.hintUsed)s.reading='hide';return E.check(state);}
@@ -302,14 +302,14 @@
       }
       if(action==='pause')return E.pause(state);
       if(action==='next')return E.advance(state,{repair:el.dataset.repair?el.dataset.repair==='true':undefined,skipped:el.dataset.skipped==='true'});
-    },action==='resume'?null:expected,!['start','resume','pause','next','select','token'].includes(action));
+    },action==='resume'?null:expected,!['start','resume','pause','next','token'].includes(action));
     if(!outcome)return;
-    if(['select','token'].includes(action)){if(!window.NPLessonInteractions?.update(outcome.state,el))render(false);return;}
+    if(action==='token'){if(!window.NPLessonInteractions?.update(outcome.state,el))render(false);return;}
     const s=E.active(outcome.state);
     if(action==='pause'){if(isPreview()){render(false);return;}go('today');return;}
     if(s?.status==='completed'){go('summary/'+encodeURIComponent(s.id));return;}
     if(action==='start')migrateLegacyResume();if(['start','resume'].includes(action))go(s.mode==='practice'?'quiz':'lesson/resume');else if(action==='next')render(false);
-    if(window.NPLessonInteractions)NPLessonInteractions.after(action,view,el);else focusAfter(action,el);
+    if(window.NPLessonInteractions)NPLessonInteractions.after(action==='select'?'check':action,view,el);else focusAfter(action==='select'?'check':action,el);
   },true);
   document.addEventListener('input',event=>{const field=event.target.dataset.n5Field;if(!field)return;const value=event.target.value,result=transact(state=>{const s=E.active(state);if(E.unit(s)?.type!=='personal')throw new Error('Phần tự giới thiệu đã thay đổi.');if(field==='name')s.personal.name=value.slice(0,60);else if(field==='role'&&['','学生','会社員'].includes(value))s.personal.role=value;else if(field==='country'&&['','ベトナム','日本'].includes(value))s.personal.country=value;},null,false);if(result){const preview=document.querySelector('[data-n5-personal-preview]');if(preview)preview.innerHTML=jp(personalText(E.active(result.state)),E.active(result.state).definition);}});
   window.addEventListener('storage',event=>{if(!isPreview()&&event.key===NPContentStore.KEY&&['library','today','review'].includes(route().split('/')[0])){render(false);return;}if(event.key===S.PREFIX+P().id&&['lesson','quiz','summary','review','reports','mistakes','today','assistant'].includes(route().split('/')[0])){clock=null;render(false);toast('Đã cập nhật phiên học từ cửa sổ khác.');}});
