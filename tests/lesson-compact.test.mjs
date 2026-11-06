@@ -154,14 +154,14 @@ test('Desktop column, narrower breakpoints and existing mobile action dock remai
  const actions=read('lesson-interaction.js');
  assert.ok(actions.includes("document.body.classList.toggle('n5-question-docked'"));
  assert.ok(actions.includes("const source=el.querySelector('.n5-step-actions')"));
- assert.ok(lesson.includes("if(action==='select')return E.select(state,el.dataset.option)"));
+ assert.ok(lesson.includes("if(action==='select'){E.select(state,el.dataset.option);const s=E.active(state);"));
  assert.ok(lesson.includes("if(action==='check'){const s=E.active(state)"));
  assert.ok(lesson.includes("if(action==='next')return E.advance(state"));
 });
 test('Lesson player styles are the last cascade layer and do not replace lesson storage',()=>{
  assert.ok(index.includes('href="lesson-compact.css?v=19.1"'));
  assert.ok(index.includes('src="i18n/ui-pack.js?v=20"'));
- assert.ok(index.includes('src="lesson-ui.js?v=20"'));
+ assert.ok(index.includes('src="lesson-ui.js?v=22"'));
  assert.ok(index.includes('href="lesson-mockup.css?v=20"'));
  assert.ok(index.indexOf('href="lesson-mockup.css?v=20"')>
    index.indexOf('href="foundation-journey.css?v=18"'));
