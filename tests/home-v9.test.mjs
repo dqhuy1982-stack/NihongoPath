@@ -132,5 +132,5 @@ test('V9.2 Guest entry icon and season icons have distinct semantics and states'
   assert.ok(css.includes('home-season-summary-glyph'),'theme trigger styled');
   assert.ok(css.includes('body.dark .home-v9 .home-season-control'),'dark theme remains legible');
   assert.ok(css.includes('@media(max-width:600px)'),'mobile has touch-sized choices');
-  assert.ok(html.includes('src="login-ui.js?v=10"'),'Safari picks up new SVG semantics');
+  assert.ok(html.includes('src="login-ui.js?v=13"'),'Safari picks up new SVG semantics');
 });
