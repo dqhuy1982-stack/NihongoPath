@@ -7,7 +7,7 @@ const html=read('index.html'),ui=read('login-ui.js'),css=read('home-v7.css');
 test('V7 is last Home-only cascade layer and preserves original Home frameworks',()=>{
  assert.ok(html.includes('href="home-v7.css"'));
  assert.ok(html.indexOf('href="home-v7.css"')>html.indexOf('href="home-v6-mobile.css"'));
- assert.ok(ui.includes("home.classList.add('home-v7')"));
+ assert.ok(ui.includes("home.classList.add('home-v7','home-v8')"));
  assert.ok(css.includes('.home-v7.home-v4.home-v3.home-v2.atelier-home'));
  assert.ok(!css.includes('position:fixed'));
 });
@@ -38,14 +38,14 @@ test('V7 responsive composition: desktop 4 portraits, mobile 4 rows, no hidden p
  assert.ok(css.includes('@media(prefers-reduced-motion:reduce)'));
  assert.ok(css.includes('body.dark'));
 });
-test('Season is a real accessible menu; primary CTA takes user to learner picker',()=>{
+test('Season menu remains accessible; direct learner selection replaces duplicate V7 CTA',()=>{
  assert.ok(ui.includes("seasonMenu.className='home-v7-seasons'"));
  assert.ok(ui.includes('seasonMenu.append(seasonSummary,seasonControl)'));
  assert.ok(ui.includes("localStorage.setItem('np-home-season-v1',selected)"));
- assert.ok(ui.includes("startButton.dataset.action='home-start'"));
- assert.ok(ui.includes('aria-controls'));
- assert.ok(ui.includes("if(button.dataset.action==='home-start')"));
- assert.ok(ui.includes("first.focus({preventScroll:true})"));
+ assert.ok(!ui.includes("startButton.dataset.action='home-start'"));
+ assert.ok(!ui.includes("if(button.dataset.action==='home-start')"));
+ assert.ok(ui.includes('data-action="loginprofile"'));
+ assert.ok(ui.includes('window.NPFamilyAccess.open(p.id,button)'));
  assert.ok(css.includes('.portal-guest-row'));
  assert.ok(css.includes(':focus-visible'));
 });
