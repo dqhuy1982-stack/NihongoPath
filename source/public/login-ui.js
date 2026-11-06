@@ -57,6 +57,7 @@ window.NPLogin=(function(){
         home.classList.add('home-v2','home-v3');
         home.classList.add('home-v4');
         home.classList.add('home-v7','home-v8');
+        home.classList.add('home-v9');
         home.dataset.season=preferredSeason();
         const headerActions=home.querySelector('.atelier-header-actions');
         if(headerActions){
@@ -91,6 +92,10 @@ window.NPLogin=(function(){
         home.querySelector('.brand-edition')?.remove();
         home.querySelector('.home-guide')?.remove();
         home.querySelector('.atelier-footer')?.remove();
+        const scenic=document.createElement('div');
+        scenic.className='home-v9-landscape';
+        scenic.setAttribute('aria-hidden','true');
+        home.querySelector('.atelier-main')?.prepend(scenic);
         const story=home.querySelector('.atelier-story');
         story.innerHTML=`<div class="horizon-hero-lockup" data-no-translate>
             <img class="horizon-hero-mark" src="assets/horizon-v7-sunmark.svg?v=7" width="114" height="62" alt="" decoding="async">
