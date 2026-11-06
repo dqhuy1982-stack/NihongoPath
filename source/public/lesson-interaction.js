@@ -25,7 +25,7 @@
     document.body.classList.toggle('n5-question-active',!!el);
     document.body.classList.toggle('n5-question-docked',!!el&&narrow);
     if(!el||!narrow){dock?.remove();dock=null;return;}
-    if(!dock){dock=document.createElement('section');dock.id='n5-question-dock';dock.className='n5-question-dock';dock.setAttribute('aria-label','Thao tác câu hỏi');document.body.append(dock);}
+    if(!dock){dock=document.createElement('section');dock.id='n5-question-dock';dock.className='n5-question-dock';dock.setAttribute('aria-label',Locale.ui('lesson.mockup.quick'));document.body.append(dock);}
     const source=el.querySelector('.n5-step-actions'),hint=el.querySelector('[data-action="n5-hint"]');
     const html=(source?.innerHTML||'')+(hint?hint.outerHTML:'');
     if(dock.dataset.content!==html){dock.innerHTML=html;dock.dataset.content=html;}
@@ -67,6 +67,10 @@
     mount();
     if(['select','token'].includes(action))return;
     if(['hint','reading','check'].includes(action))restore(view);
+    if(action==='reading'){
+      document.querySelector('.n5-hero-reading [data-action="n5-reading"]')?.focus({preventScroll:true});
+      return;
+    }
     if(action==='check')reveal(document.querySelector('[data-n5-feedback]'));
     else if(action==='hint'){const hint=document.querySelector('.n5-hint');if(hint){hint.tabIndex=-1;reveal(hint);}}
     else if(['next','start','resume'].includes(action)){const heading=document.querySelector('.n5-stage h2');if(heading){heading.tabIndex=-1;reveal(heading);}}
