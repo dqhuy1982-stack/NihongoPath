@@ -107,7 +107,7 @@ test('Reading controls are translated across locales and do not expose the answe
 test('Mockup follows seasonal art and faithful three-panel desktop composition',()=>{
  const html=read('index.html');
  assert.ok(html.includes('href="lesson-mockup.css?v=20"'));
- assert.ok(html.includes('src="lesson-ui.js?v=20"'));
+ assert.ok(html.includes('src="lesson-ui.js?v=22"'));
  assert.ok(html.includes('src="i18n/ui-pack.js?v=20"'));
  assert.ok(css.includes('assets/lesson-sakura-branch.svg'));
  assert.ok(css.includes('assets/lesson-enso-sakura.svg'));
@@ -128,6 +128,6 @@ test('Mobile question dock and reading toggles preserve keyboard focus and origi
  assert.ok(interaction.includes("document.querySelector('.n5-hero-reading [data-action="));
  assert.ok(interaction.includes('preventScroll:true'));
  assert.ok(css.includes('.n5-question-docked .n5-player-mockup .n5-stage-footer .n5-step-actions{display:none!important}'));
- assert.ok(ui.includes("if(action==='select')return E.select(state,el.dataset.option)"));
+ assert.ok(ui.includes("if(action==='select'){E.select(state,el.dataset.option);const s=E.active(state);"));
  assert.ok(ui.includes("if(action==='next')return E.advance(state"));
 });
