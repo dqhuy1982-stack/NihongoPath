@@ -19,7 +19,7 @@
  background-image:url('assets/horizon-learning-hero-v29.svg')!important;
  background-repeat:no-repeat!important;
  background-position:right center!important;
- background-size:100% 100%!important;
+ background-size:auto 138px!important;
 }
 .v25-wrap .v28-header-shell .v25-header:before,
 .v25-wrap .v28-header-shell .v25-header:after{display:none!important;content:none!important;background:none!important}
