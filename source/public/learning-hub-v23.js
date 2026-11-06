@@ -72,9 +72,9 @@
     '<div class="lh-path">'+levels.map(function(level){const active=s.p.goal===level.name;return '<a href="#course/'+level.id+'" class="'+(active?'selected':'')+'"><span class="lh-path-mark">'+level.mark+'</span><strong>'+level.name+'</strong><small>'+ (level.status==='planned'?'Dự kiến':active?'Mục tiêu hiện tại':'Có bản mẫu')+'</small></a>'}).join('')+'</div></section>'+
    '<section class="lh-panel lh-course-preview"><div class="lh-section-title"><h2>'+icon('book')+' Khám phá nội dung học</h2>'+anchor('Toàn bộ bài học','learn/lessons','lh-text-link')+'</div>'+
     '<div class="lh-learning-cards">'+
-      '<a href="#course/foundation" class="lh-learning-card"><span class="lh-learning-symbol" lang="ja">あ</span><strong>Nền tảng · Hiragana</strong><small>Nhận mặt chữ, luyện viết, kiểm tra</small>'+pill('Bài mẫu & công cụ','ready')+'</a>'+
-      '<a href="#course/N5" class="lh-learning-card"><span class="lh-learning-symbol" lang="ja">日本語</span><strong>N5 · Giới thiệu bản thân</strong><small>Mẫu câu và luyện nhớ lại</small>'+pill('Bài mẫu','ready')+'</a>'+
-      '<a href="#exams" class="lh-learning-card"><span class="lh-learning-symbol" lang="ja">試験</span><strong>Luyện đề JLPT</strong><small>Bộ câu hỏi minh họa theo cấp độ</small>'+pill('Bộ mẫu','preview')+'</a>'+
+      '<a href="#course/foundation" class="lh-learning-card lh-content-hira"><span class="lh-learning-symbol" lang="ja">あ</span><strong>Nền tảng · Hiragana</strong><small>Nhận mặt chữ, luyện viết, kiểm tra</small>'+pill('Bài mẫu & công cụ','ready')+'</a>'+
+      '<a href="#course/N5" class="lh-learning-card lh-content-n5"><span class="lh-learning-symbol" lang="ja">日本語</span><strong>N5 · Giới thiệu bản thân</strong><small>Mẫu câu và luyện nhớ lại</small>'+pill('Bài mẫu','ready')+'</a>'+
+      '<a href="#exams" class="lh-learning-card lh-content-exam"><span class="lh-learning-symbol" lang="ja">試験</span><strong>Luyện đề JLPT</strong><small>Bộ câu hỏi minh họa theo cấp độ</small>'+pill('Bộ mẫu','preview')+'</a>'+
     '</div></section></div>'+
    '<aside class="lh-side"><section class="lh-panel lh-progress-panel"><h2>'+icon('chart')+' Tiến độ đã ghi nhận</h2>'+
      '<div class="lh-stat"><strong>'+completed+'</strong><span>Phiên học hoàn tất</span></div><div class="lh-stat"><strong>'+independent+' / '+first.length+'</strong><span>Câu đúng độc lập / câu đã trả lời</span></div>'+
