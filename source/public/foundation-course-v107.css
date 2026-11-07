@@ -677,3 +677,51 @@ body:has(.v109-overlay) > .v108-dock{display:none!important}
  .v115-foundation .v115-chapter-rail{justify-content:center}
  .v115-foundation .v115-chapter-rail .v114-chapter-switch{justify-content:center}
 }
+
+/* HORIZON Foundation v1.16: recover refined Kana/workbook styling.
+   The root module MUST carry .v34-studying; these are safeguards, not a rebuild. */
+.v34-studying .v113-stagebar .v36-step-icon{
+ display:block!important;width:18px!important;height:18px!important;
+ min-width:18px!important;max-width:18px!important;
+ flex:0 0 18px!important;stroke-width:1.7!important;
+}
+.v34-studying .v113-stagebar .v34-stage-tab{
+ display:flex!important;flex-direction:row!important;align-items:center!important;
+ justify-content:center!important;gap:7px!important;
+ min-height:46px!important;padding:9px 8px!important;
+ font-size:12px!important;line-height:1.35!important;
+}
+.v34-studying .v36-kana-board .v35-kana-button{
+ position:relative!important;
+ box-shadow:0 1px 3px rgba(79,51,62,.035);
+ transform:translateY(0);
+}
+@media(hover:hover) and (prefers-reduced-motion:no-preference){
+ .v34-studying .v36-kana-board .v35-kana-button:hover{
+  transform:translateY(-3px)!important;
+  border-color:var(--v33-ink)!important;
+  box-shadow:0 9px 22px rgba(91,52,70,.12)!important;
+ }
+}
+.v34-studying .v36-kana-board .v35-kana-button:focus-visible{
+ outline:2px solid var(--v33-ink)!important;outline-offset:2px!important;
+ border-color:var(--v33-ink)!important;
+}
+.v34-studying .v39-book-layout>.v39-book-nav{
+ align-self:start;background:var(--v33-paper);
+}
+.v34-studying .v39-book-layout>.v33-pane{
+ background:var(--v33-paper);min-width:0;
+}
+@media(max-width:680px){
+ .v34-studying .v113-stagebar .v36-step-icon{
+  width:16px!important;height:16px!important;min-width:16px!important;max-width:16px!important;flex-basis:16px!important;
+ }
+ .v34-studying .v113-stagebar .v34-stage-tab{
+  flex-direction:column!important;gap:4px!important;font-size:10px!important;
+  padding:7px 3px!important;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ .v34-studying .v36-kana-board .v35-kana-button:hover{transform:none!important}
+}
