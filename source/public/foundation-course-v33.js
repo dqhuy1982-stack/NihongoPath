@@ -514,17 +514,31 @@ function introPopup(cfg,s){
 }
 const PRACTICE_MODES=[['quiz','Chữ → âm','あ'],['reverse','Âm → chữ','a'],['listen','Nghe → chữ','♫'],['truefalse','Đúng / Sai','✓'],['match','Ghép chữ & âm','⇄'],['listen-match','Nghe & ghép','◖'],['build','Xếp chữ thành từ','文'],['missing','Điền chữ còn thiếu','□'],['vocab-ja-vi','Nhật → Việt','日'],['vocab-vi-ja','Việt → Nhật','VI'],['review','Sổ ôn chữ yếu','↻']];
 const GAME_MODES=[['game','Ghép cặp Kana','⇄'],['game-build','Xếp từ vui','文'],['game-listen','Nghe & nối','♫']];
+function audioPref(){
+ try{return localStorage.getItem('horizon.foundation.autoAnswerAudio')!=='off'}catch(e){return true}
+}
+function toggleAudioPref(){
+ const enabled=!audioPref();
+ try{localStorage.setItem('horizon.foundation.autoAnswerAudio',enabled?'on':'off')}catch(e){}
+ return enabled;
+}
 function activityBook(cfg){
- const isGame=cfg.mode.startsWith('game'),items=(isGame?GAME_MODES:PRACTICE_MODES).filter(([id])=>{
-  if(id==='listen'||id==='listen-match'||id==='game-listen')return cfg.id!=='small'&&cfg.id!=='mixed';
-  return true;
- });
- const title=isGame?'Trò chơi Kana':'Sổ bài tập';
- const description=isGame?'Chơi để nhận diện chữ nhanh hơn. Không giới hạn thời gian.':'Chọn dạng luyện bên trái để bắt đầu.';
- return '<nav class="v39-book-nav" aria-label="'+title+'"><div class="v39-book-heading"><span class="v39-book-mark" aria-hidden="true">▤</span><div><strong>'+title+'</strong><small>'+description+'</small></div></div>'+
- items.map(([id,label,symbol],i)=>(!isGame&&({0:'NHẬN DIỆN',4:'GHÉP & GHI NHỚ',8:'NGHĨA & ỨNG DỤNG',10:'ÔN TẬP'})[i]?'<div class="v103-nav-group">'+({0:'NHẬN DIỆN',4:'GHÉP & GHI NHỚ',8:'NGHĨA & ỨNG DỤNG',10:'ÔN TẬP'})[i]+'</div>':'')+'<button type="button" data-f34="mode" data-value="'+id+'" class="v39-book-tab '+(id===cfg.mode?'active':'')+'" '+(id===cfg.mode?'aria-current="page"':'')+'><span class="v39-book-symbol" aria-hidden="true">'+symbol+'</span><span>'+label+'</span><span aria-hidden="true" class="v39-book-chevron">›</span></button>').join('')+
+ const isGame=cfg.mode.startsWith('game');
+ const items=(isGame?GAME_MODES:PRACTICE_MODES).filter(([id])=>!['listen','listen-match','game-listen'].includes(id)||(cfg.id!=='small'&&cfg.id!=='mixed'));
+ const groups=isGame?[['TRÒ CHƠI',items]]:[
+  ['NHẬN DIỆN',items.filter(x=>['quiz','reverse','listen','truefalse'].includes(x[0]))],
+  ['GHÉP & GHI NHỚ',items.filter(x=>['match','listen-match','build','missing'].includes(x[0]))],
+  ['NGHĨA & ỨNG DỤNG',items.filter(x=>['vocab-ja-vi','vocab-vi-ja'].includes(x[0]))],
+  ['ÔN TẬP',items.filter(x=>x[0]==='review')]
+ ];
+ const entry=([id,label,symbol])=>'<button type="button" data-f34="mode" data-value="'+id+'" class="v39-book-tab '+(id===cfg.mode?'active':'')+'" '+(id===cfg.mode?'aria-current="page"':'')+'><span class="v39-book-symbol" aria-hidden="true">'+symbol+'</span><span>'+label+'</span><span aria-hidden="true" class="v39-book-chevron">›</span></button>';
+ return '<nav class="v39-book-nav" aria-label="'+(isGame?'Trò chơi Kana':'Sổ bài tập')+'">'+
+ '<div class="v39-book-heading"><span class="v39-book-mark" aria-hidden="true">▤</span><div><strong>'+(isGame?'Trò chơi Kana':'Sổ bài tập')+'</strong><small>'+(isGame?'Vừa chơi vừa nhớ chữ.':'Chọn dạng luyện bên trái để bắt đầu.')+'</small></div></div>'+
+ '<button type="button" class="v105-audio-toggle" data-f33="toggle-audio" aria-pressed="'+audioPref()+'"><span aria-hidden="true">'+(audioPref()?'◖))':'◖×')+'</span> Âm thanh đáp án: <strong>'+(audioPref()?'Bật':'Tắt')+'</strong></button>'+
+ groups.filter(([,entries])=>entries.length).map(([label,entries])=>'<details class="v105-menu-group" '+(entries.some(([id])=>id===cfg.mode)?'open':'')+'><summary>'+label+' <span aria-hidden="true">⌄</span></summary><div class="v105-menu-entries">'+entries.map(entry).join('')+'</div></details>').join('')+
  '</nav>';
 }
+
 function workspace(cfg){
  const s=cfg.mode==='learn'?null:ensurePlay(cfg);
  const intro=cfg.mode==='mix'&&s&&!s.ready&&!s.finished?introPopup(cfg,s):'';
@@ -547,6 +561,7 @@ function perform(el){
  const cfg=current(),op=el.dataset.f33,value=el.dataset.value,side=el.dataset.side;
  if(!cfg.mod)return;
  if(op==='guide-ok'){dismissCoach();return;}
+ if(op==='toggle-audio'){toggleAudioPref();refresh();return;}
  if(op==='insight-audio'){pronounce(value,el.dataset.reading||'',true);return;}
  if(op==='pronounce'&&cfg.mode==='learn'){pronounce(value,el.dataset.reading||'',el.dataset.kind==='basic');dismissCoach();return;}
  if(op==='listen-audio'&&(cfg.mode==='listen'||cfg.mode==='mix'||cfg.mode==='review')){const state=ensurePlay(cfg),q=state.questions[state.index];if(q){state.audioReplays=(state.audioReplays||0)+1;pronounce(q.item.glyph,q.item.read,true);}return;}
@@ -562,7 +577,7 @@ function perform(el){
   const word=s.cards[s.index],built=s.selected.map(n=>s.tileOrder[n].glyph).join('');
   if(s.selected.length===Array.from(word.glyph).length){
    const correct=built===word.glyph;s.answer={correct,built};if(correct)s.correct++;
-   s.lastMs=null;s.grade=record(word,correct,s.kind,null);pronounce(word.glyph,word.read,true);
+   s.lastMs=null;s.grade=record(word,correct,s.kind,null);if(audioPref())pronounce(word.glyph,word.read,true);
   }
   refresh();return;
  }
@@ -581,7 +596,7 @@ function perform(el){
  if(op==='answer'&&s.kind!=='match'&&s.kind!=='flash'&&!s.choice&&!s.finished){
   const q=s.questions[s.index];if(!q.choices.some(x=>x.id===value))return;
   const took=cfg.mode==='mix'?elapsed(s):null;s.lastMs=took;s.choice=value;s.answered++;const ok=value===q.correct;if(ok)s.correct++;
-  s.grade=record(q.item,ok,q.mode||cfg.mode,took,s.hintsUsed||0,s.audioReplays||0);pronounce(q.item.glyph,q.item.read,true);if(took!==null)s.roundMs.push(took);if(s.grade.slow)s.slow++;if(!ok)s.errors++;
+  s.grade=record(q.item,ok,q.mode||cfg.mode,took,s.hintsUsed||0,s.audioReplays||0);if(audioPref())pronounce(q.item.glyph,q.item.read,true);if(took!==null)s.roundMs.push(took);if(s.grade.slow)s.slow++;if(!ok)s.errors++;
   refresh();return;
  }
  if(op==='next'&&s.choice){s.index++;s.choice=null;s.grade=null;s.hintsUsed=0;s.audioReplays=0;if(s.startedAt)resetClock(s);s.finished=s.index>=s.questions.length;refresh();return}
@@ -590,11 +605,16 @@ function perform(el){
   if(s.leftId&&s.rightId){
    const ok=s.leftId===s.rightId;const item=s.cards.find(x=>x.id===s.leftId);
    record(item,ok,s.kind,null);
-   if(ok){s.lastMatched=item.id;s.matched.push(item.id);s.feedback='Đúng! Hãy ghép cặp tiếp theo.';pronounce(item.glyph,item.read,true);}
-   else{s.mistakes++;s.feedback='Chưa đúng. Thử ghép lại hai ô.';}
+   if(ok){s.lastMatched=item.id;s.matched.push(item.id);s.feedback='Đúng! Hãy ghép cặp tiếp theo.';if(audioPref())pronounce(item.glyph,item.read,true);}
+   else{s.mistakes++;s.feedback='Chưa đúng. Đường đỏ chỉ cặp vừa chọn, thử lại nhé.';s.wrongPair={left:s.leftId,right:s.rightId};}
    s.leftId=null;s.rightId=null;
   }
-  refresh();return;
+  refresh();
+  if(s.wrongPair){
+   const ref=s.wrongPair;
+   if(typeof setTimeout==='function')setTimeout(()=>{if(play===s&&s.wrongPair===ref){s.wrongPair=null;s.feedback='Thử ghép lại hai ô.';refresh();}},950);
+  }
+  return;
  }
  if(op==='restart'){play=null;ensurePlay(cfg);refresh()}
 }
