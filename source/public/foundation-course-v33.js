@@ -304,7 +304,7 @@ document.addEventListener('change',event=>{
  localSwitch(node.dataset.f34,node.value);
 });
 document.addEventListener('click',event=>{
- const nav=event.target.closest('[data-f34="tab"]');if(nav&&document.querySelector('.v34-workspace-shell')){event.preventDefault();localSwitch('tab',nav.dataset.value);return;}
+ const nav=event.target.closest('[data-f34="tab"]');if(nav?.dataset?.f34==='tab'&&document.querySelector('.v34-workspace-shell')){event.preventDefault();localSwitch('tab',nav.dataset.value);return;}
  const b=event.target.closest('[data-f33]');if(!b)return;
  if(!document.querySelector('.v33-foundation'))return;
  event.preventDefault();perform(b);
