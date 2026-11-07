@@ -624,7 +624,7 @@ test('v1.07 matching completes only once and distinguishes first-try pairs from 
  assert.equal(summary.reviewIds.length,2);
  assert.ok(h.ui.store().matchReview[a.id]);
  assert.ok(h.ui.store().matchReview[b.id]);
- assert.equal(h.ui.store().items[b.id]?.attempts??0,0,'partner in an incorrect match is flagged for review without invented scored response');
+ assert.equal(h.ui.store().items[b.id]?.errorCount??0,0,'partner receives review flag without being scored as an incorrect independent response');
  assert.match(h.ui.page(r),/TỔNG KẾT VÁN HỌC/);
  assert.match(h.ui.page(r),/Luyện lại cặp cần ôn/);
  h.click('summary-close');
