@@ -368,26 +368,10 @@ function removeFinishDock(){
  const dock=document.querySelector?.('body > .v108-dock');
  dock?.remove?.();
 }
-function syncFinishDock(){
- if(!document.body?.appendChild)return;
- const active=document.querySelector?.('[data-v107-dialog]');
- if(active){removeFinishDock();return;}
- const dock=document.querySelector?.('.v34-workspace-shell .v108-dock');
- if(!dock){removeFinishDock();return;}
- removeFinishDock();
- // Preserve theme tokens before moving outside the Foundation container.
- if(typeof getComputedStyle==='function'&&dock.style?.setProperty){
-  const styles=getComputedStyle(dock);
-  for(const key of ['--v33-paper','--v33-ink','--v33-line','--v33-soft']){
-   const value=styles.getPropertyValue(key).trim();if(value)dock.style.setProperty(key,value);
-  }
- }
- document.body.appendChild(dock);
-}
-function scheduleFinishDock(){
- if(typeof queueMicrotask==='function')queueMicrotask(syncFinishDock);
- else if(typeof requestAnimationFrame==='function')requestAnimationFrame(syncFinishDock);
-}
+/* Completion controls stay inside the exercise pane, same as Next Question.
+   Clean up any obsolete body-level dock left by an earlier release. */
+function syncFinishDock(){removeFinishDock();}
+function scheduleFinishDock(){syncFinishDock();}
 /* The feedback pulse runs only immediately after a newly graded response.
    Repainting, scrolling, or reopening a result does not replay it. */
 function pulseGradedFeedback(correct,kind='answer'){
@@ -683,7 +667,7 @@ function matchingView(cfg,s){
  '<div class="v105-match-board" data-match-board="1"><div class="v105-match-header"><strong>'+(listening?'NGHE ÂM':'KANA')+'</strong><strong>'+(listening?'KANA':'ROMAJI')+'</strong></div>'+rows+'<svg class="v101-match-lines" aria-hidden="true" preserveAspectRatio="none"></svg></div>'+
  '<p class="v105-match-feedback" aria-live="polite">'+clean(s.feedback||'Chọn một ô ở mỗi bên để ghép cặp.')+'</p>'+
  (s.lastMatched?insightPanel(s.cards.find(x=>x.id===s.lastMatched),cfg):'')+
- (complete&&!s.round?.summaryOpen?'<div class="v108-dock" role="navigation" aria-label="Thao tác sau lượt luyện"><span>✓ '+s.cards.length+' cặp đã ghép</span><button data-f33="summary-open" class="v33-primary">Xem kết quả ✦</button><button data-f33="restart" class="v33-secondary">Lượt luyện mới ↻</button></div>':'')+
+ (complete&&!s.round?.summaryOpen?'<div class="v108-dock v104-sticky-next v118-match-actions" role="navigation" aria-label="Thao tác sau lượt luyện"><span class="v104-next-caption">✓ '+s.cards.length+' cặp đã ghép</span><div class="v118-match-buttons"><button type="button" data-f33="summary-open" class="v33-primary">Xem kết quả ✦</button><button type="button" data-f33="restart" class="v33-secondary">Lượt luyện mới ↻</button></div></div>':'')+
  '</section>';
 }
 
