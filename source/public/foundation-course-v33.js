@@ -362,10 +362,35 @@ function scheduleFoundationOverlay(){
  if(typeof queueMicrotask==='function')queueMicrotask(mountFoundationOverlay);
  else if(typeof requestAnimationFrame==='function')requestAnimationFrame(mountFoundationOverlay);
 }
+/* Move the completed-round dock outside scrollable/transformed application shells.
+   Delegated click actions still work after relocation. */
+function removeFinishDock(){
+ const dock=document.querySelector?.('body > .v108-dock');
+ dock?.remove?.();
+}
+function syncFinishDock(){
+ if(!document.body?.appendChild)return;
+ const active=document.querySelector?.('[data-v107-dialog]');
+ if(active){removeFinishDock();return;}
+ const dock=document.querySelector?.('.v34-workspace-shell .v108-dock');
+ if(!dock){removeFinishDock();return;}
+ removeFinishDock();
+ document.body.appendChild(dock);
+}
+function scheduleFinishDock(){
+ if(typeof queueMicrotask==='function')queueMicrotask(syncFinishDock);
+ else if(typeof requestAnimationFrame==='function')requestAnimationFrame(syncFinishDock);
+}
 function refresh(){
  removeFoundationOverlay();
+ removeFinishDock();
  const stage=document.querySelector('.v34-workspace-shell');
- if(stage){const rail=stage.querySelector?.('.v39-book-nav'),saved=rail?rail.scrollTop:null;stage.innerHTML=workspace(current());restoreBookViewport(saved);tickClock();scheduleMatchLines();return}
+ if(stage){
+  const rail=stage.querySelector?.('.v39-book-nav'),saved=rail?rail.scrollTop:null;
+  stage.innerHTML=workspace(current());
+  restoreBookViewport(saved);tickClock();scheduleMatchLines();scheduleFinishDock();
+  return;
+ }
  render(false);
 }
 function wrap(content,crumb='Nền tảng'){
@@ -702,7 +727,7 @@ function workspace(cfg){
  return navigationFor(cfg)+'<div class="v38-task-area"><div class="'+(gameOrPractice?'v39-book-layout':'v33-workspace')+'"'+(intro?' inert':'')+'>'+(gameOrPractice?activityBook(cfg)+body:body+panel)+'</div>'+intro+(s&&MATCH_KINDS.includes(s.kind)?roundSummaryView(s,cfg):'')+'</div>';
 }
 function modulePage(cfg){
- scheduleFoundationOverlay();scheduleMatchLines();tickClock();if(typeof queueMicrotask==='function')queueMicrotask(()=>restoreBookViewport());return wrap('<div class="v34-workspace-shell">'+workspace(cfg)+'</div>',cfg.mod.title).replace('class="v25-wrap v33-foundation"','class="v25-wrap v33-foundation v34-studying"');
+ scheduleFoundationOverlay();scheduleMatchLines();scheduleFinishDock();tickClock();if(typeof queueMicrotask==='function')queueMicrotask(()=>restoreBookViewport());return wrap('<div class="v34-workspace-shell">'+workspace(cfg)+'</div>',cfg.mod.title).replace('class="v25-wrap v33-foundation"','class="v25-wrap v33-foundation v34-studying"');
 }
 function page(route){
  if(!route||route==='course/foundation'||route===routePrefix)return indexPage();
@@ -789,6 +814,7 @@ function perform(el){
 /* Local switching preserves the page viewport and avoids hash navigation on every exercise tab. */
 function localSwitch(kind,value){
  removeFoundationOverlay();
+ removeFinishDock();
  const cfg=current();if(!cfg.mod)return;
  let target={...cfg};
  if(kind==='module'){
@@ -812,7 +838,7 @@ function localSwitch(kind,value){
  if(typeof history!=='undefined'&&history.replaceState)history.replaceState(null,'','#'+next);
  else location.hash='#'+next;
  const stage=document.querySelector('.v34-workspace-shell');
- if(stage){const rail=stage.querySelector?.('.v39-book-nav'),saved=rail?rail.scrollTop:null;stage.innerHTML=workspace(target);restoreBookViewport(saved);mountFoundationOverlay();tickClock();scheduleMatchLines();const crumb=document.querySelector('.v33-foundation .v25-breadcrumb [aria-current="page"]');if(crumb)crumb.textContent=target.mod.title;}
+ if(stage){const rail=stage.querySelector?.('.v39-book-nav'),saved=rail?rail.scrollTop:null;stage.innerHTML=workspace(target);restoreBookViewport(saved);mountFoundationOverlay();tickClock();scheduleMatchLines();scheduleFinishDock();const crumb=document.querySelector('.v33-foundation .v25-breadcrumb [aria-current="page"]');if(crumb)crumb.textContent=target.mod.title;}
 }
 /* Optional desktop dragging; touch and keyboard selection remain the primary accessible controls. */
 let dragging=null;
@@ -850,7 +876,7 @@ document.addEventListener('change',event=>{
  const node=event.target.closest?.('[data-f34]');if(!node||!document.querySelector('.v34-workspace-shell'))return;
  localSwitch(node.dataset.f34,node.value);
 });
-if(typeof window!=='undefined'&&window.addEventListener)window.addEventListener('hashchange',removeFoundationOverlay);
+if(typeof window!=='undefined'&&window.addEventListener)window.addEventListener('hashchange',()=>{removeFoundationOverlay();removeFinishDock();});
 document.addEventListener('keydown',event=>{
  const modal=document.querySelector?.('[data-v107-dialog]');
  if(modal){
