@@ -159,7 +159,13 @@ function navigationFor(cfg){
  const practices=[['quiz','Chữ → âm'],['reverse','Âm → chữ'],...(cfg.id!=='small'&&cfg.id!=='mixed'?[['listen','Nghe → chữ']]:[]),['truefalse','Đúng / Sai'],['match','Ghép cặp'],['build','Xếp chữ'],['vocab-ja-vi','Nhật → Việt'],['vocab-vi-ja','Việt → Nhật']];
  const group=cfg.mode==='learn'?'learn':cfg.mode==='flash'?'flash':cfg.mode==='mix'?'mix':'practice';
  const actions=[['learn','1. Học bảng chữ'],['flash','2. Flashcard'],['practice','3. Luyện tập'],['mix','4. Kiểm tra tổng hợp']];
- const tabs=actions.map(([id,label])=>'<button type="button" data-f34="tab" data-value="'+id+'" class="v34-stage-tab '+(id===group?'active':'')+'" '+(id===group?'aria-current="step"':'')+'>'+label+'</button>').join('');
+ const stepIcons={
+ learn:'<path d="M12 7v14m0-14C9.5 5.6 6.5 5 3 6v14c3.5-1 6.5-.5 9 1m0-14c2.5-1.4 5.5-2 9-1v14c-3.5-1-6.5-.5-9 1"/>',
+ flash:'<rect x="3" y="5" width="13" height="16" rx="2"/><path d="M7 2h12a2 2 0 0 1 2 2v12M7 10h5M7 14h5"/>',
+ practice:'<path d="M9 11l2 2 4-4"/><circle cx="12" cy="12" r="9"/>',
+ mix:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v4m0 10v4M3 12h4m10 0h4"/>'
+ };
+ const tabs=actions.map(([id,label])=>'<button type="button" data-f34="tab" data-value="'+id+'" class="v34-stage-tab '+(id===group?'active':'')+'" '+(id===group?'aria-current="step"':'')+'><svg class="v36-step-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">'+stepIcons[id]+'</svg><span>'+label+'</span></button>').join('');
  const all=DATA.take(cfg.id,'all',cfg.script),stats=countStats(all);
  return '<div class="v34-topline"><div class="v34-course-picker"><label for="v34-module">Đang học</label><select id="v34-module" data-f34="module" aria-label="Chọn nội dung Nền tảng">'+opts+'</select></div>'+
  '<div class="v34-topline-info"><strong>'+clean(m.subtitle)+'</strong><small>'+stats.reviewed+' / '+stats.total+' mẫu đã luyện thử</small></div><a class="v34-back" href="#course/foundation">Tất cả nội dung</a></div>'+
@@ -249,7 +255,7 @@ function flashView(cfg,s){
  return '<section class="v33-pane"><div class="v33-pane-head"><div><p class="v33-eyebrow">02 / FLASHCARD · TỰ NHỚ</p><h3>Nhìn trước, lật sau</h3><p>Thử đọc trong đầu trước khi lật. Đánh giá “Nhớ” chỉ là tự nhận xét, không tính điểm kiểm tra.</p></div>'+tag((s.index+1)+' / '+s.cards.length)+'</div>'+
  '<button class="v33-flash '+(flipped?'is-back':'')+'" data-f33="flip" aria-label="Lật thẻ Flashcard"><span class="v33-flash-caption">'+(flipped?'ĐÁP ÁN':'THỬ NHỚ CÁCH ĐỌC')+'</span><span class="v33-flash-glyph" lang="ja">'+clean(item.glyph)+'</span>'+(flipped?'<strong>'+clean(item.read)+'</strong>'+(isWord(item)?'<small>'+clean(item.vi)+'</small>':''):'<small>Chạm để xem cách đọc</small>')+'</button>'+
  (flipped?'<p class="v33-feedback">'+clean(item.note||'Luyện đọc lại không nhìn gợi ý.')+'</p><div class="v33-pane-actions"><button type="button" data-f33="flash-audio" class="v33-secondary">▶ Nghe phát âm</button><button data-f33="rate" data-value="again" class="v33-secondary">Cần ôn</button><button data-f33="rate" data-value="remember" class="v33-primary">Tôi nhớ rồi →</button></div>':'<div class="v33-pane-actions"><button data-f33="flip" class="v33-primary">Lật thẻ xem đáp án</button></div>')+
- '<p class="v33-subline">Thẻ đã đánh giá: '+Object.keys(store().flash).filter(k=>s.cards.some(x=>x.id===k)).length+'/'+s.cards.length+'. '+(marked?'Thẻ này từng được đánh giá '+(marked==='remember'?'nhớ':'cần ôn')+'.':'')+'</p></section>';
+ '<p class="v36-audio-status" role="status" aria-live="polite" hidden></p><p class="v33-subline">Thẻ đã đánh giá: '+Object.keys(store().flash).filter(k=>s.cards.some(x=>x.id===k)).length+'/'+s.cards.length+'. '+(marked?'Thẻ này từng được đánh giá '+(marked==='remember'?'nhớ':'cần ôn')+'.':'')+'</p></section>';
 }
 function noData(msg){return '<section class="v33-pane"><h3>Chưa đủ dữ liệu</h3><p>'+clean(msg)+'</p><a href="#course/foundation">Trở lại khóa Nền tảng</a></section>'}
 function quizView(cfg,s){
@@ -257,7 +263,7 @@ function quizView(cfg,s){
  const q=s.questions[s.index];
  return '<section class="v33-pane"><div class="v33-pane-head"><div><p class="v33-eyebrow">KIỂM TRA · '+clean(modeNames[cfg.mode])+'</p><h3>Nhớ lại không nhìn gợi ý</h3><p>'+clean(q.prompt)+'</p></div>'+tag('Câu '+(s.index+1)+' / '+s.questions.length)+'</div>'+
  (q.mode==='listen'?'<div class="v35-listen-panel"><p>Nghe và chọn chữ. Có thể nghe lại nhiều lần.</p><button class="v35-listen-trigger" data-f33="listen-audio" aria-label="Nghe phát âm Kana"><span aria-hidden="true">♫</span> Phát âm thanh</button></div>':'<div class="v33-question-glyph" lang="'+(q.mode.startsWith('vocab')&&q.mode==='vocab-vi-ja'?'vi':'ja')+'">'+clean(q.stimulus)+'</div>')+
- '<div class="v33-answer-grid">'+q.choices.map(opt=>'<button class="v33-answer '+(s.choice&&opt.id===q.correct?'correct':'')+' '+(s.choice===opt.id&&s.choice!==q.correct?'wrong':'')+'" data-f33="answer" data-value="'+clean(opt.id)+'" '+(s.choice?'disabled':'')+'>'+clean(opt.label)+'</button>').join('')+'</div>'+
+ '<p class="v36-audio-status" role="status" aria-live="polite" hidden></p><div class="v33-answer-grid">'+q.choices.map(opt=>'<button class="v33-answer '+(s.choice&&opt.id===q.correct?'correct':'')+' '+(s.choice===opt.id&&s.choice!==q.correct?'wrong':'')+'" data-f33="answer" data-value="'+clean(opt.id)+'" '+(s.choice?'disabled':'')+'>'+clean(opt.label)+'</button>').join('')+'</div>'+
  (s.choice?'<div class="v33-feedback '+(s.choice===q.correct?'positive':'negative')+'" role="status"><strong>'+(s.choice===q.correct?'Chính xác.':'Chưa đúng. Đáp án: '+clean(q.choices.find(x=>x.id===q.correct)?.label))+'</strong><p>'+clean(q.note)+'</p><button class="v36-feedback-audio" data-f33="feedback-audio" type="button">▶ Nghe đáp án</button></div><div class="v33-pane-actions"><button class="v33-primary" data-f33="next">'+(s.index+1===s.questions.length?'Xem kết quả':'Câu tiếp theo')+' →</button></div>':'<p class="v33-subline">Chọn một đáp án. Kết quả và giải thích hiện ngay, không cần bấm “Kiểm tra” thêm lần nữa.</p>')+
  '</section>';
 }
