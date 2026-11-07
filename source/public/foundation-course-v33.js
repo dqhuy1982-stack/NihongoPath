@@ -166,9 +166,15 @@ function ensurePlay(config){
   play={key,kind,cards,index:0,selected:[],tileOrder:cards.length?shuffle(Array.from(cards[0].glyph).map((glyph,i)=>({glyph,i}))):[],answer:null,correct:0,finished:cards.length===0,startedAt:null,ready:true};
  }else if(['match','listen-match','game','game-listen'].includes(kind)){
   const permitted=['listen-match','game-listen'].includes(kind)?list.filter(x=>x.stage!=='small'&&Array.from(x.glyph).length<=3):list;
-  const base=(['match','listen-match','game-listen','game'].includes(kind)&&config.script==='both'&&config.mod.script==='both')?permitted.filter(x=>x.script==='hira'):permitted;
-  const distinct=base.filter((x,i)=>base.findIndex(y=>y.read===x.read&&y.script===x.script)===i);
-  const cards=chooseTargets(distinct,Math.min(6,distinct.length));
+  const distinct=permitted.filter((x,i)=>permitted.findIndex(y=>y.read===x.read&&y.script===x.script)===i);
+  const size=Math.min(6,distinct.length);
+  let cards;
+  if(config.script==='both'&&config.mod.script==='both'){
+   const hira=chooseTargets(distinct.filter(x=>x.script==='hira'),Math.min(3,size));
+   const kata=chooseTargets(distinct.filter(x=>x.script==='kata'),Math.min(3,size-hira.length));
+   const used=new Set([...hira,...kata].map(x=>x.id));
+   cards=shuffle([...hira,...kata,...chooseTargets(distinct.filter(x=>!used.has(x.id)),size-hira.length-kata.length)]);
+  }else cards=chooseTargets(distinct,size);
   play={key,kind,cards,left:shuffle(cards),right:shuffle(cards),leftId:null,rightId:null,matched:[],mistakes:0,answered:0,feedback:'',finished:cards.length===0,startedAt:null,ready:true};
  }else if(kind==='flash'){
   play={key,kind,cards:shuffle(list),index:0,flipped:false,remembered:0,needsReview:0};
@@ -474,6 +480,7 @@ function matchingView(cfg,s){
  const rows=s.left.map((x,i)=>'<div class="v105-match-row">'+left(x)+right(s.right[i])+'</div>').join('');
  return '<section class="v33-pane"><div class="v33-pane-head"><div><p class="v33-eyebrow">'+(listening?'NGHE & GHÉP':'GHÉP CẶP · 2 CỘT')+'</p><h3>'+(listening?'Nghe và ghép đúng chữ':'Ghép Kana với Romaji')+'</h3><p>'+(listening?'Nghe ở bên trái, sau đó chọn chữ phù hợp bên phải.':'Chọn một ô Kana và một ô Romaji để nối cặp.')+'</p></div>'+tag(s.matched.length+' / '+s.cards.length+' cặp')+'</div>'+
  '<div class="v105-match-tools"><span>Hai bên được trộn ngẫu nhiên, không theo cùng thứ tự.</span><button type="button" class="v105-remix" data-f33="restart">↻ Ván mới</button></div>'+
+ (cfg.mod.script==='both'?'<div class="v105-script-options" role="group" aria-label="Bảng chữ">'+[['both','Cả hai'],['hira','Hiragana'],['kata','Katakana']].map(([id,label])=>'<button type="button" data-f34="script" data-value="'+id+'" aria-pressed="'+(cfg.script===id)+'">'+label+'</button>').join('')+'</div>':'')+
  '<div class="v105-match-board" data-match-board="1"><div class="v105-match-header"><strong>'+(listening?'NGHE ÂM':'KANA')+'</strong><strong>'+(listening?'KANA':'ROMAJI')+'</strong></div>'+rows+'<svg class="v101-match-lines" aria-hidden="true" preserveAspectRatio="none"></svg></div>'+
  '<p class="v105-match-feedback" aria-live="polite">'+clean(s.feedback||'Chọn một ô ở mỗi bên để ghép cặp.')+'</p>'+
  (s.lastMatched?insightPanel(s.cards.find(x=>x.id===s.lastMatched),cfg):'')+
