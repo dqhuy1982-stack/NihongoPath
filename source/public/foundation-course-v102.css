@@ -90,3 +90,13 @@
  .v34-studying .v39-book-tab.active{border-right:1px solid var(--v33-ink)!important;border-radius:9px!important}
  .v34-studying .v39-book-tab.active::after{display:none!important}
 }
+
+@media(min-width:681px){
+ .v34-studying .v39-book-layout>.v39-book-nav{border-right:0!important}
+ .v34-studying .v102-connector-lane::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:1px;
+  background:var(--v33-line);z-index:0;
+ }
+ .v34-studying .v102-connector-bridge{z-index:2}
+ .v34-studying .v39-book-tab.active{width:calc(100% + 11px)!important}
+}
