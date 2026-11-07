@@ -160,6 +160,6 @@ test('All UI pack resources load before runtime and route modules',()=>{
  const ui=html.indexOf('src="i18n/ui-pack.js?v=32"');
  assert.ok(ui>=0);
  assert.ok(ui<html.indexOf('src="locales.js?v=16"'));
- assert.ok(html.includes('src="app.js?v=100"'));
+ assert.ok(html.includes('src="app.js?v=101"'));
  assert.ok(html.includes('src="lesson-ui.js?v=32"'));
 });
