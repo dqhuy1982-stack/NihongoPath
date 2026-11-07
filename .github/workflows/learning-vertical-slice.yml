@@ -33,7 +33,7 @@ jobs:
       - name: Audit authored content and sample fixtures
         run: node tools/audit-learning-data.mjs
       - name: Run learning regression tests
-        run: node --test source/tests/learning-vertical-slice.test.cjs source/tests/lesson-engine.test.cjs source/tests/content-model.test.cjs tests/foundation-n5-next.test.mjs
+        run: node --test source/tests/learning-vertical-slice.test.cjs source/tests/lesson-engine.test.cjs source/tests/content-model.test.cjs tests/foundation-n5-next.test.mjs tests/foundation-course-v33.test.mjs
       - name: Test family profiles, PIN and Guest isolation
         run: node --test tests/family-static-demo.test.mjs
       - name: Validate full static export without deploying
