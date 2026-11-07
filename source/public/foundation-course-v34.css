@@ -59,3 +59,8 @@
  .v34-studying .v33-pane{padding:10px}
 }
 @media(prefers-reduced-motion:reduce){.v34-stage-tab{transition:none}}
+
+/* Kana reference board is a bounded, independently scrollable learning frame. */
+.v34-studying .v33-glyph-grid{max-height:405px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;align-content:start;padding:2px 3px 5px 0}
+.v34-studying .v33-glyph-grid:focus-visible{outline:2px solid var(--v33-ink);outline-offset:2px}
+@media(max-width:600px){.v34-studying .v33-glyph-grid{max-height:345px}}
