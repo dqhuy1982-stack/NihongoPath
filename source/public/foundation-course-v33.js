@@ -214,7 +214,7 @@ function scheduleFoundationOverlay(){
 function refresh(){
  removeFoundationOverlay();
  const stage=document.querySelector('.v34-workspace-shell');
- if(stage){const rail=stage.querySelector('.v39-book-nav'),saved=rail?rail.scrollTop:null;stage.innerHTML=workspace(current());restoreBookViewport(saved);tickClock();scheduleMatchLines();return}
+ if(stage){const rail=stage.querySelector?.('.v39-book-nav'),saved=rail?rail.scrollTop:null;stage.innerHTML=workspace(current());restoreBookViewport(saved);tickClock();scheduleMatchLines();return}
  render(false);
 }
 function wrap(content,crumb='Nền tảng'){
@@ -602,7 +602,7 @@ function localSwitch(kind,value){
  if(typeof history!=='undefined'&&history.replaceState)history.replaceState(null,'','#'+next);
  else location.hash='#'+next;
  const stage=document.querySelector('.v34-workspace-shell');
- if(stage){const rail=stage.querySelector('.v39-book-nav'),saved=rail?rail.scrollTop:null;stage.innerHTML=workspace(target);restoreBookViewport(saved);mountFoundationOverlay();tickClock();scheduleMatchLines();const crumb=document.querySelector('.v33-foundation .v25-breadcrumb [aria-current="page"]');if(crumb)crumb.textContent=target.mod.title;}
+ if(stage){const rail=stage.querySelector?.('.v39-book-nav'),saved=rail?rail.scrollTop:null;stage.innerHTML=workspace(target);restoreBookViewport(saved);mountFoundationOverlay();tickClock();scheduleMatchLines();const crumb=document.querySelector('.v33-foundation .v25-breadcrumb [aria-current="page"]');if(crumb)crumb.textContent=target.mod.title;}
 }
 /* Optional desktop dragging; touch and keyboard selection remain the primary accessible controls. */
 let dragging=null;
