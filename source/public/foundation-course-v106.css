@@ -1,0 +1,43 @@
+/* Foundation v1.06 — compact, fully expanded workbook and reversible Kana tiles */
+.v34-studying .v39-book-layout>.v39-book-nav{padding:12px 12px 16px!important}
+.v34-studying .v106-menu-group+.v106-menu-group{margin-top:13px}
+.v34-studying .v106-menu-group{border:0}
+.v34-studying .v106-group-heading{
+ color:var(--v33-ink);font-size:10px;font-weight:780;letter-spacing:.085em;
+ padding:5px 9px 9px;border-bottom:1px solid var(--v33-line);margin-bottom:6px
+}
+.v34-studying .v106-menu-group .v105-menu-entries{display:flex;flex-direction:column;gap:3px}
+.v34-studying .v106-menu-group .v39-book-tab{
+ min-height:42px;padding:7px 9px;border-radius:9px;
+ font-size:12px;gap:10px
+}
+.v34-studying .v106-menu-group .v39-book-tab.active{
+ border-radius:9px!important;box-shadow:inset 3px 0 0 var(--v33-ink)!important;
+}
+.v34-studying .v106-menu-group .v39-book-symbol{width:29px;height:29px;flex:0 0 29px}
+.v34-studying .v105-audio-toggle{margin:0 0 11px}
+.v34-studying .v106-build-answer{
+ display:flex;align-items:center;justify-content:center;
+ flex-wrap:wrap;gap:8px;min-height:75px;padding:10px
+}
+.v34-studying .v106-build-answer .v106-selected-tile{
+ display:inline-flex;align-items:center;justify-content:center;position:relative;
+ min-width:52px;min-height:55px;border-radius:9px;cursor:pointer;
+ border:1px solid var(--v33-ink);background:var(--v33-paper);
+ color:var(--v33-ink);font-size:25px;line-height:1.15;
+ padding:8px 14px 8px 10px
+}
+.v34-studying .v106-selected-tile small{
+ position:absolute;right:3px;top:2px;color:var(--muted);font-size:13px
+}
+.v34-studying .v106-selected-tile:hover:not(:disabled),
+.v34-studying .v106-selected-tile:focus-visible{
+ background:var(--v33-soft);outline:2px solid var(--v33-ink);outline-offset:1px
+}
+.v34-studying .v106-selected-tile:disabled{cursor:default;opacity:.8}
+@media(max-width:680px){
+ .v34-studying .v39-book-layout>.v39-book-nav{display:block!important}
+ .v34-studying .v106-menu-group .v105-menu-entries{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+ .v34-studying .v106-menu-group .v39-book-tab{width:100%;min-width:0;font-size:10px;padding:6px}
+ .v34-studying .v106-build-answer .v106-selected-tile{min-width:43px;min-height:46px;font-size:21px}
+}
