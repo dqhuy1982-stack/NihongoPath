@@ -622,6 +622,9 @@ test('v1.07 matching completes only once and distinguishes first-try pairs from 
  assert.equal(summary.attemptAccuracy,86);
  assert.equal(summary.attempts.length,7);
  assert.equal(summary.reviewIds.length,2);
+ assert.ok(h.ui.store().matchReview[a.id]);
+ assert.ok(h.ui.store().matchReview[b.id]);
+ assert.equal(h.ui.store().items[b.id]?.attempts??0,0,'partner in an incorrect match is flagged for review without invented scored response');
  assert.match(h.ui.page(r),/TỔNG KẾT VÁN HỌC/);
  assert.match(h.ui.page(r),/Luyện lại cặp cần ôn/);
  h.click('summary-close');
@@ -643,6 +646,9 @@ test('v1.07 review only involves pairs that were touched in a wrong match',()=>{
  assert.equal(current.round.finalized,false);
  assert.equal(current.round.attempts.length,0);
  assert.equal(current.round.summaryOpen,false);
+ for(const item of current.cards){h.click('match',item.id,'left');h.click('match',item.id,'right');}
+ assert.ok(!h.ui.store().matchReview[a.id]);
+ assert.ok(!h.ui.store().matchReview[b.id]);
 });
 test('v1.07 clean round has no fake weakness and offers a new round',()=>{
  const h=harness(),r='learn/foundation/hiragana/all/match';h.location.hash='#'+r;h.ui.page(r);
