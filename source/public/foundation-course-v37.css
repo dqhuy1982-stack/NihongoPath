@@ -1,0 +1,22 @@
+/* Foundation Studio v37 — compact recall clock and focused review. */
+.v34-studying .v37-clock{display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:2px;flex-shrink:0;min-width:105px;padding:8px 11px;border:1px solid var(--v33-line);border-radius:11px;background:var(--v33-paper);color:var(--v33-ink)}
+.v34-studying .v37-clock>span{font-size:14px;line-height:1}
+.v34-studying .v37-clock strong{font-size:20px;font-variant-numeric:tabular-nums;line-height:1.2;font-weight:800}
+.v34-studying .v37-clock small{font-size:9px;color:var(--muted);white-space:nowrap}
+.v34-studying .v37-answer-speed{display:block;margin:7px 0;color:var(--v33-ink);font-weight:750;font-size:11px;line-height:1.5}
+.v34-studying .v37-summary-stats{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:9px}
+.v34-studying .v37-summary-stats span{display:flex;flex-direction:column;gap:6px;border:1px solid var(--v33-line);border-radius:10px;min-width:108px;padding:10px;color:var(--muted);font-size:10px;text-align:center}
+.v34-studying .v37-summary-stats strong{font-size:17px;color:var(--v33-ink);font-variant-numeric:tabular-nums}
+.v34-studying .v37-weak-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:11px 0}
+.v34-studying .v37-weak-list>span{display:flex;flex-direction:column;justify-content:center;align-items:center;border:1px solid var(--v33-line);border-radius:9px;background:var(--v33-soft);padding:7px 4px;font:700 22px 'Noto Serif JP',serif;line-height:1.2}
+.v34-studying .v37-weak-list small{font:500 9px inherit;color:var(--muted);text-align:center;margin:5px 0 0;line-height:1.25}
+.v34-studying .v37-review-link{width:100%;min-height:37px;border:1px solid var(--v33-ink);border-radius:9px;background:var(--v33-paper);font-size:11px;color:var(--v33-ink);font-weight:750}
+.v34-studying .v37-review-link:hover{background:var(--v33-soft)}
+.v34-studying .v37-sr{position:absolute;width:1px;height:1px;clip:rect(0,0,0,0);white-space:nowrap;overflow:hidden}
+.v34-studying .v33-match-tile .v37-sr{position:absolute}
+@media(max-width:600px){
+ .v34-studying .v37-clock{min-width:83px;padding:6px 8px}
+ .v34-studying .v37-clock strong{font-size:17px}
+ .v34-studying .v37-clock small{font-size:8px}
+ .v34-studying .v37-summary-stats span{min-width:80px;padding:8px}
+}
