@@ -216,3 +216,8 @@
  .v121-topic-actions a{font-size:10px}
 }
 @media(prefers-reduced-motion:reduce){.v121-topic,.v121-chapter-toggle,.v121-search-label input{transition:none!important}}
+
+.v121-lessons-notice{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:17px 19px;margin-bottom:20px;border:1px solid var(--v25-line);border-radius:13px;background:color-mix(in srgb,var(--v25-rose) 38%,var(--v25-bg))}
+.v121-lessons-notice strong{color:var(--v25-ink);font-size:14px}
+.v121-lessons-notice p{font-size:11px;line-height:1.6;color:var(--muted);margin:5px 0 0}
+@media(max-width:700px){.v121-lessons-notice{flex-direction:column;align-items:stretch;gap:13px}}
