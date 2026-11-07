@@ -421,6 +421,7 @@ test('v1.01 includes answer audio and precise connected-book CSS',()=>{
  assert.ok(html.includes('foundation-course-v102.css?v=102'));
  assert.ok(html.includes('foundation-course-v103.css?v=103'));
  assert.ok(html.includes('foundation-course-v104.css?v=104'));
+ assert.ok(html.includes('foundation-course-v105.css?v=105'));
  assert.ok(html.includes('foundation-curriculum-v33.js?v=101'));
  assert.ok(html.includes('foundation-course-v33.js?v=105'));
  assert.ok(css.includes('v101-match-grid'));
