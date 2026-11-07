@@ -392,8 +392,8 @@ test('The learning UI does not alter the existing lesson engine or global learne
  assert.ok(html.includes('foundation-course-v40.css?v=100'));
  assert.ok(html.includes('app.js?v=100'));
  assert.ok(html.includes('learning-hub-v25.js?v=100'));
- assert.ok(html.includes('foundation-course-v33.js?v=39'));
- assert.ok(html.includes('foundation-course-v33.js?v=39'));
+ assert.ok(html.includes('foundation-course-v33.js?v=100'));
+ assert.ok(html.includes('foundation-course-v33.js?v=100'));
  assert.ok(load('foundation-course-v33.js').includes('data-f38="start"'));
  assert.ok(!load('foundation-course-v36.css').includes('max-height:405px'));
  assert.match(load('foundation-course-v36.css'),/max-height:none!important/);
