@@ -211,7 +211,10 @@ function completeRound(s,cfg){
    slowestPairMs:durations.length===list.length?Math.max(...durations):null,
    audioReplays:list.reduce((n,p)=>n+p.audioReplays,0),attempts:r.attempts.slice(),
    pairResults:list,reviewIds:review.map(p=>p.itemId)};
- r.summary=report;r.summaryOpen=true;saveRound(report);
+ r.summary=report;r.summaryOpen=true;
+ const d=store();d.matchReview=d.matchReview||{};
+ for(const p of list){if(p.wrongAttempts)d.matchReview[p.itemId]={at:report.endedAt,reason:'match-attempt'};else delete d.matchReview[p.itemId];}
+ persist();saveRound(report);
 }
 function formatDuration(ms){return Number.isFinite(ms)?(ms/1000).toLocaleString('vi-VN',{maximumFractionDigits:1})+' giây':'Chưa ghi nhận'}
 function roundSummaryView(s,cfg){
@@ -309,7 +312,7 @@ function clock(s,answered=false){return '<div class="v37-clock" aria-label="Th�
 let ticker=null,absentTicks=0;
 function tickClock(){if(typeof setInterval!=='function'||ticker!==null)return;ticker=setInterval(()=>{const present=!!document.querySelector?.('.v34-workspace-shell');if(!present){if(++absentTicks>20){clearInterval(ticker);ticker=null;absentTicks=0;}return;}absentTicks=0;const el=document.querySelector?.('[data-f37-timer]');if(el&&play?.startedAt&&!play.finished&&!play.choice&&!play.answer&&play.kind!=='flash')el.textContent=timeLabel(elapsed(play));},100);}
 document.addEventListener('visibilitychange',()=>{if(play?.round&&!play.round.finalized){const r=play.round;if(document.hidden){if(r.pausedAt===null)r.pausedAt=timeNow();}else if(r.pausedAt!==null){r.pausedMs+=timeNow()-r.pausedAt;r.pausedAt=null;}}if(!play?.startedAt||play.finished||play.choice||play.answer||play.kind==='flash')return;if(document.hidden){if(!play.hiddenAt)play.hiddenAt=Date.now()}else if(play.hiddenAt){play.pausedMs=(play.pausedMs||0)+(Date.now()-play.hiddenAt);play.hiddenAt=null;}});
-function weakList(cfg){const rec=store().items;return DATA.take(cfg.id,'all',cfg.script).filter(x=>{const v=rec[x.id];return v&&(v.latestOutcome!=='correct'||new Date(v.nextAt).getTime()<=Date.now())}).sort((a,b)=>priority(b)-priority(a)).slice(0,6);}
+function weakList(cfg){const d=store(),rec=d.items;return DATA.take(cfg.id,'all',cfg.script).filter(x=>{const v=rec[x.id],flag=d.matchReview?.[x.id];return !!flag||(v&&(v.latestOutcome!=='correct'||new Date(v.nextAt).getTime()<=Date.now()))}).sort((a,b)=>priority(b)-priority(a)).slice(0,6);}
 function navigate(route){location.hash='#'+route}
 function removeFoundationOverlay(){
  const overlay=document.querySelector?.('body > .v38-overlay');
@@ -660,7 +663,7 @@ function workspace(cfg){
  const gameOrPractice=cfg.mode!=='learn'&&cfg.mode!=='flash'&&cfg.mode!=='mix';
  const weak=weakList(cfg);
  const panel='<aside class="v33-side"><h3>Sổ ôn · Gợi ý theo kết quả</h3>'+
- (weak.length?'<div class="v37-weak-list">'+weak.map(x=>'<span lang="ja">'+clean(x.glyph)+' <small>'+clean(store().items[x.id]?.latestOutcome==='incorrect'?'Sai':'Chậm / đến hạn')+'</small></span>').join('')+'</div><button type="button" class="v37-review-link" data-f34="mode" data-value="review">Ôn những chữ này →</button>':'<p>Chưa có chữ cần ôn. Hãy thử một lượt kiểm tra.</p>')+
+ (weak.length?'<div class="v37-weak-list">'+weak.map(x=>'<span lang="ja">'+clean(x.glyph)+' <small>'+clean(store().matchReview?.[x.id]?'Cần ôn ghép':store().items[x.id]?.latestOutcome==='incorrect'?'Sai':'Đến hạn ôn')+'</small></span>').join('')+'</div><button type="button" class="v37-review-link" data-f34="mode" data-value="review">Ôn những chữ này →</button>':'<p>Chưa có chữ cần ôn. Hãy thử một lượt kiểm tra.</p>')+
  '<div class="v33-side-divider"></div><p>Trả lời sai được lưu ôn; bài Luyện tập và Game không đánh giá nhanh/chậm.</p></aside>';
  return navigationFor(cfg)+'<div class="v38-task-area"><div class="'+(gameOrPractice?'v39-book-layout':'v33-workspace')+'"'+(intro?' inert':'')+'>'+(gameOrPractice?activityBook(cfg)+body:body+panel)+'</div>'+intro+(s&&MATCH_KINDS.includes(s.kind)?roundSummaryView(s,cfg):'')+'</div>';
 }
