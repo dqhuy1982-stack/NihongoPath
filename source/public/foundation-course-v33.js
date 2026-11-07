@@ -422,7 +422,7 @@ function indexPage(){
 }
 function navigationFor(cfg){
  const m=cfg.mod,s=moduleStats(m);
- const opts=DATA.modules.map(x=>'<option value="'+x.id+'" '+(x.id===cfg.id?'selected':'')+'>'+clean(x.title)+'</option>').join('');
+
  const practices=[['review','Ôn chữ còn yếu'],['quiz','Chữ → âm'],['reverse','Âm → chữ'],...(cfg.id!=='small'&&cfg.id!=='mixed'?[['listen','Nghe → chữ'],['listen-match','Nghe & ghép cặp']]:[]),['truefalse','Đúng / Sai'],['match','Ghép cặp'],['build','Xếp chữ'],['vocab-ja-vi','Nhật → Việt'],['vocab-vi-ja','Việt → Nhật']];
  const group=cfg.mode==='learn'?'learn':cfg.mode==='flash'?'flash':cfg.mode==='mix'?'mix':'practice';
  const actions=[['learn','Học'],['flash','Flashcard'],['practice','Luyện tập'],['mix','Kiểm tra tổng hợp']];
@@ -438,15 +438,16 @@ function navigationFor(cfg){
  const toReview=all.filter(x=>{const t=store().items[x.id];return t&&(t.latestOutcome==='slow'||t.latestOutcome==='incorrect'||new Date(t.nextAt).getTime()<=Date.now())}).length;
  const sequence=Math.max(0,DATA.modules.findIndex(x=>x.id===cfg.id))+1;
  const moduleNumber=String(sequence).padStart(2,'0');
- const totalModules=String(DATA.modules.length).padStart(2,'0');
+ const previous=DATA.modules[sequence-2]||null,next=DATA.modules[sequence]||null;
  const stepNames={learn:'Học',flash:'Flashcard',practice:'Luyện tập',mix:'Tổng ôn'};
- const selectedStep=stepNames[group];
- return '<div class="v113-learning-nav" aria-label="Điều hướng bài học">'+
- '<div class="v113-location"><a class="v113-home" href="#course/foundation" aria-label="Xem tất cả chặng Nền tảng" title="Tất cả chặng">⌂</a>'+
- '<span class="v113-path-label">Nền tảng</span><span class="v113-separator" aria-hidden="true">/</span>'+
- '<label class="v113-module-select"><span class="v113-visually-hidden">Chặng đang học</span><span class="v113-module-index">'+moduleNumber+'</span><select id="v34-module" data-f34="module" aria-label="Chuyển chặng học">'+opts+'</select><span class="v113-chevron" aria-hidden="true">⌄</span></label>'+
- '<span class="v113-separator v113-last-separator" aria-hidden="true">/</span><strong class="v113-current-step" aria-live="polite">'+selectedStep+'</strong>'+
- '</div><div class="v113-learning-meta"><span>'+stats.reviewed+' / '+stats.total+' mẫu đã luyện</span><a href="#course/foundation">Tất cả chặng ↗</a></div></div>'+
+ return '<div class="v114-orientation" aria-label="Vị trí trong lộ trình">'+
+ '<a href="#course/foundation" class="v114-chapters" aria-label="Quay về danh sách chặng">‹ <span>Các chặng</span></a>'+
+ '<div class="v114-chapter-switch" role="group" aria-label="Chuyển chặng">'+
+ '<button type="button" class="v114-arrow" data-f34="module" data-value="'+(previous?clean(previous.id):'')+'" aria-label="'+(previous?'Chặng trước: '+clean(previous.title):'Đang ở chặng đầu tiên')+'" '+(previous?'':'disabled')+'>‹</button>'+
+ '<div class="v114-current-chapter"><small>CHẶNG '+moduleNumber+' / '+String(DATA.modules.length).padStart(2,'0')+'</small><strong>'+clean(m.title)+'</strong></div>'+
+ '<button type="button" class="v114-arrow" data-f34="module" data-value="'+(next?clean(next.id):'')+'" aria-label="'+(next?'Chặng tiếp: '+clean(next.title):'Đang ở chặng cuối cùng')+'" '+(next?'':'disabled')+'>›</button></div>'+
+ '<span class="v114-progress">'+stats.reviewed+' / '+stats.total+' mẫu đã luyện</span></div>'+
+ '<p class="v114-learning-cue" aria-live="polite">Đang ở <strong>'+clean(m.title)+'</strong> · '+stepNames[group]+'</p>'+
  '<div class="v34-stagebar v113-stagebar" role="navigation" aria-label="Chuyển hoạt động trong '+clean(m.title)+'">'+tabs+'</div>'+
  '<div class="v34-options v113-options">'+(m.script==='both'?'<label>Bảng chữ <select data-f34="script" aria-label="Chọn bảng chữ">'+[['both','Cả hai'],['hira','Hiragana'],['kata','Katakana']].map(([id,t])=>'<option value="'+id+'" '+(cfg.script===id?'selected':'')+'>'+t+'</option>').join('')+'</select></label>':'')+
  (cfg.id==='small'&&group==='learn'?'<label>Chủ đề <select data-f34="small" aria-label="Chọn chủ đề chữ nhỏ">'+[['all','Tất cả'],['pause','っ / ッ'],['length','Âm dài ー'],['vowels','Nguyên âm nhỏ']].map(([id,t])=>'<option value="'+id+'" '+(cfg.group===id?'selected':'')+'>'+t+'</option>').join('')+'</select></label>':'')+
@@ -912,7 +913,7 @@ document.addEventListener('click',event=>{
  const backdrop=event.target.closest?.('[data-v107-dialog]');
  if(backdrop&&!event.target.closest?.('.v109-dialog')){event.preventDefault();closeRoundSummary();return;}
  const startAction=event.target.closest?.('[data-f38]');if(startAction&&document.querySelector('.v34-workspace-shell')){event.preventDefault();const cfg=current(),s=ensurePlay(cfg);if(startAction.dataset.f38==='start'){s.ready=true;resetClock(s);refresh();}else if(startAction.dataset.f38==='cancel'){localSwitch('tab','learn');}return;}
- const nav=event.target.closest('[data-f34="tab"],[data-f34="mode"]');if(nav?.dataset?.f34&&document.querySelector('.v34-workspace-shell')){event.preventDefault();localSwitch(nav.dataset.f34,nav.dataset.value);return;}
+ const nav=event.target.closest('[data-f34="tab"],[data-f34="mode"],[data-f34="module"]');if(nav?.dataset?.f34&&document.querySelector('.v34-workspace-shell')){event.preventDefault();localSwitch(nav.dataset.f34,nav.dataset.value);return;}
  const b=event.target.closest('[data-f33]');if(!b)return;
  if(!document.querySelector('.v33-foundation'))return;
  event.preventDefault();perform(b);
