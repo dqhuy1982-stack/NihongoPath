@@ -439,7 +439,6 @@ function navigationFor(cfg){
  const sequence=Math.max(0,DATA.modules.findIndex(x=>x.id===cfg.id))+1;
  const moduleNumber=String(sequence).padStart(2,'0');
  const previous=DATA.modules[sequence-2]||null,next=DATA.modules[sequence]||null;
- const stepNames={learn:'Học',flash:'Flashcard',practice:'Luyện tập',mix:'Tổng ôn'};
  return '<div class="v114-orientation" aria-label="Vị trí trong lộ trình">'+
  '<a href="#course/foundation" class="v114-chapters" aria-label="Quay về danh sách chặng">‹ <span>Các chặng</span></a>'+
  '<div class="v114-chapter-switch" role="group" aria-label="Chuyển chặng">'+
@@ -447,7 +446,7 @@ function navigationFor(cfg){
  '<div class="v114-current-chapter"><small>CHẶNG '+moduleNumber+' / '+String(DATA.modules.length).padStart(2,'0')+'</small><strong>'+clean(m.title)+'</strong></div>'+
  '<button type="button" class="v114-arrow" data-f34="module" data-value="'+(next?clean(next.id):'')+'" aria-label="'+(next?'Chặng tiếp: '+clean(next.title):'Đang ở chặng cuối cùng')+'" '+(next?'':'disabled')+'>›</button></div>'+
  '<span class="v114-progress">'+stats.reviewed+' / '+stats.total+' mẫu đã luyện</span></div>'+
- '<p class="v114-learning-cue" aria-live="polite">Đang ở <strong>'+clean(m.title)+'</strong> · '+stepNames[group]+'</p>'+
+
  '<div class="v34-stagebar v113-stagebar" role="navigation" aria-label="Chuyển hoạt động trong '+clean(m.title)+'">'+tabs+'</div>'+
  '<div class="v34-options v113-options">'+(m.script==='both'?'<label>Bảng chữ <select data-f34="script" aria-label="Chọn bảng chữ">'+[['both','Cả hai'],['hira','Hiragana'],['kata','Katakana']].map(([id,t])=>'<option value="'+id+'" '+(cfg.script===id?'selected':'')+'>'+t+'</option>').join('')+'</select></label>':'')+
  (cfg.id==='small'&&group==='learn'?'<label>Chủ đề <select data-f34="small" aria-label="Chọn chủ đề chữ nhỏ">'+[['all','Tất cả'],['pause','っ / ッ'],['length','Âm dài ー'],['vowels','Nguyên âm nhỏ']].map(([id,t])=>'<option value="'+id+'" '+(cfg.group===id?'selected':'')+'>'+t+'</option>').join('')+'</select></label>':'')+
