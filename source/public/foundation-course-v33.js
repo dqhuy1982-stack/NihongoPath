@@ -224,13 +224,14 @@ function navigationFor(cfg){
  };
  const tabs=actions.map(([id,label])=>'<button type="button" data-f34="tab" data-value="'+id+'" class="v34-stage-tab '+(id===group?'active':'')+'" '+(id===group?'aria-current="step"':'')+'><svg class="v36-step-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">'+stepIcons[id]+'</svg><span>'+label+'</span></button>').join('');
  const all=DATA.take(cfg.id,'all',cfg.script),stats=countStats(all);
+ const toReview=all.filter(x=>{const t=store().items[x.id];return t&&(t.latestOutcome==='slow'||t.latestOutcome==='incorrect'||new Date(t.nextAt).getTime()<=Date.now())}).length;
  return '<div class="v34-topline"><div class="v34-course-picker"><label for="v34-module">Đang học</label><select id="v34-module" data-f34="module" aria-label="Chọn nội dung Nền tảng">'+opts+'</select></div>'+
  '<div class="v34-topline-info"><strong>'+clean(m.subtitle)+'</strong><small>'+stats.reviewed+' / '+stats.total+' mẫu đã luyện thử</small></div><a class="v34-back" href="#course/foundation">Tất cả nội dung</a></div>'+
  '<div class="v34-stagebar" role="navigation" aria-label="Bước học">'+tabs+'</div>'+
  '<div class="v34-options">'+(m.script==='both'?'<label>Bảng chữ <select data-f34="script" aria-label="Chọn bảng chữ">'+[['both','Cả hai'],['hira','Hiragana'],['kata','Katakana']].map(([id,t])=>'<option value="'+id+'" '+(cfg.script===id?'selected':'')+'>'+t+'</option>').join('')+'</select></label>':'')+
  (group==='practice'?'<label>Dạng luyện <select data-f34="mode" aria-label="Chọn dạng luyện tập">'+practices.map(([id,t])=>'<option value="'+id+'" '+(cfg.mode===id?'selected':'')+'>'+t+'</option>').join('')+'</select></label>':'')+
  (cfg.id==='small'&&group==='learn'?'<label>Chủ đề <select data-f34="small" aria-label="Chọn chủ đề chữ nhỏ">'+[['all','Tất cả'],['pause','っ / ッ'],['length','Âm dài ー'],['vowels','Nguyên âm nhỏ']].map(([id,t])=>'<option value="'+id+'" '+(cfg.group===id?'selected':'')+'>'+t+'</option>').join('')+'</select></label>':'')+
- '<span class="v34-hint">'+(group==='learn'?'46 chữ hiển thị cùng nhau, nhấn loa để nghe.':group==='flash'?'Nhớ trước, lật sau.':group==='mix'?'Câu hỏi được trộn trong chặng.':'Chọn một dạng để luyện trong khung này.')+'</span></div>';
+ (toReview?'<button type="button" data-f34="mode" data-value="review" class="v37-review-chip">↻ Sổ ôn · '+toReview+' mẫu</button>':'')+'<span class="v34-hint">'+(group==='learn'?'46 chữ hiển thị cùng nhau, nhấn loa để nghe.':group==='flash'?'Nhớ trước, lật sau.':group==='mix'?'Câu hỏi được trộn trong chặng.':'Chọn một dạng để luyện trong khung này.')+'</span></div>';
 }
 function coachSeen(){try{return localStorage.getItem('Horizon.KanaTapGuide.v1.'+learnerId())==='yes'}catch{return false}}
 function dismissCoach(){try{localStorage.setItem('Horizon.KanaTapGuide.v1.'+learnerId(),'yes')}catch(e){}const tip=document.querySelector('.v35-kana-guide');if(tip?.remove)tip.remove();const first=document.querySelector('.v35-first-kana');if(first?.classList?.remove)first.classList.remove('v35-first-kana')}
