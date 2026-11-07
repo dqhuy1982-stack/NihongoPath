@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: nihongopath-pages
+  group: nihongopath-pages-release-v118
   cancel-in-progress: true
 
 jobs:
