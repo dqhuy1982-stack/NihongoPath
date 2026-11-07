@@ -90,6 +90,21 @@ test('Matching two columns is accessible with buttons, checks answers, and count
  assert.ok(s.matched.includes(first.id));
  assert.equal(h.ui.store().items[first.id].attempts,2);
 });
+test('Word-builder supports repeated Kana tiles, immediate marking and replay',()=>{
+ const h=harness(),route='learn/foundation/small/pause/build';h.location.hash='#'+route;
+ const html=h.ui.page(route),s=h.ui.session();assert.ok(html.includes('v33-build-tile'));
+ const word=s.cards[0];
+ for(const ch of Array.from(word.glyph)){
+   const idx=s.tileOrder.findIndex((tile,i)=>tile.glyph===ch&&!s.selected.includes(i));
+   assert.ok(idx>=0,'available tile '+ch);
+   h.click('tile',String(idx));
+ }
+ assert.equal(s.answer.correct,true);
+ assert.equal(h.ui.store().items[word.id].correct,1);
+ h.click('build-next');
+ assert.equal(s.index,1);
+});
+
 test('The learning UI does not alter the existing lesson engine or global learner records',()=>{
  const html=load('index.html');
  assert.ok(html.includes('foundation-curriculum-v33.js?v=33'));
