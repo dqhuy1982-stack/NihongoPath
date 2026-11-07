@@ -59,7 +59,7 @@ test('Page navigation is consistent and practice categories have working answers
  for(const route of ['course/foundation','learn/foundation/hiragana/a/learn','learn/foundation/katakana/k/flash','learn/foundation/dakuten/g/reverse','learn/foundation/yoon/ky/match','learn/foundation/small/pause/vocab-ja-vi','learn/foundation/mixed/mixed/mix']){
    location.hash='#'+route;const html=ui.page(route);
    assert.ok(html.includes('HORIZON · Learning Hub'),route);
-   assert.ok(html.includes('HORIZON · Foundation Studio v36'),route);
+   assert.ok(html.includes('HORIZON · Foundation Studio v37'),route);
    if(route!=='course/foundation')assert.ok(html.includes('v34-stagebar'));
  }
 });
@@ -138,7 +138,7 @@ test('Kana board is one-click audio surface, not nested play buttons',()=>{
  assert.equal((markup.match(/data-f33="pronounce"/g)||[]).length,46);
  assert.equal((markup.match(/v35-kana-button/g)||[]).length,46);
  assert.ok(!markup.includes('v33-audio'));
- assert.match(markup,/HORIZON · Foundation Studio v36/);
+ assert.match(markup,/HORIZON · Foundation Studio v37/);
 });
 test('Foundation exercises expose optional draggable tiles and accessible tap-selection',()=>{
  const h=harness(),route='learn/foundation/hiragana/all/build';h.location.hash='#'+route;
@@ -178,13 +178,83 @@ test('Audio fallback handles unavailable Japanese voices without fake success',(
  assert.equal(listen.correct,listen.item.id);
 });
 
+
+test('Slow correct answers are recorded independently of raw correctness',()=>{
+ const h=harness(),route='learn/foundation/hiragana/all/quiz';
+ h.location.hash='#'+route;h.ui.page(route);
+ const session=h.ui.session(),q=session.questions[0];
+ session.startedAt=Date.now()-7600;
+ h.click('answer',q.correct);
+ const rec=h.ui.store().items[q.item.id];
+ assert.equal(rec.correct,1);
+ assert.equal(rec.slowCount,1);
+ assert.equal(rec.latestOutcome,'slow');
+ assert.ok(rec.lastResponseMs>=7000);
+ assert.equal(rec.streak,0);
+ assert.match(h.ui.page(route),/Đã lưu vào sổ ôn vì chậm/);
+ assert.ok(h.ui.store().history.some(a=>a.id===q.item.id&&a.outcome==='slow'));
+ const now=new Date(rec.lastAt).getTime(),due=new Date(rec.nextAt).getTime();
+ assert.equal(now,due);
+});
+test('Incorrect answer is routed to targeted review and timed feedback',()=>{
+ const h=harness(),route='learn/foundation/hiragana/all/quiz';
+ h.location.hash='#'+route;h.ui.page(route);
+ const s=h.ui.session(),q=s.questions[0];
+ const wrong=q.choices.find(x=>x.id!==q.correct);
+ assert.ok(wrong);
+ h.click('answer',wrong.id);
+ const rec=h.ui.store().items[q.item.id];
+ assert.equal(rec.latestOutcome,'incorrect');
+ assert.equal(rec.errorCount,1);
+ assert.ok(h.ui.page(route).includes('Đã lưu câu sai vào sổ ôn'));
+ const reviewRoute='learn/foundation/hiragana/all/review';
+ h.location.hash='#'+reviewRoute;h.ui.page(reviewRoute);
+ assert.ok(h.ui.session().questions.some(x=>x.item.id===q.item.id));
+});
+test('New review and listen-match modes remain within the four primary navigation steps',()=>{
+ const h=harness(),route='learn/foundation/hiragana/all/listen-match';
+ h.location.hash='#'+route;
+ const html=h.ui.page(route),s=h.ui.session();
+ assert.equal(s.kind,'listen-match');
+ assert.ok(s.cards.length>0);
+ assert.ok(html.includes('NGHE & GHÉP'));
+ assert.ok(html.includes('data-f33="match"'));
+ const first=s.cards[0];
+ h.click('match',first.id,'left');
+ h.click('match',first.id,'right');
+ assert.ok(s.matched.includes(first.id));
+ assert.equal(h.ui.store().items[first.id].attempts,1);
+ assert.ok(h.ui.store().items[first.id].lastResponseMs>=0);
+ const kata='learn/foundation/katakana/all/listen-match';
+ h.location.hash='#'+kata;h.ui.page(kata);
+ assert.ok(h.ui.session().cards.length>0,'Katakana audio matching available');
+ assert.ok(h.ui.session().cards.every(x=>x.script==='kata'));
+});
+test('Clock is per question and feedback freezes elapsed time until next item',()=>{
+ const h=harness(),route='learn/foundation/hiragana/all/quiz';
+ h.location.hash='#'+route;
+ let html=h.ui.page(route);
+ assert.ok(html.includes('data-f37-timer'));
+ const s=h.ui.session(),q=s.questions[0];s.startedAt=Date.now()-5300;
+ h.click('answer',q.correct);
+ const first=s.lastMs;assert.ok(first>=5000);
+ html=h.ui.page(route);
+ assert.ok(html.includes('Đã trả lời'));
+ assert.ok(html.includes('Đúng nhưng cần luyện phản xạ.'));
+ h.click('next');
+ assert.equal(s.index,1);
+ assert.equal(s.choice,null);
+ assert.ok(s.startedAt>0);
+});
+
 test('The learning UI does not alter the existing lesson engine or global learner records',()=>{
  const html=load('index.html');
  assert.ok(html.includes('foundation-curriculum-v33.js?v=33'));
- assert.ok(html.includes('foundation-course-v33.js?v=36'));
+ assert.ok(html.includes('foundation-course-v33.js?v=37'));
  assert.ok(html.includes('foundation-course-v34.css?v=34'));
  assert.ok(html.includes('foundation-course-v35.css?v=35'));
  assert.ok(html.includes('foundation-course-v36.css?v=36'));
+ assert.ok(html.includes('foundation-course-v37.css?v=37'));
  assert.ok(!load('foundation-course-v36.css').includes('max-height:405px'));
  assert.match(load('foundation-course-v36.css'),/max-height:none!important/);
  const code=load('foundation-course-v33.js');
