@@ -100,7 +100,11 @@ const words=[
  ['バス','xe buýt','basu','kata','voiced','バ chứa dấu dakuten.'],
  ['ホテル','khách sạn','hoteru','kata','basic','Từ Katakana thường dùng trong đời sống.'],
  ['タクシー','taxi','takushī','kata','small','Dấu ー kéo dài nguyên âm trong シー.'],
- ['ファイル','tệp tin','fairu','kata','small','ァ nhỏ đi cùng フ để biểu diễn âm fa.']
+ ['ファイル','tệp tin','fairu','kata','small','ァ nhỏ đi cùng フ để biểu diễn âm fa.'],
+ ['フィルム','cuộn phim','firumu','kata','small','ィ nhỏ đi cùng フ để biểu diễn âm fi.'],
+ ['フェリー','phà','ferī','kata','small','ェ nhỏ đi cùng フ; ー kéo dài âm i.'],
+ ['ウィンナー','xúc xích','winnā','kata','small','ィ nhỏ kết hợp ウ; ー kéo dài âm a.'],
+ ['パーティー','bữa tiệc','pātī','kata','small','ィ nhỏ dùng trong ティ; có dấu kéo dài ー.']
 ].map(([glyph,vi,read,script,stage,note],i)=>Object.freeze({id:'word-'+i,glyph,vi,read,script,stage,note,group:stage}));
 const modules=[
  {id:'hiragana',title:'01 · Hiragana',subtitle:'46 chữ cơ bản · nhận mặt & đọc',script:'hira',stage:'basic',groups:rows.map(([id,title])=>({id,title})),note:'Học theo từng hàng 3–5 chữ; mở rộng dần, không bắt học hết 46 chữ trong một lần.'},
