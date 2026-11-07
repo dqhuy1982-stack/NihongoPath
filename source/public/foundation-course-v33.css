@@ -125,3 +125,18 @@
  .v33-pane-actions>*{flex:1}
 }
 @media(prefers-reduced-motion:reduce){.v33-level-card{transition:none}.v33-level-card:hover{transform:none}}
+
+/* Accessible auditory cues and word construction exercise */
+.v33-glyph-card .v33-audio{display:inline-flex;align-items:center;gap:4px;min-height:26px;margin-top:4px;padding:3px 9px;color:var(--v33-ink);border:1px solid var(--v33-line);border-radius:8px;font-size:10px;font-weight:700;background:var(--v33-paper)}
+.v33-glyph-card .v33-audio:hover{border-color:var(--v33-ink);background:var(--v33-soft)}
+.v33-build-clue{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 17px;margin:7px 0 14px;background:color-mix(in srgb,var(--v33-soft) 46%,var(--v33-paper));border-radius:12px}
+.v33-build-clue span{font-size:10px;color:var(--v33-ink);font-weight:760;letter-spacing:.06em}
+.v33-build-clue strong{font-size:18px;font-weight:750}
+.v33-build-answer{display:flex;justify-content:center;align-items:center;gap:9px;min-height:80px;border:1px dashed var(--v33-line);border-radius:12px;padding:12px;margin-bottom:13px}
+.v33-build-answer span{display:grid;place-items:center;min-width:48px;min-height:53px;padding:4px;border-radius:9px;background:var(--v33-soft);color:var(--text);font-family:'Noto Serif JP',serif;font-size:28px}
+.v33-build-answer small{font-size:11px;color:var(--muted)}
+.v33-build-tiles{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px}
+.v33-build-tile{display:grid;place-items:center;min-width:55px;min-height:58px;padding:8px;border:1px solid var(--v33-line);border-radius:10px;background:var(--v33-paper);font-family:'Noto Serif JP',serif;font-size:29px;color:var(--text)}
+.v33-build-tile:hover:not([disabled]){background:var(--v33-soft);border-color:var(--v33-ink)}
+.v33-build-tile[disabled]{opacity:.3;cursor:default}
+@media(max-width:600px){.v33-build-clue{flex-direction:column;align-items:flex-start;gap:5px}.v33-build-answer span{min-width:39px;min-height:48px}.v33-build-tile{min-width:48px;min-height:52px}}
