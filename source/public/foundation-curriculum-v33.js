@@ -104,7 +104,26 @@ const words=[
  ['フィルム','cuộn phim','firumu','kata','small','ィ nhỏ đi cùng フ để biểu diễn âm fi.'],
  ['フェリー','phà','ferī','kata','small','ェ nhỏ đi cùng フ; ー kéo dài âm i.'],
  ['ウィンナー','xúc xích','winnā','kata','small','ィ nhỏ kết hợp ウ; ー kéo dài âm a.'],
- ['パーティー','bữa tiệc','pātī','kata','small','ィ nhỏ dùng trong ティ; có dấu kéo dài ー.']
+ ['パーティー','bữa tiệc','pātī','kata','small','ィ nhỏ dùng trong ティ; có dấu kéo dài ー.'],
+ ['さかな','con cá','sakana','hira','basic','Luyện phân biệt さ và な.'],
+ ['はな','bông hoa','hana','hira','basic','はな còn có thể mang nghĩa mũi; ở đây luyện nghĩa hoa.'],
+ ['まど','cửa sổ','mado','hira','voiced','ど có dấu dakuten.'],
+ ['そら','bầu trời','sora','hira','basic','Từ thường dùng về thiên nhiên.'],
+ ['むし','côn trùng','mushi','hira','basic','し đọc shi.'],
+ ['とり','con chim','tori','hira','basic','Luyện と và り.'],
+ ['うみ','biển','umi','hira','basic','Đọc liền う và み.'],
+ ['ほし','ngôi sao','hoshi','hira','basic','し đọc shi.'],
+ ['ふね','con thuyền','fune','hira','basic','ふ đọc fu.'],
+ ['はこ','cái hộp','hako','hira','basic','Đọc hai Kana đã học.'],
+ ['カメラ','máy ảnh','kamera','kata','basic','Từ mượn thường gặp.'],
+ ['トマト','cà chua','tomato','kata','basic','Từ mượn dễ luyện nhận diện.'],
+ ['メモ','ghi chú','memo','kata','basic','Từ mượn ngắn.'],
+ ['ラジオ','đài radio','rajio','kata','voiced','ジ có dấu dakuten.'],
+ ['バナナ','quả chuối','banana','kata','voiced','バ có dấu dakuten.'],
+ ['ペン','bút','pen','kata','voiced','ペ có handakuten.'],
+ ['スーパー','siêu thị','sūpā','kata','small','ー kéo dài nguyên âm trong từ.'],
+ ['ジュース','nước ép / nước uống','jūsu','kata','yoon','ジュ là âm ghép; ー kéo dài âm u.'],
+ ['チョコ','sô-cô-la','choko','kata','yoon','チョ là âm ghép Katakana.']
 ].map(([glyph,vi,read,script,stage,note],i)=>Object.freeze({id:'word-'+i,glyph,vi,read,script,stage,note,group:stage}));
 const modules=[
  {id:'hiragana',title:'01 · Hiragana',subtitle:'46 chữ cơ bản · nhận mặt & đọc',script:'hira',stage:'basic',groups:rows.map(([id,title])=>({id,title})),note:'Học theo từng hàng 3–5 chữ; mở rộng dần, không bắt học hết 46 chữ trong một lần.'},
