@@ -115,3 +115,11 @@
  .v34-studying .v34-stage-tab{display:flex;flex-direction:column;gap:4px;font-size:9.5px;min-height:53px!important}
  .v34-studying .v36-step-icon{width:18px;height:18px;flex:0 0 18px}
 }
+
+/* Yoon has three Hiragana and three Katakana forms per family; preserve their paired rhythm. */
+@media(min-width:601px){
+ .v34-studying .v36-board-yoon .v33-glyph-grid{grid-template-columns:repeat(6,minmax(0,1fr))!important}
+}
+@media(max-width:600px){
+ .v34-studying .v36-board-yoon .v33-glyph-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
