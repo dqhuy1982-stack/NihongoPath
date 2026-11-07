@@ -401,9 +401,8 @@ function refresh(){
  render(false);
 }
 function wrap(content,crumb='Nền tảng'){
- const shell=window.NPHorizonV25?.shell?.('catalog')||'<header class="v25-header"><div class="v25-hero-copy"><h1>Không gian học tập</h1></div></header>';
- return '<div class="v25-wrap v33-foundation" data-learning-hub="v38">'+shell+
- '<nav class="v25-breadcrumb" aria-label="Vị trí học tập"><a href="#course/foundation">Nền tảng</a>'+(crumb==='Nền tảng'?'':'<span aria-hidden="true">›</span><span aria-current="page">'+clean(crumb)+'</span>')+'</nav>'+
+ // Foundation uses global navigation; no duplicated generic hero, tab rail or breadcrumbs.
+ return '<div class="v25-wrap v33-foundation v112-foundation" data-learning-hub="v38">'+
  content+'<footer class="v25-version">Luyện tập mẫu · Tiến độ lưu trên thiết bị</footer></div>';
 }
 function tag(txt){return '<span class="v33-tag">'+clean(txt)+'</span>'}
@@ -437,8 +436,10 @@ function navigationFor(cfg){
  const tabs=actions.map(([id,label])=>'<button type="button" data-f34="tab" data-value="'+id+'" class="v34-stage-tab '+(id===group?'active':'')+'" '+(id===group?'aria-current="step"':'')+'><svg class="v36-step-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round">'+stepIcons[id]+'</svg><span>'+label+'</span></button>').join('');
  const all=DATA.take(cfg.id,'all',cfg.script),stats=countStats(all);
  const toReview=all.filter(x=>{const t=store().items[x.id];return t&&(t.latestOutcome==='slow'||t.latestOutcome==='incorrect'||new Date(t.nextAt).getTime()<=Date.now())}).length;
- return '<div class="v34-topline"><div class="v34-course-picker"><label for="v34-module">Đang học</label><select id="v34-module" data-f34="module" aria-label="Chọn nội dung Nền tảng">'+opts+'</select></div>'+
- '<div class="v34-topline-info"><strong>'+clean(m.subtitle)+'</strong><small>'+stats.reviewed+' / '+stats.total+' mẫu đã luyện thử</small></div><a class="v34-back" href="#course/foundation">Tất cả nội dung</a></div>'+
+ const sequence=Math.max(0,DATA.modules.findIndex(x=>x.id===cfg.id))+1;
+ const totalModules=DATA.modules.length;
+ return '<header class="v112-course-head" aria-label="Chặng học hiện tại"><div class="v112-head-text"><p class="v112-kicker">NỀN TẢNG <span aria-hidden="true">·</span> CHẶNG '+String(sequence).padStart(2,'0')+' / '+String(totalModules).padStart(2,'0')+'</p><h1>'+clean(m.title)+'</h1><p class="v112-subtitle">'+clean(m.subtitle)+'</p></div><div class="v112-head-meta"><span class="v112-progress"><strong>'+stats.reviewed+' / '+stats.total+'</strong> mẫu đã luyện</span><a href="#course/foundation" class="v112-course-back">Tất cả chặng <span aria-hidden="true">↗</span></a></div></header>'+
+ '<div class="v34-topline v112-tools"><div class="v34-course-picker"><label for="v34-module">Đổi chặng</label><select id="v34-module" data-f34="module" aria-label="Chọn chặng Nền tảng">'+opts+'</select></div></div>'+
  '<div class="v34-stagebar" role="navigation" aria-label="Bước học">'+tabs+'</div>'+
  '<div class="v34-options">'+(m.script==='both'?'<label>Bảng chữ <select data-f34="script" aria-label="Chọn bảng chữ">'+[['both','Cả hai'],['hira','Hiragana'],['kata','Katakana']].map(([id,t])=>'<option value="'+id+'" '+(cfg.script===id?'selected':'')+'>'+t+'</option>').join('')+'</select></label>':'')+
  
@@ -734,7 +735,7 @@ function workspace(cfg){
  return navigationFor(cfg)+'<div class="v38-task-area"><div class="'+(gameOrPractice?'v39-book-layout':'v33-workspace')+'"'+(intro?' inert':'')+'>'+(gameOrPractice?activityBook(cfg)+body:body+panel)+'</div>'+intro+(s&&MATCH_KINDS.includes(s.kind)?roundSummaryView(s,cfg):'')+'</div>';
 }
 function modulePage(cfg){
- scheduleFoundationOverlay();scheduleMatchLines();scheduleFinishDock();tickClock();if(typeof queueMicrotask==='function')queueMicrotask(()=>restoreBookViewport());return wrap('<div class="v34-workspace-shell">'+workspace(cfg)+'</div>',cfg.mod.title).replace('class="v25-wrap v33-foundation"','class="v25-wrap v33-foundation v34-studying"');
+ scheduleFoundationOverlay();scheduleMatchLines();scheduleFinishDock();tickClock();if(typeof queueMicrotask==='function')queueMicrotask(()=>restoreBookViewport());return wrap('<div class="v34-workspace-shell">'+workspace(cfg)+'</div>',cfg.mod.title).replace('class="v25-wrap v33-foundation v112-foundation"','class="v25-wrap v33-foundation v112-foundation v34-studying"');
 }
 function page(route){
  if(!route||route==='course/foundation'||route===routePrefix)return indexPage();
