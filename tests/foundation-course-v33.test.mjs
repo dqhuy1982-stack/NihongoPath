@@ -742,13 +742,13 @@ test('Completion dialog has exactly two result-aware actions, no footer Close, a
  assert.doesNotMatch(html,/data-f33="summary-review"/);
  assert.doesNotMatch(html,/<button[^>]+data-f33="summary-close">Đóng<\/button>/);
  assert.match(load('foundation-course-v107.css'),/v109-dialog-out/);
- assert.match(load('foundation-course-v33.js'),/!event.target.closest\\?\\.\\('.v109-dialog'\\)/);
- assert.match(load('foundation-course-v33.js'),/closeRoundSummary\\(\\)/);
+ assert.ok(load('foundation-course-v33.js').includes("!event.target.closest?.('.v109-dialog')"));
+ assert.ok(load('foundation-course-v33.js').includes('closeRoundSummary()'));
  assert.doesNotMatch(html,/Nhận xét sau ván/);
  assert.match(html,/Nhận xét lượt luyện/);
  assert.match(html,/v110-feedback-card/);
  assert.match(html,/v110-next-card/);
- assert.match(load('foundation-course-v107.css'),/v110-feedback-card\\.is-positive/);
+ assert.ok(load('foundation-course-v107.css').includes('v110-feedback-card.is-positive'));
  h.click('summary-close');
  assert.equal(session.round.summaryOpen,false);
 });
