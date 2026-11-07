@@ -385,8 +385,8 @@ function introPopup(cfg,s){
  '<p class="v33-eyebrow">HƯỚNG DẪN TRƯỚC KHI LUYỆN</p><h3 id="v38-title">'+clean(mode==='mix'?'Kiểm tra tổng hợp':modeNames[mode]||'Luyện tập')+'</h3>'+
  '<p id="v38-description">'+clean(modeDirections(mode))+'</p>'+
  '<div class="v38-dialog-spec"><div><span>Số câu / từ</span><strong>'+count+'</strong></div><div><span>Ngưỡng tham khảo</span><strong>'+clean(threshold)+'</strong></div><div><span>Đồng hồ</span><strong>Theo từng câu</strong></div></div>'+
- '<div class="v38-rule-list"><p><strong>Đúng trong ngưỡng:</strong> ghi nhận để ôn lại theo lịch.</p><p><strong>Đúng nhưng chậm:</strong> vẫn được tính đúng, nhưng đưa vào Sổ ôn.</p><p><strong>Trả lời sai:</strong> xem đáp án/giải thích và đưa vào Sổ ôn.</p></div>'+
- '<p class="v38-disclaimer">Thời gian chỉ bắt đầu sau khi nhấn “Bắt đầu”. Không trừ điểm khi nghe lại; không có thời hạn bắt buộc. Ngưỡng là tiêu chí luyện tập thử nghiệm, không phải chuẩn JLPT.</p>'+
+ '<div class="v38-rule-list"><p><strong>Đúng trong ngưỡng (tạm đạt):</strong> phản xạ tốt; vẫn cần đúng lại ở các ngày sau để xác nhận đã nhớ.</p><p><strong>Đúng nhưng chậm (cần ôn):</strong> vẫn được tính đúng, nhưng đưa vào Sổ ôn để luyện phản xạ.</p><p><strong>Trả lời sai (chưa vững):</strong> xem đáp án/giải thích và đưa vào Sổ ôn.</p></div>'+
+ '<p class="v38-disclaimer">Thời gian chỉ bắt đầu sau khi nhấn “Bắt đầu”. Không trừ điểm khi nghe lại; không có thời hạn bắt buộc. Chưa giới hạn tổng thời gian làm bài. Ngưỡng là tiêu chí luyện tập thử nghiệm, không phải chuẩn JLPT.</p>'+
  (mode==='mix'||mode==='review'?'<p class="v38-audio-tip">♫ Bài nghe: nhấn nút <strong>Phát âm thanh</strong> để nghe. Trình duyệt có thể chặn tự phát âm thanh.</p>':'')+
  '<div class="v38-dialog-actions"><button class="v33-secondary" type="button" data-f38="cancel">Quay về Học</button><button class="v33-primary" type="button" data-f38="start" autofocus>Bắt đầu '+(mode==='mix'?'kiểm tra':'luyện tập')+' →</button></div></section></div>';
 }
