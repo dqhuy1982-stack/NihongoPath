@@ -430,8 +430,8 @@ test('v1.01 includes answer audio and precise connected-book CSS',()=>{
  assert.ok(html.includes('foundation-course-v105.css?v=105'));
  assert.ok(html.includes('foundation-course-v106.css?v=106'));
  assert.ok(html.includes('foundation-curriculum-v33.js?v=101'));
- assert.ok(html.includes('foundation-course-v33.js?v=109'));
- assert.ok(html.includes('foundation-course-v107.css?v=109'));
+ assert.ok(html.includes('foundation-course-v33.js?v=110'));
+ assert.ok(html.includes('foundation-course-v107.css?v=110'));
  assert.ok(load('app.js').includes('v1.08</small>'));
  assert.ok(css.includes('v101-match-grid'));
  assert.ok(css.includes('[data-connected="yes"]'));
@@ -697,7 +697,7 @@ test('v1.07 duration metrics are derived from attempts and never guessed',()=>{
 test('The learning UI does not alter the existing lesson engine or global learner records',()=>{
  const html=load('index.html');
  assert.ok(html.includes('foundation-curriculum-v33.js?v=101'));
- assert.ok(html.includes('foundation-course-v33.js?v=109'));
+ assert.ok(html.includes('foundation-course-v33.js?v=110'));
  assert.ok(html.includes('foundation-course-v34.css?v=34'));
  assert.ok(html.includes('foundation-course-v35.css?v=35'));
  assert.ok(html.includes('foundation-course-v36.css?v=36'));
@@ -708,8 +708,8 @@ test('The learning UI does not alter the existing lesson engine or global learne
  assert.ok(html.includes('foundation-course-v101.css?v=101'));
  assert.ok(html.includes('app.js?v=108'));
  assert.ok(html.includes('learning-hub-v25.js?v=100'));
- assert.ok(html.includes('foundation-course-v33.js?v=109'));
- assert.ok(html.includes('foundation-course-v33.js?v=109'));
+ assert.ok(html.includes('foundation-course-v33.js?v=110'));
+ assert.ok(html.includes('foundation-course-v33.js?v=110'));
  assert.ok(load('foundation-course-v33.js').includes('data-f38="start"'));
  assert.ok(!load('foundation-course-v36.css').includes('max-height:405px'));
  assert.match(load('foundation-course-v36.css'),/max-height:none!important/);
