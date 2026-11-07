@@ -457,7 +457,7 @@ function navigationFor(cfg){
  '<div class="v34-options v113-options">'+(m.script==='both'?'<label>Bảng chữ <select data-f34="script" aria-label="Chọn bảng chữ">'+[['both','Cả hai'],['hira','Hiragana'],['kata','Katakana']].map(([id,t])=>'<option value="'+id+'" '+(cfg.script===id?'selected':'')+'>'+t+'</option>').join('')+'</select></label>':'')+
  (cfg.id==='small'&&group==='learn'?'<label>Chủ đề <select data-f34="small" aria-label="Chọn chủ đề chữ nhỏ">'+[['all','Tất cả'],['pause','っ / ッ'],['length','Âm dài ー'],['vowels','Nguyên âm nhỏ']].map(([id,t])=>'<option value="'+id+'" '+(cfg.group===id?'selected':'')+'>'+t+'</option>').join('')+'</select></label>':'')+
  (toReview&&group!=='practice'?'<button type="button" data-f34="mode" data-value="review" class="v37-review-chip">↻ Sổ ôn · '+toReview+' mẫu</button>':'')+
- '<span class="v34-hint">'+(group==='learn'?'Chạm vào ô chữ để nghe phát âm.':group==='flash'?'Nhớ trước, lật sau.':group==='mix'?'Kiểm tra tổng hợp và xem kết quả từng câu.':'Chọn bài trong mục lục bên trái.')+'</span></div>';
+ '<span class="v34-hint">'+(group==='learn'?'':group==='flash'?'Nhớ trước, lật sau.':group==='mix'?'Kiểm tra tổng hợp và xem kết quả từng câu.':'Chọn bài trong mục lục bên trái.')+'</span></div>';
 }
 function coachSeen(){try{return localStorage.getItem('Horizon.KanaTapGuide.v1.'+learnerId())==='yes'}catch{return false}}
 function dismissCoach(){try{localStorage.setItem('Horizon.KanaTapGuide.v1.'+learnerId(),'yes')}catch(e){}const tip=document.querySelector('.v35-kana-guide');if(tip?.remove)tip.remove();const first=document.querySelector('.v35-first-kana');if(first?.classList?.remove)first.classList.remove('v35-first-kana')}
@@ -521,14 +521,14 @@ function learnView(cfg){
  const grid=grouped?cfg.mod.groups.map(g=>{
   const groupCards=deck.filter(x=>x.group===g.id).sort((a,b)=>a.script===b.script?0:a.script==='hira'?-1:1);
   if(!groupCards.length)return '';
-  return '<section class="v36-kana-row"><div class="v36-row-label"><strong>'+clean(g.title)+'</strong><span>'+groupCards.length+' mẫu · Chạm để nghe</span></div><div class="v33-glyph-grid">'+tiles(groupCards)+'</div></section>';
+  return '<section class="v36-kana-row"><div class="v36-row-label"><strong>'+clean(g.title)+'</strong><span>'+groupCards.length+' mẫu</span></div><div class="v33-glyph-grid">'+tiles(groupCards)+'</div></section>';
  }).join(''):'<div class="v33-glyph-grid">'+tiles(deck)+'</div>';
  const selected=deck[0];
  const exampleMarkup=examples?'<div class="v33-examples">'+examples.examples.map(([glyph,read,meaning])=>'<button type="button" class="v36-example-button" data-f33="pronounce" data-value="'+clean(glyph)+'" data-reading="'+clean(read)+'" data-kind="small" aria-label="Nghe ví dụ '+clean(glyph)+'"><b lang="ja">'+clean(glyph)+'</b><span>'+clean(read)+'</span><small>'+clean(meaning)+'</small></button>').join('')+'</div>':'';
  const note=cfg.id==='small'?'Chữ nhỏ, っ/ッ và dấu ー không được đọc như âm riêng. Chạm vào từ ví dụ để nghe trong ngữ cảnh. Giọng đọc tự động có thể khác file ghi âm chuẩn.':selected?.note;
  const marks=cfg.id==='small'&&examples?.marks?'<div class="v33-small-marks" lang="ja">'+clean(examples.marks)+'</div>':'';
- return '<section class="v33-pane"><div class="v33-pane-head"><div><p class="v33-eyebrow">01 / HỌC & NHẬN DIỆN</p><h3>'+(cfg.group==='all'?cfg.mod.title:cfg.mod.groups.find(g=>g.id===cfg.group)?.title||cfg.mod.title)+'</h3><p>Quan sát nhóm chữ, đối chiếu cách đọc; sau đó ẩn gợi ý qua Flashcard.</p></div>'+tag(deck.length+' mẫu')+'</div>'+
- (deck.length>0&&!coachSeen()?'<div class="v35-kana-guide" role="note"><span>Chạm vào <strong>bất kỳ ô chữ hoặc từ nào</strong> để nghe. Âm cơ bản dùng file ghi âm; âm đặc biệt dùng giọng Nhật trên thiết bị.</span><button type="button" data-f33="guide-ok" aria-label="Đóng hướng dẫn">Đã hiểu</button></div>':'')+marks+'<div class="v36-kana-board v36-board-'+clean(cfg.id)+'" aria-label="Bảng Kana đầy đủ">'+grid+'</div>'+'<p class="v36-audio-status" role="status" aria-live="polite" hidden></p>'+exampleMarkup+
+ return '<section class="v33-pane"><div class="v33-pane-head"><div><p class="v33-eyebrow">01 / HỌC & NHẬN DIỆN</p><h3>'+(cfg.group==='all'?cfg.mod.title:cfg.mod.groups.find(g=>g.id===cfg.group)?.title||cfg.mod.title)+'</h3><p>Quan sát nhóm chữ · Nhấn vào ô chữ để nghe phát âm.</p></div>'+tag(deck.length+' mẫu')+'</div>'+
+ (deck.length>0&&!coachSeen()?'<div class="v35-kana-guide" role="note"><span>Âm cơ bản sử dụng file ghi âm; các âm đặc biệt có thể dùng giọng Nhật trên thiết bị.</span><button type="button" data-f33="guide-ok" aria-label="Đóng hướng dẫn">Đã hiểu</button></div>':'')+marks+'<div class="v36-kana-board v36-board-'+clean(cfg.id)+'" aria-label="Bảng Kana đầy đủ">'+grid+'</div>'+'<p class="v36-audio-status" role="status" aria-live="polite" hidden></p>'+exampleMarkup+
  (note?'<div class="v33-teacher-note"><strong>Ghi chú của giáo viên</strong><p>'+clean(typeof note==='string'?note:'')+'</p></div>':'')+
  '<div class="v33-pane-actions v36-next-actions"><button type="button" data-f34="tab" data-value="flash" class="v33-primary">Tiếp theo: Flashcard <span aria-hidden="true">→</span></button><button type="button" data-f34="tab" data-value="practice" class="v33-secondary">Luyện tập <span aria-hidden="true">↗</span></button><a href="#kana" class="v33-secondary">Luyện viết Kana <span aria-hidden="true">✎</span></a></div></section>';
 }
@@ -748,7 +748,9 @@ function workspace(cfg){
  return navigationFor(cfg)+'<div class="v38-task-area"><div class="'+(gameOrPractice?'v39-book-layout':'v33-workspace')+'"'+(intro?' inert':'')+'>'+(gameOrPractice?activityBook(cfg)+body:body+panel)+'</div>'+intro+(s&&MATCH_KINDS.includes(s.kind)?roundSummaryView(s,cfg):'')+'</div>';
 }
 function modulePage(cfg){
- scheduleFoundationOverlay();scheduleMatchLines();scheduleFinishDock();tickClock();if(typeof queueMicrotask==='function')queueMicrotask(()=>restoreBookViewport());return wrap('<div class="v34-workspace-shell">'+workspace(cfg)+'</div>',cfg.mod.title).replace('class="v25-wrap v33-foundation v112-foundation"','class="v25-wrap v33-foundation v112-foundation v34-studying"');
+ scheduleFoundationOverlay();scheduleMatchLines();scheduleFinishDock();tickClock();if(typeof queueMicrotask==='function')queueMicrotask(()=>restoreBookViewport());return wrap('<div class="v34-workspace-shell">'+workspace(cfg)+'</div>',cfg.mod.title)
+  .replace('class="v25-wrap v33-foundation v112-foundation v115-foundation"',
+           'class="v25-wrap v33-foundation v112-foundation v115-foundation v34-studying"');
 }
 function page(route){
  if(!route||route==='course/foundation'||route===routePrefix)return indexPage();
@@ -859,7 +861,8 @@ function localSwitch(kind,value){
  if(typeof history!=='undefined'&&history.replaceState)history.replaceState(null,'','#'+next);
  else location.hash='#'+next;
  const stage=document.querySelector('.v34-workspace-shell');
- if(stage){const rail=stage.querySelector?.('.v39-book-nav'),saved=rail?rail.scrollTop:null;stage.innerHTML=workspace(target);restoreBookViewport(saved);mountFoundationOverlay();tickClock();scheduleMatchLines();scheduleFinishDock();const crumb=document.querySelector('.v33-foundation .v25-breadcrumb [aria-current="page"]');if(crumb)crumb.textContent=target.mod.title;}
+ if(stage){const rail=stage.querySelector?.('.v39-book-nav'),saved=rail?rail.scrollTop:null;stage.innerHTML=workspace(target);restoreBookViewport(saved);mountFoundationOverlay();tickClock();scheduleMatchLines();scheduleFinishDock();const crumb=document.querySelector('.v115-breadcrumb [aria-current="page"]');
+  if(crumb)crumb.textContent=target.mod.title.replace(/^\d+\s*[·.:-]\s*/,'');}
 }
 /* Optional desktop dragging; touch and keyboard selection remain the primary accessible controls. */
 let dragging=null;
