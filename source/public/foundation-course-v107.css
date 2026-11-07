@@ -984,3 +984,16 @@ body > .v120-preflight-host .v38-dialog-spec>div{
  body > .v120-preflight-host .v38-dialog,
  body > .v119-summary-host .v109-dialog{animation:none!important}
 }
+
+/* v1.21 — Foundation course discovery without creating another menu level. */
+.v33-foundation .v121-foundation-entry-actions{
+ display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:9px
+}
+.v33-foundation .v121-foundation-entry-actions a{
+ display:inline-flex;align-items:center;justify-content:center;min-height:42px;
+ padding:9px 14px;border-radius:10px;text-decoration:none;font-size:12px;white-space:nowrap
+}
+@media(max-width:680px){
+ .v33-foundation .v121-foundation-entry-actions{justify-content:flex-start;width:100%}
+ .v33-foundation .v121-foundation-entry-actions a{flex:1 1 auto;white-space:normal}
+}
