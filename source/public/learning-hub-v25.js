@@ -55,7 +55,7 @@ function model(){
    weak:seed.weak,due:seed.reviewDue.length,actualPending:false,actualContent:null,
    info:'Dữ liệu mô phỏng theo hồ sơ — không ghi vào kết quả học thật.'};
  }
- const completedSessions=sessions.filter(x=>x.status==='completed');
+ const completedSessions=sessions.filter(x=>x.status==='completed'&&x.mode==='lesson');
  const pending=sessions.filter(x=>x.status!=='completed').sort((a,b)=>String(b.updatedAt||'').localeCompare(String(a.updatedAt||'')));
  const active=pending[0]||null;
  const contentToId=id=>lessons.find(a=>a.contentId===id)?.id||null;
@@ -64,7 +64,7 @@ function model(){
  const completedUnits=done.size;
  const totalUnits=lessons.length;
  const answers=attempts.filter(a=>a.kind!=='repair');
- const minutes=Math.round(sessions.reduce((n,s)=>n+(Number(s.current?.activeMs||0)/60000),0));
+ const minutes=null; // Accurate total study time is not available in the current session schema.
  const due=reviews.filter(r=>new Date(r.dueAt).getTime()<=Date.now()).length;
  const wrong=answers.filter(a=>!a.correct).length;
  return {learner,sample:false,done,current:selected||'vowels',step:active?.index+1||1,steps:active?.units?.length||0,
@@ -107,8 +107,8 @@ function progress(m){
  return '<section class="v25-panel v25-statpanel">'+sectionHead('progress',title,'reports','Chi tiết')+
  '<div class="v25-statmain">'+ring(m.percent)+'<dl>'+
  '<div><dt>'+I('book')+' '+(m.sample?'Hoạt động hoàn tất':'Bước hoàn tất')+'</dt><dd>'+m.count+' / '+m.total+'</dd></div>'+
- '<div><dt>'+I('clock')+' Thời gian</dt><dd>'+m.minutes+' phút</dd></div>'+
- '<div><dt>'+I('calendar')+' '+(m.sample?'Buổi học mô phỏng':'Phiên hoàn tất')+'</dt><dd>'+(m.sample?m.days:(m.done.size))+'</dd></div>'+
+ '<div><dt>'+I('clock')+' Thời gian</dt><dd>'+(m.minutes==null?'Chưa đo':m.minutes+' phút')+'</dd></div>'+
+ '<div><dt>'+I('calendar')+' '+(m.sample?'Buổi học mô phỏng':'Bài học hoàn tất')+'</dt><dd>'+(m.sample?m.days:(m.done.size))+'</dd></div>'+
  '</dl></div><p class="v25-tiny">'+safe(m.info)+'</p></section>';
 }
 function weekly(m){
