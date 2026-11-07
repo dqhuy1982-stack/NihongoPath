@@ -456,6 +456,7 @@ function drawMatchLines(){
  const curve=(a,b,cls)=>{const mid=(a.x+b.x)/2;return '<path class="'+cls+'" d="M'+a.x+' '+a.y+' C'+mid+' '+a.y+' '+mid+' '+b.y+' '+b.x+' '+b.y+'"/>';};
  let paths=s.matched.map(id=>{const a=point('left',id),b=point('right',id);return a&&b?curve(a,b,'v101-match-ok'):''}).join('');
  if(s.leftId&&!s.matched.includes(s.leftId)){const a=point('left',s.leftId);if(a)paths+=curve(a,{x:width/2,y:a.y},'v101-match-pending');}
+ if(s.wrongPair){const a=point('left',s.wrongPair.left),b=point('right',s.wrongPair.right);if(a&&b)paths+=curve(a,b,'v105-match-wrong');}
  svg.innerHTML=paths;
 }
 function scheduleMatchLines(){
@@ -467,13 +468,19 @@ document.addEventListener('scroll',event=>{if(event.target?.classList?.contains(
 function matchingView(cfg,s){
  if(!s.cards.length)return noData('Nhóm này chưa có đủ cặp duy nhất. Hãy chọn bảng hoặc nhóm khác.');
  const complete=s.matched.length===s.cards.length;
- const left=items=>items.map((x,i)=>'<button data-f33="match" data-side="left" data-value="'+clean(x.id)+'" draggable="true" class="v33-match-tile '+(s.matched.includes(x.id)?'done':s.leftId===x.id?'selected':'')+'" '+(s.matched.includes(x.id)?'disabled':'')+'>'+(['listen-match','game-listen'].includes(s.kind)?'<span aria-hidden="true">▶ '+(i+1)+'</span><span class="v37-sr">Nghe âm số '+(i+1)+'</span>':'<span lang="ja">'+clean(x.glyph)+'</span>')+'</button>').join('');
- const right=items=>items.map(x=>'<button data-f33="match" data-side="right" data-value="'+clean(x.id)+'" data-f35-drop="match" class="v33-match-tile '+(s.matched.includes(x.id)?'done':s.rightId===x.id?'selected':'')+'>'+(['listen-match','game-listen'].includes(s.kind)?'<span lang="ja">'+clean(x.glyph)+'</span>':clean(readable(x)))+(cfg.script==='both'&&cfg.mod.script==='both'&&!['listen-match','game-listen'].includes(s.kind)?' <small>· '+(x.script==='hira'?'Hira':'Kata')+'</small>':'')+'</button>').join('');
- return '<section class="v33-pane"><div class="v33-pane-head"><div><p class="v33-eyebrow">'+(['listen-match','game-listen'].includes(s.kind)?'NGHE & GHÉP':s.kind==='game'?'GAME · GHÉP CẶP':'GHÉP CẶP · 2 CỘT')+'</p><h3>'+(['listen-match','game-listen'].includes(s.kind)?'Nghe và ghép đúng chữ':'Ghép Kana với Romaji')+'</h3><p>'+(['listen-match','game-listen'].includes(s.kind)?'Nhấn nút nghe bên trái rồi ghép chữ tương ứng bên phải.':'Chọn một ô bên trái, rồi ô tương ứng bên phải. Có thể dùng bàn phím.')+'</p></div><div class="v37-head-meta">'+tag(s.matched.length+' / '+s.cards.length+' cặp')+(cfg.mode==='mix'?clock(s,s.finished):'')+'</div></div>'+
- (complete?'<div class="v33-feedback positive"><strong>Đã ghép xong!</strong><p>Số lần chọn sai: '+s.mistakes+'. Nếu chọn sai nhiều, hãy thử lại sau khi ôn Flashcard.</p></div>':'<p class="v33-subline">'+clean(s.feedback||'Chọn 1 chữ và 1 cách đọc để ghép cặp.')+'</p>')+
- '<div class="v104-match-board" data-match-board="1"><div class="v104-match-column" aria-label="Cột '+(['listen-match','game-listen'].includes(s.kind)?'phát âm':'Kana')+'"><div class="v101-match-label">'+(['listen-match','game-listen'].includes(s.kind)?'NGHE ÂM':'KANA')+'</div>'+left(s.left)+'</div><div class="v104-match-column" aria-label="Cột '+(['listen-match','game-listen'].includes(s.kind)?'Kana':'Romaji')+'"><div class="v101-match-label">'+(['listen-match','game-listen'].includes(s.kind)?'KANA':'ROMAJI')+'</div>'+right(s.right)+'</div><svg class="v101-match-lines" aria-hidden="true" preserveAspectRatio="none"></svg></div>'+
- (s.lastMatched?insightPanel(s.cards.find(x=>x.id===s.lastMatched),cfg):'')+(complete?'<div class="v33-pane-actions"><button data-f33="restart" class="v33-primary">Ghép lại với thứ tự khác</button></div>':'')+'</section>';
+ const listening=['listen-match','game-listen'].includes(s.kind);
+ const left=x=>'<button type="button" data-f33="match" data-side="left" data-value="'+clean(x.id)+'" class="v105-tile v33-match-tile '+(s.matched.includes(x.id)?'done':s.leftId===x.id?'selected':'')+'" '+(s.matched.includes(x.id)?'disabled':'')+' aria-label="'+clean(listening?'Nghe âm '+x.read:'Kana '+x.glyph)+'">'+(listening?'▶ Nghe':'<span lang="ja">'+clean(x.glyph)+'</span>')+(s.matched.includes(x.id)?'<span class="v105-check">✓</span>':'')+'</button>';
+ const right=x=>'<button type="button" data-f33="match" data-side="right" data-value="'+clean(x.id)+'" data-f35-drop="match" class="v105-tile v33-match-tile '+(s.matched.includes(x.id)?'done':s.rightId===x.id?'selected':'')+'" '+(s.matched.includes(x.id)?'disabled':'')+' aria-label="'+clean(listening?'Kana '+x.glyph:'Romaji '+x.read)+'">'+(listening?'<span lang="ja">'+clean(x.glyph)+'</span>':'<span class="v105-romaji">'+clean(x.read||'')+'</span>')+(cfg.script==='both'&&cfg.mod.script==='both'&&!listening?'<small>'+ (x.script==='hira'?'Hira':'Kata')+'</small>':'')+(s.matched.includes(x.id)?'<span class="v105-check">✓</span>':'')+'</button>';
+ const rows=s.left.map((x,i)=>'<div class="v105-match-row">'+left(x)+right(s.right[i])+'</div>').join('');
+ return '<section class="v33-pane"><div class="v33-pane-head"><div><p class="v33-eyebrow">'+(listening?'NGHE & GHÉP':'GHÉP CẶP · 2 CỘT')+'</p><h3>'+(listening?'Nghe và ghép đúng chữ':'Ghép Kana với Romaji')+'</h3><p>'+(listening?'Nghe ở bên trái, sau đó chọn chữ phù hợp bên phải.':'Chọn một ô Kana và một ô Romaji để nối cặp.')+'</p></div>'+tag(s.matched.length+' / '+s.cards.length+' cặp')+'</div>'+
+ '<div class="v105-match-tools"><span>Hai bên được trộn ngẫu nhiên, không theo cùng thứ tự.</span><button type="button" class="v105-remix" data-f33="restart">↻ Ván mới</button></div>'+
+ '<div class="v105-match-board" data-match-board="1"><div class="v105-match-header"><strong>'+(listening?'NGHE ÂM':'KANA')+'</strong><strong>'+(listening?'KANA':'ROMAJI')+'</strong></div>'+rows+'<svg class="v101-match-lines" aria-hidden="true" preserveAspectRatio="none"></svg></div>'+
+ '<p class="v105-match-feedback" aria-live="polite">'+clean(s.feedback||'Chọn một ô ở mỗi bên để ghép cặp.')+'</p>'+
+ (s.lastMatched?insightPanel(s.cards.find(x=>x.id===s.lastMatched),cfg):'')+
+ (complete?'<div class="v33-pane-actions"><button type="button" data-f33="restart" class="v33-primary">Chơi ván mới →</button></div>':'')+
+ '</section>';
 }
+
 function modeDirections(mode){
  const instructions={
  quiz:'Nhìn chữ Kana, chọn đúng cách đọc.',
