@@ -326,7 +326,8 @@ document.addEventListener('input',event=>{
 function lessonsTab(m){
  const groups=[['foundation','Nền tảng'],['N5','N5']];
  return '<section class="v25-panel">'+sectionHead('play-circle','Bài học & bài kiểm tra','learn/modules','Module')+
- '<p class="v25-tab-intro">Mỗi bài có hai lựa chọn: Học có hướng dẫn hoặc Kiểm tra độc lập. Cả hai dùng cùng bộ câu hỏi nhưng lưu phiên riêng.</p>'+
+ '<p class="v25-tab-intro">Bài học hướng dẫn chi tiết được phân biệt với luyện Kana theo nhóm; các chặng Foundation khác vẫn có Học, Flashcard, Luyện và Kiểm tra.</p>'+
+ '<div class="v121-lessons-notice"><div><strong>Nền tảng · 40 nhóm bài</strong><p>Tìm đầy đủ Hiragana, Katakana, âm đục, âm ghép, chữ nhỏ và tổng ôn trong mục lục.</p></div>'+href('learn/modules','Mở mục lục 40 bài →','v121-continue')+'</div>'+
  groups.map(([id,titleText])=>'<section class="v32-learning-group"><div class="v32-group-heading"><h3>'+titleText+'</h3>'+href('course/'+id,'Lộ trình '+I('arrow'),'v25-text-cta')+'</div>'+
  lessons.filter(a=>a.course===id).map((a,i)=>'<div class="v32-lesson-entry"><a href="#'+cellRoute(a,m)+'" class="v32-lesson-main"><span class="v25-module-symbol" lang="ja">'+a.icon+'</span><span><small>BÀI '+String(i+1).padStart(2,'0')+' · '+safe(a.module)+'</small><strong>'+safe(a.title)+'</strong><em>'+safe(a.desc)+'</em></span>'+label(status(m,a.id)==='done'?'Đã hoàn tất':status(m,a.id)==='current'?'Đang học':'Chưa bắt đầu',status(m,a.id))+'</a><div class="v32-lesson-actions">'+href(cellRoute(a,m),I('book-open')+' Học','v32-small-action')+href(testRoute(a),I('target')+' Kiểm tra','v32-small-action v32-test-action')+'</div></div>').join('')+'</section>').join('')+'</section>';
 }
