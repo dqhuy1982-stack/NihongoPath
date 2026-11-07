@@ -106,3 +106,12 @@
  .v34-studying .v33-examples .v36-example-button{flex-direction:row;justify-content:space-between;text-align:left}
  .v34-studying .v33-examples .v36-example-button small{max-width:55%}
 }
+
+/* Primary four-step learning flow uses the same icon language throughout. */
+.v34-studying .v34-stage-tab{gap:8px}
+.v34-studying .v36-step-icon{width:17px;height:17px;flex:0 0 17px}
+.v34-studying .v34-stage-tab.active .v36-step-icon{stroke-width:2}
+@media(max-width:600px){
+ .v34-studying .v34-stage-tab{display:flex;flex-direction:column;gap:4px;font-size:9.5px;min-height:53px!important}
+ .v34-studying .v36-step-icon{width:18px;height:18px;flex:0 0 18px}
+}
