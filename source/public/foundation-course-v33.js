@@ -437,14 +437,21 @@ function navigationFor(cfg){
  const all=DATA.take(cfg.id,'all',cfg.script),stats=countStats(all);
  const toReview=all.filter(x=>{const t=store().items[x.id];return t&&(t.latestOutcome==='slow'||t.latestOutcome==='incorrect'||new Date(t.nextAt).getTime()<=Date.now())}).length;
  const sequence=Math.max(0,DATA.modules.findIndex(x=>x.id===cfg.id))+1;
- const totalModules=DATA.modules.length;
- return '<header class="v112-course-head" aria-label="Chặng học hiện tại"><div class="v112-head-text"><p class="v112-kicker">NỀN TẢNG <span aria-hidden="true">·</span> CHẶNG '+String(sequence).padStart(2,'0')+' / '+String(totalModules).padStart(2,'0')+'</p><h1>'+clean(m.title)+'</h1><p class="v112-subtitle">'+clean(m.subtitle)+'</p></div><div class="v112-head-meta"><span class="v112-progress"><strong>'+stats.reviewed+' / '+stats.total+'</strong> mẫu đã luyện</span><a href="#course/foundation" class="v112-course-back">Tất cả chặng <span aria-hidden="true">↗</span></a></div></header>'+
- '<div class="v34-topline v112-tools"><div class="v34-course-picker"><label for="v34-module">Đổi chặng</label><select id="v34-module" data-f34="module" aria-label="Chọn chặng Nền tảng">'+opts+'</select></div></div>'+
- '<div class="v34-stagebar" role="navigation" aria-label="Bước học">'+tabs+'</div>'+
- '<div class="v34-options">'+(m.script==='both'?'<label>Bảng chữ <select data-f34="script" aria-label="Chọn bảng chữ">'+[['both','Cả hai'],['hira','Hiragana'],['kata','Katakana']].map(([id,t])=>'<option value="'+id+'" '+(cfg.script===id?'selected':'')+'>'+t+'</option>').join('')+'</select></label>':'')+
- 
+ const moduleNumber=String(sequence).padStart(2,'0');
+ const totalModules=String(DATA.modules.length).padStart(2,'0');
+ const stepNames={learn:'Học',flash:'Flashcard',practice:'Luyện tập',mix:'Tổng ôn'};
+ const selectedStep=stepNames[group];
+ return '<div class="v113-learning-nav" aria-label="Điều hướng bài học">'+
+ '<div class="v113-location"><a class="v113-home" href="#course/foundation" aria-label="Xem tất cả chặng Nền tảng" title="Tất cả chặng">⌂</a>'+
+ '<span class="v113-path-label">Nền tảng</span><span class="v113-separator" aria-hidden="true">/</span>'+
+ '<label class="v113-module-select"><span class="v113-visually-hidden">Chặng đang học</span><span class="v113-module-index">'+moduleNumber+'</span><select id="v34-module" data-f34="module" aria-label="Chuyển chặng học">'+opts+'</select><span class="v113-chevron" aria-hidden="true">⌄</span></label>'+
+ '<span class="v113-separator v113-last-separator" aria-hidden="true">/</span><strong class="v113-current-step" aria-live="polite">'+selectedStep+'</strong>'+
+ '</div><div class="v113-learning-meta"><span>'+stats.reviewed+' / '+stats.total+' mẫu đã luyện</span><a href="#course/foundation">Tất cả chặng ↗</a></div></div>'+
+ '<div class="v34-stagebar v113-stagebar" role="navigation" aria-label="Chuyển hoạt động trong '+clean(m.title)+'">'+tabs+'</div>'+
+ '<div class="v34-options v113-options">'+(m.script==='both'?'<label>Bảng chữ <select data-f34="script" aria-label="Chọn bảng chữ">'+[['both','Cả hai'],['hira','Hiragana'],['kata','Katakana']].map(([id,t])=>'<option value="'+id+'" '+(cfg.script===id?'selected':'')+'>'+t+'</option>').join('')+'</select></label>':'')+
  (cfg.id==='small'&&group==='learn'?'<label>Chủ đề <select data-f34="small" aria-label="Chọn chủ đề chữ nhỏ">'+[['all','Tất cả'],['pause','っ / ッ'],['length','Âm dài ー'],['vowels','Nguyên âm nhỏ']].map(([id,t])=>'<option value="'+id+'" '+(cfg.group===id?'selected':'')+'>'+t+'</option>').join('')+'</select></label>':'')+
- (toReview&&group!=='practice'&&group!=='game'?'<button type="button" data-f34="mode" data-value="review" class="v37-review-chip">↻ Sổ ôn · '+toReview+' mẫu</button>':'')+'<span class="v34-hint">'+(group==='learn'?'Chạm vào ô chữ để nghe phát âm.':group==='flash'?'Nhớ trước, lật sau.':group==='mix'?'Bài kiểm tra có hướng dẫn và tính giờ từng câu.':'Chọn bài từ mục lục bên trái · không tính giờ.')+'</span></div>';
+ (toReview&&group!=='practice'?'<button type="button" data-f34="mode" data-value="review" class="v37-review-chip">↻ Sổ ôn · '+toReview+' mẫu</button>':'')+
+ '<span class="v34-hint">'+(group==='learn'?'Chạm vào ô chữ để nghe phát âm.':group==='flash'?'Nhớ trước, lật sau.':group==='mix'?'Kiểm tra tổng hợp và xem kết quả từng câu.':'Chọn bài trong mục lục bên trái.')+'</span></div>';
 }
 function coachSeen(){try{return localStorage.getItem('Horizon.KanaTapGuide.v1.'+learnerId())==='yes'}catch{return false}}
 function dismissCoach(){try{localStorage.setItem('Horizon.KanaTapGuide.v1.'+learnerId(),'yes')}catch(e){}const tip=document.querySelector('.v35-kana-guide');if(tip?.remove)tip.remove();const first=document.querySelector('.v35-first-kana');if(first?.classList?.remove)first.classList.remove('v35-first-kana')}
