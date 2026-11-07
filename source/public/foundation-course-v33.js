@@ -28,16 +28,18 @@ let cache=null,cacheKey=null;
 function store(){const k=localKey();if(cacheKey!==k){cacheKey=k;cache=load();}return cache}
 function persist(){try{localStorage.setItem(localKey(),JSON.stringify(store()))}catch(e){/* private browsing: in-memory only */}}
 function dueDate(date,n){const d=new Date(date);d.setUTCDate(d.getUTCDate()+n);return d.toISOString()}
-const RESPONSE_TARGET_MS=5000; // configurable learning heuristic, not a JLPT or fluency standard.
-const MIN_RESPONSE_MS=0;
-function grade(elapsedMs,correct){
- const ms=Number.isFinite(elapsedMs)?Math.max(MIN_RESPONSE_MS,Math.round(elapsedMs)):null;
- return {responseMs:ms,slow:!!correct&&ms!==null&&ms>RESPONSE_TARGET_MS,
-  outcome:!correct?'incorrect':ms!==null&&ms>RESPONSE_TARGET_MS?'slow':'correct'};
+/* Task-specific targets are prototype heuristics, not JLPT or mastery standards. */
+const RESPONSE_TARGET_MS=Object.freeze({quiz:5000,reverse:5000,truefalse:5000,mix:5000,review:5000,listen:9000,
+ 'listen-match':12000,match:10000,build:15000,'vocab-ja-vi':8000,'vocab-vi-ja':8000});
+function targetMs(mode){return RESPONSE_TARGET_MS[mode]||5000}
+function grade(elapsedMs,correct,mode='quiz'){
+ const ms=Number.isFinite(elapsedMs)?Math.max(0,Math.round(elapsedMs)):null;
+ const thresholdMs=targetMs(mode),slow=!!correct&&ms!==null&&ms>thresholdMs;
+ return {responseMs:ms,thresholdMs,slow,outcome:!correct?'incorrect':slow?'slow':'correct'};
 }
 function record(item,correct,mode,elapsedMs=null){
  const d=store(),id=item.id,prev=d.items[id]||{attempts:0,correct:0,streak:0,slowCount:0,errorCount:0};
- const now=new Date().toISOString(),measure=grade(elapsedMs,correct);
+ const now=new Date().toISOString(),measure=grade(elapsedMs,correct,mode);
  const streak=correct&&!measure.slow?Math.min(5,prev.streak+1):0;
  const oldTimes=Array.isArray(prev.recentMs)?prev.recentMs:[];
  const recentMs=measure.responseMs===null?oldTimes:oldTimes.concat(measure.responseMs).slice(-8);
@@ -46,7 +48,7 @@ function record(item,correct,mode,elapsedMs=null){
   slowCount:(prev.slowCount||0)+Number(measure.slow),
   errorCount:(prev.errorCount||0)+Number(!correct),
   streak,lastAt:now,latestOutcome:measure.outcome,lastResponseMs:measure.responseMs,recentMs,
-  nextAt:dueDate(now,needsReview?0:[1,1,3,7,14,30][streak]),lastMode:mode};
+  nextAt:dueDate(now,needsReview?0:[1,1,3,7,14,30][streak]),lastMode:mode,thresholdMs:measure.thresholdMs};
  d.history.push({id,correct,mode,at:now,ms:measure.responseMs,outcome:measure.outcome});
  if(d.history.length>450)d.history=d.history.slice(-450);
  persist();return measure;
@@ -330,7 +332,7 @@ function summaryView(cfg,s){
  const avg=s.roundMs?.length?timeLabel(s.roundMs.reduce((a,b)=>a+b,0)/s.roundMs.length):'—';
  return '<section class="v33-pane v33-summary"><p class="v33-eyebrow">KẾT QUẢ LƯỢT LUYỆN</p><h3>Hoàn thành bài kiểm tra</h3><div class="v33-summary-score">'+s.correct+' <span>/ '+total+' câu đúng</span></div>'+
  '<div class="v37-summary-stats"><span>Đúng chậm: <strong>'+s.slow+'</strong></span><span>Sai: <strong>'+s.errors+'</strong></span><span>TB phản hồi: <strong>'+avg+'</strong></span></div>'+
- '<p>Chữ đúng trên 5 giây và chữ sai được đề xuất ôn tiếp. Đây là ngưỡng luyện phản xạ để tham khảo, không phải chuẩn JLPT.</p>'+
+ '<p>Chữ đúng chậm theo ngưỡng của từng dạng bài và chữ sai đều được đề xuất ôn. Đây là ngưỡng thử nghiệm, không phải chuẩn JLPT.</p>'+
  '<div class="v33-pane-actions"><button data-f33="restart" class="v33-primary">Luyện lại ngẫu nhiên</button><button data-f34="mode" data-value="review" class="v33-secondary">Ôn chữ cần luyện</button></div></section>';
 }
 
@@ -361,7 +363,7 @@ function workspace(cfg){
  const weak=weakList(cfg);
  const panel='<aside class="v33-side"><h3>Sổ ôn · Gợi ý theo kết quả</h3>'+
  (weak.length?'<div class="v37-weak-list">'+weak.map(x=>'<span lang="ja">'+clean(x.glyph)+' <small>'+clean(store().items[x.id]?.latestOutcome==='incorrect'?'Sai':'Chậm / đến hạn')+'</small></span>').join('')+'</div><button type="button" class="v37-review-link" data-f34="mode" data-value="review">Ôn những chữ này →</button>':'<p>Chưa có chữ sai hoặc chậm cần ôn. Hãy làm một lượt kiểm tra.</p>')+
- '<div class="v33-side-divider"></div><h3>Học thế nào cho hiệu quả?</h3><ol><li>Học và nghe phát âm theo nhóm chữ.</li><li>Luyện nhớ không nhìn gợi ý.</li><li>Trộn chữ ngẫu nhiên để tránh nhớ vị trí.</li><li>Ôn lại cả câu sai và câu đúng chậm.</li></ol><small>Ngưỡng phản xạ hiện tại: 5 giây, chỉ mang tính gợi ý.</small></aside>';
+ '<div class="v33-side-divider"></div><h3>Học thế nào cho hiệu quả?</h3><ol><li>Học và nghe phát âm theo nhóm chữ.</li><li>Luyện nhớ không nhìn gợi ý.</li><li>Trộn chữ ngẫu nhiên để tránh nhớ vị trí.</li><li>Ôn lại cả câu sai và câu đúng chậm.</li></ol><small>Ngưỡng tham khảo: 5 giây cho nhận diện; nghe, ghép từ có thời gian dài hơn.</small></aside>';
  return navigationFor(cfg)+'<div class="v33-workspace">'+body+panel+'</div>';
 }
 
@@ -407,7 +409,7 @@ function perform(el){
  if(op==='answer'&&s.kind!=='match'&&s.kind!=='flash'&&!s.choice&&!s.finished){
   const q=s.questions[s.index];if(!q.choices.some(x=>x.id===value))return;
   const took=elapsed(s);s.lastMs=took;s.choice=value;s.answered++;const ok=value===q.correct;if(ok)s.correct++;
-  s.grade=record(q.item,ok,cfg.mode,took);s.roundMs.push(took);if(s.grade.slow)s.slow++;if(!ok)s.errors++;
+  s.grade=record(q.item,ok,q.mode||cfg.mode,took);s.roundMs.push(took);if(s.grade.slow)s.slow++;if(!ok)s.errors++;
   refresh();return;
  }
  if(op==='next'&&s.choice){s.index++;s.choice=null;s.grade=null;s.startedAt=Date.now();s.finished=s.index>=s.questions.length;refresh();return}
