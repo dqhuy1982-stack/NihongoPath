@@ -156,7 +156,7 @@ function ensurePlay(config){
   play={key,kind,cards,index:0,selected:[],tileOrder:cards.length?shuffle(Array.from(cards[0].glyph).map((glyph,i)=>({glyph,i}))):[],answer:null,correct:0,finished:cards.length===0,startedAt:Date.now()};
  }else if(kind==='match'||kind==='listen-match'){
   const permitted=kind==='listen-match'?list.filter(x=>x.stage!=='small'&&Array.from(x.glyph).length<=3):list;
-  const cards=chooseTargets(kind==='listen-match'&&config.script==='both'?permitted.filter(x=>x.script==='hira'):permitted,Math.min(6,permitted.length));
+  const cards=chooseTargets(kind==='listen-match'&&config.script==='both'&&config.mod.script==='both'?permitted.filter(x=>x.script==='hira'):permitted,Math.min(6,permitted.length));
   play={key,kind,cards,left:shuffle(cards),right:shuffle(cards),leftId:null,rightId:null,matched:[],mistakes:0,answered:0,feedback:'',finished:cards.length===0,startedAt:Date.now()};
  }else if(kind==='flash'){
   play={key,kind,cards:shuffle(list),index:0,flipped:false,remembered:0,needsReview:0};
@@ -183,7 +183,7 @@ function refresh(){
 }
 function wrap(content,crumb='Nền tảng'){
  const shell=window.NPHorizonV25?.shell?.('catalog')||'<header class="v25-header"><div class="v25-hero-copy"><h1>Không gian học tập</h1></div></header>';
- return '<div class="v25-wrap v33-foundation" data-learning-hub="v34">'+shell+
+ return '<div class="v25-wrap v33-foundation" data-learning-hub="v37">'+shell+
  '<nav class="v25-breadcrumb" aria-label="Vị trí học tập"><a href="#learn/overview">Học</a><span aria-hidden="true">›</span><a href="#learn/catalog">Khóa học</a><span aria-hidden="true">›</span><a href="#course/foundation">Nền tảng</a>'+(crumb==='Nền tảng'?'':'<span aria-hidden="true">›</span><span aria-current="page">'+clean(crumb)+'</span>')+'</nav>'+
  content+'<footer class="v25-version">HORIZON · Foundation Studio v37 · Prototype (lưu luyện tập trên thiết bị)</footer></div>';
 }
@@ -440,7 +440,7 @@ function localSwitch(kind,value){
  if(typeof history!=='undefined'&&history.replaceState)history.replaceState(null,'','#'+next);
  else location.hash='#'+next;
  const stage=document.querySelector('.v34-workspace-shell');
- if(stage){stage.innerHTML=workspace(target);const crumb=document.querySelector('.v33-foundation .v25-breadcrumb [aria-current="page"]');if(crumb)crumb.textContent=target.mod.title;}
+ if(stage){stage.innerHTML=workspace(target);tickClock();const crumb=document.querySelector('.v33-foundation .v25-breadcrumb [aria-current="page"]');if(crumb)crumb.textContent=target.mod.title;}
 }
 /* Optional desktop dragging; touch and keyboard selection remain the primary accessible controls. */
 let dragging=null;
@@ -479,7 +479,7 @@ document.addEventListener('change',event=>{
  localSwitch(node.dataset.f34,node.value);
 });
 document.addEventListener('click',event=>{
- const nav=event.target.closest('[data-f34="tab"]');if(nav?.dataset?.f34==='tab'&&document.querySelector('.v34-workspace-shell')){event.preventDefault();localSwitch('tab',nav.dataset.value);return;}
+ const nav=event.target.closest('[data-f34="tab"],[data-f34="mode"]');if(nav?.dataset?.f34&&document.querySelector('.v34-workspace-shell')){event.preventDefault();localSwitch(nav.dataset.f34,nav.dataset.value);return;}
  const b=event.target.closest('[data-f33]');if(!b)return;
  if(!document.querySelector('.v33-foundation'))return;
  event.preventDefault();perform(b);
