@@ -1,0 +1,46 @@
+/* HORIZON Learning v32 · course > module > lesson > independent test.
+   Uses existing season tokens; no change to global layout or learning state. */
+.v25-wrap .v32-learning-group{margin-top:17px;padding-top:12px;border-top:1px solid var(--v25-line)}
+.v25-wrap .v32-learning-group:first-of-type{border-top:0;padding-top:0;margin-top:0}
+.v25-wrap .v32-group-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 11px}
+.v25-wrap .v32-group-heading h3{font-size:15px;font-weight:760;color:var(--v25-ink)}
+.v25-wrap .v32-module{display:flex;flex-direction:column;gap:9px;margin:12px 0;padding:12px;border-radius:12px;background:color-mix(in srgb,var(--v25-rose) 28%,var(--v25-bg));border:1px solid var(--v25-line)}
+.v25-wrap .v32-module-title{display:flex;align-items:center;gap:8px;padding:1px 2px;font-size:12px;color:var(--v25-ink)}
+.v25-wrap .v32-module-title>.icon{width:16px;height:16px}
+.v25-wrap .v32-module-title strong{font-weight:750}
+.v25-wrap .v32-module-title small{margin-left:auto;color:var(--muted);font-size:10px}
+.v25-wrap .v32-lesson-entry{display:flex;flex-direction:column;gap:0;border:1px solid var(--v25-line);border-radius:12px;background:var(--v25-bg);overflow:hidden}
+.v25-wrap .v32-lesson-main{display:grid;grid-template-columns:48px minmax(0,1fr) auto;align-items:center;gap:11px;padding:11px 12px}
+.v25-wrap .v32-lesson-main>.v25-module-symbol{height:48px;width:48px;font-size:26px;border-radius:10px}
+.v25-wrap .v32-lesson-main>span:nth-child(2){display:flex;flex-direction:column;gap:4px;min-width:0}
+.v25-wrap .v32-lesson-main small{font-size:10px;color:var(--v25-ink);font-weight:730}
+.v25-wrap .v32-lesson-main strong{font-size:13px;font-weight:770;line-height:1.4}
+.v25-wrap .v32-lesson-main em{font-size:11px;font-style:normal;color:var(--muted);line-height:1.4}
+.v25-wrap .v32-lesson-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:8px 11px;border-top:1px solid var(--v25-line);background:color-mix(in srgb,var(--v25-bg) 95%,var(--v25-rose))}
+.v25-wrap .v32-small-action{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:35px;padding:7px 13px;border:1px solid var(--v25-line);border-radius:9px;color:var(--v25-ink);font-size:11px;font-weight:730}
+.v25-wrap .v32-small-action .icon{width:15px;height:15px}
+.v25-wrap .v32-small-action:hover{background:var(--v25-rose)}
+.v25-wrap .v32-test-action{background:color-mix(in srgb,var(--v25-rose) 64%,var(--v25-bg))}
+.v25-wrap .v32-helper{font-size:10px;line-height:1.6;color:var(--muted);padding:10px 4px}
+.v25-wrap .v32-learning-group .v25-module-card{box-shadow:none}
+.v25-wrap .v32-learning-group .v25-module-card .v25-module-symbol{height:46px;width:46px}
+.v25-wrap .v25-lesson-column .v25-lesson-row{align-items:flex-start;min-height:40px;padding:6px}
+.v25-wrap .v25-lesson-column .v25-lesson-row strong{font-size:10px}
+.v25-wrap .v25-lesson-column .v25-lesson-row small{font-size:9px}
+.v32-study-nav{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:0 0 13px;padding:6px 1px 12px;border-bottom:1px solid var(--season-hairline,#ead5d5);font-size:11px;color:var(--text)}
+.v32-study-nav a{color:var(--season-ink,#76475a);font-weight:700;text-decoration:none}
+.v32-study-nav a:hover{text-decoration:underline;text-underline-offset:3px}
+.v32-study-nav span[aria-current="page"]{font-weight:750}
+.v32-study-nav .v32-study-back{margin-left:auto;padding:6px 9px;border:1px solid var(--season-hairline,#ead5d5);border-radius:8px}
+@media(max-width:680px){
+ .v25-wrap .v32-group-heading h3{font-size:14px}
+ .v25-wrap .v32-module{padding:10px}
+ .v25-wrap .v32-lesson-main{grid-template-columns:42px minmax(0,1fr);padding:10px}
+ .v25-wrap .v32-lesson-main>.v25-module-symbol{height:42px;width:42px}
+ .v25-wrap .v32-lesson-main>.v25-badge{grid-column:2;justify-self:start}
+ .v25-wrap .v32-lesson-actions{padding:8px;gap:6px}
+ .v25-wrap .v32-small-action{flex:1;min-height:39px}
+ .v32-study-nav{font-size:10px;gap:5px}
+ .v32-study-nav .v32-study-back{margin-left:0}
+}
+@media(prefers-reduced-motion:reduce){.v25-wrap .v32-small-action{transition:none}}
