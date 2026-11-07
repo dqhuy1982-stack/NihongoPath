@@ -405,7 +405,7 @@ function navigationFor(cfg){
  '<div class="v34-options">'+(m.script==='both'?'<label>Bảng chữ <select data-f34="script" aria-label="Chọn bảng chữ">'+[['both','Cả hai'],['hira','Hiragana'],['kata','Katakana']].map(([id,t])=>'<option value="'+id+'" '+(cfg.script===id?'selected':'')+'>'+t+'</option>').join('')+'</select></label>':'')+
  
  (cfg.id==='small'&&group==='learn'?'<label>Chủ đề <select data-f34="small" aria-label="Chọn chủ đề chữ nhỏ">'+[['all','Tất cả'],['pause','っ / ッ'],['length','Âm dài ー'],['vowels','Nguyên âm nhỏ']].map(([id,t])=>'<option value="'+id+'" '+(cfg.group===id?'selected':'')+'>'+t+'</option>').join('')+'</select></label>':'')+
- (toReview&&group!=='practice'&&group!=='game'?'<button type="button" data-f34="mode" data-value="review" class="v37-review-chip">↻ Sổ ôn · '+toReview+' mẫu</button>':'')+'<span class="v34-hint">'+(group==='learn'?'Chạm vào ô chữ để nghe phát âm.':group==='flash'?'Nhớ trước, lật sau.':group==='mix'?'Bài kiểm tra có hướng dẫn và tính giờ từng câu.':group==='game'?'Học mà chơi · không tính giờ.':'Chọn bài từ mục lục bên trái · không tính giờ.')+'</span></div>';
+ (toReview&&group!=='practice'&&group!=='game'?'<button type="button" data-f34="mode" data-value="review" class="v37-review-chip">↻ Sổ ôn · '+toReview+' mẫu</button>':'')+'<span class="v34-hint">'+(group==='learn'?'Chạm vào ô chữ để nghe phát âm.':group==='flash'?'Nhớ trước, lật sau.':group==='mix'?'Bài kiểm tra có hướng dẫn và tính giờ từng câu.':'Chọn bài từ mục lục bên trái · không tính giờ.')+'</span></div>';
 }
 function coachSeen(){try{return localStorage.getItem('Horizon.KanaTapGuide.v1.'+learnerId())==='yes'}catch{return false}}
 function dismissCoach(){try{localStorage.setItem('Horizon.KanaTapGuide.v1.'+learnerId(),'yes')}catch(e){}const tip=document.querySelector('.v35-kana-guide');if(tip?.remove)tip.remove();const first=document.querySelector('.v35-first-kana');if(first?.classList?.remove)first.classList.remove('v35-first-kana')}
@@ -692,7 +692,7 @@ function workspace(cfg){
  const weak=weakList(cfg);
  const panel='<aside class="v33-side"><h3>Sổ ôn · Gợi ý theo kết quả</h3>'+
  (weak.length?'<div class="v37-weak-list">'+weak.map(x=>'<span lang="ja">'+clean(x.glyph)+' <small>'+clean(store().matchReview?.[x.id]?'Cần ôn ghép':store().items[x.id]?.latestOutcome==='incorrect'?'Sai':'Đến hạn ôn')+'</small></span>').join('')+'</div><button type="button" class="v37-review-link" data-f34="mode" data-value="review">Ôn những chữ này →</button>':'<p>Chưa có chữ cần ôn. Hãy thử một lượt kiểm tra.</p>')+
- '<div class="v33-side-divider"></div><p>Trả lời sai được lưu ôn; bài Luyện tập và Game không đánh giá nhanh/chậm.</p></aside>';
+ '<div class="v33-side-divider"></div><p>Trả lời sai được lưu ôn; các bài luyện không đánh giá nhanh/chậm.</p></aside>';
  return navigationFor(cfg)+'<div class="v38-task-area"><div class="'+(gameOrPractice?'v39-book-layout':'v33-workspace')+'"'+(intro?' inert':'')+'>'+(gameOrPractice?activityBook(cfg)+body:body+panel)+'</div>'+intro+(s&&MATCH_KINDS.includes(s.kind)?roundSummaryView(s,cfg):'')+'</div>';
 }
 function modulePage(cfg){
