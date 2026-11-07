@@ -104,7 +104,7 @@ const take=(id,group='all',script='both')=>{
  if(id==='mixed')return deck.filter(x=>script==='both'||x.script===script).concat(words.filter(w=>script==='both'||w.script===script));
  return deck.filter(x=>x.stage===m.stage&&(m.script==='both'||x.script===m.script)&&(group==='all'||x.group===group)&&(script==='both'||x.script===script));
 };
-const contextual=(id,script='both')=>words.filter(w=>(script==='both'||w.script===script)&&(id==='mixed'||id==='small'?true:id==='hiragana'?w.script==='hira':id==='katakana'?w.script==='kata':w.stage===byId[id]?.stage));
+const contextual=(id,script='both')=>words.filter(w=>(script==='both'||w.script===script)&&(id==='mixed'?true:id==='small'?w.stage==='small':id==='hiragana'?w.script==='hira':id==='katakana'?w.script==='kata':w.stage===byId[id]?.stage));
 const counts={hiragana:deck.filter(x=>x.stage==='basic'&&x.script==='hira').length,katakana:deck.filter(x=>x.stage==='basic'&&x.script==='kata').length,dakuten:deck.filter(x=>x.stage==='voiced').length,yoon:deck.filter(x=>x.stage==='yoon').length,small:words.filter(x=>x.stage==='small').length};
 if(counts.hiragana!==46||counts.katakana!==46||counts.dakuten!==50||counts.yoon!==66)throw Error('Foundation curriculum counts are inconsistent');
 window.NPFoundationCurriculum=Object.freeze({version:'v33',modules,rows,deck,words,smallSamples,counts,byId,take,contextual});
