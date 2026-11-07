@@ -944,3 +944,45 @@ test('v1.20 both portal dialogs preserve opaque theme on body',()=>{
  assert.match(result,/class="v107-overlay v109-overlay"/);
  assert.match(result,/class="v107-dialog v109-dialog"/);
 });
+
+test('v1.21 Foundation catalogue has all 40 real groups and direct learning paths',()=>{
+ const {data,ui}=harness();
+ const window={NPFoundationCurriculum:data,NPFoundationCourse:ui},hooks={};
+ const document={addEventListener:(kind,fn)=>{hooks[kind]=fn}};
+ const script=load('learning-hub-v25.js').replace(/\}\)\(\);\s*$/,'window.__foundationCatalog=foundationModuleCatalogue;})();');
+ runInNewContext(script,{
+  window,document,location:{hash:'#today'},P:()=>({id:'demo-a',goal:'Nền tảng'}),
+  render:()=>{},learnPage:()=>'',coursePage:()=>'',titleOf:()=>'',icon:()=>'',Locale:{t:x=>x}
+ });
+ assert.equal(typeof window.__foundationCatalog,'function');
+ const html=window.__foundationCatalog();
+ assert.equal((html.match(/data-v121-chapter(?:\s|>)/g)||[]).length,6);
+ assert.equal((html.match(/data-v121-topic(?:\s|>)/g)||[]).length,40);
+ assert.equal((html.match(/class="v121-topic-main"/g)||[]).length,40);
+ assert.equal((html.match(/href="#learn\/foundation\/[^"]+\/quiz"/g)||[]).length,40);
+ assert.equal((html.match(/href="#learn\/foundation\/[^"]+\/flash"/g)||[]).length,40);
+ assert.equal((html.match(/href="#learn\/foundation\/[^"]+\/mix"/g)||[]).length,40);
+ assert.equal((html.match(/Bài hướng dẫn chi tiết/g)||[]).length,4);
+ assert.ok(html.includes('data-v121-filter'));
+ assert.ok(html.includes('Tiếp tục học →'));
+ assert.ok(html.includes('href="#learn/foundation/hiragana/a/learn"'));
+ assert.ok(html.includes('href="#learn/foundation/katakana/w/quiz"'));
+ assert.ok(html.includes('href="#learn/foundation/dakuten/g/flash"'));
+ assert.ok(html.includes('href="#learn/foundation/yoon/ky/mix"'));
+ assert.ok(html.includes('href="#learn/foundation/small/pause/learn"'));
+ assert.ok(html.includes('href="#learn/foundation/mixed/mixed/mix"'));
+ assert.ok(!html.includes('href="#learn/foundation/undefined'));
+ const css=load('learning-hub-v25.css');
+ assert.ok(css.includes('.v121-chapter[hidden],.v121-topic[hidden]'));
+ assert.ok(css.includes('@media(max-width:700px)'));
+ assert.equal(typeof hooks.input,'function');
+ const nodes=['kya','hàng k'].map(term=>({hidden:false,getAttribute:()=>term}));
+ const section={hidden:false,open:false,querySelectorAll:()=>nodes};
+ const status={hidden:true,textContent:''};
+ const area={querySelectorAll:()=>[section],querySelector:()=>status};
+ hooks.input({target:{matches:()=>true,value:'kya',closest:()=>area}});
+ assert.equal(nodes[0].hidden,false);
+ assert.equal(nodes[1].hidden,true);
+ assert.equal(section.open,true);
+ assert.match(status.textContent,/1 nhóm bài phù hợp/);
+});
