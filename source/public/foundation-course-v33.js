@@ -37,19 +37,19 @@ function grade(elapsedMs,correct,mode='quiz'){
  const thresholdMs=targetMs(mode),slow=!!correct&&ms!==null&&ms>thresholdMs;
  return {responseMs:ms,thresholdMs,slow,outcome:!correct?'incorrect':slow?'slow':'correct'};
 }
-function record(item,correct,mode,elapsedMs=null){
+function record(item,correct,mode,elapsedMs=null,hintsUsed=0,audioReplays=0){
  const d=store(),id=item.id,prev=d.items[id]||{attempts:0,correct:0,streak:0,slowCount:0,errorCount:0};
  const now=new Date().toISOString(),measure=grade(elapsedMs,correct,mode);
- const streak=correct&&!measure.slow?Math.min(5,prev.streak+1):0;
+ const streak=correct&&!measure.slow&&!hintsUsed?Math.min(5,prev.streak+1):0;
  const oldTimes=Array.isArray(prev.recentMs)?prev.recentMs:[];
  const recentMs=measure.responseMs===null?oldTimes:oldTimes.concat(measure.responseMs).slice(-8);
- const needsReview=!correct||measure.slow;
+ const needsReview=!correct||measure.slow||hintsUsed>0;
  d.items[id]={...prev,attempts:prev.attempts+1,correct:prev.correct+Number(correct),
   slowCount:(prev.slowCount||0)+Number(measure.slow),
   errorCount:(prev.errorCount||0)+Number(!correct),
   streak,lastAt:now,latestOutcome:measure.outcome,lastResponseMs:measure.responseMs,recentMs,
-  nextAt:dueDate(now,needsReview?0:[1,1,3,7,14,30][streak]),lastMode:mode,thresholdMs:measure.thresholdMs};
- d.history.push({id,correct,mode,at:now,ms:measure.responseMs,outcome:measure.outcome});
+  nextAt:dueDate(now,needsReview?0:[1,1,3,7,14,30][streak]),lastMode:mode,thresholdMs:measure.thresholdMs,lastHintsUsed:hintsUsed,lastAudioReplays:audioReplays,assistedCount:(prev.assistedCount||0)+Number(hintsUsed>0)};
+ d.history.push({id,correct,mode,at:now,ms:measure.responseMs,outcome:measure.outcome,hintsUsed,audioReplays});
  if(d.history.length>450)d.history=d.history.slice(-450);
  persist();return measure;
 }
@@ -177,7 +177,7 @@ function ensurePlay(config){
    if(mode==='listen'&&x.stage==='small')mode='truefalse';
    return questionFor(x,mode,allPool);
   });
-  play={key,kind,questions,index:0,correct:0,answered:0,choice:null,finished:valid.length===0,startedAt:null,ready:kind!=='mix',roundMs:[],slow:0,errors:0};
+  play={key,kind,questions,index:0,correct:0,answered:0,choice:null,finished:valid.length===0,startedAt:null,ready:kind!=='mix',roundMs:[],slow:0,errors:0,hintsUsed:0,audioReplays:0};
  }
  return play;
 }
@@ -337,13 +337,27 @@ function flashView(cfg,s){
  '<p class="v36-audio-status" role="status" aria-live="polite" hidden></p><p class="v33-subline">Thẻ đã đánh giá: '+Object.keys(store().flash).filter(k=>s.cards.some(x=>x.id===k)).length+'/'+s.cards.length+'. '+(marked?'Thẻ này từng được đánh giá '+(marked==='remember'?'nhớ':'cần ôn')+'.':'')+'</p></section>';
 }
 function noData(msg){return '<section class="v33-pane"><h3>Chưa đủ dữ liệu</h3><p>'+clean(msg)+'</p><a href="#course/foundation">Trở lại khóa Nền tảng</a></section>'}
+function questionHints(q){
+ const item=q.item,rom=String(item.read||'');
+ if(q.mode==='listen')return ['Nghe lại và chú ý âm đầu.','Quan sát hình nét và so sánh các đáp án.','Nghe thêm một lần và tự đọc trước khi chọn.'];
+ if(q.mode.startsWith('vocab'))return ['Đây là từ có nghĩa, không phải chữ rời.','Tìm các Kana bạn đã học trong từ.','Đọc từ chậm theo từng nhịp trước khi chọn nghĩa.'];
+ if(q.mode==='truefalse')return ['Quan sát chữ và âm được cho.','Thử đọc chữ không nhìn Romaji.','Đối chiếu cả âm đầu và nguyên âm cuối.'];
+ return ['Chữ thuộc nhóm '+(item.group||'Kana')+'.','Cách đọc bắt đầu với '+(rom.slice(0,1)||'một âm')+'…','Hãy xác định âm cuối '+(rom.slice(-1)||'')+' và tự đọc trước khi chọn.'];
+}
+function hintView(q,s){
+ if(s.choice)return '';
+ const count=s.hintsUsed||0,arr=questionHints(q);
+ return '<div class="v101-hints"><button type="button" data-f33="hint" class="v101-hint-button" '+(count>=3?'disabled':'')+'>✧ Gợi ý '+count+'/3</button>'+
+ (count?'<div role="status" class="v101-hint-content">'+arr.slice(0,count).map((h,i)=>'<p><strong>'+['I','II','III'][i]+'.</strong> '+clean(h)+'</p>').join('')+'</div>':'')+
+ '<small>Câu đúng sau gợi ý vẫn được tính đúng, nhưng sẽ đưa vào sổ ôn.</small></div>';
+}
 function quizView(cfg,s){
  if(s.finished||s.index>=s.questions.length)return summaryView(cfg,s);
  const q=s.questions[s.index];
  return '<section class="v33-pane"><div class="v33-pane-head"><div><p class="v33-eyebrow">'+(cfg.mode==='mix'?'KIỂM TRA TỔNG HỢP':'BÀI LUYỆN')+' · '+clean(modeNames[cfg.mode])+'</p><h3>Nhớ lại không nhìn gợi ý</h3><p>'+clean(q.prompt)+'</p></div><div class="v37-head-meta">'+tag('Câu '+(s.index+1)+' / '+s.questions.length)+(cfg.mode==='mix'?clock(s,!!s.choice):'')+'</div></div>'+
  (q.mode==='listen'?'<div class="v35-listen-panel"><p>Nghe và chọn chữ. Có thể nghe lại nhiều lần.</p><button class="v35-listen-trigger" data-f33="listen-audio" aria-label="Nghe phát âm Kana"><span aria-hidden="true">♫</span> Phát âm thanh</button></div>':'<div class="v33-question-glyph" lang="'+(q.mode.startsWith('vocab')&&q.mode==='vocab-vi-ja'?'vi':'ja')+'">'+clean(q.stimulus)+'</div>')+
- '<p class="v36-audio-status" role="status" aria-live="polite" hidden></p><div class="v33-answer-grid">'+q.choices.map(opt=>'<button class="v33-answer '+(s.choice&&opt.id===q.correct?'correct':'')+' '+(s.choice===opt.id&&s.choice!==q.correct?'wrong':'')+'" data-f33="answer" data-value="'+clean(opt.id)+'" '+(s.choice?'disabled':'')+'>'+clean(opt.label)+'</button>').join('')+'</div>'+
- (s.choice?'<div class="v33-feedback '+(s.choice===q.correct?'positive':'negative')+'" role="status"><strong>'+(s.choice===q.correct?(s.grade?.slow?'Đúng nhưng cần luyện phản xạ.':'Chính xác.'):'Chưa đúng. Đáp án: '+clean(q.choices.find(x=>x.id===q.correct)?.label))+'</strong>'+(cfg.mode==='mix'?'<small class="v37-answer-speed">'+timeLabel(s.lastMs)+' · '+(s.grade?.outcome==='incorrect'?'Đã lưu câu sai vào sổ ôn':s.grade?.slow?'Đã lưu vào sổ ôn vì chậm':'Đúng trong ngưỡng luyện')+'</small>':'<small class="v39-casual-feedback">'+(s.choice===q.correct?'Đã ghi nhận câu đúng':'Đã thêm chữ cần ôn')+' · Không tính thời gian</small>')+'<p>'+clean(q.note)+'</p><button class="v36-feedback-audio" data-f33="feedback-audio" type="button">▶ Nghe đáp án</button></div><div class="v33-pane-actions"><button class="v33-primary" data-f33="next">'+(s.index+1===s.questions.length?'Xem kết quả':'Câu tiếp theo')+' →</button></div>':'<p class="v33-subline">Chọn một đáp án. Kết quả và giải thích hiện ngay, không cần bấm “Kiểm tra” thêm lần nữa.</p>')+
+ '<p class="v36-audio-status" role="status" aria-live="polite" hidden></p>'+hintView(q,s)+'<div class="v33-answer-grid">'+q.choices.map(opt=>'<button class="v33-answer '+(s.choice&&opt.id===q.correct?'correct':'')+' '+(s.choice===opt.id&&s.choice!==q.correct?'wrong':'')+'" data-f33="answer" data-value="'+clean(opt.id)+'" '+(s.choice?'disabled':'')+'>'+clean(opt.label)+'</button>').join('')+'</div>'+
+ (s.choice?'<div class="v33-feedback '+(s.choice===q.correct?'positive':'negative')+'" role="status"><strong>'+(s.choice===q.correct?(s.grade?.slow?'Đúng nhưng cần luyện phản xạ.':'Chính xác.'):'Chưa đúng. Đáp án: '+clean(q.choices.find(x=>x.id===q.correct)?.label))+'</strong>'+(cfg.mode==='mix'?'<small class="v37-answer-speed">'+timeLabel(s.lastMs)+' · '+(s.grade?.outcome==='incorrect'?'Đã lưu câu sai vào sổ ôn':s.grade?.slow?'Đã lưu vào sổ ôn vì chậm':'Đúng trong ngưỡng luyện')+'</small>':'<small class="v39-casual-feedback">'+(s.choice===q.correct?'Đã ghi nhận câu đúng':'Đã thêm chữ cần ôn')+' · Không tính thời gian</small>')+'<p>'+clean(q.note)+'</p>'+(s.hintsUsed?'<small class="v101-assisted">Có dùng '+s.hintsUsed+' gợi ý — cần ôn lại không trợ giúp.</small>':'')+'<button class="v36-feedback-audio" data-f33="feedback-audio" type="button">▶ Nghe đáp án</button></div><div class="v33-pane-actions"><button class="v33-primary" data-f33="next">'+(s.index+1===s.questions.length?'Xem kết quả':'Câu tiếp theo')+' →</button></div>':'<p class="v33-subline">Chọn một đáp án. Kết quả và giải thích hiện ngay, không cần bấm “Kiểm tra” thêm lần nữa.</p>')+
  '</section>';
 }
 function summaryView(cfg,s){
@@ -363,7 +377,7 @@ function buildView(cfg,s){
  '<div class="v33-build-clue"><span>NGHĨA TIẾNG VIỆT</span><strong>'+clean(word.vi)+'</strong></div>'+
  '<div class="v33-build-answer" data-f35-drop="build" aria-label="Các chữ đã xếp" aria-live="polite">'+(selected?Array.from(selected).map(ch=>'<span lang="ja">'+clean(ch)+'</span>').join(''):'<small>Chọn ký tự bên dưới để ghép từ</small>')+'</div>'+
  '<div class="v33-build-tiles">'+s.tileOrder.map((x,i)=>'<button data-f33="tile" data-value="'+i+'" draggable="true" class="v33-build-tile" '+(s.selected.includes(i)||s.answer?'disabled':'')+' lang="ja">'+clean(x.glyph)+'</button>').join('')+'</div>'+
- (s.answer?'<div class="v33-feedback '+(s.answer.correct?'positive':'negative')+'" role="status"><strong>'+(s.answer.correct?'Đúng!':'Chưa đúng: '+clean(word.glyph))+'</strong><p>'+clean(word.glyph)+' → '+clean(word.read)+' · '+clean(word.vi)+'. '+clean(word.note||'')+'</p></div>':'<p class="v33-subline">Câu trả lời được chấm ngay khi bạn ghép đủ số ký tự.</p>')+
+ (s.answer?'<div class="v33-feedback '+(s.answer.correct?'positive':'negative')+'" role="status"><strong>'+(s.answer.correct?'Đúng!':'Chưa đúng: '+clean(word.glyph))+'</strong><p>'+clean(word.glyph)+' → '+clean(word.read)+' · '+clean(word.vi)+'. '+clean(word.note||'')+'</p><button type="button" class="v36-feedback-audio" data-f33="feedback-audio">▶ Nghe đáp án</button></div>':'<p class="v33-subline">Câu trả lời được chấm ngay khi bạn ghép đủ số ký tự.</p>')+
  '<div class="v33-pane-actions">'+(!s.answer?'<button class="v33-secondary" data-f33="undo">Bỏ chữ cuối</button>':'<button class="v33-primary" data-f33="build-next">'+(s.index+1===s.cards.length?'Xem kết quả':'Từ tiếp theo')+' →</button>')+'</div></section>';
 }
 /* Matching connectors use actual button geometry, not a protruding CSS border. */
@@ -468,12 +482,13 @@ function perform(el){
  if(!cfg.mod)return;
  if(op==='guide-ok'){dismissCoach();return;}
  if(op==='pronounce'&&cfg.mode==='learn'){pronounce(value,el.dataset.reading||'',el.dataset.kind==='basic');dismissCoach();return;}
- if(op==='listen-audio'&&(cfg.mode==='listen'||cfg.mode==='mix'||cfg.mode==='review')){const state=ensurePlay(cfg),q=state.questions[state.index];if(q)pronounce(q.item.glyph,q.item.read,true);return;}
- if(op==='feedback-audio'&&cfg.mode!=='learn'){const state=ensurePlay(cfg),q=state.questions?.[state.index];if(q&&state.choice)pronounce(q.item.glyph,q.item.read,true);return;}
+ if(op==='listen-audio'&&(cfg.mode==='listen'||cfg.mode==='mix'||cfg.mode==='review')){const state=ensurePlay(cfg),q=state.questions[state.index];if(q){state.audioReplays=(state.audioReplays||0)+1;pronounce(q.item.glyph,q.item.read,true);}return;}
+ if(op==='feedback-audio'&&cfg.mode!=='learn'){const state=ensurePlay(cfg),q=state.questions?.[state.index],word=state.cards?.[state.index];if(q&&state.choice)pronounce(q.item.glyph,q.item.read,true);else if(word&&state.answer)pronounce(word.glyph,word.read,true);return;}
  if(op==='flash-audio'&&cfg.mode==='flash'){const state=ensurePlay(cfg);if(state.flipped)pronounce(state.cards[state.index]?.glyph,state.cards[state.index]?.read,true);return;}
  if(cfg.mode==='learn')return;
  const s=ensurePlay(cfg);
  if(!s.ready&&s.kind!=='flash')return;
+ if(op==='hint'&&s.questions&&!s.choice&&!s.finished){s.hintsUsed=Math.min(3,(s.hintsUsed||0)+1);refresh();return;}
  if(op==='tile'&&['build','game-build'].includes(s.kind)&&!s.answer){
   const i=Number(value);if(!Number.isInteger(i)||i<0||i>=s.tileOrder.length||s.selected.includes(i))return;
   s.selected.push(i);
@@ -499,10 +514,10 @@ function perform(el){
  if(op==='answer'&&s.kind!=='match'&&s.kind!=='flash'&&!s.choice&&!s.finished){
   const q=s.questions[s.index];if(!q.choices.some(x=>x.id===value))return;
   const took=cfg.mode==='mix'?elapsed(s):null;s.lastMs=took;s.choice=value;s.answered++;const ok=value===q.correct;if(ok)s.correct++;
-  s.grade=record(q.item,ok,q.mode||cfg.mode,took);if(took!==null)s.roundMs.push(took);if(s.grade.slow)s.slow++;if(!ok)s.errors++;
+  s.grade=record(q.item,ok,q.mode||cfg.mode,took,s.hintsUsed||0,s.audioReplays||0);if(took!==null)s.roundMs.push(took);if(s.grade.slow)s.slow++;if(!ok)s.errors++;
   refresh();return;
  }
- if(op==='next'&&s.choice){s.index++;s.choice=null;s.grade=null;if(s.startedAt)resetClock(s);s.finished=s.index>=s.questions.length;refresh();return}
+ if(op==='next'&&s.choice){s.index++;s.choice=null;s.grade=null;s.hintsUsed=0;s.audioReplays=0;if(s.startedAt)resetClock(s);s.finished=s.index>=s.questions.length;refresh();return}
  if(op==='match'&&['match','listen-match','game','game-listen'].includes(s.kind)&&!s.matched.includes(value)&&s.cards.some(x=>x.id===value)){
   if(side==='left'){s.leftId=value;if(['listen-match','game-listen'].includes(s.kind)){const sample=s.cards.find(x=>x.id===value);if(sample)pronounce(sample.glyph,sample.read,true);}}else if(side==='right')s.rightId=value;
   if(s.leftId&&s.rightId){
