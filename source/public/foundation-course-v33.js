@@ -62,20 +62,27 @@ const isWord=item=>typeof item.vi==='string';
 function readable(item){return isWord(item)?item.vi:item.read}
 function choosePool(config,mode){
  let pool=activityPool(config,mode);
- if(mode==='reverse'||mode==='match'||mode==='mix'){
+ if(mode==='reverse'||mode==='match'){
   const all=config.id==='small'?pool:DATA.take(config.id,'all',config.script);
-  const counts={};for(const x of all){const v=readable(x);counts[v]=(counts[v]||0)+1;}
-  pool=pool.filter(x=>counts[readable(x)]===1);
+  const counts={};for(const x of all){const v=readable(x)+'|'+(mode==='match'&&config.script==='both'?x.script:'');counts[v]=(counts[v]||0)+1;}
+  pool=pool.filter(x=>counts[readable(x)+'|'+(mode==='match'&&config.script==='both'?x.script:'')]===1);
  }
  return pool;
 }
 function questionFor(item,mode,pool){
  const isVocab=mode.startsWith('vocab')||isWord(item);
- const inverse=mode==='reverse'||mode==='vocab-vi-ja'||mode==='mix'&&Math.random()<.5;
+ const sameType=pool.filter(x=>isWord(x)===isVocab);
+ const sameScript=isVocab?sameType:sameType.filter(x=>x.script===item.script);
+ const ambiguous=!isVocab&&sameScript.filter(x=>x.read===item.read).length>1;
+ const inverse=mode==='reverse'||mode==='vocab-vi-ja'||mode==='mix'&&Math.random()<.5&&!ambiguous;
  const key=x=>inverse?x.glyph:isVocab?x.vi:x.read;
- const prompt=inverse?(isVocab?'Chọn từ tiếng Nhật phù hợp với nghĩa:':'Âm nào ứng với chữ Kana?'):isVocab?'Từ này có nghĩa tiếng Việt nào?':'Chữ Kana này đọc thế nào?';
+ const prompt=inverse?(isVocab?'Chọn từ tiếng Nhật phù hợp với nghĩa:':'Chọn '+(item.script==='hira'?'Hiragana':'Katakana')+' ứng với âm:'):isVocab?'Từ này có nghĩa tiếng Việt nào?':'Chữ Kana này đọc thế nào?';
  const stimulus=inverse?(isVocab?item.vi:item.read):item.glyph;
- const choices=[item,...pick(pool.filter(x=>x.id!==item.id&&key(x)!==key(item)),3)].map(x=>({id:x.id,label:key(x)}));
+ const poolForChoices=inverse&&!isVocab?sameScript:sameType;
+ const candidates=shuffle(poolForChoices.filter(x=>x.id!==item.id&&key(x)!==key(item)));
+ const unique=[];const labels=new Set([key(item)]);
+ for(const x of candidates){if(labels.has(key(x)))continue;labels.add(key(x));unique.push(x);if(unique.length===3)break}
+ const choices=[item,...unique].map(x=>({id:x.id,label:key(x)}));
  return {item,mode,prompt,stimulus,choices:shuffle(choices),correct:item.id,
  note:isVocab?(item.note||'Ghi nhớ nghĩa từ theo ngữ cảnh.'):item.note||('Chữ '+item.glyph+' đọc là '+item.read+'.')};
 }
@@ -92,7 +99,7 @@ function ensurePlay(config){
  }else{
   const targets=pick(list,Math.min(10,list.length));
   const allPool=kind.startsWith('vocab')||config.id==='small'?contextual(config):DATA.take(config.id,'all',config.script);
-  const valid=targets.filter(x=>allPool.filter(p=>p.id!==x.id&& (kind==='reverse'?p.glyph:kind.startsWith('vocab')?(kind==='vocab-ja-vi'?p.vi:p.glyph):p.read)!==(kind==='reverse'?x.glyph:kind.startsWith('vocab')?(kind==='vocab-ja-vi'?x.vi:x.glyph):x.read)).length>=Math.min(3,allPool.length-1));
+  const valid=targets.filter(x=>allPool.filter(p=>p.id!==x.id&&isWord(p)===isWord(x)).length>=2);
   play={key,kind,questions:valid.map(x=>questionFor(x,kind,allPool)),index:0,correct:0,answered:0,choice:null,finished:valid.length===0};
  }
  return play;
@@ -136,9 +143,10 @@ function learnView(cfg){
  const s=countStats(deck),examples=cfg.id==='small'?DATA.smallSamples.find(x=>x.id===cfg.group):null;
  const grid=deck.map(x=>'<div class="v33-glyph-card"><span lang="ja">'+clean(x.glyph)+'</span><strong>'+clean(x.read)+'</strong>'+(isWord(x)?'<small>'+clean(x.vi)+'</small>':'')+'</div>').join('');
  const selected=deck[0];
- const note=cfg.id==='small'?(examples?'<div class="v33-examples">'+examples.examples.map(([glyph,read,meaning])=>'<div><b lang="ja">'+clean(glyph)+'</b><span>'+clean(read)+'</span><small>'+clean(meaning)+'</small></div>').join('')+'</div>':''):selected?.note;
+ const exampleMarkup=examples?'<div class="v33-examples">'+examples.examples.map(([glyph,read,meaning])=>'<div><b lang="ja">'+clean(glyph)+'</b><span>'+clean(read)+'</span><small>'+clean(meaning)+'</small></div>').join('')+'</div>':'';
+ const note=cfg.id==='small'?'Chữ nhỏ và dấu ー được học trong từ hoặc cụm âm; không yêu cầu đọc một chữ nhỏ như âm độc lập.':selected?.note;
  return '<section class="v33-pane"><div class="v33-pane-head"><div><p class="v33-eyebrow">01 / HỌC & NHẬN DIỆN</p><h3>'+(cfg.mod.groups.find(g=>g.id===cfg.group)?.title||cfg.mod.title)+'</h3><p>Quan sát nhóm chữ, đối chiếu cách đọc; sau đó ẩn gợi ý qua Flashcard.</p></div>'+tag(deck.length+' mẫu')+'</div>'+
- '<div class="v33-glyph-grid">'+grid+'</div>'+
+ '<div class="v33-glyph-grid">'+grid+'</div>'+exampleMarkup+
  (note?'<div class="v33-teacher-note"><strong>Ghi chú của giáo viên</strong><p>'+clean(typeof note==='string'?note:'')+'</p></div>':'')+
  '<div class="v33-pane-actions"><a href="#'+path(cfg.id,cfg.group,'flash',cfg.script)+'" class="v33-primary">Luyện Flashcard →</a><a href="#'+path(cfg.id,cfg.group,cfg.id==='small'?'vocab-ja-vi':'quiz',cfg.script)+'" class="v33-secondary">Làm bài kiểm tra</a><a href="#kana" class="v33-secondary">Mở Writing Studio</a></div></section>';
 }
@@ -169,7 +177,7 @@ function matchingView(cfg,s){
  if(!s.cards.length)return noData('Nhóm này chưa có đủ cặp duy nhất. Hãy chọn bảng hoặc nhóm khác.');
  const complete=s.matched.length===s.cards.length;
  const left=items=>items.map(x=>'<button data-f33="match" data-side="left" data-value="'+clean(x.id)+'" class="v33-match-tile '+(s.matched.includes(x.id)?'done':s.leftId===x.id?'selected':'')+'" '+(s.matched.includes(x.id)?'disabled':'')+' lang="ja">'+clean(x.glyph)+'</button>').join('');
- const right=items=>items.map(x=>'<button data-f33="match" data-side="right" data-value="'+clean(x.id)+'" class="v33-match-tile '+(s.matched.includes(x.id)?'done':s.rightId===x.id?'selected':'')+'" '+(s.matched.includes(x.id)?'disabled':'')+'>'+clean(readable(x))+'</button>').join('');
+ const right=items=>items.map(x=>'<button data-f33="match" data-side="right" data-value="'+clean(x.id)+'" class="v33-match-tile '+(s.matched.includes(x.id)?'done':s.rightId===x.id?'selected':'')+'" '+(s.matched.includes(x.id)?'disabled':'')+'>'+clean(readable(x))+(cfg.script==='both'&&cfg.mod.script==='both'?' <small>· '+(x.script==='hira'?'Hira':'Kata')+'</small>':'')+'</button>').join('');
  return '<section class="v33-pane"><div class="v33-pane-head"><div><p class="v33-eyebrow">GHÉP CẶP · 2 CỘT</p><h3>Ghép chữ và cách đọc</h3><p>Chọn một ô bên trái, rồi ô tương ứng bên phải. Có thể dùng bàn phím; không cần kéo thả.</p></div>'+tag(s.matched.length+'/'+s.cards.length+' cặp')+'</div>'+
  (complete?'<div class="v33-feedback positive"><strong>Đã ghép xong!</strong><p>Số lần chọn sai: '+s.mistakes+'. Nếu chọn sai nhiều, hãy thử lại sau khi ôn Flashcard.</p></div>':'<p class="v33-subline">'+clean(s.feedback||'Chọn 1 chữ và 1 cách đọc để ghép cặp.')+'</p>')+
  '<div class="v33-match-grid"><div class="v33-match-column">'+left(s.left)+'</div><div class="v33-match-column">'+right(s.right)+'</div></div>'+
