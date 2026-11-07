@@ -245,18 +245,22 @@ function roundSummaryView(s,cfg){
  const lead=cleanRound?'Bạn đã ghép đúng ngay lần đầu cả '+report.totalPairs+' cặp.':'Hoàn thành '+report.totalPairs+' cặp, trong đó '+report.firstTryPairs+' cặp đúng ngay lần đầu.';
  const medal='<svg viewBox="0 0 112 112" aria-hidden="true" class="v109-medal-art"><circle cx="56" cy="56" r="50" fill="none" stroke="currentColor" stroke-opacity=".14"/><g class="v109-petals" fill="#f5ded5" stroke="#b7897e" stroke-width=".9"><ellipse cx="56" cy="30" rx="12" ry="21"/><ellipse cx="56" cy="82" rx="12" ry="21"/><ellipse cx="30" cy="56" rx="21" ry="12"/><ellipse cx="82" cy="56" rx="21" ry="12"/><ellipse cx="37.5" cy="37.5" rx="11" ry="19" transform="rotate(-45 37.5 37.5)"/><ellipse cx="74.5" cy="37.5" rx="11" ry="19" transform="rotate(45 74.5 37.5)"/><ellipse cx="37.5" cy="74.5" rx="11" ry="19" transform="rotate(45 37.5 74.5)"/><ellipse cx="74.5" cy="74.5" rx="11" ry="19" transform="rotate(-45 74.5 74.5)"/></g><circle cx="56" cy="56" r="21" fill="#f8eacb" stroke="#b7897e"/><path d="M48 53h.1m16 0h.1" stroke="#956c58" stroke-linecap="round" stroke-width="3"/><path d="M48 62q8 9 16 0" stroke="#956c58" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg>';
  const metric=(symbol,value,label)=>'<div class="v109-stat"><span class="v109-stat-icon" aria-hidden="true">'+symbol+'</span><strong>'+clean(value)+'</strong><span>'+clean(label)+'</span></div>';
- const note=cleanRound?'Không có lượt chọn sai trong lần luyện này. Thử lại sau một khoảng nghỉ để củng cố ghi nhớ.':
-  'Có '+review.length+' chữ xuất hiện trong lượt ghép sai. Đây là các chữ cần ôn, không có nghĩa cả '+review.length+' chữ đều được trả lời sai độc lập.';
- const nextText=cleanRound?'Thử một lượt khác với thứ tự mới. Một lượt đúng chưa đủ kết luận đã nhớ lâu.':
-  'Ôn các chữ từng xuất hiện trong cặp ghép sai trước khi chuyển sang lượt mới.';
+ const noteTitle=cleanRound?'Chính xác ngay lần đầu':'Đã hoàn thành — cần ôn thêm';
+ const note=cleanRound?'Bạn ghép đúng ngay lần đầu <strong>'+report.firstTryPairs+' / '+report.totalPairs+' cặp</strong>, không có lượt chọn sai.':
+  'Có <strong>'+report.wrongAttempts+' lượt ghép chưa đúng</strong>, liên quan tới <strong>'+review.length+' chữ</strong> trong lượt luyện này.';
+ const noteHint=cleanRound?'Kết quả tốt trong lượt này. Hãy ôn lại sau một khoảng nghỉ để củng cố trí nhớ.':
+  'Các chữ được đánh dấu chỉ vì từng tham gia cặp ghép sai; chưa thể xác định bạn nhầm chữ nào.';
+ const nextTitle=cleanRound?'Củng cố thêm':'Ưu tiên ôn tập';
+ const nextText=cleanRound?'Thử lượt luyện khác với thứ tự mới, sau đó quay lại ôn sau một khoảng nghỉ.':
+  'Ôn nhóm chữ được đánh dấu trước, rồi thử một lượt mới để xem còn nhầm không.';
  const detailRows=report.pairResults.map(p=>'<div class="v109-detail-row"><strong lang="ja">'+clean(p.glyph)+'</strong><span>'+clean(p.romaji)+'</span><small>'+p.wrongAttempts+' lượt ghép sai · '+formatDuration(p.pairElapsedMs)+(p.audioReplays?' · nghe lại '+p.audioReplays+' lần':'')+'</small></div>').join('');
  return '<div class="v107-overlay v109-overlay" data-v107-dialog="1"><section class="v107-dialog v109-dialog" role="dialog" aria-modal="true" aria-labelledby="v107-title" aria-describedby="v109-description" tabindex="-1">'+
  '<header class="v109-hero"><div class="v109-medal" role="img" aria-label="Hoa mỉm cười chúc mừng">'+medal+'<span class="v109-glint" aria-hidden="true">✧</span></div><div class="v109-intro"><p class="v33-eyebrow">✦ TỔNG KẾT LƯỢT LUYỆN</p><h3 id="v107-title">'+title+'</h3><p id="v109-description">'+lead+'</p></div><button type="button" class="v107-close v109-close" data-f33="summary-close" aria-label="Đóng kết quả">×</button></header>'+
  '<div class="v109-stats" aria-label="Thống kê lượt luyện">'+metric('✓',report.completedPairs+' / '+report.totalPairs,'Cặp hoàn thành')+metric('✦',report.firstTryPairs+' / '+report.totalPairs,'Đúng lần đầu')+metric('↺',report.wrongAttempts,'Lượt chọn sai')+metric('◷',formatDuration(report.totalElapsedMs),'Tổng thời gian')+'</div>'+
- '<div class="v109-content"><section class="v109-observation"><div class="v109-section-top"><span class="v109-step">01</span><h4>Nhận xét dành cho bạn</h4></div><p class="v109-observation-lead">'+note+'</p><div class="v109-mini-data"><span>Đúng ngay lần đầu <strong>'+report.firstTryAccuracy+'%</strong></span><span>Trung bình mỗi cặp <strong>'+formatDuration(report.averagePairMs)+'</strong></span></div>'+
+ '<div class="v109-content"><section class="v109-observation"><div class="v109-section-top"><span class="v109-step">01</span><h4>Nhận xét lượt luyện</h4></div><div class="v110-feedback-card '+(cleanRound?'is-positive':'is-review')+'"><div class="v110-feedback-icon" aria-hidden="true">'+(cleanRound?'✓':'↺')+'</div><div><strong class="v110-feedback-title">'+noteTitle+'</strong><p class="v109-observation-lead">'+note+'</p></div></div><p class="v110-guidance">'+noteHint+'</p><div class="v109-mini-data"><span>Đúng ngay lần đầu <strong>'+report.firstTryAccuracy+'%</strong></span><span>Trung bình mỗi cặp <strong>'+formatDuration(report.averagePairMs)+'</strong></span></div>'+
  (['listen-match','game-listen'].includes(s.kind)?'<p class="v109-small-note">Số lần nghe lại: '+report.audioReplays+' (không tính lần nghe đầu hoặc phát đáp án tự động).</p>':'')+
  '<p class="v109-small-note">Thời gian chỉ dùng tham khảo, không chấm điểm nhanh/chậm.</p></section>'+
- '<section class="v109-next"><div class="v109-section-top"><span class="v109-step">02</span><h4>Bước tiếp theo</h4></div><p>'+nextText+'</p>'+
+ '<section class="v109-next"><div class="v109-section-top"><span class="v109-step">02</span><h4>Bước tiếp theo</h4></div><div class="v110-next-card"><strong>'+nextTitle+'</strong><p>'+nextText+'</p></div>'+
  (review.length?'<div class="v109-review-list" aria-label="Chữ cần ôn">'+review.map(p=>'<span lang="ja">'+clean(p.glyph)+' <small>'+clean(p.romaji)+'</small></span>').join('')+'</div>':'')+
  '<details class="v109-details"><summary>Xem chi tiết từng cặp <span>'+report.pairResults.length+'</span></summary><div class="v109-details-list">'+detailRows+'</div></details></section></div>'+
  '<footer class="v109-actions"><span class="v109-footer-note">Mỗi lượt luyện là một bước tiến nhỏ.</span>'+
@@ -271,6 +275,8 @@ function closeRoundSummary(){
  const overlay=document.querySelector?.('[data-v107-dialog]');
  if(!overlay?.classList?.add||typeof setTimeout!=='function'){refresh();focusRoundReturn();return;}
  overlay.classList.add('v109-closing');
+ overlay.setAttribute?.('aria-hidden','true');
+ overlay.style&&(overlay.style.pointerEvents='none');
  setTimeout(()=>{if(play===session&&!session.round.summaryOpen){refresh();focusRoundReturn();}},190);
 }
 function focusRoundReturn(){
@@ -863,7 +869,7 @@ document.addEventListener('keydown',event=>{
 });
 document.addEventListener('click',event=>{
  const backdrop=event.target.closest?.('[data-v107-dialog]');
- if(backdrop&&event.target===backdrop){event.preventDefault();closeRoundSummary();return;}
+ if(backdrop&&!event.target.closest?.('.v109-dialog')){event.preventDefault();closeRoundSummary();return;}
  const startAction=event.target.closest?.('[data-f38]');if(startAction&&document.querySelector('.v34-workspace-shell')){event.preventDefault();const cfg=current(),s=ensurePlay(cfg);if(startAction.dataset.f38==='start'){s.ready=true;resetClock(s);refresh();}else if(startAction.dataset.f38==='cancel'){localSwitch('tab','learn');}return;}
  const nav=event.target.closest('[data-f34="tab"],[data-f34="mode"]');if(nav?.dataset?.f34&&document.querySelector('.v34-workspace-shell')){event.preventDefault();localSwitch(nav.dataset.f34,nav.dataset.value);return;}
  const b=event.target.closest('[data-f33]');if(!b)return;
