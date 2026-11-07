@@ -267,6 +267,9 @@ function foundationModuleCatalogue(){
   return {m,index,groups,all:groups.length};
  });
  const allCount=records.reduce((n,r)=>n+r.all,0);
+ const firstPending=modules.flatMap(m=>m.groups.map(g=>({m,g,cards:foundationTopics(m,g,data)})))
+   .find(({cards})=>cards.some(card=>!(progress[card.id]?.attempts>0)));
+ const nextPath=firstPending?engine.path(firstPending.m.id,firstPending.g.id,'learn'):engine.path(modules[0].id,modules[0].groups[0].id,'learn');
  return '<section class="v121-foundation-catalog" aria-labelledby="v121-heading">'+
   '<div class="v121-catalog-heading"><div><p class="v121-eyebrow">FOUNDATION · MỤC LỤC HỌC TẬP</p>'+
   '<h3 id="v121-heading">Nền tảng — học theo từng nhóm nhỏ</h3>'+
@@ -274,12 +277,9 @@ function foundationModuleCatalogue(){
   '<span class="v121-catalog-count">'+modules.length+' chặng · '+allCount+' nhóm bài</span></div>'+
   '<div class="v121-toolbar"><label class="v121-search-label"><span class="v121-search-icon" aria-hidden="true">⌕</span>'+
   '<input type="search" data-v121-filter placeholder="Tìm Kana, Romaji hoặc tên bài…" aria-label="Tìm bài học Nền tảng" autocomplete="off"></label>'+
-  '<a class="v121-continue" href="#'+engine.path(modules[0].id,modules[0].groups[0].id,'learn')+'">Bắt đầu từ bài đầu →</a></div>'+
+  '<a class="v121-continue" href="#'+nextPath+'">Tiếp tục học →</a></div>'+
   '<p class="v121-search-status" data-v121-status role="status" aria-live="polite" hidden></p>'+
   '<div class="v121-chapter-list">'+records.map(({m,index,groups})=>{
-    const chapterItems=[...new Set(groups.flatMap(g=>{
-     const id=(g.match(/data-v121-search="([^"]*)"/)||[])[1];return id?[id]:[];
-    }))]; // Section counts come from the actual rendered groups, not fake lesson completion.
     return '<details class="v121-chapter" data-v121-chapter '+(index===0?'open':'')+'>'+
      '<summary><span class="v121-chapter-index">'+String(index+1).padStart(2,'0')+'</span>'+
      '<span class="v121-chapter-name"><strong>'+safe(m.title.replace(/^\d+\s*[·.:-]\s*/,''))+'</strong><small>'+safe(m.subtitle)+'</small></span>'+
