@@ -876,3 +876,22 @@ test('v1.16 restores Foundation styling scope for study and practice on every ch
  assert.match(css,/\.v34-studying \.v113-stagebar \.v36-step-icon/);
  assert.match(css,/\.v34-studying \.v36-kana-board \.v35-kana-button:hover/);
 });
+
+test('v1.17 result pulse applies only on newly graded answers, including matching and build',()=>{
+ const source=load('foundation-course-v33.js');
+ const css=load('foundation-course-v107.css');
+ assert.ok(source.includes("function pulseGradedFeedback(correct,kind='answer')"));
+ assert.ok(source.includes("refresh();pulseGradedFeedback(ok)"));
+ assert.ok(source.includes("if(s.answer)pulseGradedFeedback(s.answer.correct)"));
+ assert.ok(source.includes("else if(gradedMatch!==null)pulseGradedFeedback(gradedMatch,'match')"));
+ assert.ok(source.includes("const selector=kind==='match'?'.v105-match-feedback':'.v33-feedback'"));
+ assert.ok(css.includes('@keyframes v117-correct-result'));
+ assert.ok(css.includes('@keyframes v117-wrong-result'));
+ assert.ok(css.includes('@media(prefers-reduced-motion:reduce)'));
+ const h=harness(),route='learn/foundation/hiragana/all/quiz';
+ h.location.hash='#'+route;h.ui.page(route);
+ const s=h.ui.session(),answer=s.questions[0].correct;
+ h.click('answer',answer);
+ assert.equal(s.choice,answer);
+ assert.match(h.ui.page(route),/v33-feedback positive/);
+});
