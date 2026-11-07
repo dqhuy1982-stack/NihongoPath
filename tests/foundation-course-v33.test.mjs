@@ -368,7 +368,7 @@ test('Global UI footer shows unobtrusive v1.01 beside HORIZON tagline',()=>{
  const app=load('app.js'),hub=load('learning-hub-v25.js');
  assert.ok(app.includes('Học theo cách của bạn'));
  assert.ok(app.includes('horizon-ui-version'));
- assert.ok(app.includes('v1.04'));
+ assert.ok(app.includes('v1.05'));
  assert.ok(!hub.includes('HORIZON · Learning Hub v33 · Recorded progress'));
 });
 test('Book index uses a warm connected selected tab and responsive separation',()=>{
@@ -382,7 +382,7 @@ test('Book index uses a warm connected selected tab and responsive separation',(
 test('v1.01 has both match columns and persistent line overlay for user selected pairs',()=>{
  const h=harness(),route='learn/foundation/hiragana/all/match';
  h.location.hash='#'+route;const html=h.ui.page(route);
- assert.match(html,/v104-match-board/);
+ assert.match(html,/v105-match-board/);
  assert.match(html,/v101-match-lines/);
  assert.match(html,/>KANA</);
  assert.match(html,/>ROMAJI</);
@@ -416,27 +416,27 @@ test('v1.01 offers three hints and records assisted correct answers for review',
 });
 test('v1.01 includes answer audio and precise connected-book CSS',()=>{
  const app=load('app.js'),html=load('index.html'),css=load('foundation-course-v101.css');
- assert.ok(app.includes('v1.04'));
+ assert.ok(app.includes('v1.05'));
  assert.ok(html.includes('foundation-course-v101.css?v=101'));
  assert.ok(html.includes('foundation-course-v102.css?v=102'));
  assert.ok(html.includes('foundation-course-v103.css?v=103'));
  assert.ok(html.includes('foundation-course-v104.css?v=104'));
  assert.ok(html.includes('foundation-curriculum-v33.js?v=101'));
- assert.ok(html.includes('foundation-course-v33.js?v=104'));
+ assert.ok(html.includes('foundation-course-v33.js?v=105'));
  assert.ok(css.includes('v101-match-grid'));
  assert.ok(css.includes('[data-connected="yes"]'));
 });
 test('v1.03 workbook avoids nested scroll containers and renders both matching columns',()=>{
  const h=harness(),route='learn/foundation/hiragana/all/match';
  h.location.hash='#'+route;const html=h.ui.page(route),css=load('foundation-course-v103.css');
- assert.match(html,/v104-match-board/);
+ assert.match(html,/v105-match-board/);
  assert.match(html,/>KANA</);
  assert.match(html,/>ROMAJI</);
  assert.equal((html.match(/data-side="right"/g)||[]).length,6);
  assert.equal((html.match(/data-side="left"/g)||[]).length,6);
  assert.doesNotMatch(html,/v102-connector-lane/);
  assert.match(css,/grid-template-columns:minmax\(0,1fr\) minmax\(0,1fr\)!important/);
- assert.match(load('foundation-course-v104.css'),/\.v104-match-board>\.v104-match-column/);
+ assert.match(load('foundation-course-v105.css'),/\.v105-match-row/);
  assert.match(css,/overflow:visible!important/);
  assert.match(html,/v103-nav-group/);
 });
@@ -478,7 +478,7 @@ test('v1.04 answer buttons show exact success/failure markers and sticky next ac
 test('v1.04 matches use two flex columns plus out-of-flow SVG',()=>{
  const h=harness(),route='learn/foundation/hiragana/all/match';h.location.hash='#'+route;
  const html=h.ui.page(route),css=load('foundation-course-v104.css');
- assert.equal((html.match(/class="v104-match-column"/g)||[]).length,2);
+ assert.equal((html.match(/class="v105-match-row"/g)||[]).length,6);
  assert.equal((html.match(/data-side="right"/g)||[]).length,6);
  assert.match(html,/ROMAJI/);
  assert.match(css,/display:flex!important/);
@@ -486,10 +486,80 @@ test('v1.04 matches use two flex columns plus out-of-flow SVG',()=>{
  assert.match(css,/position:absolute!important/);
  assert.ok(!html.includes('v101-match-grid'));
 });
+
+test('v1.05 prints six actual Romaji strings on the right, not empty tiles',()=>{
+ const h=harness(),route='learn/foundation/hiragana/all/match';
+ h.location.hash='#'+route;
+ const html=h.ui.page(route),s=h.ui.session();
+ assert.match(html,/v105-match-board/);
+ assert.equal((html.match(/class="v105-match-row"/g)||[]).length,6);
+ assert.equal((html.match(/class="v105-romaji"/g)||[]).length,6);
+ assert.equal((html.match(/data-side="right"/g)||[]).length,6);
+ for(const item of s.right)assert.ok(html.includes('>'+item.read+'</span>'),'visible Romaji '+item.read);
+ assert.ok(s.right.every(x=>x.read&&x.read.trim().length>0));
+});
+test('v1.05 supports Hiragana, Katakana and mixed scripts without ambiguous labels',()=>{
+ const h=harness();
+ const routes=[
+  ['learn/foundation/hiragana/all/match','hira'],
+  ['learn/foundation/katakana/all/match','kata'],
+  ['learn/foundation/mixed/mixed/match','mixed']
+ ];
+ for(const [route,script] of routes){
+  h.location.hash='#'+route;
+  const html=h.ui.page(route),s=h.ui.session();
+  assert.equal(s.cards.length,6);
+  assert.equal(new Set(s.cards.map(x=>x.id)).size,6);
+  assert.equal(new Set(s.cards.map(x=>x.read+'-'+x.script)).size,6);
+  assert.ok(html.includes('class="v105-romaji"'));
+  if(script!=='mixed')assert.ok(s.cards.every(x=>x.script===script));
+  else{
+   assert.equal(s.cards.filter(x=>x.script==='hira').length,3);
+   assert.equal(s.cards.filter(x=>x.script==='kata').length,3);
+   assert.match(html,/data-f34="script"/);
+  }
+ }
+});
+test('v1.05 wrong pairs draw a temporary red connector and correct pairs a green one',()=>{
+ const h=harness(),route='learn/foundation/hiragana/all/match';
+ h.location.hash='#'+route;h.ui.page(route);
+ const s=h.ui.session(),a=s.cards[0],b=s.cards[1];
+ h.click('match',a.id,'left');h.click('match',b.id,'right');
+ assert.equal(s.mistakes,1);
+ assert.equal(s.wrongPair.left,a.id);
+ assert.equal(s.wrongPair.right,b.id);
+ assert.match(h.ui.page(route),/Đường đỏ/);
+ assert.match(load('foundation-course-v105.css'),/v105-match-wrong/);
+ h.click('match',a.id,'left');h.click('match',a.id,'right');
+ assert.ok(s.matched.includes(a.id));
+ assert.match(h.ui.page(route),/v105-check/);
+});
+test('v1.05 auto answer audio can be turned off without disabling manual listening',()=>{
+ const h=harness(),route='learn/foundation/hiragana/all/quiz';
+ h.location.hash='#'+route;h.ui.page(route);
+ assert.match(h.ui.page(route),/Âm thanh đáp án: <strong>Bật/);
+ h.click('toggle-audio');
+ assert.match(h.ui.page(route),/Âm thanh đáp án: <strong>Tắt/);
+ const q=h.ui.session().questions[0];
+ h.click('answer',q.correct);
+ assert.equal(h.audioFiles.length,0,'no automatic answer audio when off');
+ h.click('feedback-audio');
+ assert.ok(h.audioFiles.length>0,'manual answer playback is still available');
+});
+test('v1.05 displays practice activities in compact expandable groups',()=>{
+ const h=harness(),route='learn/foundation/hiragana/all/quiz';
+ h.location.hash='#'+route;const html=h.ui.page(route);
+ assert.match(html,/<details class="v105-menu-group"/);
+ assert.match(html,/NHẬN DIỆN/);
+ assert.match(html,/GHÉP & GHI NHỚ/);
+ assert.match(html,/NGHĨA & ỨNG DỤNG/);
+ assert.match(html,/ÔN TẬP/);
+});
+
 test('The learning UI does not alter the existing lesson engine or global learner records',()=>{
  const html=load('index.html');
  assert.ok(html.includes('foundation-curriculum-v33.js?v=101'));
- assert.ok(html.includes('foundation-course-v33.js?v=104'));
+ assert.ok(html.includes('foundation-course-v33.js?v=105'));
  assert.ok(html.includes('foundation-course-v34.css?v=34'));
  assert.ok(html.includes('foundation-course-v35.css?v=35'));
  assert.ok(html.includes('foundation-course-v36.css?v=36'));
@@ -498,10 +568,10 @@ test('The learning UI does not alter the existing lesson engine or global learne
  assert.ok(html.includes('foundation-course-v39.css?v=39'));
  assert.ok(html.includes('foundation-course-v40.css?v=100'));
  assert.ok(html.includes('foundation-course-v101.css?v=101'));
- assert.ok(html.includes('app.js?v=104'));
+ assert.ok(html.includes('app.js?v=105'));
  assert.ok(html.includes('learning-hub-v25.js?v=100'));
- assert.ok(html.includes('foundation-course-v33.js?v=104'));
- assert.ok(html.includes('foundation-course-v33.js?v=104'));
+ assert.ok(html.includes('foundation-course-v33.js?v=105'));
+ assert.ok(html.includes('foundation-course-v33.js?v=105'));
  assert.ok(load('foundation-course-v33.js').includes('data-f38="start"'));
  assert.ok(!load('foundation-course-v36.css').includes('max-height:405px'));
  assert.match(load('foundation-course-v36.css'),/max-height:none!important/);
