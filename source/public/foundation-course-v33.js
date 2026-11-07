@@ -119,7 +119,7 @@ function ensurePlay(config){
  }else if(kind==='flash'){
   play={key,kind,cards:shuffle(list),index:0,flipped:false,remembered:0,needsReview:0};
  }else{
-  const targets=pick(config.mode==='listen'?list.filter(x=>x.stage==='basic'&&x.glyph.length===1&&x.script==='hira'):list,Math.min(10,list.length));
+  const targets=pick(config.mode==='listen'?list.filter(x=>x.stage==='basic'&&x.glyph.length===1):list,Math.min(10,list.length));
   const allPool=kind.startsWith('vocab')||config.id==='small'?contextual(config):DATA.take(config.id,'all',config.script);
   const valid=targets.filter(x=>allPool.filter(p=>p.id!==x.id&&isWord(p)===isWord(x)).length>=2);
   play={key,kind,questions:valid.map(x=>questionFor(x,kind,allPool)),index:0,correct:0,answered:0,choice:null,finished:valid.length===0};
@@ -156,7 +156,7 @@ function indexPage(){
 function navigationFor(cfg){
  const m=cfg.mod,s=moduleStats(m);
  const opts=DATA.modules.map(x=>'<option value="'+x.id+'" '+(x.id===cfg.id?'selected':'')+'>'+clean(x.title)+'</option>').join('');
- const practices=[['quiz','Chữ → âm'],['reverse','Âm → chữ'],['listen','Nghe → chữ'],['truefalse','Đúng / Sai'],['match','Ghép cặp'],['build','Xếp chữ'],['vocab-ja-vi','Nhật → Việt'],['vocab-vi-ja','Việt → Nhật']];
+ const practices=[['quiz','Chữ → âm'],['reverse','Âm → chữ'],...(cfg.id==='hiragana'||cfg.id==='katakana'?[['listen','Nghe → chữ']]:[]),['truefalse','Đúng / Sai'],['match','Ghép cặp'],['build','Xếp chữ'],['vocab-ja-vi','Nhật → Việt'],['vocab-vi-ja','Việt → Nhật']];
  const group=cfg.mode==='learn'?'learn':cfg.mode==='flash'?'flash':cfg.mode==='mix'?'mix':'practice';
  const actions=[['learn','1. Học bảng chữ'],['flash','2. Flashcard'],['practice','3. Luyện tập'],['mix','4. Kiểm tra tổng hợp']];
  const tabs=actions.map(([id,label])=>'<button type="button" data-f34="tab" data-value="'+id+'" class="v34-stage-tab '+(id===group?'active':'')+'" '+(id===group?'aria-current="step"':'')+'>'+label+'</button>').join('');
@@ -169,16 +169,22 @@ function navigationFor(cfg){
  (cfg.id==='small'&&group==='learn'?'<label>Chủ đề <select data-f34="small" aria-label="Chọn chủ đề chữ nhỏ">'+[['all','Tất cả'],['pause','っ / ッ'],['length','Âm dài ー'],['vowels','Nguyên âm nhỏ']].map(([id,t])=>'<option value="'+id+'" '+(cfg.group===id?'selected':'')+'>'+t+'</option>').join('')+'</select></label>':'')+
  '<span class="v34-hint">'+(group==='learn'?'46 chữ hiển thị cùng nhau, nhấn loa để nghe.':group==='flash'?'Nhớ trước, lật sau.':group==='mix'?'Câu hỏi được trộn trong chặng.':'Chọn một dạng để luyện trong khung này.')+'</span></div>';
 }
+function coachSeen(){try{return localStorage.getItem('Horizon.KanaTapGuide.v1.'+learnerId())==='yes'}catch{return false}}
+function dismissCoach(){try{localStorage.setItem('Horizon.KanaTapGuide.v1.'+learnerId(),'yes')}catch(e){}const tip=document.querySelector('.v35-kana-guide');if(tip)tip.remove();const first=document.querySelector('.v35-first-kana');if(first)first.classList.remove('v35-first-kana')}
+function playKana(value){if(!/^(?:a|i|u|e|o|ka|ki|ku|ke|ko|sa|shi|su|se|so|ta|chi|tsu|te|to|na|ni|nu|ne|no|ha|hi|fu|he|ho|ma|mi|mu|me|mo|ya|yu|yo|ra|ri|ru|re|ro|wa|wo|n)$/.test(value||''))return false;
+ try{const audio=new Audio('assets/kana-audio/'+value+'.mp3');audio.play().catch(()=>{});return true}catch(e){return false}}
 function learnView(cfg){
  const deck=tokens(cfg);
  const s=countStats(deck),examples=cfg.id==='small'?DATA.smallSamples.find(x=>x.id===cfg.group):null;
- const grid=deck.map(x=>'<div class="v33-glyph-card"><span lang="ja">'+clean(x.glyph)+'</span><strong>'+clean(x.read)+'</strong>'+(isWord(x)?'<small>'+clean(x.vi)+'</small>':'')+(x.stage==='basic'&&x.glyph.length===1?'<button class="v33-audio" data-f33="audio" data-value="'+clean(x.read)+'" aria-label="Nghe âm '+clean(x.read)+'"><svg aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 9h4l5-4v14l-5-4H4zM17 9a5 5 0 0 1 0 6M19 6a9 9 0 0 1 0 12"/></svg> Nghe</button>':'')+'</div>').join('');
+ const grid=deck.map((x,i)=>x.stage==='basic'&&Array.from(x.glyph).length===1?
+ '<button type="button" class="v33-glyph-card v35-kana-button '+(i===0&&!coachSeen()?'v35-first-kana':'')+'" data-f33="audio" data-value="'+clean(x.read)+'" aria-label="Phát âm chữ '+clean(x.glyph)+', đọc '+clean(x.read)+'"><span lang="ja">'+clean(x.glyph)+'</span><strong>'+clean(x.read)+'</strong></button>':
+ '<div class="v33-glyph-card"><span lang="ja">'+clean(x.glyph)+'</span><strong>'+clean(x.read)+'</strong>'+(isWord(x)?'<small>'+clean(x.vi)+'</small>':'')+'</div>').join('');
  const selected=deck[0];
  const exampleMarkup=examples?'<div class="v33-examples">'+examples.examples.map(([glyph,read,meaning])=>'<div><b lang="ja">'+clean(glyph)+'</b><span>'+clean(read)+'</span><small>'+clean(meaning)+'</small></div>').join('')+'</div>':'';
  const note=cfg.id==='small'?'Chữ nhỏ và dấu ー được học trong từ hoặc cụm âm; không yêu cầu đọc một chữ nhỏ như âm độc lập.':selected?.note;
  const marks=cfg.id==='small'&&examples?.marks?'<div class="v33-small-marks" lang="ja">'+clean(examples.marks)+'</div>':'';
  return '<section class="v33-pane"><div class="v33-pane-head"><div><p class="v33-eyebrow">01 / HỌC & NHẬN DIỆN</p><h3>'+(cfg.group==='all'?cfg.mod.title:cfg.mod.groups.find(g=>g.id===cfg.group)?.title||cfg.mod.title)+'</h3><p>Quan sát nhóm chữ, đối chiếu cách đọc; sau đó ẩn gợi ý qua Flashcard.</p></div>'+tag(deck.length+' mẫu')+'</div>'+
- marks+'<div class="v33-glyph-grid" role="region" aria-label="Bảng chữ Kana, cuộn để xem toàn bộ" tabindex="0">'+grid+'</div>'+exampleMarkup+
+ (deck.some(x=>x.stage==='basic'&&Array.from(x.glyph).length===1)&&!coachSeen()?'<div class="v35-kana-guide" role="note"><span>Chạm hoặc click vào <strong>ô chữ</strong> để nghe phát âm. Không cần bấm nút loa riêng.</span><button type="button" data-f33="guide-ok" aria-label="Đóng hướng dẫn">Đã hiểu</button></div>':'')+marks+'<div class="v33-glyph-grid" role="region" aria-label="Bảng chữ Kana, cuộn để xem toàn bộ" tabindex="0">'+grid+'</div>'+exampleMarkup+
  (note?'<div class="v33-teacher-note"><strong>Ghi chú của giáo viên</strong><p>'+clean(typeof note==='string'?note:'')+'</p></div>':'')+
  '<div class="v33-pane-actions"><a href="#'+path(cfg.id,cfg.group,'flash',cfg.script)+'" class="v33-primary">Luyện Flashcard →</a><a href="#'+path(cfg.id,cfg.group,cfg.id==='small'?'vocab-ja-vi':'quiz',cfg.script)+'" class="v33-secondary">Làm bài kiểm tra</a><a href="#kana" class="v33-secondary">Mở Writing Studio</a></div></section>';
 }
@@ -196,7 +202,7 @@ function quizView(cfg,s){
  if(s.finished||s.index>=s.questions.length)return summaryView(cfg,s);
  const q=s.questions[s.index];
  return '<section class="v33-pane"><div class="v33-pane-head"><div><p class="v33-eyebrow">KIỂM TRA · '+clean(modeNames[cfg.mode])+'</p><h3>Nhớ lại không nhìn gợi ý</h3><p>'+clean(q.prompt)+'</p></div>'+tag('Câu '+(s.index+1)+' / '+s.questions.length)+'</div>'+
- '<div class="v33-question-glyph" lang="'+(q.mode.startsWith('vocab')&&q.mode==='vocab-vi-ja'?'vi':'ja')+'">'+clean(q.stimulus)+'</div>'+
+ (q.mode==='listen'?'<div class="v35-listen-panel"><p>Nghe và chọn chữ. Có thể nghe lại nhiều lần.</p><button class="v35-listen-trigger" data-f33="listen-audio" aria-label="Nghe phát âm Kana"><span aria-hidden="true">♫</span> Phát âm thanh</button></div>':'<div class="v33-question-glyph" lang="'+(q.mode.startsWith('vocab')&&q.mode==='vocab-vi-ja'?'vi':'ja')+'">'+clean(q.stimulus)+'</div>')+
  '<div class="v33-answer-grid">'+q.choices.map(opt=>'<button class="v33-answer '+(s.choice&&opt.id===q.correct?'correct':'')+' '+(s.choice===opt.id&&s.choice!==q.correct?'wrong':'')+'" data-f33="answer" data-value="'+clean(opt.id)+'" '+(s.choice?'disabled':'')+'>'+clean(opt.label)+'</button>').join('')+'</div>'+
  (s.choice?'<div class="v33-feedback '+(s.choice===q.correct?'positive':'negative')+'" role="status"><strong>'+(s.choice===q.correct?'Chính xác.':'Chưa đúng. Đáp án: '+clean(q.choices.find(x=>x.id===q.correct)?.label))+'</strong><p>'+clean(q.note)+'</p></div><div class="v33-pane-actions"><button class="v33-primary" data-f33="next">'+(s.index+1===s.questions.length?'Xem kết quả':'Câu tiếp theo')+' →</button></div>':'<p class="v33-subline">Chọn một đáp án. Kết quả và giải thích hiện ngay, không cần bấm “Kiểm tra” thêm lần nữa.</p>')+
  '</section>';
@@ -242,7 +248,9 @@ function page(route){
 function perform(el){
  const cfg=current(),op=el.dataset.f33,value=el.dataset.value,side=el.dataset.side;
  if(!cfg.mod)return;
- if(op==='audio'&&cfg.mode==='learn'&&/^(?:a|i|u|e|o|ka|ki|ku|ke|ko|sa|shi|su|se|so|ta|chi|tsu|te|to|na|ni|nu|ne|no|ha|hi|fu|he|ho|ma|mi|mu|me|mo|ya|yu|yo|ra|ri|ru|re|ro|wa|wo|n)$/.test(value||'')){try{const audio=new Audio('assets/kana-audio/'+value+'.mp3');audio.play().catch(()=>{});}catch(e){}return;}
+ if(op==='guide-ok'){dismissCoach();return;}
+ if(op==='audio'&&cfg.mode==='learn'){playKana(value);dismissCoach();if(el.classList){el.classList.add('v35-playing');setTimeout(()=>el.classList.remove('v35-playing'),500)}return;}
+ if(op==='listen-audio'&&cfg.mode==='listen'){const state=ensurePlay(cfg),q=state.questions[state.index];if(q)playKana(q.item.read);return;}
  if(cfg.mode==='learn')return;
  const s=ensurePlay(cfg);
  if(op==='tile'&&s.kind==='build'&&!s.answer){
@@ -300,7 +308,7 @@ function localSwitch(kind,value){
   if(!['all','pause','length','vowels'].includes(value))return;
   target.group=value;
  }else if(kind==='mode'){
-  if(!['quiz','reverse','match','build','vocab-ja-vi','vocab-vi-ja'].includes(value))return;
+  if(!['quiz','reverse','listen','truefalse','match','build','vocab-ja-vi','vocab-vi-ja'].includes(value))return;
   target.mode=value;
  }else if(kind==='tab'){
   if(!['learn','flash','practice','mix'].includes(value))return;
