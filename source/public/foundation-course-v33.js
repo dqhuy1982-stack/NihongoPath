@@ -8,7 +8,7 @@ const routePrefix='learn/foundation',base='#'+routePrefix;
 const modes=[
  ['learn','Học','book-open'],['flash','Flashcard','layers'],['listen','Nghe → chữ','volume-2'],['truefalse','Đúng / Sai','check-circle'],['quiz','Chữ → âm','target'],
  ['reverse','Âm → chữ','arrow-left-right'],['match','Ghép cặp','grid-2x2'],['build','Xếp chữ','puzzle'],
- ['vocab-ja-vi','Nhật → Việt','languages'],['vocab-vi-ja','Việt → Nhật','languages'],['mix','Kiểm tra tổng hợp','check-circle-2']
+ ['vocab-ja-vi','Nhật → Việt','languages'],['vocab-vi-ja','Việt → Nhật','languages'],['listen-match','Nghe & ghép','headphones'],['review','Ôn chữ yếu','refresh-cw'],['mix','Kiểm tra tổng hợp','check-circle-2']
 ];
 const modeNames=Object.fromEntries(modes.map(([id,title])=>[id,title]));
 const initialGroup=m=>m.id==='small'?'pause':'all';
@@ -28,14 +28,53 @@ let cache=null,cacheKey=null;
 function store(){const k=localKey();if(cacheKey!==k){cacheKey=k;cache=load();}return cache}
 function persist(){try{localStorage.setItem(localKey(),JSON.stringify(store()))}catch(e){/* private browsing: in-memory only */}}
 function dueDate(date,n){const d=new Date(date);d.setUTCDate(d.getUTCDate()+n);return d.toISOString()}
-function record(item,correct,mode){
- const d=store(),id=item.id,prev=d.items[id]||{attempts:0,correct:0,streak:0};
- const now=new Date().toISOString(),streak=correct?Math.min(5,prev.streak+1):0;
- d.items[id]={attempts:prev.attempts+1,correct:prev.correct+Number(correct),streak,lastAt:now,
- nextAt:dueDate(now,correct?[1,1,3,7,14,30][streak]:1),lastMode:mode};
- d.history.push({id,correct,mode,at:now});if(d.history.length>450)d.history=d.history.slice(-450);
- persist();
+const RESPONSE_TARGET_MS=5000; // configurable learning heuristic, not a JLPT or fluency standard.
+const MIN_RESPONSE_MS=0;
+function grade(elapsedMs,correct){
+ const ms=Number.isFinite(elapsedMs)?Math.max(MIN_RESPONSE_MS,Math.round(elapsedMs)):null;
+ return {responseMs:ms,slow:!!correct&&ms!==null&&ms>RESPONSE_TARGET_MS,
+  outcome:!correct?'incorrect':ms!==null&&ms>RESPONSE_TARGET_MS?'slow':'correct'};
 }
+function record(item,correct,mode,elapsedMs=null){
+ const d=store(),id=item.id,prev=d.items[id]||{attempts:0,correct:0,streak:0,slowCount:0,errorCount:0};
+ const now=new Date().toISOString(),measure=grade(elapsedMs,correct);
+ const streak=correct&&!measure.slow?Math.min(5,prev.streak+1):0;
+ const oldTimes=Array.isArray(prev.recentMs)?prev.recentMs:[];
+ const recentMs=measure.responseMs===null?oldTimes:oldTimes.concat(measure.responseMs).slice(-8);
+ const needsReview=!correct||measure.slow;
+ d.items[id]={...prev,attempts:prev.attempts+1,correct:prev.correct+Number(correct),
+  slowCount:(prev.slowCount||0)+Number(measure.slow),
+  errorCount:(prev.errorCount||0)+Number(!correct),
+  streak,lastAt:now,latestOutcome:measure.outcome,lastResponseMs:measure.responseMs,recentMs,
+  nextAt:dueDate(now,needsReview?0:[1,1,3,7,14,30][streak]),lastMode:mode};
+ d.history.push({id,correct,mode,at:now,ms:measure.responseMs,outcome:measure.outcome});
+ if(d.history.length>450)d.history=d.history.slice(-450);
+ persist();return measure;
+}
+function priority(item){
+ const stat=store().items[item.id];
+ if(!stat)return 1;
+ const overdue=stat.nextAt&&new Date(stat.nextAt).getTime()<=Date.now();
+ const weak=stat.latestOutcome==='incorrect'||stat.latestOutcome==='slow';
+ return 1+(overdue?5:0)+(weak?5:0)+(stat.streak===0?2:0);
+}
+function chooseTargets(items,n){
+ const remaining=shuffle(items),out=[];
+ while(remaining.length&&out.length<n){
+  const weight=remaining.map(priority),total=weight.reduce((s,w)=>s+w,0);
+  let r=Math.random()*total,j=0;
+  for(;j<remaining.length-1;j++){r-=weight[j];if(r<0)break}
+  out.push(remaining.splice(j,1)[0]);
+ }
+ return out;
+}
+function reviewPool(list){
+ const d=store().items;
+ const candidates=list.filter(x=>d[x.id]&&(d[x.id].latestOutcome!=='correct'||new Date(d[x.id].nextAt).getTime()<=Date.now()));
+ return candidates.length?candidates:list;
+}
+function timeLabel(ms){return (Math.max(0,ms||0)/1000).toFixed(1)+'s'}
+
 function countStats(list){
  const m=store().items,unique=[...new Set(list.map(x=>x.id))],stats=unique.map(id=>m[id]).filter(Boolean);
  return {reviewed:stats.length,total:unique.length,attempts:stats.reduce((n,a)=>n+a.attempts,0),correct:stats.reduce((n,a)=>n+a.correct,0),
@@ -67,7 +106,7 @@ const isWord=item=>typeof item.vi==='string';
 function readable(item){return isWord(item)?item.vi:item.read}
 function choosePool(config,mode){
  let pool=activityPool(config,mode);
- if(mode==='reverse'||mode==='match'||mode==='listen'){
+ if(mode==='reverse'||mode==='match'||mode==='listen'||mode==='listen-match'){
   const all=config.id==='small'?pool:DATA.take(config.id,'all',config.script);
   const counts={};for(const x of all){const v=readable(x)+'|'+x.script;counts[v]=(counts[v]||0)+1;}
   pool=pool.filter(x=>counts[readable(x)+'|'+x.script]===1);
@@ -109,23 +148,28 @@ let play=null;
 const sessionKey=config=>learnerId()+':'+config.id+':'+config.group+':'+config.mode+':'+config.script;
 function ensurePlay(config){
  const key=sessionKey(config);if(play?.key===key)return play;
- const list=choosePool(config,config.mode),kind=config.mode;
+ const kind=config.mode;
+ const source=choosePool(config,kind);
+ const list=kind==='review'?reviewPool(source):source;
  if(kind==='build'){
-  const cards=pick(contextual(config),5);
-  play={key,kind,cards,index:0,selected:[],tileOrder:cards.length?shuffle(Array.from(cards[0].glyph).map((glyph,i)=>({glyph,i}))):[],answer:null,correct:0,finished:cards.length===0};
- }else if(kind==='match'){
-  const cards=pick(list,Math.min(6,list.length));
-  play={key,kind,cards,left:shuffle(cards),right:shuffle(cards),leftId:null,rightId:null,matched:[],mistakes:0,answered:0,feedback:'',finished:cards.length===0};
+  const cards=chooseTargets(contextual(config),5);
+  play={key,kind,cards,index:0,selected:[],tileOrder:cards.length?shuffle(Array.from(cards[0].glyph).map((glyph,i)=>({glyph,i}))):[],answer:null,correct:0,finished:cards.length===0,startedAt:Date.now()};
+ }else if(kind==='match'||kind==='listen-match'){
+  const permitted=kind==='listen-match'?list.filter(x=>x.stage!=='small'&&Array.from(x.glyph).length<=3):list;
+  const cards=chooseTargets(permitted,Math.min(6,permitted.length));
+  play={key,kind,cards,left:shuffle(cards),right:shuffle(cards),leftId:null,rightId:null,matched:[],mistakes:0,answered:0,feedback:'',finished:cards.length===0,startedAt:Date.now()};
  }else if(kind==='flash'){
   play={key,kind,cards:shuffle(list),index:0,flipped:false,remembered:0,needsReview:0};
  }else{
-  const targets=pick(config.mode==='listen'?list.filter(x=>x.stage!=='small'&&Array.from(x.glyph).length<=3):list,Math.min(10,list.length));
+  const targets=chooseTargets(kind==='listen'?list.filter(x=>x.stage!=='small'&&Array.from(x.glyph).length<=3):list,Math.min(10,list.length));
   const allPool=kind.startsWith('vocab')||config.id==='small'?contextual(config):DATA.take(config.id,'all',config.script);
   const valid=targets.filter(x=>allPool.filter(p=>p.id!==x.id&&isWord(p)===isWord(x)).length>=2);
-  play={key,kind,questions:valid.map(x=>questionFor(x,kind,allPool)),index:0,correct:0,answered:0,choice:null,finished:valid.length===0};
+  const qMode=kind==='review'?'mix':kind;
+  play={key,kind,questions:valid.map(x=>questionFor(x,qMode,allPool)),index:0,correct:0,answered:0,choice:null,finished:valid.length===0,startedAt:Date.now(),roundMs:[],slow:0,errors:0};
  }
  return play;
 }
+
 function navigate(route){location.hash='#'+route}
 function refresh(){
  const stage=document.querySelector('.v34-workspace-shell');
@@ -136,7 +180,7 @@ function wrap(content,crumb='Nền tảng'){
  const shell=window.NPHorizonV25?.shell?.('catalog')||'<header class="v25-header"><div class="v25-hero-copy"><h1>Không gian học tập</h1></div></header>';
  return '<div class="v25-wrap v33-foundation" data-learning-hub="v34">'+shell+
  '<nav class="v25-breadcrumb" aria-label="Vị trí học tập"><a href="#learn/overview">Học</a><span aria-hidden="true">›</span><a href="#learn/catalog">Khóa học</a><span aria-hidden="true">›</span><a href="#course/foundation">Nền tảng</a>'+(crumb==='Nền tảng'?'':'<span aria-hidden="true">›</span><span aria-current="page">'+clean(crumb)+'</span>')+'</nav>'+
- content+'<footer class="v25-version">HORIZON · Foundation Studio v36 · Prototype (lưu luyện tập trên thiết bị)</footer></div>';
+ content+'<footer class="v25-version">HORIZON · Foundation Studio v37 · Prototype (lưu luyện tập trên thiết bị)</footer></div>';
 }
 function tag(txt){return '<span class="v33-tag">'+clean(txt)+'</span>'}
 function moduleStats(module){
@@ -156,7 +200,7 @@ function indexPage(){
 function navigationFor(cfg){
  const m=cfg.mod,s=moduleStats(m);
  const opts=DATA.modules.map(x=>'<option value="'+x.id+'" '+(x.id===cfg.id?'selected':'')+'>'+clean(x.title)+'</option>').join('');
- const practices=[['quiz','Chữ → âm'],['reverse','Âm → chữ'],...(cfg.id!=='small'&&cfg.id!=='mixed'?[['listen','Nghe → chữ']]:[]),['truefalse','Đúng / Sai'],['match','Ghép cặp'],['build','Xếp chữ'],['vocab-ja-vi','Nhật → Việt'],['vocab-vi-ja','Việt → Nhật']];
+ const practices=[['review','Ôn chữ còn yếu'],['quiz','Chữ → âm'],['reverse','Âm → chữ'],...(cfg.id!=='small'&&cfg.id!=='mixed'?[['listen','Nghe → chữ'],['listen-match','Nghe & ghép cặp']]:[]),['truefalse','Đúng / Sai'],['match','Ghép cặp'],['build','Xếp chữ'],['vocab-ja-vi','Nhật → Việt'],['vocab-vi-ja','Việt → Nhật']];
  const group=cfg.mode==='learn'?'learn':cfg.mode==='flash'?'flash':cfg.mode==='mix'?'mix':'practice';
  const actions=[['learn','1. Học bảng chữ'],['flash','2. Flashcard'],['practice','3. Luyện tập'],['mix','4. Kiểm tra tổng hợp']];
  const stepIcons={
@@ -294,7 +338,7 @@ function matchingView(cfg,s){
 }
 function workspace(cfg){
  const s=cfg.mode==='learn'?null:ensurePlay(cfg);
- const body=cfg.mode==='learn'?learnView(cfg):cfg.mode==='flash'?flashView(cfg,s):cfg.mode==='match'?matchingView(cfg,s):cfg.mode==='build'?buildView(cfg,s):quizView(cfg,s);
+ const body=cfg.mode==='learn'?learnView(cfg):cfg.mode==='flash'?flashView(cfg,s):(cfg.mode==='match'||cfg.mode==='listen-match')?matchingView(cfg,s):cfg.mode==='build'?buildView(cfg,s):quizView(cfg,s);
  const panel='<aside class="v33-side"><h3>Học thế nào cho hiệu quả?</h3><ol><li>Nhìn tổng thể 46 chữ.</li><li>Học theo nhóm nhỏ khi cần.</li><li>Đọc thành tiếng trước khi lật thẻ.</li><li>Kiểm tra xen kẽ và ôn chữ sai.</li></ol><div class="v33-side-divider"></div><p>Flashcard tự đánh giá không phải kết quả kiểm tra. Điểm chỉ ghi nhận theo lượt trả lời.</p><a href="#kana">Mở Writing Studio →</a></aside>';
  return navigationFor(cfg)+'<div class="v33-workspace">'+body+panel+'</div>';
 }
@@ -370,7 +414,7 @@ function localSwitch(kind,value){
   if(!['all','pause','length','vowels'].includes(value))return;
   target.group=value;
  }else if(kind==='mode'){
-  if(!['quiz','reverse','listen','truefalse','match','build','vocab-ja-vi','vocab-vi-ja'].includes(value))return;
+  if(!['quiz','reverse','listen','listen-match','review','truefalse','match','build','vocab-ja-vi','vocab-vi-ja'].includes(value))return;
   target.mode=value;
  }else if(kind==='tab'){
   if(!['learn','flash','practice','mix'].includes(value))return;
@@ -425,5 +469,5 @@ document.addEventListener('click',event=>{
  if(!document.querySelector('.v33-foundation'))return;
  event.preventDefault();perform(b);
 });
-window.NPFoundationCourse={version:'v36',page,store,stats:countStats,path,questionFor,choosePool,session:()=>play};
+window.NPFoundationCourse={version:'v37',page,store,stats:countStats,path,questionFor,choosePool,session:()=>play};
 })();
