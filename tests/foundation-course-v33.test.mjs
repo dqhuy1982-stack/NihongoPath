@@ -667,7 +667,7 @@ test('v1.07 listening counts manual prompt replays not automatic answer sound',(
  h.click('match',first.id,'left');
  assert.equal(s.round.pairs[first.id].audioReplays,1);
  for(const item of s.cards){h.click('match',item.id,'left');h.click('match',item.id,'right');}
- assert.equal(s.round.summary.audioReplays,1);
+ assert.equal(s.round.summary.audioReplays,2,'three manual prompts on the same pair count as two replays');
  assert.match(h.ui.page(r),/Số lần nghe lại/);
 });
 test('v1.07 duration metrics are derived from attempts and never guessed',()=>{
