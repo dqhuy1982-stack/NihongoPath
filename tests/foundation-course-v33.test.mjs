@@ -5,13 +5,13 @@ import {runInNewContext} from 'node:vm';
 const root=new URL('../source/public/',import.meta.url);
 const load=name=>readFileSync(new URL(name,root),'utf8');
 function harness(){
- const window={},location={hash:'#course/foundation'},hooks={};
+ const window={},location={hash:'#course/foundation'},hooks={},audioFiles=[];
  const map=new Map(),localStorage={getItem:k=>map.get(k)??null,setItem:(k,v)=>map.set(k,v)};
  const document={addEventListener:(name,fn)=>{hooks[name]=fn},querySelector:()=>({})};
  let profile='demo-a',renders=0;
  runInNewContext(load('foundation-curriculum-v33.js'),{window});
  window.NPHorizonV25={shell:()=>'<header class="v25-header">HORIZON · Learning Hub</header>'};
- const ctx={window,document,location,localStorage,render:()=>{renders++},P:()=>({id:profile}),Audio:class{play(){return Promise.resolve()}}};
+ const ctx={window,document,location,localStorage,render:()=>{renders++},P:()=>({id:profile}),Audio:class{constructor(url){audioFiles.push(url)}play(){return Promise.resolve()}pause(){}}};
  runInNewContext(load('foundation-course-v33.js'),ctx);
  const click=(action,value,side)=>{
    const selector=(s)=>{
@@ -21,7 +21,7 @@ function harness(){
    hooks.click({target:{closest:selector},preventDefault(){}});
  };
  const start=()=>click('start');
- return {data:window.NPFoundationCurriculum,ui:window.NPFoundationCourse,location,click,start,setProfile:v=>profile=v,getRenders:()=>renders};
+ return {data:window.NPFoundationCurriculum,ui:window.NPFoundationCourse,location,click,start,audioFiles,setProfile:v=>profile=v,getRenders:()=>renders};
 }
 test('Foundational syllabus has complete canonical counts and meaningful distinct modules',()=>{
  const {data}=harness();
@@ -290,6 +290,8 @@ test('Mixed listening question plays Japanese audio only after start, with manua
  assert.doesNotThrow(()=>h.click('listen-audio'));
  assert.equal(s.choice,before);
  assert.equal(h.ui.store().history.length,0,'listening does not count as an answer');
+ assert.ok(h.audioFiles.length>0,'manual playback invokes actual MP3 player');
+ assert.ok(h.audioFiles.every(url=>url.startsWith('assets/kana-audio/')));
 });
 test('Mixed test gives specific preflight guidance and does not start timer while reading',()=>{
  const h=harness(),route='learn/foundation/hiragana/all/mix';
@@ -300,6 +302,33 @@ test('Mixed test gives specific preflight guidance and does not start timer whil
  assert.match(html,/5–9 giây/);
  assert.match(html,/không có thời hạn bắt buộc/);
  assert.equal(h.ui.session().startedAt,null);
+});
+
+test('Audio matching and word construction cannot start timer during introduction',()=>{
+ const h=harness();
+ for(const mode of ['match','listen-match','build']){
+   const route='learn/foundation/hiragana/all/'+mode;
+   h.location.hash='#'+route;
+   const html=h.ui.page(route),session=h.ui.session();
+   assert.equal(session.ready,false,mode);
+   assert.equal(session.startedAt,null,mode);
+   assert.ok(html.includes('data-f38="start"'),mode);
+   h.start();
+   assert.equal(session.ready,true,mode);
+   assert.ok(session.startedAt>0,mode);
+ }
+});
+test('Review and mixed sessions expose guidance, without claiming a fast answer means mastery',()=>{
+ const h=harness();
+ for(const mode of ['review','mix']){
+   const route='learn/foundation/hiragana/all/'+mode;
+   h.location.hash='#'+route;
+   const html=h.ui.page(route);
+   assert.ok(html.includes('tạm đạt'),mode);
+   assert.ok(html.includes('cần ôn'),mode);
+   assert.ok(html.includes('chưa vững'),mode);
+   assert.ok(html.includes('đã nhớ'),mode);
+ }
 });
 
 test('The learning UI does not alter the existing lesson engine or global learner records',()=>{
