@@ -56,7 +56,7 @@ function contextual(config){
  return a.length>=3?a:DATA.words.filter(w=>config.script==='both'||w.script===config.script);
 }
 function activityPool(config,mode){
- return mode.startsWith('vocab')||config.id==='small'?contextual(config):tokens(config);
+ return mode.startsWith('vocab')?contextual(config):tokens(config);
 }
 const isWord=item=>typeof item.vi==='string';
 function readable(item){return isWord(item)?item.vi:item.read}
@@ -141,7 +141,7 @@ function navigationFor(cfg){
 function learnView(cfg){
  const deck=tokens(cfg);
  const s=countStats(deck),examples=cfg.id==='small'?DATA.smallSamples.find(x=>x.id===cfg.group):null;
- const grid=deck.map(x=>'<div class="v33-glyph-card"><span lang="ja">'+clean(x.glyph)+'</span><strong>'+clean(x.read)+'</strong>'+(isWord(x)?'<small>'+clean(x.vi)+'</small>':'')+(x.stage==='basic'&&x.glyph.length===1?'<button class="v33-audio" data-f33="audio" data-value="'+clean(x.read)+'" aria-label="Nghe âm '+clean(x.read)+'">◖)) Nghe</button>':'')+'</div>').join('');
+ const grid=deck.map(x=>'<div class="v33-glyph-card"><span lang="ja">'+clean(x.glyph)+'</span><strong>'+clean(x.read)+'</strong>'+(isWord(x)?'<small>'+clean(x.vi)+'</small>':'')+(x.stage==='basic'&&x.glyph.length===1?'<button class="v33-audio" data-f33="audio" data-value="'+clean(x.read)+'" aria-label="Nghe âm '+clean(x.read)+'"><svg aria-hidden="true" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 9h4l5-4v14l-5-4H4zM17 9a5 5 0 0 1 0 6M19 6a9 9 0 0 1 0 12"/></svg> Nghe</button>':'')+'</div>').join('');
  const selected=deck[0];
  const exampleMarkup=examples?'<div class="v33-examples">'+examples.examples.map(([glyph,read,meaning])=>'<div><b lang="ja">'+clean(glyph)+'</b><span>'+clean(read)+'</span><small>'+clean(meaning)+'</small></div>').join('')+'</div>':'';
  const note=cfg.id==='small'?'Chữ nhỏ và dấu ー được học trong từ hoặc cụm âm; không yêu cầu đọc một chữ nhỏ như âm độc lập.':selected?.note;
