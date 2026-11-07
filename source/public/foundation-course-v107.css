@@ -758,3 +758,63 @@ body:has(.v109-overlay) > .v108-dock{display:none!important}
 @media(prefers-reduced-motion:reduce){
  .v34-studying .v117-feedback-pulse{animation:none!important;outline:2px solid currentColor;outline-offset:2px}
 }
+
+/* HORIZON v1.18 — matching completion bar aligned to the exercise pane.
+   No viewport centering and no body-level portal; same sticky pattern as Next Question. */
+.v34-studying .v108-dock.v118-match-actions{
+ position:sticky!important;top:auto!important;bottom:12px!important;
+ left:auto!important;right:auto!important;
+ transform:none!important;box-sizing:border-box!important;
+ width:100%!important;max-width:none!important;min-width:0!important;
+ display:flex!important;align-items:center!important;justify-content:space-between!important;
+ gap:12px!important;
+ margin:14px 0 0!important;padding:10px 12px!important;
+ border:1px solid var(--v33-line)!important;
+ border-radius:12px!important;
+ background:color-mix(in srgb,var(--v33-paper) 96%,transparent)!important;
+ color:var(--v33-ink)!important;
+ box-shadow:0 6px 22px rgba(86,45,60,.12)!important;
+ z-index:15!important;
+ opacity:1!important;visibility:visible!important;
+}
+.v34-studying .v118-match-actions>.v104-next-caption{
+ display:block!important;flex:1 1 auto;min-width:0;
+ margin:0!important;white-space:normal;
+ font-size:11px!important;font-weight:600!important;
+ color:var(--muted)!important;
+}
+.v34-studying .v118-match-buttons{
+ display:flex;align-items:center;justify-content:flex-end;gap:9px;
+ flex:0 0 auto;min-width:0;
+}
+.v34-studying .v118-match-buttons>button{
+ appearance:none;min-height:42px!important;
+ padding:9px 15px!important;border-radius:11px!important;
+ font-size:11px!important;font-weight:770!important;
+ white-space:nowrap!important;cursor:pointer;
+}
+.v34-studying .v118-match-buttons>.v33-primary{
+ background:var(--v33-ink)!important;color:#fff!important;
+ border:1px solid var(--v33-ink)!important;
+}
+.v34-studying .v118-match-buttons>.v33-secondary{
+ background:var(--v33-paper)!important;color:var(--v33-ink)!important;
+ border:1px solid var(--v33-line)!important;
+}
+.v34-studying .v118-match-buttons>button:focus-visible{
+ outline:2px solid var(--v33-ink)!important;outline-offset:2px;
+}
+/* Prevent an obsolete viewport-centered bar style from reserving artificial space. */
+.v34-studying .v34-workspace-shell:has(.v118-match-actions){padding-bottom:0!important}
+@media(max-width:680px){
+ .v34-studying .v108-dock.v118-match-actions{
+  bottom:max(10px,env(safe-area-inset-bottom))!important;
+  gap:8px!important;padding:9px!important;
+ }
+ .v34-studying .v118-match-actions>.v104-next-caption{display:none!important}
+ .v34-studying .v118-match-buttons{width:100%;flex:1 1 auto;gap:8px}
+ .v34-studying .v118-match-buttons>button{
+  flex:1 1 0;min-width:0;white-space:normal!important;
+  padding:9px 7px!important;
+ }
+}
