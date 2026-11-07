@@ -660,3 +660,20 @@ body:has(.v109-overlay) > .v108-dock{display:none!important}
  .v115-foundation .v115-crumb-item:nth-child(2){display:none}
  .v115-foundation .v115-crumb-item.is-current>span{max-width:122px}
 }
+
+/* v1.15: Breadcrumb already offers "Nền tảng" return; chapter rail focuses
+   only on previous / current / next without repeating that destination. */
+.v115-foundation .v115-chapter-rail{
+ display:flex!important;justify-content:space-between;align-items:center;
+ gap:14px;
+}
+.v115-foundation .v115-chapter-rail .v114-chapter-switch{
+ justify-content:flex-start;gap:11px;
+}
+.v115-foundation .v115-chapter-rail .v114-progress{
+ margin-left:auto;text-align:right;
+}
+@media(max-width:680px){
+ .v115-foundation .v115-chapter-rail{justify-content:center}
+ .v115-foundation .v115-chapter-rail .v114-chapter-switch{justify-content:center}
+}
