@@ -729,6 +729,25 @@ test('Completion polish retains visible post-round controls and accessible feedb
  assert.match(styles,/prefers-reduced-motion:reduce/);
 });
 
+test('Backdrop click dismisses only outside the result dialog and preserves summary',()=>{
+ const h=harness(),route='learn/foundation/hiragana/all/match';
+ h.location.hash='#'+route;h.ui.page(route);
+ const session=h.ui.session();
+ for(const item of session.cards){h.click('match',item.id,'left');h.click('match',item.id,'right');}
+ const id=session.round.summary.roundId;
+ // The real delegated handler uses closest() to distinguish dialog content and backdrop.
+ // Verify the exact dispatch guard is still present; summary must stay persistent.
+ const code=load('foundation-course-v33.js');
+ assert.ok(code.includes("if(backdrop&&!event.target.closest?.('.v109-dialog'))"));
+ assert.ok(code.includes("overlay.classList.add('v109-closing')"));
+ assert.equal(session.round.summaryOpen,true);
+ h.click('summary-close');
+ assert.equal(session.round.summaryOpen,false);
+ assert.equal(session.round.summary.roundId,id);
+ h.click('summary-open');
+ assert.equal(session.round.summary.roundId,id);
+});
+
 test('Completion dialog has exactly two result-aware actions, no footer Close, and animated dismissal',()=>{
  const h=harness(),r='learn/foundation/hiragana/all/match';h.location.hash='#'+r;h.ui.page(r);
  const session=h.ui.session();
