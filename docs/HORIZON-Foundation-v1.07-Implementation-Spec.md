@@ -1,5 +1,5 @@
 # HORIZON Foundation v1.07 — Round Completion & Learning Feedback
-**Status:** Implementation specification only — not deployed.  
+**Status:** Implemented on `develop` and published to GitHub Pages; automated Learning QA and Pages build/deploy passed. Visual acceptance on end-user PC/iPhone remains pending.  
 **Baseline:** HORIZON Foundation v1.06 on `develop`. Preserve working features, learner profiles and historical progress.  
 **Primary scope:** Ghép chữ & âm (`match`), Nghe & ghép (`listen-match`); reusable later for `game` / `game-listen`, but no unrelated UI changes.
 
@@ -131,3 +131,12 @@ Implementation tasks:
 6. Cross-browser visual QA and deploy the demo; only then bump public release label.
 
 **Explicit non-goals for this phase:** database backend or schema migration, JLPT scoring claims, mandatory speed grading, user data reset, overhaul of Foundation course hierarchy.
+
+## Release record (v1.07)
+
+- UI code: `source/public/foundation-course-v33.js` (round attempt data, first-try metrics, listening replay tracking, completion modal, weak-pair review, and navigation).
+- Styles: `source/public/foundation-course-v107.css` (responsive dialog and reduced-motion behavior).
+- Asset references: `source/public/index.html` with `foundation-course-v33.js?v=107`, `foundation-course-v107.css?v=107` and `app.js?v=107`.
+- Wordmark: `source/public/app.js` displays `v1.07` beside HORIZON logo.
+- Automated regression: `tests/foundation-course-v33.test.mjs` exercises clean/wrong rounds, replay counts, report details, review selection and idempotent completion.
+- Note: UI is a browser-local prototype, not a database-backed analytics release. Any prior practice records remain unchanged.
