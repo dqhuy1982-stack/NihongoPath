@@ -1,0 +1,122 @@
+/* HORIZON Foundation v1.03
+   Natural page scrolling, no nested rails or fake book bridges. */
+@media(min-width:681px){
+ .v34-studying .v39-book-layout{
+  display:grid!important;
+  grid-template-columns:minmax(190px,235px) minmax(0,1fr)!important;
+  gap:14px!important;column-gap:14px!important;
+  align-items:start!important;
+  height:auto!important;min-height:0!important;max-height:none!important;
+  overflow:visible!important;
+  border:0!important;border-radius:0!important;box-shadow:none!important;
+  background:transparent!important;
+ }
+ .v34-studying .v39-book-layout>.v39-book-nav{
+  position:relative!important;grid-column:1;grid-row:1;
+  height:auto!important;min-height:0!important;max-height:none!important;
+  overflow:visible!important;overscroll-behavior:auto;
+  scrollbar-width:none;border:1px solid var(--v33-line)!important;
+  border-radius:14px!important;
+  padding:12px!important;
+  background:color-mix(in srgb,var(--v33-soft) 28%,var(--v33-paper));
+ }
+ .v34-studying .v39-book-layout>.v33-pane{
+  grid-column:2;grid-row:1;
+  position:sticky!important;top:76px!important;
+  height:auto!important;min-height:260px!important;max-height:none!important;
+  overflow:visible!important;overscroll-behavior:auto;
+  padding:18px 20px!important;
+  border:1px solid var(--v33-line)!important;border-radius:14px!important;
+  box-shadow:0 5px 19px rgba(86,44,60,.045)!important;
+  background:var(--v33-paper)!important;
+ }
+ .v34-studying .v39-book-layout>.v33-pane::before{display:none!important}
+ .v34-studying .v102-connector-lane{display:none!important}
+ .v34-studying .v39-book-tab.active{
+  width:100%!important;max-width:100%!important;
+  border:1px solid var(--v33-ink)!important;
+  border-radius:9px!important;
+  background:var(--v33-paper)!important;
+  box-shadow:inset 4px 0 0 var(--v33-ink)!important;
+ }
+ .v34-studying .v39-book-tab.active::after{content:none!important;display:none!important}
+}
+.v34-studying .v39-book-layout .v101-match-grid{
+ position:relative;display:grid!important;
+ grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+ grid-template-rows:auto!important;gap:clamp(18px,4vw,48px)!important;
+ align-items:start!important;min-width:0;
+}
+.v34-studying .v39-book-layout .v101-match-grid>.v33-match-column:first-child{
+ grid-column:1!important;grid-row:1!important;min-width:0!important;width:100%!important;
+}
+.v34-studying .v39-book-layout .v101-match-grid>.v33-match-column:last-child{
+ grid-column:2!important;grid-row:1!important;min-width:0!important;width:100%!important;
+}
+.v34-studying .v39-book-layout .v101-match-grid>.v101-match-lines{
+ position:absolute!important;inset:0!important;
+ grid-column:auto!important;grid-row:auto!important;
+ width:100%!important;height:100%!important;z-index:1;pointer-events:none;
+}
+.v34-studying .v39-book-layout .v101-match-grid>.v33-match-column{
+ position:relative;z-index:2;
+}
+.v34-studying .v103-nav-group{
+ font-size:9px;font-weight:780;letter-spacing:.09em;
+ color:var(--muted);margin:12px 8px 2px;
+}
+.v34-studying .v103-insight{
+ margin-top:15px;padding:14px;border:1px solid var(--v33-line);
+ border-radius:13px;background:color-mix(in srgb,var(--v33-soft) 24%,var(--v33-paper));
+}
+.v34-studying .v103-insight-title{display:flex;gap:9px;align-items:center;margin-bottom:12px;color:var(--v33-ink)}
+.v34-studying .v103-insight-title>span{font-size:20px}
+.v34-studying .v103-insight-title strong{display:block;font-size:13px}
+.v34-studying .v103-insight-title small{display:block;color:var(--muted);font-size:10px;line-height:1.5}
+.v34-studying .v103-insight-main{
+ display:flex;align-items:center;gap:12px;padding:11px;background:var(--v33-paper);
+ border:1px solid var(--v33-line);border-radius:11px;
+}
+.v34-studying .v103-insight-main>span{font-family:'Noto Serif JP',serif;font-size:29px;line-height:1.3;color:var(--v33-ink)}
+.v34-studying .v103-insight-main>div{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}
+.v34-studying .v103-insight-main strong{font-size:13px}
+.v34-studying .v103-insight-main small{font-size:10px;color:var(--muted)}
+.v34-studying .v103-audio{
+ border:1px solid var(--v33-line);border-radius:9px;background:var(--v33-paper);
+ color:var(--v33-ink);padding:7px 10px;cursor:pointer;font-size:11px;font-weight:700
+}
+.v34-studying .v103-insight-sections{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:10px}
+.v34-studying .v103-insight-sections>div{
+ min-width:0;padding:10px 11px;border:1px solid var(--v33-line);
+ border-radius:10px;background:var(--v33-paper);
+}
+.v34-studying .v103-insight-sections b{display:block;font-size:11px;color:var(--v33-ink);margin-bottom:5px}
+.v34-studying .v103-insight-sections p{font-size:11px;line-height:1.65;color:var(--text)}
+.v34-studying .v103-compare{display:flex;gap:7px;flex-wrap:wrap}
+.v34-studying .v103-compare>span{padding:5px 7px;border-radius:7px;background:var(--v33-soft);font-size:19px}
+.v34-studying .v103-compare small{font-size:10px;color:var(--muted)}
+.v34-studying .v103-examples{grid-column:1/-1}
+.v34-studying .v103-examples button{
+ display:flex;gap:10px;align-items:center;text-align:left;width:100%;min-height:36px;
+ background:transparent;border:0;border-top:1px solid var(--v33-line);
+ color:var(--text);padding:7px 0;cursor:pointer
+}
+.v34-studying .v103-examples button span:first-child{font-size:19px;font-family:'Noto Serif JP',serif;min-width:50px}
+.v34-studying .v103-examples button span:nth-child(2){font-size:11px;flex:1}
+.v34-studying .v103-examples button:hover{color:var(--v33-ink)}
+@media(max-width:680px){
+ .v34-studying .v39-book-layout{
+  height:auto!important;max-height:none!important;overflow:visible!important;
+  display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:9px!important;
+ }
+ .v34-studying .v39-book-layout>.v39-book-nav{height:auto!important;max-height:none!important;overflow:visible!important;display:flex;flex-wrap:wrap;gap:6px;white-space:normal}
+ .v34-studying .v39-book-layout .v39-book-heading{display:flex;flex-basis:100%}
+ .v34-studying .v39-book-tab{flex:1 1 130px;width:auto;white-space:normal}
+ .v34-studying .v103-nav-group{flex-basis:100%;margin:9px 4px 0}
+ .v34-studying .v39-book-layout>.v33-pane{
+  height:auto!important;max-height:none!important;overflow:visible!important;
+  position:static!important;border-radius:13px!important
+ }
+ .v34-studying .v39-book-layout .v101-match-grid{gap:12px!important}
+ .v34-studying .v103-insight-sections{grid-template-columns:1fr}
+}
