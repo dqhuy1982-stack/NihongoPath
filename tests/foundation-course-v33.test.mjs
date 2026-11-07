@@ -894,3 +894,29 @@ test('v1.18 result pulse applies only on newly graded answers, including matchin
  assert.equal(s.choice,answer);
  assert.match(h.ui.page(route),/v33-feedback positive/);
 });
+
+test('v1.19B achievement sheet is centered in viewport with scoped portal',()=>{
+ const js=load('foundation-course-v33.js');
+ const css=load('foundation-course-v107.css');
+ assert.ok(js.includes('function mountSummaryHost()'));
+ assert.ok(js.includes("host.className='v34-studying v119-summary-host'"));
+ assert.ok(js.includes('host.appendChild(overlay)'));
+ assert.ok(js.includes('document.body.appendChild(host)'));
+ assert.ok(js.includes("document.querySelector?.('body > .v119-summary-host')"));
+ assert.ok(js.includes('scheduleSummaryHost()'));
+ assert.ok(css.includes('body > .v119-summary-host > .v109-overlay'));
+ assert.ok(css.includes('place-items:center!important'));
+ assert.ok(css.includes('body > .v119-summary-host .v109-dialog'));
+ assert.ok(css.includes('radial-gradient(ellipse'));
+ assert.ok(css.includes('rgba(255,244,234,.13)'));
+ assert.ok(css.includes('prefers-reduced-motion:reduce'));
+ const h=harness(),route='learn/foundation/hiragana/all/match';
+ h.location.hash='#'+route;h.ui.page(route);
+ const session=h.ui.session();
+ for(const item of session.cards){h.click('match',item.id,'left');h.click('match',item.id,'right');}
+ const html=h.ui.page(route);
+ assert.match(html,/v109-overlay/);
+ assert.match(html,/v109-dialog/);
+ h.click('summary-close');
+ assert.equal(session.round.summaryOpen,false);
+});
