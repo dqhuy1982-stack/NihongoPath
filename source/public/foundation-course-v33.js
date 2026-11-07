@@ -269,7 +269,7 @@ function closeRoundSummary(){
  if(!session?.round?.summaryOpen)return;
  session.round.summaryOpen=false;
  const overlay=document.querySelector?.('[data-v107-dialog]');
- if(!overlay||typeof setTimeout!=='function'){refresh();focusRoundReturn();return;}
+ if(!overlay?.classList?.add||typeof setTimeout!=='function'){refresh();focusRoundReturn();return;}
  overlay.classList.add('v109-closing');
  setTimeout(()=>{if(play===session&&!session.round.summaryOpen){refresh();focusRoundReturn();}},190);
 }
