@@ -224,7 +224,7 @@ function voiceText(item){
 }
 function learnView(cfg){
  const deck=tokens(cfg);
- const s=countStats(deck),examples=cfg.id==='small'?DATA.smallSamples.find(x=>x.id===cfg.group):null;
+ const s=countStats(deck),examples=cfg.id==='small'?(cfg.group==='all'?{marks:DATA.smallSamples.map(x=>x.marks).join(' · '),examples:DATA.smallSamples.flatMap(x=>x.examples)}:DATA.smallSamples.find(x=>x.id===cfg.group)):null;
  let guideFocusUsed=false;
  const tiles=arr=>arr.map((x,i)=>{const focus=!guideFocusUsed&&!coachSeen();if(focus)guideFocusUsed=true;return '<button type="button" class="v33-glyph-card v35-kana-button '+(focus?'v35-first-kana':'')+'" data-f33="pronounce" data-value="'+clean(x.glyph)+'" data-reading="'+clean(x.read)+'" data-kind="'+clean(x.stage)+'" aria-label="Nghe '+clean(x.glyph)+(x.read?' · '+clean(x.read):'')+'"><span lang="ja">'+clean(x.glyph)+'</span><strong>'+clean(x.read)+'</strong>'+(isWord(x)?'<small>'+clean(x.vi)+'</small>':'')+'</button>';}).join('');
  const grouped=cfg.group==='all'&&cfg.id!=='small'&&cfg.id!=='mixed'&&cfg.mod.groups.length>1;
