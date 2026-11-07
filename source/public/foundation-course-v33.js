@@ -64,8 +64,8 @@ function choosePool(config,mode){
  let pool=activityPool(config,mode);
  if(mode==='reverse'||mode==='match'){
   const all=config.id==='small'?pool:DATA.take(config.id,'all',config.script);
-  const counts={};for(const x of all){const v=readable(x)+'|'+(mode==='match'&&config.script==='both'?x.script:'');counts[v]=(counts[v]||0)+1;}
-  pool=pool.filter(x=>counts[readable(x)+'|'+(mode==='match'&&config.script==='both'?x.script:'')]===1);
+  const counts={};for(const x of all){const v=readable(x)+'|'+x.script;counts[v]=(counts[v]||0)+1;}
+  pool=pool.filter(x=>counts[readable(x)+'|'+x.script]===1);
  }
  return pool;
 }
