@@ -831,3 +831,23 @@ test('v1.14 learners navigate adjacent chapters without a dropdown menu',()=>{
  assert.ok(css.includes('.v114-orientation'));
  assert.ok(css.includes('@media(max-width:680px)'));
 });
+
+test('v1.15 breadcrumbs show actual route ancestry and link to parent destinations',()=>{
+ const h=harness(),moduleRoute='learn/foundation/hiragana/all/learn';
+ h.location.hash='#'+moduleRoute;const html=h.ui.page(moduleRoute);
+ assert.match(html,/class="v115-breadcrumb"/);
+ assert.match(html,/aria-label="Vị trí trong lộ trình"/);
+ assert.match(html,/<a href="#learn\/overview">Học<\/a>/);
+ assert.match(html,/<a href="#learn\/catalog">Khóa học<\/a>/);
+ assert.match(html,/<a href="#course\/foundation">Nền tảng<\/a>/);
+ assert.match(html,/<span aria-current="page">Hiragana<\/span>/);
+ assert.equal((html.match(/class="v115-breadcrumb"/g)||[]).length,1);
+ assert.equal((html.match(/class="v34-stage-tab /g)||[]).length,4);
+ assert.doesNotMatch(html,/v28-header-shell/);
+ const index=h.ui.page('course/foundation');
+ assert.match(index,/<span aria-current="page">Nền tảng<\/span>/);
+ assert.doesNotMatch(index,/<span aria-current="page">Hiragana<\/span>/);
+ const style=load('foundation-course-v107.css');
+ assert.ok(style.includes('.shell:has(.v115-foundation) > .topbar .breadcrumb'));
+ assert.ok(style.includes('.v115-foundation .v115-breadcrumb'));
+});
