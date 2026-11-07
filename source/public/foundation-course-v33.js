@@ -175,7 +175,7 @@ function roundSelect(s,id){
  const r=s.round,p=r?.pairs[id];if(p&&p.firstAt===null)p.firstAt=roundClock(s);
 }
 function listenRound(s,id){
- const r=s.round,p=r?.pairs[id];if(p){roundSelect(s,id);p.audioReplays++;r.replays[id]=(r.replays[id]||0)+1}
+ const r=s.round,p=r?.pairs[id];if(p){roundSelect(s,id);p.audioPrompts=(p.audioPrompts||0)+1;if(p.audioPrompts>1)p.audioReplays++;r.replays[id]=(r.replays[id]||0)+1}
 }
 function roundAttempt(s,left,right,ok){
  const r=s.round;if(!r||r.finalized)return;
@@ -230,7 +230,7 @@ function summaryView(s,cfg){
  '<div class="v107-stats">'+metric(report.completedPairs+' / '+report.totalPairs,'Cặp hoàn thành')+metric(report.firstTryPairs+' / '+report.totalPairs,'Đúng ngay lần đầu')+
  metric(report.wrongAttempts,'Lượt ghép sai')+metric(formatDuration(report.totalElapsedMs),'Tổng thời gian')+'</div>'+
  '<div class="v107-body"><div class="v107-insight"><h4>✧ Nhận xét sau ván</h4><p>'+notes+'</p><p>Đúng ngay lần đầu: <strong>'+report.firstTryAccuracy+'%</strong> · Đúng theo lượt ghép: <strong>'+report.attemptAccuracy+'%</strong>.</p>'+
- (['listen-match','game-listen'].includes(s.kind)?'<p>Đã nghe âm theo thao tác: <strong>'+report.audioReplays+' lượt</strong> (không tính phát đáp án tự động).</p>':'')+
+ (['listen-match','game-listen'].includes(s.kind)?'<p>Số lần nghe lại: <strong>'+report.audioReplays+' lượt</strong> (không tính lượt nghe đầu tiên hay phát đáp án tự động).</p>':'')+
  '<p>Thời gian trung bình theo cặp: '+formatDuration(report.averagePairMs)+'. Đây là luyện tập, không có giới hạn thời gian.</p></div>'+
  '<div class="v107-review"><h4>'+ (canReview?'Cặp nên ôn lại':'Gợi ý tiếp theo')+'</h4>'+
  (canReview?'<div class="v107-review-tiles">'+review.map(p=>'<span lang="ja">'+clean(p.glyph)+' <small>'+clean(p.romaji)+' · ghép sai '+p.wrongAttempts+' lượt</small></span>').join('')+'</div>':
