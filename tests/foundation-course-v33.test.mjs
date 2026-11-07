@@ -689,7 +689,7 @@ test('v1.07 duration metrics are derived from attempts and never guessed',()=>{
  assert.ok(s.round.summary.pairResults.every(p=>p.pairElapsedMs===null||p.pairElapsedMs>=0));
  assert.ok(s.round.summary.totalElapsedMs>=0);
  const ui=h.ui.page(r);
- assert.match(ui,/Chi tiết từng cặp/);
+ assert.match(ui,/Xem chi tiết từng cặp/);
  assert.match(ui,/Tổng thời gian/);
  assert.match(load('foundation-course-v107.css'),/prefers-reduced-motion/);
 });
@@ -722,7 +722,7 @@ test('The learning UI does not alter the existing lesson engine or global learne
 test('Completion polish retains visible post-round controls and accessible feedback',()=>{
  const code=load('foundation-course-v33.js'),styles=load('foundation-course-v107.css');
  assert.match(code,/v108-dock/);
- assert.match(code,/v108-flower/);
+ assert.match(code,/v109-medal-art/);
  assert.match(code,/matchingSound\(true\)/);
  assert.match(code,/matchingSound\(false\)/);
  assert.match(styles,/v108-shake/);
