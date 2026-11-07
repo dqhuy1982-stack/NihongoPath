@@ -8,7 +8,7 @@ const routePrefix='learn/foundation',base='#'+routePrefix;
 const modes=[
  ['learn','Học','book-open'],['flash','Flashcard','layers'],['listen','Nghe → chữ','volume-2'],['truefalse','Đúng / Sai','check-circle'],['quiz','Chữ → âm','target'],
  ['reverse','Âm → chữ','arrow-left-right'],['match','Ghép cặp','grid-2x2'],['build','Xếp chữ','puzzle'],
- ['vocab-ja-vi','Nhật → Việt','languages'],['vocab-vi-ja','Việt → Nhật','languages'],['listen-match','Nghe & ghép','headphones'],['review','Ôn chữ yếu','refresh-cw'],['mix','Kiểm tra tổng hợp','check-circle-2']
+ ['vocab-ja-vi','Nhật → Việt','languages'],['vocab-vi-ja','Việt → Nhật','languages'],['listen-match','Nghe & ghép','headphones'],['review','Ôn chữ yếu','refresh-cw'],['game','Ghép cặp vui','gamepad-2'],['game-build','Ghép từ','puzzle'],['game-listen','Nghe & nối','headphones'],['mix','Kiểm tra tổng hợp','check-circle-2']
 ];
 const modeNames=Object.fromEntries(modes.map(([id,title])=>[id,title]));
 const initialGroup=m=>m.id==='small'?'pause':'all';
@@ -153,13 +153,13 @@ function ensurePlay(config){
  const kind=config.mode;
  const source=choosePool(config,kind);
  const list=kind==='review'?reviewPool(source):source;
- if(kind==='build'){
+ if(kind==='build'||kind==='game-build'){
   const cards=chooseTargets(contextual(config),5);
-  play={key,kind,cards,index:0,selected:[],tileOrder:cards.length?shuffle(Array.from(cards[0].glyph).map((glyph,i)=>({glyph,i}))):[],answer:null,correct:0,finished:cards.length===0,startedAt:null,ready:false};
- }else if(kind==='match'||kind==='listen-match'){
-  const permitted=kind==='listen-match'?list.filter(x=>x.stage!=='small'&&Array.from(x.glyph).length<=3):list;
-  const cards=chooseTargets(kind==='listen-match'&&config.script==='both'&&config.mod.script==='both'?permitted.filter(x=>x.script==='hira'):permitted,Math.min(6,permitted.length));
-  play={key,kind,cards,left:shuffle(cards),right:shuffle(cards),leftId:null,rightId:null,matched:[],mistakes:0,answered:0,feedback:'',finished:cards.length===0,startedAt:null,ready:false};
+  play={key,kind,cards,index:0,selected:[],tileOrder:cards.length?shuffle(Array.from(cards[0].glyph).map((glyph,i)=>({glyph,i}))):[],answer:null,correct:0,finished:cards.length===0,startedAt:null,ready:true};
+ }else if(['match','listen-match','game','game-listen'].includes(kind)){
+  const permitted=['listen-match','game-listen'].includes(kind)?list.filter(x=>x.stage!=='small'&&Array.from(x.glyph).length<=3):list;
+  const cards=chooseTargets(['listen-match','game-listen'].includes(kind)&&config.script==='both'&&config.mod.script==='both'?permitted.filter(x=>x.script==='hira'):permitted,Math.min(6,permitted.length));
+  play={key,kind,cards,left:shuffle(cards),right:shuffle(cards),leftId:null,rightId:null,matched:[],mistakes:0,answered:0,feedback:'',finished:cards.length===0,startedAt:null,ready:true};
  }else if(kind==='flash'){
   play={key,kind,cards:shuffle(list),index:0,flipped:false,remembered:0,needsReview:0};
  }else{
@@ -175,7 +175,7 @@ function ensurePlay(config){
    if(mode==='listen'&&x.stage==='small')mode='truefalse';
    return questionFor(x,mode,allPool);
   });
-  play={key,kind,questions,index:0,correct:0,answered:0,choice:null,finished:valid.length===0,startedAt:null,ready:false,roundMs:[],slow:0,errors:0};
+  play={key,kind,questions,index:0,correct:0,answered:0,choice:null,finished:valid.length===0,startedAt:null,ready:kind!=='mix',roundMs:[],slow:0,errors:0};
  }
  return play;
 }
@@ -392,7 +392,7 @@ function introPopup(cfg,s){
 }
 function workspace(cfg){
  const s=cfg.mode==='learn'?null:ensurePlay(cfg);
- const intro=s&&s.kind!=='flash'&&!s.ready&&!s.finished?introPopup(cfg,s):'';
+ const intro=cfg.mode==='mix'&&s&&!s.ready&&!s.finished?introPopup(cfg,s):'';
  const body=cfg.mode==='learn'?learnView(cfg):cfg.mode==='flash'?flashView(cfg,s):(cfg.mode==='match'||cfg.mode==='listen-match')?matchingView(cfg,s):cfg.mode==='build'?buildView(cfg,s):quizView(cfg,s);
  const weak=weakList(cfg);
  const panel='<aside class="v33-side"><h3>Sổ ôn · Gợi ý theo kết quả</h3>'+
@@ -419,20 +419,20 @@ function perform(el){
  if(cfg.mode==='learn')return;
  const s=ensurePlay(cfg);
  if(!s.ready&&s.kind!=='flash')return;
- if(op==='tile'&&s.kind==='build'&&!s.answer){
+ if(op==='tile'&&['build','game-build'].includes(s.kind)&&!s.answer){
   const i=Number(value);if(!Number.isInteger(i)||i<0||i>=s.tileOrder.length||s.selected.includes(i))return;
   s.selected.push(i);
   const word=s.cards[s.index],built=s.selected.map(n=>s.tileOrder[n].glyph).join('');
   if(s.selected.length===Array.from(word.glyph).length){
    const correct=built===word.glyph;s.answer={correct,built};if(correct)s.correct++;
-   s.lastMs=elapsed(s);s.grade=record(word,correct,'build',s.lastMs);
+   s.lastMs=null;s.grade=record(word,correct,s.kind,null);
   }
   refresh();return;
  }
- if(op==='undo'&&s.kind==='build'&&!s.answer){s.selected.pop();refresh();return}
- if(op==='build-next'&&s.kind==='build'&&s.answer){
+ if(op==='undo'&&['build','game-build'].includes(s.kind)&&!s.answer){s.selected.pop();refresh();return}
+ if(op==='build-next'&&['build','game-build'].includes(s.kind)&&s.answer){
   s.index++;s.finished=s.index>=s.cards.length;s.selected=[];s.answer=null;
-  if(!s.finished){s.tileOrder=shuffle(Array.from(s.cards[s.index].glyph).map((glyph,i)=>({glyph,i})));resetClock(s);}
+  if(!s.finished){s.tileOrder=shuffle(Array.from(s.cards[s.index].glyph).map((glyph,i)=>({glyph,i})));if(s.startedAt)resetClock(s);}
   refresh();return;
  }
  if(op==='flip'){s.flipped=!s.flipped;refresh();return}
@@ -443,16 +443,16 @@ function perform(el){
  }
  if(op==='answer'&&s.kind!=='match'&&s.kind!=='flash'&&!s.choice&&!s.finished){
   const q=s.questions[s.index];if(!q.choices.some(x=>x.id===value))return;
-  const took=elapsed(s);s.lastMs=took;s.choice=value;s.answered++;const ok=value===q.correct;if(ok)s.correct++;
-  s.grade=record(q.item,ok,q.mode||cfg.mode,took);s.roundMs.push(took);if(s.grade.slow)s.slow++;if(!ok)s.errors++;
+  const took=cfg.mode==='mix'?elapsed(s):null;s.lastMs=took;s.choice=value;s.answered++;const ok=value===q.correct;if(ok)s.correct++;
+  s.grade=record(q.item,ok,q.mode||cfg.mode,took);if(took!==null)s.roundMs.push(took);if(s.grade.slow)s.slow++;if(!ok)s.errors++;
   refresh();return;
  }
- if(op==='next'&&s.choice){s.index++;s.choice=null;s.grade=null;resetClock(s);s.finished=s.index>=s.questions.length;refresh();return}
- if(op==='match'&&(s.kind==='match'||s.kind==='listen-match')&&!s.matched.includes(value)&&s.cards.some(x=>x.id===value)){
-  if(side==='left'){s.leftId=value;if(s.kind==='listen-match'){const sample=s.cards.find(x=>x.id===value);if(sample)pronounce(sample.glyph,sample.read,true);}}else if(side==='right')s.rightId=value;
+ if(op==='next'&&s.choice){s.index++;s.choice=null;s.grade=null;if(s.startedAt)resetClock(s);s.finished=s.index>=s.questions.length;refresh();return}
+ if(op==='match'&&['match','listen-match','game','game-listen'].includes(s.kind)&&!s.matched.includes(value)&&s.cards.some(x=>x.id===value)){
+  if(side==='left'){s.leftId=value;if(['listen-match','game-listen'].includes(s.kind)){const sample=s.cards.find(x=>x.id===value);if(sample)pronounce(sample.glyph,sample.read,true);}}else if(side==='right')s.rightId=value;
   if(s.leftId&&s.rightId){
    const ok=s.leftId===s.rightId;const item=s.cards.find(x=>x.id===s.leftId);
-   record(item,ok,s.kind,elapsed(s));resetClock(s);
+   record(item,ok,s.kind,null);
    if(ok){s.matched.push(item.id);s.feedback='Đúng! Hãy ghép cặp tiếp theo.';}
    else{s.mistakes++;s.feedback='Chưa đúng. Thử ghép lại hai ô.';}
    s.leftId=null;s.rightId=null;
