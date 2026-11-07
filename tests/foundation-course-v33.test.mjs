@@ -59,8 +59,8 @@ test('Page navigation is consistent and practice categories have working answers
  for(const route of ['course/foundation','learn/foundation/hiragana/a/learn','learn/foundation/katakana/k/flash','learn/foundation/dakuten/g/reverse','learn/foundation/yoon/ky/match','learn/foundation/small/pause/vocab-ja-vi','learn/foundation/mixed/mixed/mix']){
    location.hash='#'+route;const html=ui.page(route);
    assert.ok(html.includes('HORIZON · Learning Hub'),route);
-   assert.ok(html.includes('HORIZON · Foundation Studio v33'),route);
-   if(route!=='course/foundation')assert.ok(html.includes('v33-module-tabs'));
+   assert.ok(html.includes('HORIZON · Foundation Studio v34'),route);
+   if(route!=='course/foundation')assert.ok(html.includes('v34-stagebar'));
  }
 });
 test('Answer immediately shows feedback and records isolated scored attempt, not completion',()=>{
@@ -105,11 +105,20 @@ test('Word-builder supports repeated Kana tiles, immediate marking and replay',(
  assert.equal(s.index,1);
 });
 
+test('Compact course presents 46 Hiragana together, with audio and four action tabs',()=>{
+ const h=harness(); const r='learn/foundation/hiragana/all/learn';h.location.hash='#'+r;
+ const html=h.ui.page(r);
+ assert.equal((html.match(/v33-glyph-card/g)||[]).length,46);
+ assert.equal((html.match(/data-f33="audio"/g)||[]).length,46);
+ assert.equal((html.match(/data-f34="tab"/g)||[]).length,4);
+ assert.ok(!html.includes('v33-row-chip'));
+ assert.ok(html.includes('data-f34="module"'));
+});
 test('The learning UI does not alter the existing lesson engine or global learner records',()=>{
  const html=load('index.html');
  assert.ok(html.includes('foundation-curriculum-v33.js?v=33'));
- assert.ok(html.includes('foundation-course-v33.js?v=33'));
- assert.ok(html.includes('foundation-course-v33.css?v=33'));
+ assert.ok(html.includes('foundation-course-v33.js?v=34'));
+ assert.ok(html.includes('foundation-course-v34.css?v=34'));
  const code=load('foundation-course-v33.js');
  assert.ok(!code.includes('NPLessonStore.save'));
  assert.ok(!code.includes('NPLessonEngine.complete'));
