@@ -30,8 +30,9 @@ test('Foundation is a connected course with actual Learn, Practice, Check links'
  assert.ok(content.includes('href="#course/N5"'),'optional N5 bridge');
  assert.ok(content.includes('href="#review"'),'review route retained');
  assert.equal((content.match(/class="fj-stage fj-stage-/g)||[]).length,3);
- assert.equal(out.units.length,6);
- assert.deepEqual(Array.from(out.units.map(x=>x.code)),['F01','F02','F03','F04','F05','F06']);
+ assert.equal(out.units.length,7);
+ assert.ok(content.includes('href="#lesson/foundation-k-row"'),'new K-row lesson is available');
+ assert.deepEqual(Array.from(out.units.map(x=>x.code)),['F01','F01B','F02','F03','F04','F05','F06']);
  assert.ok(content.includes('chưa có đánh giá tổng hợp Foundation'));
  assert.ok(!content.includes('100%'));
  assert.ok(!content.includes('Đã hoàn thành'));
@@ -71,10 +72,10 @@ test('Foundation route preserves original Studio, Recall Lab and learning data c
 test('Site loads route modules and CSS in an appropriate versioned order',()=>{
  assert.ok(html.includes('href="foundation-journey.css?v=18"'));
  assert.ok(html.indexOf('foundation-journey.css?v=18')>html.indexOf('season-shell.css?v=15'));
- assert.ok(html.includes('src="foundation-journey.js?v=18"'));
+ assert.ok(html.includes('src="foundation-journey.js?v=31"'));
  assert.ok(html.includes('src="app.js?v=18"'));
- assert.ok(html.includes('src="i18n/ui-pack.js?v=20"'));
- assert.ok(html.indexOf('src="i18n/ui-pack.js?v=20"')<html.indexOf('src="foundation-journey.js?v=18"'));
+ assert.ok(html.includes('src="i18n/ui-pack.js?v=31"'));
+ assert.ok(html.indexOf('src="i18n/ui-pack.js?v=31"')<html.indexOf('src="foundation-journey.js?v=31"'));
  assert.ok(css.includes('@media(max-width:620px)'));
  assert.ok(css.includes('prefers-reduced-motion:reduce'));
  assert.ok(css.includes('outline:2px solid'));
