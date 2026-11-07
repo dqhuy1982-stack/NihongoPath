@@ -725,3 +725,36 @@ body:has(.v109-overlay) > .v108-dock{display:none!important}
 @media(prefers-reduced-motion:reduce){
  .v34-studying .v36-kana-board .v35-kana-button:hover{transform:none!important}
 }
+
+/* HORIZON Foundation v1.17 — brief answer-result attention pulse.
+   The flash stays inside the existing green/red feedback surface. */
+.v34-studying .v33-feedback.v117-feedback-pulse,
+.v34-studying .v105-match-feedback.v117-feedback-pulse{
+ position:relative;isolation:isolate;
+ border-radius:12px;
+}
+.v34-studying .v105-match-feedback.v117-feedback-pulse{
+ padding:9px 12px;border:1px solid var(--v33-line);
+ background:var(--v33-paper);
+}
+@media(prefers-reduced-motion:no-preference){
+ .v34-studying .v117-pulse-correct{
+  animation:v117-correct-result .92s ease-in-out 1 both;
+ }
+ .v34-studying .v117-pulse-wrong{
+  animation:v117-wrong-result .92s ease-in-out 1 both;
+ }
+ @keyframes v117-correct-result{
+  0%,100%{box-shadow:0 0 0 0 rgba(54,135,87,0);filter:brightness(1)}
+  20%,58%{box-shadow:0 0 0 3px rgba(56,132,88,.22);filter:brightness(1.055)}
+  38%,77%{box-shadow:0 0 0 0 rgba(54,135,87,0);filter:brightness(1)}
+ }
+ @keyframes v117-wrong-result{
+  0%,100%{box-shadow:0 0 0 0 rgba(174,73,76,0);filter:brightness(1)}
+  20%,58%{box-shadow:0 0 0 3px rgba(174,73,76,.23);filter:brightness(1.045)}
+  38%,77%{box-shadow:0 0 0 0 rgba(174,73,76,0);filter:brightness(1)}
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ .v34-studying .v117-feedback-pulse{animation:none!important;outline:2px solid currentColor;outline-offset:2px}
+}
