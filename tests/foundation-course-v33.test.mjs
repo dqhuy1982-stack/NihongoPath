@@ -772,40 +772,39 @@ test('Completion dialog has exactly two result-aware actions, no footer Close, a
  assert.equal(session.round.summaryOpen,false);
 });
 
-test('v1.17 finish dock is portaled out of scrolling stages and cleaned up on navigation',()=>{
+test('v1.18 matching result controls remain inside the same exercise pane as Next Question',()=>{
  const code=load('foundation-course-v33.js'),css=load('foundation-course-v107.css');
- assert.ok(code.includes('function syncFinishDock()'));
- assert.ok(code.includes('document.body.appendChild(dock)'));
- assert.ok(code.includes('function removeFinishDock()'));
- assert.ok(code.includes('stage.innerHTML=workspace(current())'));
- assert.ok(code.includes('scheduleFinishDock()'));
- assert.ok(css.includes('body > .v108-dock'));
- assert.ok(css.includes('body:has([data-v107-dialog]) > .v108-dock'));
- assert.ok(css.includes('scrollbar-width:none!important'));
- assert.ok(css.includes('overscroll-behavior:contain'));
- const h=harness(),route='learn/foundation/hiragana/all/match';h.location.hash='#'+route;h.ui.page(route);
+ assert.ok(code.includes('function syncFinishDock(){removeFinishDock();}'));
+ assert.ok(!code.includes('document.body.appendChild(dock)'));
+ assert.ok(code.includes('v108-dock v104-sticky-next v118-match-actions'));
+ assert.ok(css.includes('.v108-dock.v118-match-actions'));
+ assert.ok(css.includes('position:sticky!important'));
+ assert.ok(css.includes('width:100%!important'));
+ assert.ok(css.includes('transform:none!important'));
+ const h=harness(),route='learn/foundation/hiragana/all/match';
+ h.location.hash='#'+route;h.ui.page(route);
  const session=h.ui.session();
  for(const item of session.cards){h.click('match',item.id,'left');h.click('match',item.id,'right');}
  h.click('summary-close');
- const markup=h.ui.page(route);
- assert.match(markup,/v108-dock/);
+ const html=h.ui.page(route);
+ assert.match(html,/v118-match-actions/);
+ assert.match(html,/data-f33="summary-open"/);
+ assert.match(html,/data-f33="restart"/);
+ assert.match(html,/v118-match-buttons/);
 });
 
-test('v1.17 finish bar is opaque and buttons remain legible after body portal',()=>{
- const css=load('foundation-course-v107.css'),code=load('foundation-course-v33.js');
- assert.match(css,/body > \.v108-dock button\.v33-primary/);
- assert.match(css,/body > \.v108-dock button\.v33-secondary/);
- assert.match(css,/background:#fffafa!important/);
- assert.match(css,/color:#ffffff!important/);
- assert.match(css,/\.v28-header-shell \.v25-header/);
- assert.match(code,/document\.body\.appendChild\(dock\)/);
- assert.match(code,/getComputedStyle/);
- const h=harness(),route='learn/foundation/hiragana/all/match';
- h.location.hash='#'+route;const html=h.ui.page(route);
- assert.match(html,/<a href="#learn\/overview">Học<\/a>/);
- assert.match(html,/v115-chapter-rail/);
+test('v1.18 both matching modes use the same locally aligned finish actions',()=>{
+ const h=harness();
+ for(const mode of ['match','listen-match']){
+  const route='learn/foundation/hiragana/all/'+mode;
+  h.location.hash='#'+route;h.ui.page(route);
+  const session=h.ui.session();
+  for(const item of session.cards){h.click('match',item.id,'left');h.click('match',item.id,'right');}
+  h.click('summary-close');
+  const html=h.ui.page(route);
+  assert.equal((html.match(/class="v108-dock v104-sticky-next v118-match-actions"/g)||[]).length,1);
+ }
 });
-
 test('v1.17 learners navigate adjacent chapters without a dropdown menu',()=>{
  const h=harness();
  const route='learn/foundation/hiragana/all/learn';
