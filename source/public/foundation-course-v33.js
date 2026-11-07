@@ -303,7 +303,7 @@ function resetClock(s){s.startedAt=Date.now();s.pausedMs=0;s.hiddenAt=null;}
 function clock(s,answered=false){return '<div class="v37-clock" aria-label="Thời gian phản hồi"><span aria-hidden="true">◷</span><strong data-f37-timer>'+(s.startedAt?timeLabel(answered?(s.lastMs||0):elapsed(s)):'—')+'</strong><small>'+(answered?'Đã trả lời':s.startedAt?'Đang tính giờ':'Chưa bắt đầu')+'</small></div>';}
 let ticker=null,absentTicks=0;
 function tickClock(){if(typeof setInterval!=='function'||ticker!==null)return;ticker=setInterval(()=>{const present=!!document.querySelector?.('.v34-workspace-shell');if(!present){if(++absentTicks>20){clearInterval(ticker);ticker=null;absentTicks=0;}return;}absentTicks=0;const el=document.querySelector?.('[data-f37-timer]');if(el&&play?.startedAt&&!play.finished&&!play.choice&&!play.answer&&play.kind!=='flash')el.textContent=timeLabel(elapsed(play));},100);}
-document.addEventListener('visibilitychange',()=>{if(!play?.startedAt||play.finished||play.choice||play.answer||play.kind==='flash')return;if(document.hidden){if(!play.hiddenAt)play.hiddenAt=Date.now()}else if(play.hiddenAt){play.pausedMs=(play.pausedMs||0)+(Date.now()-play.hiddenAt);play.hiddenAt=null;}});
+document.addEventListener('visibilitychange',()=>{if(play?.round&&!play.round.finalized){const r=play.round;if(document.hidden){if(r.pausedAt===null)r.pausedAt=timeNow();}else if(r.pausedAt!==null){r.pausedMs+=timeNow()-r.pausedAt;r.pausedAt=null;}}if(!play?.startedAt||play.finished||play.choice||play.answer||play.kind==='flash')return;if(document.hidden){if(!play.hiddenAt)play.hiddenAt=Date.now()}else if(play.hiddenAt){play.pausedMs=(play.pausedMs||0)+(Date.now()-play.hiddenAt);play.hiddenAt=null;}});
 function weakList(cfg){const rec=store().items;return DATA.take(cfg.id,'all',cfg.script).filter(x=>{const v=rec[x.id];return v&&(v.latestOutcome!=='correct'||new Date(v.nextAt).getTime()<=Date.now())}).sort((a,b)=>priority(b)-priority(a)).slice(0,6);}
 function navigate(route){location.hash='#'+route}
 function removeFoundationOverlay(){
@@ -671,6 +671,11 @@ function perform(el){
  if(!cfg.mod)return;
  if(op==='guide-ok'){dismissCoach();return;}
  if(op==='toggle-audio'){toggleAudioPref();refresh();return;}
+ if(op==='summary-close'&&play?.round){play.round.summaryOpen=false;refresh();return;}
+ if(op==='summary-open'&&play?.round?.summary){play.round.summaryOpen=true;refresh();focusRoundSummary();return;}
+ if(op==='summary-new'&&play?.round?.summary){play=null;ensurePlay(cfg);refresh();return;}
+ if(op==='summary-review'&&play?.round?.summary){if(roundReview(play,cfg))refresh();return;}
+ if(op==='summary-next'&&play?.round?.summary){localSwitch('mode',['match','game'].includes(play.kind)?'listen-match':'mix');return;}
  if(op==='insight-audio'){pronounce(value,el.dataset.reading||'',true);return;}
  if(op==='pronounce'&&cfg.mode==='learn'){pronounce(value,el.dataset.reading||'',el.dataset.kind==='basic');dismissCoach();return;}
  if(op==='listen-audio'&&(cfg.mode==='listen'||cfg.mode==='mix'||cfg.mode==='review')){const state=ensurePlay(cfg),q=state.questions[state.index];if(q){state.audioReplays=(state.audioReplays||0)+1;pronounce(q.item.glyph,q.item.read,true);}return;}
@@ -717,15 +722,20 @@ function perform(el){
  }
  if(op==='next'&&s.choice){s.index++;s.choice=null;s.grade=null;s.hintsUsed=0;s.audioReplays=0;if(s.startedAt)resetClock(s);s.finished=s.index>=s.questions.length;refresh();return}
  if(op==='match'&&['match','listen-match','game','game-listen'].includes(s.kind)&&!s.matched.includes(value)&&s.cards.some(x=>x.id===value)){
-  if(side==='left'){s.leftId=value;if(['listen-match','game-listen'].includes(s.kind)){const sample=s.cards.find(x=>x.id===value);if(sample)pronounce(sample.glyph,sample.read,true);}}else if(side==='right')s.rightId=value;
+  if(side==='left'){s.leftId=value;roundSelect(s,value);if(['listen-match','game-listen'].includes(s.kind)){const sample=s.cards.find(x=>x.id===value);if(sample){listenRound(s,value);pronounce(sample.glyph,sample.read,true);}}}
+  else if(side==='right'){s.rightId=value;roundSelect(s,value);}
   if(s.leftId&&s.rightId){
-   const ok=s.leftId===s.rightId;const item=s.cards.find(x=>x.id===s.leftId);
+   const left=s.leftId,right=s.rightId;
+   const ok=left===right;const item=s.cards.find(x=>x.id===left);
+   roundAttempt(s,left,right,ok);
    record(item,ok,s.kind,null);
    if(ok){s.lastMatched=item.id;s.matched.push(item.id);s.feedback='Đúng! Hãy ghép cặp tiếp theo.';if(audioPref())pronounce(item.glyph,item.read,true);}
-   else{s.mistakes++;s.feedback='Chưa đúng. Đường đỏ chỉ cặp vừa chọn, thử lại nhé.';s.wrongPair={left:s.leftId,right:s.rightId};}
+   else{s.mistakes++;s.feedback='Chưa đúng. Đường đỏ chỉ cặp vừa chọn, thử lại nhé.';s.wrongPair={left,right};}
    s.leftId=null;s.rightId=null;
+   if(ok&&s.matched.length===s.cards.length)completeRound(s,cfg);
   }
   refresh();
+  if(s.round?.summaryOpen)focusRoundSummary();
   if(s.wrongPair){
    const ref=s.wrongPair;
    if(typeof setTimeout==='function')setTimeout(()=>{if(play===s&&s.wrongPair===ref){s.wrongPair=null;s.feedback='Thử ghép lại hai ô.';refresh();}},950);
@@ -799,7 +809,22 @@ document.addEventListener('change',event=>{
  localSwitch(node.dataset.f34,node.value);
 });
 if(typeof window!=='undefined'&&window.addEventListener)window.addEventListener('hashchange',removeFoundationOverlay);
-document.addEventListener('keydown',event=>{if(event.key!=='Escape'||!document.querySelector?.('.v38-dialog'))return;event.preventDefault();localSwitch('tab','learn');});
+document.addEventListener('keydown',event=>{
+ const modal=document.querySelector?.('[data-v107-dialog]');
+ if(modal){
+  if(event.key==='Escape'){event.preventDefault();if(play?.round){play.round.summaryOpen=false;refresh();}return;}
+  if(event.key==='Tab'){
+   const actions=Array.from(modal.querySelectorAll?.('button,[href],summary')||[]).filter(x=>!x.disabled);
+   if(actions.length){const first=actions[0],last=actions[actions.length-1],active=document.activeElement;
+    if(event.shiftKey&&(active===first||active===modal.querySelector?.('.v107-dialog'))){event.preventDefault();last.focus();}
+    else if(!event.shiftKey&&active===last){event.preventDefault();first.focus();}
+   }
+  }
+  return;
+ }
+ if(event.key!=='Escape'||!document.querySelector?.('.v38-dialog'))return;
+ event.preventDefault();localSwitch('tab','learn');
+});
 document.addEventListener('click',event=>{
  const startAction=event.target.closest?.('[data-f38]');if(startAction&&document.querySelector('.v34-workspace-shell')){event.preventDefault();const cfg=current(),s=ensurePlay(cfg);if(startAction.dataset.f38==='start'){s.ready=true;resetClock(s);refresh();}else if(startAction.dataset.f38==='cancel'){localSwitch('tab','learn');}return;}
  const nav=event.target.closest('[data-f34="tab"],[data-f34="mode"]');if(nav?.dataset?.f34&&document.querySelector('.v34-workspace-shell')){event.preventDefault();localSwitch(nav.dataset.f34,nav.dataset.value);return;}
