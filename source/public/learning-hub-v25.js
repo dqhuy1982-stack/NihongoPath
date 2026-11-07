@@ -189,17 +189,139 @@ function catalogueTab(m){
  (ready?'<div class="v25-course-metric">'+progressBar(pct(count,total))+'<small>'+count+'/'+total+' hoạt động trong bản '+(m.sample?'mô phỏng':'ghi nhận')+'</small></div>':'')+'</div><span class="v25-course-open">Xem khóa học '+I('arrow')+'</span>','v25-course-card');
  }).join('')+'</div></section>';
 }
-function modulesTab(m){
- const groups=[['foundation','Nền tảng'],['N5','N5']];
- const blocks=groups.map(([id,labelText])=>{
-  const courseLessons=lessons.filter(a=>a.course===id),modules=[...new Set(courseLessons.map(a=>a.module))];
-  return '<section class="v32-learning-group"><div class="v32-group-heading"><h3>'+labelText+'</h3>'+href('course/'+id,'Xem khóa '+I('arrow'),'v25-text-cta')+'</div>'+
-  modules.map(name=>'<div class="v32-module"><div class="v32-module-title">'+I('layers')+'<strong>'+safe(name)+'</strong><small>'+courseLessons.filter(a=>a.module===name).length+' bài</small></div>'+
-  courseLessons.filter(a=>a.module===name).map((a,i)=>href(cellRoute(a,m),'<span class="v25-module-symbol" lang="ja">'+a.icon+'</span><span><small>BÀI '+String(i+1).padStart(2,'0')+' · '+safe(labelText)+'</small><strong>'+safe(a.title)+'</strong><em>'+safe(a.desc)+'</em></span>'+label(status(m,a.id)==='done'?'Đã hoàn tất':status(m,a.id)==='current'?'Đang học':'Có thể học',status(m,a.id))+'<span class="v25-module-go">'+I('arrow')+'</span>','v25-module-card')).join('')+'</div>').join('')+'</section>';
- }).join('');
- return '<section class="v25-panel">'+sectionHead('layers','Module · Học theo kỹ năng','learn/catalog','Khóa học')+
- '<p class="v25-tab-intro">Theo cấp độ → module → bài học. Nhấn bài để học, hoặc mở khóa để xem toàn bộ lộ trình.</p>'+blocks+'</section>';
+
+/* Foundation: the existing curriculum is the single source of truth.
+   A chapter contains topic lessons; the exercise engine supplies practice
+   and checks for each topic. Progress is read-only and never inferred from demos. */
+const foundationTopicTips={
+ a:'5 nguyên âm nền tảng; luyện nhận mặt và phản xạ âm.',
+ k:'5 chữ hàng K; phân biệt nét gần nhau khi đổi bảng chữ.',
+ s:'し đọc shi, không đọc si; đối chiếu さ・き.',
+ t:'ち đọc chi và つ đọc tsu; tránh nhầm với さ.',
+ n:'Đọc chậm từng chữ rồi tăng tốc nhận diện.',
+ h:'ふ đọc fu; lưu ý phân biệt は・ま・ほ.',
+ m:'Luyện phân biệt ま, み, む và các nét tương tự.',
+ y:'Hàng Y chỉ có や・ゆ・よ.',
+ r:'Âm R tiếng Nhật không hoàn toàn giống R tiếng Việt.',
+ w:'を thường đọc gần như o; ん là âm mũi.',
+ g:'Dấu ゛ biến hàng K thành hàng G.',
+ z:'じ đọc ji, ず đọc zu; chú ý nét và dấu.',
+ d:'ぢ・づ có phát âm gần じ・ず; học qua từ để phân biệt.',
+ b:'Dấu ゛ biến hàng H thành hàng B.',
+ p:'Dấu tròn ゜ biến hàng H thành hàng P.',
+ ky:'き + ゃ/ゅ/ょ nhỏ tạo một nhịp âm.',
+ sh:'し + ゃ/ゅ/ょ nhỏ: sha, shu, sho.',
+ ch:'ち + ゃ/ゅ/ょ nhỏ: cha, chu, cho.',
+ ny:'に + ゃ/ゅ/ょ nhỏ: nya, nyu, nyo.',
+ hy:'ひ + ゃ/ゅ/ょ nhỏ: hya, hyu, hyo.',
+ my:'み + ゃ/ゅ/ょ nhỏ: mya, myu, myo.',
+ ry:'り + ゃ/ゅ/ょ nhỏ: rya, ryu, ryo.',
+ gy:'ぎ + ゃ/ゅ/ょ nhỏ: gya, gyu, gyo.',
+ j:'じ + ゃ/ゅ/ょ nhỏ: ja, ju, jo.',
+ by:'び + ゃ/ゅ/ょ nhỏ: bya, byu, byo.',
+ py:'ぴ + ゃ/ゅ/ょ nhỏ: pya, pyu, pyo.',
+ pause:'っ/ッ nhỏ tạo nhịp ngắt trước phụ âm tiếp theo.',
+ length:'Dấu ー kéo dài nguyên âm, thường gặp ở Katakana.',
+ vowels:'Nhận diện chữ nhỏ trong âm ghép và từ mượn.',
+ mixed:'Trộn hai bảng chữ và các âm đã học để tự kiểm tra.'
+};
+const foundationLegacyLessons={a:'foundation-vowels',k:'foundation-k-row',s:'foundation-s-row',t:'foundation-t-row'};
+function foundationTopics(module,group,data){
+ if(module.id!=='small')return data.take(module.id,group.id,'both');
+ const w=data.words.filter(x=>x.stage==='small');
+ if(group.id==='pause')return w.filter(x=>/[っッ]/u.test(x.glyph));
+ if(group.id==='length')return w.filter(x=>x.glyph.includes('ー'));
+ if(group.id==='vowels')return w.filter(x=>/[ァィゥェォ]/u.test(x.glyph));
+ return w;
 }
+function foundationModuleCatalogue(){
+ const data=window.NPFoundationCurriculum,engine=window.NPFoundationCourse;
+ if(!data?.modules?.length||!engine?.path){
+  return '<section class="v25-panel"><h3>Nền tảng</h3><p>Chưa tải được mục lục. Vui lòng mở lại khóa Nền tảng.</p>'+href('course/foundation','Xem khóa Nền tảng','v25-text-cta')+'</section>';
+ }
+ const progress=engine.store?.()?.items||{};
+ const modules=data.modules;
+ const records=modules.map((m,index)=>{
+  const groups=m.groups.map((g,ordinal)=>{
+   const cards=foundationTopics(m,g,data);
+   const unique=[...new Set(cards.map(x=>x.id))];
+   const practiced=unique.filter(id=>progress[id]?.attempts>0).length;
+   const sample=cards[0]||{};
+   const route=engine.path(m.id,g.id,'learn');
+   const title=g.title;
+   const search=[m.title,m.subtitle,title,g.id,foundationTopicTips[g.id]||'',...cards.map(x=>x.glyph+' '+x.read)].join(' ');
+   const legacy=m.id==='hiragana'&&foundationLegacyLessons[g.id]?
+    '<a class="v121-lesson-guide" href="#lesson/'+foundationLegacyLessons[g.id]+'">Bài hướng dẫn chi tiết</a>':'';
+   return '<article class="v121-topic" data-v121-topic data-v121-search="'+safe(search.toLocaleLowerCase('vi'))+'">'+
+     '<a class="v121-topic-main" href="#'+route+'" aria-label="Học '+safe(title)+'">'+
+      '<span class="v121-topic-number">'+String(ordinal+1).padStart(2,'0')+'</span>'+
+      '<span class="v121-topic-glyph" lang="ja">'+safe(sample.glyph||'あ')+'</span>'+
+      '<span class="v121-topic-copy"><strong>'+safe(title)+'</strong><small>'+safe(foundationTopicTips[g.id]||m.subtitle)+'</small></span>'+
+      '<span class="v121-topic-progress">'+practiced+' / '+unique.length+' mẫu đã luyện</span>'+
+      '<span class="v121-topic-chevron" aria-hidden="true">›</span></a>'+
+      '<div class="v121-topic-actions">'+legacy+
+      '<a href="#'+engine.path(m.id,g.id,'quiz')+'">Luyện nhận diện</a>'+
+      '<a href="#'+engine.path(m.id,g.id,'flash')+'">Flashcard</a>'+
+      '<a href="#'+engine.path(m.id,g.id,'mix')+'">Kiểm tra</a></div></article>';
+  });
+  return {m,index,groups,all:groups.length};
+ });
+ const allCount=records.reduce((n,r)=>n+r.all,0);
+ return '<section class="v121-foundation-catalog" aria-labelledby="v121-heading">'+
+  '<div class="v121-catalog-heading"><div><p class="v121-eyebrow">FOUNDATION · MỤC LỤC HỌC TẬP</p>'+
+  '<h3 id="v121-heading">Nền tảng — học theo từng nhóm nhỏ</h3>'+
+  '<p>Chọn nhóm chữ để học, luyện hoặc kiểm tra. Không cần cuộn qua toàn bộ chương trình.</p></div>'+
+  '<span class="v121-catalog-count">'+modules.length+' chặng · '+allCount+' nhóm bài</span></div>'+
+  '<div class="v121-toolbar"><label class="v121-search-label"><span class="v121-search-icon" aria-hidden="true">⌕</span>'+
+  '<input type="search" data-v121-filter placeholder="Tìm Kana, Romaji hoặc tên bài…" aria-label="Tìm bài học Nền tảng" autocomplete="off"></label>'+
+  '<a class="v121-continue" href="#'+engine.path(modules[0].id,modules[0].groups[0].id,'learn')+'">Bắt đầu từ bài đầu →</a></div>'+
+  '<p class="v121-search-status" data-v121-status role="status" aria-live="polite" hidden></p>'+
+  '<div class="v121-chapter-list">'+records.map(({m,index,groups})=>{
+    const chapterItems=[...new Set(groups.flatMap(g=>{
+     const id=(g.match(/data-v121-search="([^"]*)"/)||[])[1];return id?[id]:[];
+    }))]; // Section counts come from the actual rendered groups, not fake lesson completion.
+    return '<details class="v121-chapter" data-v121-chapter '+(index===0?'open':'')+'>'+
+     '<summary><span class="v121-chapter-index">'+String(index+1).padStart(2,'0')+'</span>'+
+     '<span class="v121-chapter-name"><strong>'+safe(m.title.replace(/^\d+\s*[·.:-]\s*/,''))+'</strong><small>'+safe(m.subtitle)+'</small></span>'+
+     '<span class="v121-chapter-count">'+groups.length+' bài</span><span class="v121-chapter-toggle" aria-hidden="true">⌄</span></summary>'+
+     '<div class="v121-chapter-body">'+groups.join('')+
+     '<div class="v121-chapter-end"><a href="#'+engine.path(m.id,'all','learn')+'">Xem toàn bộ chặng →</a></div></div></details>';
+  }).join('')+'</div>'+
+  '<p class="v121-catalog-note">Tiến độ “đã luyện” chỉ tính mẫu có câu trả lời đã ghi nhận trong hồ sơ hiện tại; không đồng nghĩa đã nhớ lâu. Bài kiểm tra tổng hợp dùng cùng nguồn dữ liệu, không phải chứng chỉ JLPT.</p>'+
+  '</section>';
+}
+function modulesTab(m){
+ const courseLessons=lessons.filter(a=>a.course==='N5');
+ const n5Modules=[...new Set(courseLessons.map(a=>a.module))];
+ return '<section class="v25-panel v121-modules-page">'+
+  sectionHead('layers','Module · Danh mục bài học','learn/catalog','Khóa học')+
+  '<p class="v25-tab-intro">Mở một chặng, chọn nhóm bài và vào học trực tiếp. Không cần mở nhiều tầng menu.</p>'+
+  foundationModuleCatalogue()+
+  '<section class="v121-next-level"><div class="v32-group-heading"><h3>N5 · Bài học hiện có</h3>'+href('course/N5','Xem khóa N5 '+I('arrow'),'v25-text-cta')+'</div>'+
+  n5Modules.map(name=>'<div class="v32-module"><div class="v32-module-title">'+I('layers')+'<strong>'+safe(name)+'</strong></div>'+
+  courseLessons.filter(a=>a.module===name).map(a=>href(cellRoute(a,m),'<span class="v25-module-symbol" lang="ja">'+a.icon+'</span><span><strong>'+safe(a.title)+'</strong><em>'+safe(a.desc)+'</em></span>'+label(status(m,a.id)==='done'?'Đã hoàn tất':status(m,a.id)==='current'?'Đang học':'Có thể học',status(m,a.id))+'<span class="v25-module-go">'+I('arrow')+'</span>','v25-module-card')).join('')+'</div>').join('')+
+  '</section></section>';
+}
+/* Scoped search only changes the visible catalogue, never writes learning data. */
+document.addEventListener('input',event=>{
+ if(!event.target?.matches?.('[data-v121-filter]'))return;
+ const area=event.target.closest('.v121-foundation-catalog');if(!area)return;
+ const query=String(event.target.value||'').toLocaleLowerCase('vi').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();
+ let visible=0;
+ area.querySelectorAll('[data-v121-chapter]').forEach(chapter=>{
+  let count=0;
+  chapter.querySelectorAll('[data-v121-topic]').forEach(topic=>{
+   const haystack=(topic.getAttribute('data-v121-search')||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+   const match=!query||haystack.includes(query);
+   topic.hidden=!match;if(match)count++;
+  });
+  chapter.hidden=count===0;
+  if(query&&count)chapter.open=true;
+  visible+=count;
+ });
+ const status=area.querySelector('[data-v121-status]');
+ if(status){status.hidden=!query;status.textContent=query?visible+' nhóm bài phù hợp'+(visible?'':' · Hãy thử Kana, Romaji hoặc tên khác.'):'';}
+});
 
 function lessonsTab(m){
  const groups=[['foundation','Nền tảng'],['N5','N5']];
