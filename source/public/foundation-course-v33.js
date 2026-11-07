@@ -11,12 +11,12 @@ const modes=[
  ['vocab-ja-vi','Nhật → Việt','languages'],['vocab-vi-ja','Việt → Nhật','languages'],['mix','Kiểm tra tổng hợp','check-circle-2']
 ];
 const modeNames=Object.fromEntries(modes.map(([id,title])=>[id,title]));
-const initialGroup=m=>m.id==='hiragana'||m.id==='katakana'?'a':m.id==='dakuten'?'g':m.id==='yoon'?'ky':m.id==='small'?'pause':'mixed';
+const initialGroup=m=>m.id==='small'?'pause':'all';
 const path=(id,group,mode,script)=>routePrefix+'/'+id+'/'+(group||initialGroup(DATA.byId[id]))+'/'+(mode||'learn')+(script&&script!=='both'?'/'+script:'');
 function current(){
  const bits=decodeURIComponent(location.hash.replace(/^#\/?/,'')).split('/');
  const id=bits[2],mod=DATA.byId[id],group=bits[3]|| (mod?initialGroup(mod):''),mode=bits[4]||'learn',script=bits[5]||'both';
- return {id,mod,group:mod?.groups.some(x=>x.id===group)?group:mod?initialGroup(mod):'',mode:modeNames[mode]?mode:'learn',script:['hira','kata','both'].includes(script)?script:'both'};
+ return {id,mod,group:mod&&(group==='all'||mod.groups.some(x=>x.id===group))?group:mod?initialGroup(mod):'',mode:modeNames[mode]?mode:'learn',script:['hira','kata','both'].includes(script)?script:'both'};
 }
 function learnerId(){try{return String(P()?.id||'guest').replace(/[^a-z0-9_-]/gi,'_')}catch{return 'guest'}}
 const localKey=()=>'Horizon.FoundationPractice.v1.'+learnerId();
@@ -46,7 +46,7 @@ function shuffle(arr){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=
 function tokens(config){
  if(!config.mod)return [];
  if(config.id==='small'){
-  const selected=DATA.words.filter(w=>w.stage==='small'&&(config.group==='pause'?/[っッ]/u.test(w.glyph):config.group==='length'?w.glyph.includes('ー'):config.group==='vowels'?/[ァィゥェォ]/u.test(w.glyph):true));
+  const selected=DATA.words.filter(w=>w.stage==='small'&&(config.group==='all'?true:config.group==='pause'?/[っッ]/u.test(w.glyph):config.group==='length'?w.glyph.includes('ー'):config.group==='vowels'?/[ァィゥェォ]/u.test(w.glyph):true));
   return selected.length>=2?selected:DATA.words.filter(w=>w.stage==='small');
  }
  return DATA.take(config.id,config.group,config.script);
@@ -54,7 +54,7 @@ function tokens(config){
 function contextual(config){
  const a=DATA.contextual(config.id,config.script);
  if(config.id==='hiragana'||config.id==='katakana'){
-  const rowIndex=DATA.rows.findIndex(x=>x[0]===config.group);
+  const rowIndex=config.group==='all'?DATA.rows.length-1:DATA.rows.findIndex(x=>x[0]===config.group);
   const known=new Set(DATA.rows.slice(0,Math.max(0,rowIndex)+1).flatMap(row=>Array.from(config.id==='hiragana'?row[2]:row[3])));
   return a.filter(w=>w.stage==='basic'&&Array.from(w.glyph).every(ch=>known.has(ch)));
  }
@@ -113,12 +113,16 @@ function ensurePlay(config){
  return play;
 }
 function navigate(route){location.hash='#'+route}
-function refresh(){render(false)}
+function refresh(){
+ const stage=document.querySelector('.v34-workspace-shell');
+ if(stage){stage.innerHTML=workspace(current());return}
+ render(false);
+}
 function wrap(content,crumb='Nền tảng'){
  const shell=window.NPHorizonV25?.shell?.('catalog')||'<header class="v25-header"><div class="v25-hero-copy"><h1>Không gian học tập</h1></div></header>';
- return '<div class="v25-wrap v33-foundation" data-learning-hub="v33">'+shell+
+ return '<div class="v25-wrap v33-foundation" data-learning-hub="v34">'+shell+
  '<nav class="v25-breadcrumb" aria-label="Vị trí học tập"><a href="#learn/overview">Học</a><span aria-hidden="true">›</span><a href="#learn/catalog">Khóa học</a><span aria-hidden="true">›</span><a href="#course/foundation">Nền tảng</a>'+(crumb==='Nền tảng'?'':'<span aria-hidden="true">›</span><span aria-current="page">'+clean(crumb)+'</span>')+'</nav>'+
- content+'<footer class="v25-version">HORIZON · Foundation Studio v33 · Prototype (lưu luyện tập trên thiết bị)</footer></div>';
+ content+'<footer class="v25-version">HORIZON · Foundation Studio v34 · Prototype (lưu luyện tập trên thiết bị)</footer></div>';
 }
 function tag(txt){return '<span class="v33-tag">'+clean(txt)+'</span>'}
 function moduleStats(module){
@@ -136,15 +140,20 @@ function indexPage(){
  '<div class="v33-notice"><strong>Phân biệt ba trạng thái:</strong> Đã xem flashcard ≠ đã trả lời đúng ≠ ghi nhớ lâu dài. Tiến độ ở đây là số mẫu đã luyện trên thiết bị; không thay thế kết quả bài học chính thức hay chứng nhận trình độ.</div>');
 }
 function navigationFor(cfg){
- const m=cfg.mod;
- const tabs=DATA.modules.map(x=>'<a href="#'+path(x.id)+'" class="v33-module-tab '+(cfg.id===x.id?'active':'')+'" '+(cfg.id===x.id?'aria-current="page"':'')+'><span>'+clean(x.title)+'</span></a>').join('');
- const groups=m.groups.map(g=>'<a href="#'+path(cfg.id,g.id,'learn',cfg.script)+'" class="v33-row-chip '+(cfg.group===g.id?'active':'')+'">'+clean(g.title)+'</a>').join('');
- const s=moduleStats(m);
- return '<nav class="v33-module-tabs" aria-label="Các chặng Nền tảng">'+tabs+'</nav>'+
- '<div class="v33-module-intro"><div><p class="v33-eyebrow">NỀN TẢNG / '+clean(m.title)+'</p><h2>'+clean(m.subtitle)+'</h2><p>'+clean(m.note)+'</p></div><div class="v33-mini-stat"><strong>'+s.reviewed+' / '+s.total+'</strong><small>Mẫu đã thực sự luyện</small></div></div>'+
- (m.script==='both'?'<div class="v33-script-switch"><span>Bảng chữ:</span>'+[['both','Cả hai'],['hira','Hiragana'],['kata','Katakana']].map(([id,t])=>'<a href="#'+path(cfg.id,cfg.group,cfg.mode,id)+'" class="'+(cfg.script===id?'active':'')+'">'+t+'</a>').join('')+'</div>':'')+
- '<nav class="v33-row-nav" aria-label="Nhóm bài học">'+groups+'</nav>'+
- '<nav class="v33-modes" aria-label="Chọn cách luyện">'+modes.filter(([id])=>!(cfg.id==='small'&&['quiz','reverse'].includes(id))).map(([id,t])=>'<a href="#'+path(cfg.id,cfg.group,id,cfg.script)+'" class="'+(cfg.mode===id?'active':'')+'" '+(cfg.mode===id?'aria-current="page"':'')+'>'+t+'</a>').join('')+'</nav>';
+ const m=cfg.mod,s=moduleStats(m);
+ const opts=DATA.modules.map(x=>'<option value="'+x.id+'" '+(x.id===cfg.id?'selected':'')+'>'+clean(x.title)+'</option>').join('');
+ const practices=[['quiz','Chữ → âm'],['reverse','Âm → chữ'],['match','Ghép cặp'],['build','Xếp chữ'],['vocab-ja-vi','Nhật → Việt'],['vocab-vi-ja','Việt → Nhật']];
+ const group=cfg.mode==='learn'?'learn':cfg.mode==='flash'?'flash':cfg.mode==='mix'?'mix':'practice';
+ const actions=[['learn','1. Học bảng chữ'],['flash','2. Flashcard'],['practice','3. Luyện tập'],['mix','4. Kiểm tra tổng hợp']];
+ const tabs=actions.map(([id,label])=>'<button type="button" data-f34="tab" data-value="'+id+'" class="v34-stage-tab '+(id===group?'active':'')+'" '+(id===group?'aria-current="step"':'')+'>'+label+'</button>').join('');
+ const all=DATA.take(cfg.id,'all',cfg.script),stats=countStats(all);
+ return '<div class="v34-topline"><div class="v34-course-picker"><label for="v34-module">Đang học</label><select id="v34-module" data-f34="module" aria-label="Chọn nội dung Nền tảng">'+opts+'</select></div>'+
+ '<div class="v34-topline-info"><strong>'+clean(m.subtitle)+'</strong><small>'+stats.reviewed+' / '+stats.total+' mẫu đã luyện thử</small></div><a class="v34-back" href="#course/foundation">Tất cả nội dung</a></div>'+
+ '<div class="v34-stagebar" role="navigation" aria-label="Bước học">'+tabs+'</div>'+
+ '<div class="v34-options">'+(m.script==='both'?'<label>Bảng chữ <select data-f34="script" aria-label="Chọn bảng chữ">'+[['both','Cả hai'],['hira','Hiragana'],['kata','Katakana']].map(([id,t])=>'<option value="'+id+'" '+(cfg.script===id?'selected':'')+'>'+t+'</option>').join('')+'</select></label>':'')+
+ (group==='practice'?'<label>Dạng luyện <select data-f34="mode" aria-label="Chọn dạng luyện tập">'+practices.map(([id,t])=>'<option value="'+id+'" '+(cfg.mode===id?'selected':'')+'>'+t+'</option>').join('')+'</select></label>':'')+
+ (cfg.id==='small'&&group==='learn'?'<label>Chủ đề <select data-f34="small" aria-label="Chọn chủ đề chữ nhỏ">'+[['all','Tất cả'],['pause','っ / ッ'],['length','Âm dài ー'],['vowels','Nguyên âm nhỏ']].map(([id,t])=>'<option value="'+id+'" '+(cfg.group===id?'selected':'')+'>'+t+'</option>').join('')+'</select></label>':'')+
+ '<span class="v34-hint">'+(group==='learn'?'46 chữ hiển thị cùng nhau, nhấn loa để nghe.':group==='flash'?'Nhớ trước, lật sau.':group==='mix'?'Câu hỏi được trộn trong chặng.':'Chọn một dạng để luyện trong khung này.')+'</span></div>';
 }
 function learnView(cfg){
  const deck=tokens(cfg);
@@ -154,7 +163,7 @@ function learnView(cfg){
  const exampleMarkup=examples?'<div class="v33-examples">'+examples.examples.map(([glyph,read,meaning])=>'<div><b lang="ja">'+clean(glyph)+'</b><span>'+clean(read)+'</span><small>'+clean(meaning)+'</small></div>').join('')+'</div>':'';
  const note=cfg.id==='small'?'Chữ nhỏ và dấu ー được học trong từ hoặc cụm âm; không yêu cầu đọc một chữ nhỏ như âm độc lập.':selected?.note;
  const marks=cfg.id==='small'&&examples?.marks?'<div class="v33-small-marks" lang="ja">'+clean(examples.marks)+'</div>':'';
- return '<section class="v33-pane"><div class="v33-pane-head"><div><p class="v33-eyebrow">01 / HỌC & NHẬN DIỆN</p><h3>'+(cfg.mod.groups.find(g=>g.id===cfg.group)?.title||cfg.mod.title)+'</h3><p>Quan sát nhóm chữ, đối chiếu cách đọc; sau đó ẩn gợi ý qua Flashcard.</p></div>'+tag(deck.length+' mẫu')+'</div>'+
+ return '<section class="v33-pane"><div class="v33-pane-head"><div><p class="v33-eyebrow">01 / HỌC & NHẬN DIỆN</p><h3>'+(cfg.group==='all'?cfg.mod.title:cfg.mod.groups.find(g=>g.id===cfg.group)?.title||cfg.mod.title)+'</h3><p>Quan sát nhóm chữ, đối chiếu cách đọc; sau đó ẩn gợi ý qua Flashcard.</p></div>'+tag(deck.length+' mẫu')+'</div>'+
  marks+'<div class="v33-glyph-grid">'+grid+'</div>'+exampleMarkup+
  (note?'<div class="v33-teacher-note"><strong>Ghi chú của giáo viên</strong><p>'+clean(typeof note==='string'?note:'')+'</p></div>':'')+
  '<div class="v33-pane-actions"><a href="#'+path(cfg.id,cfg.group,'flash',cfg.script)+'" class="v33-primary">Luyện Flashcard →</a><a href="#'+path(cfg.id,cfg.group,cfg.id==='small'?'vocab-ja-vi':'quiz',cfg.script)+'" class="v33-secondary">Làm bài kiểm tra</a><a href="#kana" class="v33-secondary">Mở Writing Studio</a></div></section>';
@@ -203,13 +212,14 @@ function matchingView(cfg,s){
  '<div class="v33-match-grid"><div class="v33-match-column">'+left(s.left)+'</div><div class="v33-match-column">'+right(s.right)+'</div></div>'+
  (complete?'<div class="v33-pane-actions"><button data-f33="restart" class="v33-primary">Ghép lại với thứ tự khác</button></div>':'')+'</section>';
 }
-function modulePage(cfg){
- const header=navigationFor(cfg);
+function workspace(cfg){
  const s=cfg.mode==='learn'?null:ensurePlay(cfg);
  const body=cfg.mode==='learn'?learnView(cfg):cfg.mode==='flash'?flashView(cfg,s):cfg.mode==='match'?matchingView(cfg,s):cfg.mode==='build'?buildView(cfg,s):quizView(cfg,s);
- const vals=countStats(tokens(cfg));
- const panel='<aside class="v33-side"><h3>Học thế nào cho hiệu quả?</h3><ol><li>Học một nhóm chữ nhỏ.</li><li>Nhìn chữ, tự nhớ âm trước khi lật Flashcard.</li><li>Làm bài hai chiều, ghép cặp và luyện trộn.</li><li>Ôn chữ làm sai vào lần sau.</li></ol><div class="v33-side-divider"></div><strong>Tiến độ luyện trên thiết bị</strong><p>'+vals.reviewed+' / '+vals.total+' mẫu từng được kiểm tra · '+vals.due+' mẫu đến hạn gợi ý ôn.</p><a href="#kana">Writing Studio →</a><small>Không cộng lượt lật Flashcard vào điểm kiểm tra. Âm ghép và chữ nhỏ được học trong ngữ cảnh phù hợp.</small></aside>';
- return wrap(header+'<div class="v33-workspace">'+body+panel+'</div>',cfg.mod.title);
+ const panel='<aside class="v33-side"><h3>Học thế nào cho hiệu quả?</h3><ol><li>Nhìn tổng thể 46 chữ.</li><li>Học theo nhóm nhỏ khi cần.</li><li>Đọc thành tiếng trước khi lật thẻ.</li><li>Kiểm tra xen kẽ và ôn chữ sai.</li></ol><div class="v33-side-divider"></div><p>Flashcard tự đánh giá không phải kết quả kiểm tra. Điểm chỉ ghi nhận theo lượt trả lời.</p><a href="#kana">Mở Writing Studio →</a></aside>';
+ return navigationFor(cfg)+'<div class="v33-workspace">'+body+panel+'</div>';
+}
+function modulePage(cfg){
+ return wrap('<div class="v34-workspace-shell">'+workspace(cfg)+'</div>',cfg.mod.title).replace('class="v25-wrap v33-foundation"','class="v25-wrap v33-foundation v34-studying"');
 }
 function page(route){
  if(!route||route==='course/foundation'||route===routePrefix)return indexPage();
@@ -262,10 +272,42 @@ function perform(el){
  }
  if(op==='restart'){play=null;ensurePlay(cfg);refresh()}
 }
+/* Local switching preserves the page viewport and avoids hash navigation on every exercise tab. */
+function localSwitch(kind,value){
+ const cfg=current();if(!cfg.mod)return;
+ let target={...cfg};
+ if(kind==='module'){
+  const mod=DATA.byId[value];if(!mod)return;
+  target={id:mod.id,mod,group:initialGroup(mod),mode:'learn',script:'both'};
+ }else if(kind==='script'){
+  if(!['both','hira','kata'].includes(value))return;
+  target.script=value;
+ }else if(kind==='small'){
+  if(!['all','pause','length','vowels'].includes(value))return;
+  target.group=value;
+ }else if(kind==='mode'){
+  if(!['quiz','reverse','match','build','vocab-ja-vi','vocab-vi-ja'].includes(value))return;
+  target.mode=value;
+ }else if(kind==='tab'){
+  if(!['learn','flash','practice','mix'].includes(value))return;
+  target.mode=value==='practice'?'quiz':value;
+ }else return;
+ play=null;
+ const next=path(target.id,target.group,target.mode,target.script);
+ if(typeof history!=='undefined'&&history.replaceState)history.replaceState(null,'','#'+next);
+ else location.hash='#'+next;
+ const stage=document.querySelector('.v34-workspace-shell');
+ if(stage)stage.innerHTML=workspace(target);
+}
+document.addEventListener('change',event=>{
+ const node=event.target.closest?.('[data-f34]');if(!node||!document.querySelector('.v34-workspace-shell'))return;
+ localSwitch(node.dataset.f34,node.value);
+});
 document.addEventListener('click',event=>{
+ const nav=event.target.closest('[data-f34="tab"]');if(nav&&document.querySelector('.v34-workspace-shell')){event.preventDefault();localSwitch('tab',nav.dataset.value);return;}
  const b=event.target.closest('[data-f33]');if(!b)return;
  if(!document.querySelector('.v33-foundation'))return;
  event.preventDefault();perform(b);
 });
-window.NPFoundationCourse={version:'v33',page,store,stats:countStats,path,questionFor,choosePool,session:()=>play};
+window.NPFoundationCourse={version:'v34',page,store,stats:countStats,path,questionFor,choosePool,session:()=>play};
 })();
