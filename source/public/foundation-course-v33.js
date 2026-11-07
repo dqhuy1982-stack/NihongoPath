@@ -46,7 +46,7 @@ function shuffle(arr){const a=arr.slice();for(let i=a.length-1;i>0;i--){const j=
 function tokens(config){
  if(!config.mod)return [];
  if(config.id==='small'){
-  const selected=DATA.words.filter(w=>w.stage==='small'&&(config.group==='pause'?/[っッ]/u.test(w.glyph):config.group==='length'?w.glyph.includes('ー'):config.group==='vowels'?w.glyph.includes('ァ'):true));
+  const selected=DATA.words.filter(w=>w.stage==='small'&&(config.group==='pause'?/[っッ]/u.test(w.glyph):config.group==='length'?w.glyph.includes('ー'):config.group==='vowels'?/[ァィゥェォ]/u.test(w.glyph):true));
   return selected.length>=2?selected:DATA.words.filter(w=>w.stage==='small');
  }
  return DATA.take(config.id,config.group,config.script);
