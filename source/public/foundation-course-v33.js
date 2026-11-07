@@ -15,7 +15,7 @@ const initialGroup=m=>m.id==='small'?'pause':'all';
 const path=(id,group,mode,script)=>routePrefix+'/'+id+'/'+(group||initialGroup(DATA.byId[id]))+'/'+(mode||'learn')+(script&&script!=='both'?'/'+script:'');
 function current(){
  const bits=decodeURIComponent(location.hash.replace(/^#\/?/,'')).split('/');
- const id=bits[2],mod=DATA.byId[id],group=bits[3]|| (mod?initialGroup(mod):''),mode=bits[4]||'learn',script=bits[5]||'both';
+ const id=bits[2],mod=DATA.byId[id],group=bits[3]|| (mod?initialGroup(mod):''),legacyMode=bits[4]||'learn',mode=({game:'match','game-listen':'listen-match','game-build':'build'})[legacyMode]||legacyMode,script=bits[5]||'both';
  return {id,mod,group:mod&&(group==='all'||mod.groups.some(x=>x.id===group))?group:mod?initialGroup(mod):'',mode:modeNames[mode]?mode:'learn',script:['hira','kata','both'].includes(script)?script:'both'};
 }
 function learnerId(){try{return String(P()?.id||'guest').replace(/[^a-z0-9_-]/gi,'_')}catch{return 'guest'}}
@@ -236,31 +236,42 @@ function matchingSound(correct){
 }
 function formatDuration(ms){return Number.isFinite(ms)?(ms/1000).toLocaleString('vi-VN',{maximumFractionDigits:1})+' giây':'Chưa ghi nhận'}
 function roundSummaryView(s,cfg){
- const r=s.round,report=r?.summary;
- if(!report||!r.summaryOpen)return '';
- const review=report.pairResults.filter(p=>p.wrongAttempts);
+ const report=s.round?.summary;
+ if(!report||!s.round.summaryOpen)return '';
+ const review=report.pairResults.filter(p=>p.wrongAttempts>0);
  const cleanRound=report.wrongAttempts===0;
- const canReview=review.length>0;
- const heading=cleanRound?'Một lượt luyện thật tốt!':'Hoàn thành lượt luyện!';
- const detail=cleanRound?'Bạn đã ghép đúng ngay lần đầu cả '+report.totalPairs+' cặp. Hãy thử lượt luyện mới để củng cố.':
-  'Bạn đã nối đủ '+report.totalPairs+' cặp, trong đó '+report.firstTryPairs+' cặp đúng ngay lần đầu và '+report.wrongAttempts+' lượt ghép chưa đúng.';
- const metric=(value,label)=>'<div class="v107-metric"><strong>'+clean(value)+'</strong><small>'+clean(label)+'</small></div>';
- const notes=review.length?'Có '+review.length+' chữ tham gia vào ít nhất một lượt ghép sai. Ôn lại các cặp này trước khi bắt đầu lượt mới.':'Chưa ghi nhận cặp ghép sai trong ván này. Một ván đúng chưa có nghĩa là đã nhớ lâu.';
- return '<div class="v107-overlay" data-v107-dialog="1"><section class="v107-dialog" role="dialog" aria-modal="true" aria-labelledby="v107-title" tabindex="-1">'+
- '<div class="v107-header"><span class="v107-star v108-flower" role="img" aria-label="Hoa và nụ cười chúc mừng">🌸<span aria-hidden="true" class="v108-smile">☺</span><span aria-hidden="true" class="v108-spark">✦</span></span><div><p class="v33-eyebrow">TỔNG KẾT LƯỢT LUYỆN</p><h3 id="v107-title">'+heading+'</h3><p>'+detail+'</p></div><button type="button" class="v107-close" data-f33="summary-close" aria-label="Đóng tổng kết">×</button></div>'+
- '<div class="v107-stats">'+metric(report.completedPairs+' / '+report.totalPairs,'Cặp hoàn thành')+metric(report.firstTryPairs+' / '+report.totalPairs,'Đúng ngay lần đầu')+
- metric(report.wrongAttempts,'Lượt ghép sai')+metric(formatDuration(report.totalElapsedMs),'Tổng thời gian')+'</div>'+
- '<div class="v107-body"><div class="v107-insight"><h4>✧ Nhận xét sau ván</h4><p>'+notes+'</p><p>Đúng ngay lần đầu: <strong>'+report.firstTryAccuracy+'%</strong> · Đúng theo lượt ghép: <strong>'+report.attemptAccuracy+'%</strong>.</p>'+
- (['listen-match','game-listen'].includes(s.kind)?'<p>Số lần nghe lại: <strong>'+report.audioReplays+' lượt</strong> (không tính lượt nghe đầu tiên hay phát đáp án tự động).</p>':'')+
- '<p>Trung bình theo cặp: <strong>'+formatDuration(report.averagePairMs)+'</strong>. Nhanh nhất: <strong>'+formatDuration(report.fastestPairMs)+'</strong>; lâu nhất: <strong>'+formatDuration(report.slowestPairMs)+'</strong>.</p><p>Luyện tập không có giới hạn thời gian; số liệu chỉ dùng tham khảo.</p></div>'+
- '<div class="v107-review"><h4>'+ (canReview?'Cặp nên ôn lại':'Gợi ý tiếp theo')+'</h4>'+
- (canReview?'<div class="v107-review-tiles">'+review.map(p=>'<span lang="ja">'+clean(p.glyph)+' <small>'+clean(p.romaji)+' · ghép sai '+p.wrongAttempts+' lượt</small></span>').join('')+'</div>':
- '<p>Hãy thử thêm một lượt với các chữ và thứ tự mới, sau đó ôn lại sau một khoảng nghỉ.</p>')+
- '<details class="v107-details"><summary>Chi tiết từng cặp · '+report.pairResults.length+'</summary><div>'+report.pairResults.map(p=>'<div><span lang="ja">'+clean(p.glyph)+'</span><span>'+clean(p.romaji)+'</span><small>'+p.wrongAttempts+' lần ghép sai · '+formatDuration(p.pairElapsedMs)+(p.audioReplays?' · nghe '+p.audioReplays+' lần':'')+'</small></div>').join('')+'</div></details></div></div>'+
- '<div class="v107-actions">'+(canReview?'<button type="button" class="v33-primary" data-f33="summary-review">Luyện lại cặp cần ôn</button>':'')+
- '<button type="button" class="'+(canReview?'v33-secondary':'v33-primary')+'" data-f33="summary-new">↻ Lượt luyện mới</button>'+
- '<button type="button" class="v33-secondary" data-f33="summary-next">'+(['match','game'].includes(s.kind)?'Chuyển sang Nghe & ghép':'Kiểm tra tổng hợp')+'</button>'+
- '<button type="button" class="v33-secondary" data-f33="summary-close">Đóng</button></div></section></div>';
+ const nextMode=['match','game'].includes(s.kind)&&cfg.id!=='small'&&cfg.id!=='mixed'?'listen-match':'mix';
+ const title=cleanRound?'Một lượt luyện thật tốt!':'Bạn đã hoàn thành lượt luyện!';
+ const lead=cleanRound?'Bạn đã ghép đúng ngay lần đầu cả '+report.totalPairs+' cặp.':'Hoàn thành '+report.totalPairs+' cặp, trong đó '+report.firstTryPairs+' cặp đúng ngay lần đầu.';
+ const medal='<svg viewBox="0 0 112 112" aria-hidden="true" class="v109-medal-art"><circle cx="56" cy="56" r="50" fill="none" stroke="currentColor" stroke-opacity=".14"/><g class="v109-petals" fill="#f5ded5" stroke="#b7897e" stroke-width=".9"><ellipse cx="56" cy="30" rx="12" ry="21"/><ellipse cx="56" cy="82" rx="12" ry="21"/><ellipse cx="30" cy="56" rx="21" ry="12"/><ellipse cx="82" cy="56" rx="21" ry="12"/><ellipse cx="37.5" cy="37.5" rx="11" ry="19" transform="rotate(-45 37.5 37.5)"/><ellipse cx="74.5" cy="37.5" rx="11" ry="19" transform="rotate(45 74.5 37.5)"/><ellipse cx="37.5" cy="74.5" rx="11" ry="19" transform="rotate(45 37.5 74.5)"/><ellipse cx="74.5" cy="74.5" rx="11" ry="19" transform="rotate(-45 74.5 74.5)"/></g><circle cx="56" cy="56" r="21" fill="#f8eacb" stroke="#b7897e"/><path d="M48 53h.1m16 0h.1" stroke="#956c58" stroke-linecap="round" stroke-width="3"/><path d="M48 62q8 9 16 0" stroke="#956c58" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg>';
+ const metric=(symbol,value,label)=>'<div class="v109-stat"><span class="v109-stat-icon" aria-hidden="true">'+symbol+'</span><strong>'+clean(value)+'</strong><span>'+clean(label)+'</span></div>';
+ const note=cleanRound?'Không có lượt chọn sai trong lần luyện này. Thử lại sau một khoảng nghỉ để củng cố ghi nhớ.':
+  'Có '+review.length+' chữ xuất hiện trong lượt ghép sai. Đây là các chữ cần ôn, không có nghĩa cả '+review.length+' chữ đều được trả lời sai độc lập.';
+ const nextText=cleanRound?'Thử một lượt khác với thứ tự mới. Một lượt đúng chưa đủ kết luận đã nhớ lâu.':
+  'Ôn các chữ từng xuất hiện trong cặp ghép sai trước khi chuyển sang lượt mới.';
+ const detailRows=report.pairResults.map(p=>'<div class="v109-detail-row"><strong lang="ja">'+clean(p.glyph)+'</strong><span>'+clean(p.romaji)+'</span><small>'+p.wrongAttempts+' lượt ghép sai · '+formatDuration(p.pairElapsedMs)+(p.audioReplays?' · nghe lại '+p.audioReplays+' lần':'')+'</small></div>').join('');
+ return '<div class="v107-overlay v109-overlay" data-v107-dialog="1"><section class="v107-dialog v109-dialog" role="dialog" aria-modal="true" aria-labelledby="v107-title" aria-describedby="v109-description" tabindex="-1">'+
+ '<header class="v109-hero"><div class="v109-medal" role="img" aria-label="Hoa mỉm cười chúc mừng">'+medal+'<span class="v109-glint" aria-hidden="true">✧</span></div><div class="v109-intro"><p class="v33-eyebrow">✦ TỔNG KẾT LƯỢT LUYỆN</p><h3 id="v107-title">'+title+'</h3><p id="v109-description">'+lead+'</p></div><button type="button" class="v107-close v109-close" data-f33="summary-close" aria-label="Đóng kết quả">×</button></header>'+
+ '<div class="v109-stats" aria-label="Thống kê lượt luyện">'+metric('✓',report.completedPairs+' / '+report.totalPairs,'Cặp hoàn thành')+metric('✦',report.firstTryPairs+' / '+report.totalPairs,'Đúng lần đầu')+metric('↺',report.wrongAttempts,'Lượt chọn sai')+metric('◷',formatDuration(report.totalElapsedMs),'Tổng thời gian')+'</div>'+
+ '<div class="v109-content"><section class="v109-observation"><div class="v109-section-top"><span class="v109-step">01</span><h4>Nhận xét dành cho bạn</h4></div><p class="v109-observation-lead">'+note+'</p><div class="v109-mini-data"><span>Đúng ngay lần đầu <strong>'+report.firstTryAccuracy+'%</strong></span><span>Trung bình mỗi cặp <strong>'+formatDuration(report.averagePairMs)+'</strong></span></div>'+
+ (['listen-match','game-listen'].includes(s.kind)?'<p class="v109-small-note">Số lần nghe lại: '+report.audioReplays+' (không tính lần nghe đầu hoặc phát đáp án tự động).</p>':'')+
+ '<p class="v109-small-note">Thời gian chỉ dùng tham khảo, không chấm điểm nhanh/chậm.</p></section>'+
+ '<section class="v109-next"><div class="v109-section-top"><span class="v109-step">02</span><h4>Bước tiếp theo</h4></div><p>'+nextText+'</p>'+
+ (review.length?'<div class="v109-review-list" aria-label="Chữ cần ôn">'+review.map(p=>'<span lang="ja">'+clean(p.glyph)+' <small>'+clean(p.romaji)+'</small></span>').join('')+'</div>':'')+
+ '<details class="v109-details"><summary>Xem chi tiết từng cặp <span>'+report.pairResults.length+'</span></summary><div class="v109-details-list">'+detailRows+'</div></details></section></div>'+
+ '<footer class="v109-actions"><span class="v109-footer-note">Mỗi lượt luyện là một bước tiến nhỏ.</span>'+
+ (review.length?'<button type="button" class="v33-primary" data-f33="summary-review">Ôn lại cặp cần nhớ</button><button type="button" class="v33-secondary" data-f33="summary-new">Lượt luyện mới</button>':
+ '<button type="button" class="v33-primary" data-f33="summary-new">Lượt luyện mới</button><button type="button" class="v33-secondary" data-f33="summary-next">'+(nextMode==='listen-match'?'Sang Nghe & ghép':'Kiểm tra tổng hợp')+'</button>')+
+ '</footer></section></div>';
+}
+function closeRoundSummary(){
+ const session=play;
+ if(!session?.round?.summaryOpen)return;
+ session.round.summaryOpen=false;
+ const overlay=document.querySelector?.('[data-v107-dialog]');
+ if(!overlay||typeof setTimeout!=='function'){refresh();focusRoundReturn();return;}
+ overlay.classList.add('v109-closing');
+ setTimeout(()=>{if(play===session&&!session.round.summaryOpen){refresh();focusRoundReturn();}},190);
 }
 function focusRoundReturn(){
  if(typeof queueMicrotask==='function')queueMicrotask(()=>{
@@ -376,8 +387,8 @@ function navigationFor(cfg){
  const m=cfg.mod,s=moduleStats(m);
  const opts=DATA.modules.map(x=>'<option value="'+x.id+'" '+(x.id===cfg.id?'selected':'')+'>'+clean(x.title)+'</option>').join('');
  const practices=[['review','Ôn chữ còn yếu'],['quiz','Chữ → âm'],['reverse','Âm → chữ'],...(cfg.id!=='small'&&cfg.id!=='mixed'?[['listen','Nghe → chữ'],['listen-match','Nghe & ghép cặp']]:[]),['truefalse','Đúng / Sai'],['match','Ghép cặp'],['build','Xếp chữ'],['vocab-ja-vi','Nhật → Việt'],['vocab-vi-ja','Việt → Nhật']];
- const group=cfg.mode==='learn'?'learn':cfg.mode==='flash'?'flash':cfg.mode==='mix'?'mix':cfg.mode.startsWith('game')?'game':'practice';
- const actions=[['learn','Học'],['flash','Flashcard'],['practice','Luyện tập'],['game','Game'],['mix','Kiểm tra tổng hợp']];
+ const group=cfg.mode==='learn'?'learn':cfg.mode==='flash'?'flash':cfg.mode==='mix'?'mix':'practice';
+ const actions=[['learn','Học'],['flash','Flashcard'],['practice','Luyện tập'],['mix','Kiểm tra tổng hợp']];
  const stepIcons={
  learn:'<path d="M12 7v14m0-14C9.5 5.6 6.5 5 3 6v14c3.5-1 6.5-.5 9 1m0-14c2.5-1.4 5.5-2 9-1v14c-3.5-1-6.5-.5-9 1"/>',
  flash:'<rect x="3" y="5" width="13" height="16" rx="2"/><path d="M7 2h12a2 2 0 0 1 2 2v12M7 10h5M7 14h5"/>',
@@ -648,7 +659,7 @@ function introPopup(cfg,s){
  '<div class="v38-dialog-actions"><button class="v33-secondary" type="button" data-f38="cancel">Quay về Học</button><button class="v33-primary" type="button" data-f38="start" autofocus>Bắt đầu '+(mode==='mix'?'kiểm tra':'luyện tập')+' →</button></div></section></div>';
 }
 const PRACTICE_MODES=[['quiz','Chữ → âm','あ'],['reverse','Âm → chữ','a'],['listen','Nghe → chữ','♫'],['truefalse','Đúng / Sai','✓'],['match','Ghép chữ & âm','⇄'],['listen-match','Nghe & ghép','◖'],['build','Xếp chữ thành từ','文'],['missing','Điền chữ còn thiếu','□'],['vocab-ja-vi','Nhật → Việt','日'],['vocab-vi-ja','Việt → Nhật','VI'],['review','Sổ ôn chữ yếu','↻']];
-const GAME_MODES=[['game','Ghép cặp Kana','⇄'],['game-build','Xếp từ vui','文'],['game-listen','Nghe & nối','♫']];
+/* Game-style duplicates are consolidated into the Practice workbook. */
 function audioPref(){
  try{return localStorage.getItem('horizon.foundation.autoAnswerAudio')!=='off'}catch(e){return true}
 }
@@ -658,16 +669,15 @@ function toggleAudioPref(){
  return enabled;
 }
 function activityBook(cfg){
- const isGame=cfg.mode.startsWith('game');
- const items=(isGame?GAME_MODES:PRACTICE_MODES).filter(([id])=>!['listen','listen-match','game-listen'].includes(id)||(cfg.id!=='small'&&cfg.id!=='mixed'));
- const groups=isGame?[['TRÒ CHƠI',items]]:[
+ const items=PRACTICE_MODES.filter(([id])=>!['listen','listen-match'].includes(id)||(cfg.id!=='small'&&cfg.id!=='mixed'));
+ const groups=[
   ['NHẬN DIỆN',items.filter(x=>['quiz','reverse','listen','truefalse'].includes(x[0]))],
   ['GHÉP & GHI NHỚ',items.filter(x=>['match','listen-match','build','missing'].includes(x[0]))],
   ['NGHĨA & ỨNG DỤNG',items.filter(x=>['vocab-ja-vi','vocab-vi-ja'].includes(x[0]))],
   ['ÔN TẬP',items.filter(x=>x[0]==='review')]
  ];
  const entry=([id,label,symbol])=>'<button type="button" data-f34="mode" data-value="'+id+'" class="v39-book-tab '+(id===cfg.mode?'active':'')+'" '+(id===cfg.mode?'aria-current="page"':'')+'><span class="v39-book-symbol" aria-hidden="true">'+symbol+'</span><span>'+label+'</span><span aria-hidden="true" class="v39-book-chevron">›</span></button>';
- return '<nav class="v39-book-nav" aria-label="'+(isGame?'Trò chơi Kana':'Sổ bài tập')+'">'+
+ return '<nav class="v39-book-nav" aria-label="Sổ bài tập">'+
  
  '<button type="button" class="v105-audio-toggle" data-f33="toggle-audio" aria-pressed="'+audioPref()+'"><span aria-hidden="true">'+(audioPref()?'◖))':'◖×')+'</span> Âm thanh đáp án: <strong>'+(audioPref()?'Bật':'Tắt')+'</strong></button>'+
  groups.filter(([,entries])=>entries.length).map(([label,entries])=>'<div class="v106-menu-group"><div class="v106-group-heading">'+label+'</div><div class="v105-menu-entries">'+entries.map(entry).join('')+'</div></div>').join('')+
@@ -697,11 +707,11 @@ function perform(el){
  if(!cfg.mod)return;
  if(op==='guide-ok'){dismissCoach();return;}
  if(op==='toggle-audio'){toggleAudioPref();refresh();return;}
- if(op==='summary-close'&&play?.round){play.round.summaryOpen=false;refresh();focusRoundReturn();return;}
+ if(op==='summary-close'&&play?.round){closeRoundSummary();return;}
  if(op==='summary-open'&&play?.round?.summary){play.round.summaryOpen=true;refresh();focusRoundSummary();return;}
  if(op==='summary-new'&&play?.round?.summary){play=null;ensurePlay(cfg);refresh();return;}
  if(op==='summary-review'&&play?.round?.summary){if(roundReview(play,cfg))refresh();return;}
- if(op==='summary-next'&&play?.round?.summary){localSwitch('mode',['match','game'].includes(play.kind)?'listen-match':'mix');return;}
+ if(op==='summary-next'&&play?.round?.summary){localSwitch('mode',play.kind==='match'&&cfg.id!=='small'&&cfg.id!=='mixed'?'listen-match':'mix');return;}
  if(op==='insight-audio'){pronounce(value,el.dataset.reading||'',true);return;}
  if(op==='pronounce'&&cfg.mode==='learn'){pronounce(value,el.dataset.reading||'',el.dataset.kind==='basic');dismissCoach();return;}
  if(op==='listen-audio'&&(cfg.mode==='listen'||cfg.mode==='mix'||cfg.mode==='review')){const state=ensurePlay(cfg),q=state.questions[state.index];if(q){state.audioReplays=(state.audioReplays||0)+1;pronounce(q.item.glyph,q.item.read,true);}return;}
@@ -785,10 +795,10 @@ function localSwitch(kind,value){
   if(!['all','pause','length','vowels'].includes(value))return;
   target.group=value;
  }else if(kind==='mode'){
-  if(!['quiz','reverse','listen','listen-match','review','truefalse','match','build','vocab-ja-vi','vocab-vi-ja','missing','game','game-build','game-listen'].includes(value))return;
+  if(!['quiz','reverse','listen','listen-match','review','truefalse','match','build','vocab-ja-vi','vocab-vi-ja','missing'].includes(value))return;
   target.mode=value;
  }else if(kind==='tab'){
-  if(!['learn','flash','practice','game','mix'].includes(value))return;
+  if(!['learn','flash','practice','mix'].includes(value))return;
   target.mode=value==='practice'?'quiz':value;
  }else return;
  play=null;
@@ -838,7 +848,7 @@ if(typeof window!=='undefined'&&window.addEventListener)window.addEventListener(
 document.addEventListener('keydown',event=>{
  const modal=document.querySelector?.('[data-v107-dialog]');
  if(modal){
-  if(event.key==='Escape'){event.preventDefault();if(play?.round){play.round.summaryOpen=false;refresh();focusRoundReturn();}return;}
+  if(event.key==='Escape'){event.preventDefault();closeRoundSummary();return;}
   if(event.key==='Tab'){
    const actions=Array.from(modal.querySelectorAll?.('button,[href],summary')||[]).filter(x=>!x.disabled);
    if(actions.length){const first=actions[0],last=actions[actions.length-1],active=document.activeElement;
@@ -852,6 +862,8 @@ document.addEventListener('keydown',event=>{
  event.preventDefault();localSwitch('tab','learn');
 });
 document.addEventListener('click',event=>{
+ const backdrop=event.target.closest?.('[data-v107-dialog]');
+ if(backdrop&&event.target===backdrop){event.preventDefault();closeRoundSummary();return;}
  const startAction=event.target.closest?.('[data-f38]');if(startAction&&document.querySelector('.v34-workspace-shell')){event.preventDefault();const cfg=current(),s=ensurePlay(cfg);if(startAction.dataset.f38==='start'){s.ready=true;resetClock(s);refresh();}else if(startAction.dataset.f38==='cancel'){localSwitch('tab','learn');}return;}
  const nav=event.target.closest('[data-f34="tab"],[data-f34="mode"]');if(nav?.dataset?.f34&&document.querySelector('.v34-workspace-shell')){event.preventDefault();localSwitch(nav.dataset.f34,nav.dataset.value);return;}
  const b=event.target.closest('[data-f33]');if(!b)return;
