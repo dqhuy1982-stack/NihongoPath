@@ -6,7 +6,7 @@ const DATA=window.NPFoundationCurriculum;if(!DATA)return;
 const clean=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const routePrefix='learn/foundation',base='#'+routePrefix;
 const modes=[
- ['learn','Học','book-open'],['flash','Flashcard','layers'],['quiz','Chữ → âm','target'],
+ ['learn','Học','book-open'],['flash','Flashcard','layers'],['listen','Nghe → chữ','volume-2'],['truefalse','Đúng / Sai','check-circle'],['quiz','Chữ → âm','target'],
  ['reverse','Âm → chữ','arrow-left-right'],['match','Ghép cặp','grid-2x2'],['build','Xếp chữ','puzzle'],
  ['vocab-ja-vi','Nhật → Việt','languages'],['vocab-vi-ja','Việt → Nhật','languages'],['mix','Kiểm tra tổng hợp','check-circle-2']
 ];
@@ -67,7 +67,7 @@ const isWord=item=>typeof item.vi==='string';
 function readable(item){return isWord(item)?item.vi:item.read}
 function choosePool(config,mode){
  let pool=activityPool(config,mode);
- if(mode==='reverse'||mode==='match'){
+ if(mode==='reverse'||mode==='match'||mode==='listen'){
   const all=config.id==='small'?pool:DATA.take(config.id,'all',config.script);
   const counts={};for(const x of all){const v=readable(x)+'|'+x.script;counts[v]=(counts[v]||0)+1;}
   pool=pool.filter(x=>counts[readable(x)+'|'+x.script]===1);
@@ -79,13 +79,27 @@ function questionFor(item,mode,pool){
  const sameType=pool.filter(x=>isWord(x)===isVocab);
  const sameScript=isVocab?sameType:sameType.filter(x=>x.script===item.script);
  const ambiguous=!isVocab&&sameScript.filter(x=>x.read===item.read).length>1;
+ if(mode==='truefalse'){
+  const alternate=pick(sameScript.filter(x=>x.id!==item.id&&x.read!==item.read),1)[0];
+  const shown=alternate&&Math.random()<.5?alternate.read:item.read;
+  const yes=shown===item.read;
+  return {item,mode,prompt:'Cách đọc này có đúng không?',stimulus:item.glyph+' → '+shown,
+   choices:[{id:'yes',label:'Đúng'},{id:'no',label:'Sai'}],correct:yes?'yes':'no',
+   note:'Đáp án: '+item.glyph+' → '+item.read+'. '+(item.note||'Nhìn lại hình chữ và tự nhớ âm trước khi chọn.')};
+ }
+ if(mode==='listen'){
+  const candidates=shuffle(sameScript.filter(x=>x.id!==item.id&&x.glyph!==item.glyph));
+  const choices=[item,...candidates.slice(0,3)].map(x=>({id:x.id,label:x.glyph}));
+  return {item,mode,prompt:'Nghe âm, sau đó chọn chữ tương ứng.',stimulus:'',choices:shuffle(choices),correct:item.id,
+   note:'Âm đã nghe: '+item.read+' → '+item.glyph+'. '+(item.note||'Có thể nghe lại trước khi trả lời.')};
+ }
  const inverse=mode==='reverse'||mode==='vocab-vi-ja'||mode==='mix'&&Math.random()<.5&&!ambiguous;
  const key=x=>inverse?x.glyph:isVocab?x.vi:x.read;
  const prompt=inverse?(isVocab?'Chọn từ tiếng Nhật phù hợp với nghĩa:':'Chọn '+(item.script==='hira'?'Hiragana':'Katakana')+' ứng với âm:'):isVocab?'Từ này có nghĩa tiếng Việt nào?':'Chữ Kana này đọc thế nào?';
  const stimulus=inverse?(isVocab?item.vi:item.read):item.glyph;
  const poolForChoices=inverse&&!isVocab?sameScript:sameType;
  const candidates=shuffle(poolForChoices.filter(x=>x.id!==item.id&&key(x)!==key(item)));
- const unique=[];const labels=new Set([key(item)]);
+ const unique=[],labels=new Set([key(item)]);
  for(const x of candidates){if(labels.has(key(x)))continue;labels.add(key(x));unique.push(x);if(unique.length===3)break}
  const choices=[item,...unique].map(x=>({id:x.id,label:key(x)}));
  return {item,mode,prompt,stimulus,choices:shuffle(choices),correct:item.id,
@@ -105,7 +119,7 @@ function ensurePlay(config){
  }else if(kind==='flash'){
   play={key,kind,cards:shuffle(list),index:0,flipped:false,remembered:0,needsReview:0};
  }else{
-  const targets=pick(list,Math.min(10,list.length));
+  const targets=pick(config.mode==='listen'?list.filter(x=>x.stage==='basic'&&x.glyph.length===1&&x.script==='hira'):list,Math.min(10,list.length));
   const allPool=kind.startsWith('vocab')||config.id==='small'?contextual(config):DATA.take(config.id,'all',config.script);
   const valid=targets.filter(x=>allPool.filter(p=>p.id!==x.id&&isWord(p)===isWord(x)).length>=2);
   play={key,kind,questions:valid.map(x=>questionFor(x,kind,allPool)),index:0,correct:0,answered:0,choice:null,finished:valid.length===0};
@@ -142,7 +156,7 @@ function indexPage(){
 function navigationFor(cfg){
  const m=cfg.mod,s=moduleStats(m);
  const opts=DATA.modules.map(x=>'<option value="'+x.id+'" '+(x.id===cfg.id?'selected':'')+'>'+clean(x.title)+'</option>').join('');
- const practices=[['quiz','Chữ → âm'],['reverse','Âm → chữ'],['match','Ghép cặp'],['build','Xếp chữ'],['vocab-ja-vi','Nhật → Việt'],['vocab-vi-ja','Việt → Nhật']];
+ const practices=[['quiz','Chữ → âm'],['reverse','Âm → chữ'],['listen','Nghe → chữ'],['truefalse','Đúng / Sai'],['match','Ghép cặp'],['build','Xếp chữ'],['vocab-ja-vi','Nhật → Việt'],['vocab-vi-ja','Việt → Nhật']];
  const group=cfg.mode==='learn'?'learn':cfg.mode==='flash'?'flash':cfg.mode==='mix'?'mix':'practice';
  const actions=[['learn','1. Học bảng chữ'],['flash','2. Flashcard'],['practice','3. Luyện tập'],['mix','4. Kiểm tra tổng hợp']];
  const tabs=actions.map(([id,label])=>'<button type="button" data-f34="tab" data-value="'+id+'" class="v34-stage-tab '+(id===group?'active':'')+'" '+(id===group?'aria-current="step"':'')+'>'+label+'</button>').join('');
