@@ -168,3 +168,71 @@
 .v34-studying .v109-details summary:hover{color:var(--v33-ink);background:color-mix(in srgb,var(--v33-soft) 40%,transparent)}
 .v34-studying .v109-overlay.v109-closing{pointer-events:none}
 @media(max-width:680px){.v34-studying .v110-feedback-card{padding:12px;gap:9px}.v34-studying .v110-next-card{padding:12px}.v34-studying .v109-mini-data{padding:10px}}
+
+/* HORIZON Foundation v1.10 — quiet, compact summary and unoccluded finish dock */
+.v34-studying .v109-dialog{
+ width:min(790px,calc(100vw - 32px))!important;
+ max-height:min(88dvh,730px)!important;
+ display:flex!important;flex-direction:column!important;
+ overflow:hidden!important;border-radius:22px!important
+}
+.v34-studying .v109-hero{flex:0 0 auto;padding:20px 27px 16px}
+.v34-studying .v109-medal{width:74px;height:74px;flex-basis:74px}
+.v34-studying .v109-medal-art{width:67px;height:67px}
+.v34-studying .v109-intro h3{font-size:clamp(23px,2.7vw,30px)}
+.v34-studying .v109-stats{flex:0 0 auto;padding:13px 27px}
+.v34-studying .v109-stat strong{font-size:clamp(18px,2vw,23px)}
+.v34-studying .v109-content{
+ flex:1 1 auto!important;min-height:0!important;
+ overflow-x:hidden!important;overflow-y:auto!important;
+ overscroll-behavior:contain;scrollbar-width:none!important;
+ -ms-overflow-style:none;gap:19px;padding:17px 27px 22px
+}
+.v34-studying .v109-content::-webkit-scrollbar,
+.v34-studying .v109-details-list::-webkit-scrollbar{display:none!important}
+.v34-studying .v109-details-list{scrollbar-width:none}
+.v34-studying .v110-feedback-card{padding:12px!important;margin-bottom:9px!important}
+.v34-studying .v110-guidance{margin-bottom:10px!important}
+.v34-studying .v109-mini-data{margin:9px 0!important;padding:9px 12px!important}
+.v34-studying .v110-next-card{padding:12px!important;margin-bottom:9px!important}
+.v34-studying .v109-section-top{margin-bottom:9px}
+.v34-studying .v109-actions{
+ position:relative!important;inset:auto!important;
+ flex:0 0 auto!important;z-index:2;
+ min-height:66px;margin:0!important;
+ padding:11px 27px 13px!important;display:flex;
+ align-items:center;justify-content:flex-end;gap:9px;
+ background:var(--v33-paper)!important;border-top:1px solid var(--v33-line)
+}
+.v34-studying .v109-actions button{min-height:40px!important}
+body > .v108-dock{
+ position:fixed!important;bottom:calc(16px + env(safe-area-inset-bottom))!important;
+ left:50%!important;right:auto!important;transform:translateX(-50%)!important;
+ width:min(650px,calc(100vw - 32px))!important;max-width:none!important;
+ z-index:2900!important;display:flex!important;align-items:center;gap:10px;
+ box-sizing:border-box;margin:0!important;padding:10px 12px!important;
+ border:1px solid var(--v33-line);border-radius:15px;background:var(--v33-paper);
+ box-shadow:0 12px 35px rgba(39,28,36,.17)
+}
+body > .v108-dock > span{flex:1 1 auto;min-width:0}
+body > .v108-dock button{min-height:43px;white-space:nowrap;flex-shrink:0}
+body:has([data-v107-dialog]) > .v108-dock{display:none!important}
+@media(max-width:680px){
+ .v34-studying .v109-dialog{width:100%!important;max-height:calc(100dvh - 12px)!important}
+ .v34-studying .v109-hero{padding:16px 16px 13px}
+ .v34-studying .v109-stats{padding:12px 16px}
+ .v34-studying .v109-content{padding:14px 16px 18px}
+ .v34-studying .v109-actions{
+  padding:10px 16px calc(12px + env(safe-area-inset-bottom))!important
+ }
+ body > .v108-dock{
+  bottom:calc(10px + env(safe-area-inset-bottom))!important;
+  width:calc(100vw - 20px)!important;gap:8px
+ }
+ body > .v108-dock > span{display:none}
+ body > .v108-dock button{flex:1 1 0;min-width:0;white-space:normal}
+}
+@media(prefers-reduced-motion:reduce){
+ .v34-studying .v109-dialog,.v34-studying .v109-overlay,
+ body > .v108-dock{transition:none!important}
+}
