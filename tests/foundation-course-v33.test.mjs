@@ -806,23 +806,22 @@ test('v1.12 finish bar is opaque and buttons remain legible after body portal',(
  assert.match(html,/Nền tảng/);
 });
 
-test('v1.12 Foundation shows one contextual header without duplicate learning hero and nav',()=>{
- const h=harness();
- const route='learn/foundation/hiragana/all/learn';h.location.hash='#'+route;
- const html=h.ui.page(route);
- assert.match(html,/v112-course-head/);
- assert.match(html,/v112-kicker/);
- assert.match(html,/CHẶNG 01/);
- assert.match(html,/Hiragana/);
- assert.match(html,/v112-progress/);
+test('v1.13 Foundation has one compact location selector and direct activity navigation',()=>{
+ const h=harness(),route='learn/foundation/hiragana/all/learn';
+ h.location.hash='#'+route;const html=h.ui.page(route);
+ assert.match(html,/v113-learning-nav/);
+ assert.match(html,/v113-module-select/);
+ assert.match(html,/v113-current-step/);
+ assert.match(html,/data-f34="module"/);
  assert.match(html,/Tất cả chặng/);
+ assert.match(html,/Hiragana/);
+ assert.match(html,/Nền tảng/);
  assert.doesNotMatch(html,/Không gian học tập/);
  assert.doesNotMatch(html,/v28-header-shell/);
  assert.doesNotMatch(html,/v25-breadcrumb/);
+ assert.doesNotMatch(html,/v112-course-head/);
  assert.equal((html.match(/class="v34-stage-tab /g)||[]).length,4);
  const index=h.ui.page('course/foundation');
  assert.match(index,/Nhận mặt chữ, nhớ âm, rồi dùng được/);
- assert.doesNotMatch(index,/Không gian học tập/);
- assert.ok(load('app.js').includes('<span>Học</span>'));
- assert.ok(load('foundation-course-v107.css').includes('.v112-course-head'));
+ assert.ok(load('foundation-course-v107.css').includes('.v113-learning-nav'));
 });
