@@ -443,7 +443,7 @@ function navigationFor(cfg){
  '<a href="#course/foundation" class="v114-chapters" aria-label="Quay về danh sách chặng">‹ <span>Các chặng</span></a>'+
  '<div class="v114-chapter-switch" role="group" aria-label="Chuyển chặng">'+
  '<button type="button" class="v114-arrow" data-f34="module" data-value="'+(previous?clean(previous.id):'')+'" aria-label="'+(previous?'Chặng trước: '+clean(previous.title):'Đang ở chặng đầu tiên')+'" '+(previous?'':'disabled')+'>‹</button>'+
- '<div class="v114-current-chapter"><small>CHẶNG '+moduleNumber+' / '+String(DATA.modules.length).padStart(2,'0')+'</small><strong>'+clean(m.title)+'</strong></div>'+
+ '<div class="v114-current-chapter"><small>CHẶNG '+moduleNumber+' / '+String(DATA.modules.length).padStart(2,'0')+'</small><strong>'+clean(m.title.replace(/^\\d+\\s*[·.:-]\\s*/,''))+'</strong></div>'+
  '<button type="button" class="v114-arrow" data-f34="module" data-value="'+(next?clean(next.id):'')+'" aria-label="'+(next?'Chặng tiếp: '+clean(next.title):'Đang ở chặng cuối cùng')+'" '+(next?'':'disabled')+'>›</button></div>'+
  '<span class="v114-progress">'+stats.reviewed+' / '+stats.total+' mẫu đã luyện</span></div>'+
 
