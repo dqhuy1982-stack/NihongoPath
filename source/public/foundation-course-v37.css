@@ -20,3 +20,12 @@
  .v34-studying .v37-clock small{font-size:8px}
  .v34-studying .v37-summary-stats span{min-width:80px;padding:8px}
 }
+
+.v34-studying .v37-head-meta{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex:0 0 auto}
+.v34-studying .v37-review-chip{display:inline-flex;align-items:center;justify-content:center;min-height:34px;padding:6px 10px;border:1px solid var(--v33-line);border-radius:9px;background:var(--v33-soft);color:var(--v33-ink);font-size:11px;font-weight:770;cursor:pointer}
+.v34-studying .v37-review-chip:hover,.v34-studying .v37-review-chip:focus-visible{border-color:var(--v33-ink);background:var(--v33-paper)}
+@media(max-width:600px){
+ .v34-studying .v37-head-meta{flex-direction:column;gap:4px;align-items:flex-end}
+ .v34-studying .v37-head-meta .v33-tag{padding:3px 5px;font-size:9px}
+ .v34-studying .v37-review-chip{margin-left:0}
+}
