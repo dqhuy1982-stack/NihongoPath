@@ -1,0 +1,92 @@
+/* Foundation v1.02 — real connector lane and paired viewport.
+   Prior active pseudo-bridges are disabled by design. */
+@media(min-width:681px){
+ .v34-studying .v39-book-layout{
+  --v102-line:color-mix(in srgb,var(--v33-ink) 38%,var(--v33-line));
+  display:grid!important;
+  grid-template-columns:minmax(190px,230px) 22px minmax(0,1fr)!important;
+  column-gap:0!important;gap:0!important;
+  height:clamp(430px,calc(100dvh - 145px),790px);
+  min-height:0!important;max-height:790px;
+  overflow:hidden;align-items:stretch!important;
+  position:relative;isolation:isolate;
+  border:1px solid var(--v102-line);border-radius:15px;
+  background:var(--v33-paper);box-shadow:0 8px 24px rgba(95,55,72,.045);
+ }
+ .v34-studying .v39-book-layout>.v39-book-nav{
+  grid-column:1;grid-row:1;
+  height:100%;min-height:0;max-height:none;overflow-y:auto!important;overflow-x:hidden!important;
+  overscroll-behavior:contain;scrollbar-width:thin;
+  border:0!important;border-right:1px solid var(--v33-line)!important;
+  border-radius:0!important;
+  background:color-mix(in srgb,var(--v33-soft) 39%,var(--v33-paper));
+  box-shadow:none!important;z-index:2;
+  padding:12px 10px 18px;
+ }
+ .v34-studying .v39-book-layout>.v102-connector-lane{
+  grid-column:2;grid-row:1;
+  background:var(--v33-paper);position:relative;
+  height:100%;min-height:0;z-index:3;
+  border:0!important;overflow:hidden;
+ }
+ .v34-studying .v102-connector-bridge{
+  position:absolute;left:0;right:0;
+  border-top:1px solid var(--v33-ink);
+  border-bottom:1px solid var(--v33-ink);
+  background:var(--v33-paper);
+  pointer-events:none;
+  box-sizing:border-box;
+ }
+ .v34-studying .v102-connector-lane.v102-outside .v102-connector-bridge{display:none}
+ .v34-studying .v39-book-layout>.v33-pane{
+  grid-column:3;grid-row:1;
+  height:100%;max-height:none;min-height:0!important;overflow-y:auto!important;overflow-x:hidden;
+  overscroll-behavior:contain;scrollbar-width:thin;
+  border:0!important;border-radius:0!important;
+  margin:0!important;box-shadow:none!important;
+  padding:20px clamp(14px,2vw,28px)!important;
+  position:relative;z-index:1;
+  background:var(--v33-paper);
+ }
+ .v34-studying .v39-book-layout>.v33-pane::before{display:none!important}
+ .v34-studying .v39-book-tab{
+  max-width:100%;box-sizing:border-box;position:relative;
+  border:1px solid transparent;border-radius:9px;
+ }
+ .v34-studying .v39-book-tab.active{
+  border:1px solid var(--v33-ink)!important;
+  border-right:0!important;
+  border-radius:9px 0 0 9px!important;
+  background:var(--v33-paper)!important;
+  box-shadow:inset 3px 0 0 var(--v33-ink)!important;
+  color:var(--v33-ink);z-index:4;
+ }
+ .v34-studying .v39-book-tab.active::after,
+ .v34-studying .v39-book-tab.active[data-connected="yes"]::after{
+  content:none!important;display:none!important;
+ }
+ .v34-studying .v39-book-tab.active .v39-book-chevron{color:var(--v33-ink)}
+ .v34-studying .v39-book-heading{border-bottom:1px solid var(--v33-line)}
+}
+@media(min-width:681px) and (max-width:920px){
+ .v34-studying .v39-book-layout{grid-template-columns:minmax(180px,205px) 18px minmax(0,1fr)!important}
+}
+@media(max-width:680px){
+ .v34-studying .v39-book-layout{
+  display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+  grid-template-rows:auto minmax(0,1fr);gap:9px!important;height:auto!important;
+  max-height:none!important;overflow:visible!important;border:0!important;
+ }
+ .v34-studying .v102-connector-lane{display:none!important}
+ .v34-studying .v39-book-layout>.v39-book-nav{
+  grid-column:1;grid-row:1;
+  overflow-x:auto;overflow-y:hidden;min-height:0;height:auto;
+  background:var(--v33-paper);border-radius:12px;
+ }
+ .v34-studying .v39-book-layout>.v33-pane{
+  grid-column:1;grid-row:2;height:auto!important;max-height:none!important;
+  overflow:visible!important;border-radius:13px!important;
+ }
+ .v34-studying .v39-book-tab.active{border-right:1px solid var(--v33-ink)!important;border-radius:9px!important}
+ .v34-studying .v39-book-tab.active::after{display:none!important}
+}
