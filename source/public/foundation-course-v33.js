@@ -170,7 +170,7 @@ function navigationFor(cfg){
  '<span class="v34-hint">'+(group==='learn'?'46 chữ hiển thị cùng nhau, nhấn loa để nghe.':group==='flash'?'Nhớ trước, lật sau.':group==='mix'?'Câu hỏi được trộn trong chặng.':'Chọn một dạng để luyện trong khung này.')+'</span></div>';
 }
 function coachSeen(){try{return localStorage.getItem('Horizon.KanaTapGuide.v1.'+learnerId())==='yes'}catch{return false}}
-function dismissCoach(){try{localStorage.setItem('Horizon.KanaTapGuide.v1.'+learnerId(),'yes')}catch(e){}const tip=document.querySelector('.v35-kana-guide');if(tip)tip.remove();const first=document.querySelector('.v35-first-kana');if(first)first.classList.remove('v35-first-kana')}
+function dismissCoach(){try{localStorage.setItem('Horizon.KanaTapGuide.v1.'+learnerId(),'yes')}catch(e){}const tip=document.querySelector('.v35-kana-guide');if(tip?.remove)tip.remove();const first=document.querySelector('.v35-first-kana');if(first?.classList?.remove)first.classList.remove('v35-first-kana')}
 const BASIC_AUDIO=/^(?:a|i|u|e|o|ka|ki|ku|ke|ko|sa|shi|su|se|so|ta|chi|tsu|te|to|na|ni|nu|ne|no|ha|hi|fu|he|ho|ma|mi|mu|me|mo|ya|yu|yo|ra|ri|ru|re|ro|wa|wo|n)$/;
 let currentAudio=null;
 function audioStatus(msg){
@@ -225,7 +225,8 @@ function voiceText(item){
 function learnView(cfg){
  const deck=tokens(cfg);
  const s=countStats(deck),examples=cfg.id==='small'?DATA.smallSamples.find(x=>x.id===cfg.group):null;
- const tiles=arr=>arr.map((x,i)=>'<button type="button" class="v33-glyph-card v35-kana-button '+(i===0&&!coachSeen()?'v35-first-kana':'')+'" data-f33="pronounce" data-value="'+clean(x.glyph)+'" data-reading="'+clean(x.read)+'" data-kind="'+clean(x.stage)+'" aria-label="Nghe '+clean(x.glyph)+(x.read?' · '+clean(x.read):'')+'"><span lang="ja">'+clean(x.glyph)+'</span><strong>'+clean(x.read)+'</strong>'+(isWord(x)?'<small>'+clean(x.vi)+'</small>':'')+'</button>').join('');
+ let guideFocusUsed=false;
+ const tiles=arr=>arr.map((x,i)=>{const focus=!guideFocusUsed&&!coachSeen();if(focus)guideFocusUsed=true;return '<button type="button" class="v33-glyph-card v35-kana-button '+(focus?'v35-first-kana':'')+'" data-f33="pronounce" data-value="'+clean(x.glyph)+'" data-reading="'+clean(x.read)+'" data-kind="'+clean(x.stage)+'" aria-label="Nghe '+clean(x.glyph)+(x.read?' · '+clean(x.read):'')+'"><span lang="ja">'+clean(x.glyph)+'</span><strong>'+clean(x.read)+'</strong>'+(isWord(x)?'<small>'+clean(x.vi)+'</small>':'')+'</button>';}).join('');
  const grouped=cfg.group==='all'&&cfg.id!=='small'&&cfg.id!=='mixed'&&cfg.mod.groups.length>1;
  const grid=grouped?cfg.mod.groups.map(g=>{
   const groupCards=deck.filter(x=>x.group===g.id);
