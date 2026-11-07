@@ -806,22 +806,28 @@ test('v1.13 finish bar is opaque and buttons remain legible after body portal',(
  assert.match(html,/Nền tảng/);
 });
 
-test('v1.13 Foundation has one compact location selector and direct activity navigation',()=>{
- const h=harness(),route='learn/foundation/hiragana/all/learn';
- h.location.hash='#'+route;const html=h.ui.page(route);
- assert.match(html,/v113-learning-nav/);
- assert.match(html,/v113-module-select/);
- assert.match(html,/v113-current-step/);
- assert.match(html,/data-f34="module"/);
- assert.match(html,/Tất cả chặng/);
+test('v1.14 learners navigate adjacent chapters without a dropdown menu',()=>{
+ const h=harness();
+ const route='learn/foundation/hiragana/all/learn';
+ h.location.hash='#'+route;
+ const html=h.ui.page(route);
+ assert.match(html,/v114-orientation/);
+ assert.match(html,/v114-chapter-switch/);
+ assert.match(html,/v114-current-chapter/);
+ assert.match(html,/CHẶNG 01/);
  assert.match(html,/Hiragana/);
- assert.match(html,/Nền tảng/);
+ assert.match(html,/Các chặng/);
+ assert.match(html,/data-f34="module"/);
+ assert.doesNotMatch(html,/<select id="v34-module"/);
+ assert.doesNotMatch(html,/v113-module-select/);
  assert.doesNotMatch(html,/Không gian học tập/);
- assert.doesNotMatch(html,/v28-header-shell/);
  assert.doesNotMatch(html,/v25-breadcrumb/);
- assert.doesNotMatch(html,/v112-course-head/);
  assert.equal((html.match(/class="v34-stage-tab /g)||[]).length,4);
+ assert.match(html,/aria-label="Đang ở chặng đầu tiên" disabled/);
+ assert.ok(load('foundation-course-v33.js').includes('[data-f34="module"]'));
  const index=h.ui.page('course/foundation');
  assert.match(index,/Nhận mặt chữ, nhớ âm, rồi dùng được/);
- assert.ok(load('foundation-course-v107.css').includes('.v113-learning-nav'));
+ const css=load('foundation-course-v107.css');
+ assert.ok(css.includes('.v114-orientation'));
+ assert.ok(css.includes('@media(max-width:680px)'));
 });
