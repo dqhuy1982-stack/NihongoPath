@@ -159,7 +159,7 @@ function ensurePlay(config){
  }else if(kind==='match'||kind==='listen-match'){
   const permitted=kind==='listen-match'?list.filter(x=>x.stage!=='small'&&Array.from(x.glyph).length<=3):list;
   const cards=chooseTargets(kind==='listen-match'&&config.script==='both'&&config.mod.script==='both'?permitted.filter(x=>x.script==='hira'):permitted,Math.min(6,permitted.length));
-  play={key,kind,cards,left:shuffle(cards),right:shuffle(cards),leftId:null,rightId:null,matched:[],mistakes:0,answered:0,feedback:'',finished:cards.length===0,startedAt:Date.now()};
+  play={key,kind,cards,left:shuffle(cards),right:shuffle(cards),leftId:null,rightId:null,matched:[],mistakes:0,answered:0,feedback:'',finished:cards.length===0,startedAt:null,ready:false};
  }else if(kind==='flash'){
   play={key,kind,cards:shuffle(list),index:0,flipped:false,remembered:0,needsReview:0};
  }else{
