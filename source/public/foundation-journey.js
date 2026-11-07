@@ -8,6 +8,8 @@
  const units=[
   {code:'F01',key:'f01',state:'statusSample',href:'lesson/foundation-vowels',action:'unit.open'},
   {code:'F01B',key:'f01b',state:'statusSample',href:'lesson/foundation-k-row',action:'unit.open'},
+  {code:'F01C',key:'f01c',state:'statusSample',href:'lesson/foundation-s-row',action:'unit.open'},
+  {code:'F01D',key:'f01d',state:'statusSample',href:'lesson/foundation-t-row',action:'unit.open'},
   {code:'F02',key:'f02',state:'statusTool',href:'kana',action:'unit.writing'},
   {code:'F03',key:'f03',state:'statusPlanned'},
   {code:'F04',key:'f04',state:'statusPlanned'},
