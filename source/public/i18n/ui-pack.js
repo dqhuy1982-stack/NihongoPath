@@ -69,6 +69,7 @@ const NP_UI_PACK=Object.freeze({
  "foundation.statusTool":{"vi":"Có công cụ luyện","en":"Practice tool ready","ja":"練習ツールあり"},
  "foundation.statusPlanned":{"vi":"Đang biên soạn","en":"In preparation","ja":"準備中"},
  "foundation.unit.f01":{"vi":"Hiragana cơ bản · nhóm nhỏ","en":"Basic Hiragana · short groups","ja":"ひらがなの基本・小グループ"},
+ "foundation.unit.f01b":{"vi":"Hiragana · Hàng K: か・き・く・け・こ","en":"Hiragana · K row: か・き・く・け・こ","ja":"ひらがな・か行：か・き・く・け・こ"},
  "foundation.unit.f02":{"vi":"Katakana cơ bản · nhóm nhỏ","en":"Basic Katakana · short groups","ja":"カタカナの基本・小グループ"},
  "foundation.unit.f03":{"vi":"Âm đục và âm bán đục","en":"Voiced and semi-voiced sounds","ja":"濁音・半濁音"},
  "foundation.unit.f04":{"vi":"Âm ghép, âm ngắt và trường âm","en":"Combined sounds, small っ and long vowels","ja":"拗音・促音・長音"},
