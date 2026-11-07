@@ -155,7 +155,7 @@ function ensurePlay(config){
  const list=kind==='review'?reviewPool(source):source;
  if(kind==='build'){
   const cards=chooseTargets(contextual(config),5);
-  play={key,kind,cards,index:0,selected:[],tileOrder:cards.length?shuffle(Array.from(cards[0].glyph).map((glyph,i)=>({glyph,i}))):[],answer:null,correct:0,finished:cards.length===0,startedAt:Date.now()};
+  play={key,kind,cards,index:0,selected:[],tileOrder:cards.length?shuffle(Array.from(cards[0].glyph).map((glyph,i)=>({glyph,i}))):[],answer:null,correct:0,finished:cards.length===0,startedAt:null,ready:false};
  }else if(kind==='match'||kind==='listen-match'){
   const permitted=kind==='listen-match'?list.filter(x=>x.stage!=='small'&&Array.from(x.glyph).length<=3):list;
   const cards=chooseTargets(kind==='listen-match'&&config.script==='both'&&config.mod.script==='both'?permitted.filter(x=>x.script==='hira'):permitted,Math.min(6,permitted.length));
@@ -175,17 +175,17 @@ function ensurePlay(config){
    if(mode==='listen'&&x.stage==='small')mode='truefalse';
    return questionFor(x,mode,allPool);
   });
-  play={key,kind,questions,index:0,correct:0,answered:0,choice:null,finished:valid.length===0,startedAt:Date.now(),roundMs:[],slow:0,errors:0};
+  play={key,kind,questions,index:0,correct:0,answered:0,choice:null,finished:valid.length===0,startedAt:null,ready:false,roundMs:[],slow:0,errors:0};
  }
  return play;
 }
 
-function elapsed(s){const now=s?.hiddenAt||Date.now();return Math.max(0,now-(s.startedAt||now)-(s.pausedMs||0))}
+function elapsed(s){if(!s?.startedAt)return 0;const now=s.hiddenAt||Date.now();return Math.max(0,now-s.startedAt-(s.pausedMs||0))}
 function resetClock(s){s.startedAt=Date.now();s.pausedMs=0;s.hiddenAt=null;}
-function clock(s,answered=false){return '<div class="v37-clock" aria-label="Thời gian phản hồi"><span aria-hidden="true">◷</span><strong data-f37-timer>'+timeLabel(answered?(s.lastMs||0):elapsed(s))+'</strong><small>'+(answered?'Đã trả lời':'Đang tính giờ')+'</small></div>';}
+function clock(s,answered=false){return '<div class="v37-clock" aria-label="Thời gian phản hồi"><span aria-hidden="true">◷</span><strong data-f37-timer>'+(s.startedAt?timeLabel(answered?(s.lastMs||0):elapsed(s)):'—')+'</strong><small>'+(answered?'Đã trả lời':s.startedAt?'Đang tính giờ':'Chưa bắt đầu')+'</small></div>';}
 let ticker=null,absentTicks=0;
-function tickClock(){if(typeof setInterval!=='function'||ticker!==null)return;ticker=setInterval(()=>{const present=!!document.querySelector?.('.v34-workspace-shell');if(!present){if(++absentTicks>20){clearInterval(ticker);ticker=null;absentTicks=0;}return;}absentTicks=0;const el=document.querySelector?.('[data-f37-timer]');if(el&&play&&!play.finished&&!play.choice&&!play.answer&&play.kind!=='flash')el.textContent=timeLabel(elapsed(play));},100);}
-document.addEventListener('visibilitychange',()=>{if(!play||play.finished||play.choice||play.answer||play.kind==='flash')return;if(document.hidden){if(!play.hiddenAt)play.hiddenAt=Date.now()}else if(play.hiddenAt){play.pausedMs=(play.pausedMs||0)+(Date.now()-play.hiddenAt);play.hiddenAt=null;}});
+function tickClock(){if(typeof setInterval!=='function'||ticker!==null)return;ticker=setInterval(()=>{const present=!!document.querySelector?.('.v34-workspace-shell');if(!present){if(++absentTicks>20){clearInterval(ticker);ticker=null;absentTicks=0;}return;}absentTicks=0;const el=document.querySelector?.('[data-f37-timer]');if(el&&play?.startedAt&&!play.finished&&!play.choice&&!play.answer&&play.kind!=='flash')el.textContent=timeLabel(elapsed(play));},100);}
+document.addEventListener('visibilitychange',()=>{if(!play?.startedAt||play.finished||play.choice||play.answer||play.kind==='flash')return;if(document.hidden){if(!play.hiddenAt)play.hiddenAt=Date.now()}else if(play.hiddenAt){play.pausedMs=(play.pausedMs||0)+(Date.now()-play.hiddenAt);play.hiddenAt=null;}});
 function weakList(cfg){const rec=store().items;return DATA.take(cfg.id,'all',cfg.script).filter(x=>{const v=rec[x.id];return v&&(v.latestOutcome!=='correct'||new Date(v.nextAt).getTime()<=Date.now())}).sort((a,b)=>priority(b)-priority(a)).slice(0,6);}
 function navigate(route){location.hash='#'+route}
 function refresh(){
@@ -195,9 +195,9 @@ function refresh(){
 }
 function wrap(content,crumb='Nền tảng'){
  const shell=window.NPHorizonV25?.shell?.('catalog')||'<header class="v25-header"><div class="v25-hero-copy"><h1>Không gian học tập</h1></div></header>';
- return '<div class="v25-wrap v33-foundation" data-learning-hub="v37">'+shell+
+ return '<div class="v25-wrap v33-foundation" data-learning-hub="v38">'+shell+
  '<nav class="v25-breadcrumb" aria-label="Vị trí học tập"><a href="#learn/overview">Học</a><span aria-hidden="true">›</span><a href="#learn/catalog">Khóa học</a><span aria-hidden="true">›</span><a href="#course/foundation">Nền tảng</a>'+(crumb==='Nền tảng'?'':'<span aria-hidden="true">›</span><span aria-current="page">'+clean(crumb)+'</span>')+'</nav>'+
- content+'<footer class="v25-version">HORIZON · Foundation Studio v37 · Prototype (lưu luyện tập trên thiết bị)</footer></div>';
+ content+'<footer class="v25-version">HORIZON · Foundation Studio v38 · Prototype (lưu luyện tập trên thiết bị)</footer></div>';
 }
 function tag(txt){return '<span class="v33-tag">'+clean(txt)+'</span>'}
 function moduleStats(module){
@@ -359,14 +359,46 @@ function matchingView(cfg,s){
  '<div class="v33-match-grid"><div class="v33-match-column">'+left(s.left)+'</div><div class="v33-match-column">'+right(s.right)+'</div></div>'+
  (complete?'<div class="v33-pane-actions"><button data-f33="restart" class="v33-primary">Ghép lại với thứ tự khác</button></div>':'')+'</section>';
 }
+function modeDirections(mode){
+ const instructions={
+ quiz:'Nhìn chữ Kana, chọn đúng cách đọc.',
+ reverse:'Nhìn phiên âm, chọn chữ Kana tương ứng.',
+ listen:'Nhấn “Phát âm thanh”, nghe tiếng Nhật, sau đó chọn chữ.',
+ 'listen-match':'Nhấn các ô phát âm bên trái, ghép với chữ bên phải.',
+ truefalse:'So sánh chữ với cách đọc hiển thị, rồi chọn Đúng hoặc Sai.',
+ match:'Ghép chữ Kana ở cột trái với cách đọc ở cột phải.',
+ build:'Xếp các mảnh Kana theo thứ tự để tạo từ có nghĩa.',
+ 'vocab-ja-vi':'Nhìn từ tiếng Nhật và chọn nghĩa tiếng Việt.',
+ 'vocab-vi-ja':'Nhìn nghĩa tiếng Việt và chọn từ tiếng Nhật.',
+ review:'Ôn lại các chữ sai, chậm hoặc đến hạn. Câu hỏi đổi dạng để luyện nhớ.',
+ mix:'Các câu trộn Chữ→Âm, Âm→Chữ, Đúng/Sai và Nghe→Chữ. Với câu nghe, hãy nhấn nút phát tiếng trước khi chọn.'
+ };
+ return instructions[mode]||'Đọc câu hỏi và chọn đáp án phù hợp.';
+}
+function introPopup(cfg,s){
+ const mode=cfg.mode;
+ const count=s.questions?.length||s.cards?.length||0;
+ const mixed=mode==='mix'||mode==='review';
+ const threshold=mixed?'5–9 giây (theo từng câu)':(targetMs(mode)/1000)+' giây';
+ return '<div class="v38-overlay" role="presentation"><section class="v38-dialog" role="dialog" aria-modal="true" aria-labelledby="v38-title" aria-describedby="v38-description">'+
+ '<div class="v38-dialog-icon" aria-hidden="true">◷</div>'+
+ '<p class="v33-eyebrow">HƯỚNG DẪN TRƯỚC KHI LUYỆN</p><h3 id="v38-title">'+clean(mode==='mix'?'Kiểm tra tổng hợp':modeNames[mode]||'Luyện tập')+'</h3>'+
+ '<p id="v38-description">'+clean(modeDirections(mode))+'</p>'+
+ '<div class="v38-dialog-spec"><div><span>Số câu / từ</span><strong>'+count+'</strong></div><div><span>Ngưỡng tham khảo</span><strong>'+clean(threshold)+'</strong></div><div><span>Đồng hồ</span><strong>Theo từng câu</strong></div></div>'+
+ '<div class="v38-rule-list"><p><strong>Đúng trong ngưỡng:</strong> ghi nhận để ôn lại theo lịch.</p><p><strong>Đúng nhưng chậm:</strong> vẫn được tính đúng, nhưng đưa vào Sổ ôn.</p><p><strong>Trả lời sai:</strong> xem đáp án/giải thích và đưa vào Sổ ôn.</p></div>'+
+ '<p class="v38-disclaimer">Thời gian chỉ bắt đầu sau khi nhấn “Bắt đầu”. Không trừ điểm khi nghe lại; không có thời hạn bắt buộc. Ngưỡng là tiêu chí luyện tập thử nghiệm, không phải chuẩn JLPT.</p>'+
+ (mode==='mix'||mode==='review'?'<p class="v38-audio-tip">♫ Bài nghe: nhấn nút <strong>Phát âm thanh</strong> để nghe. Trình duyệt có thể chặn tự phát âm thanh.</p>':'')+
+ '<div class="v38-dialog-actions"><button class="v33-secondary" type="button" data-f38="cancel">Quay về Học</button><button class="v33-primary" type="button" data-f38="start">Bắt đầu '+(mode==='mix'?'kiểm tra':'luyện tập')+' →</button></div></section></div>';
+}
 function workspace(cfg){
  const s=cfg.mode==='learn'?null:ensurePlay(cfg);
+ const intro=s&&s.kind!=='flash'&&!s.ready&&!s.finished?introPopup(cfg,s):'';
  const body=cfg.mode==='learn'?learnView(cfg):cfg.mode==='flash'?flashView(cfg,s):(cfg.mode==='match'||cfg.mode==='listen-match')?matchingView(cfg,s):cfg.mode==='build'?buildView(cfg,s):quizView(cfg,s);
  const weak=weakList(cfg);
  const panel='<aside class="v33-side"><h3>Sổ ôn · Gợi ý theo kết quả</h3>'+
  (weak.length?'<div class="v37-weak-list">'+weak.map(x=>'<span lang="ja">'+clean(x.glyph)+' <small>'+clean(store().items[x.id]?.latestOutcome==='incorrect'?'Sai':'Chậm / đến hạn')+'</small></span>').join('')+'</div><button type="button" class="v37-review-link" data-f34="mode" data-value="review">Ôn những chữ này →</button>':'<p>Chưa có chữ sai hoặc chậm cần ôn. Hãy làm một lượt kiểm tra.</p>')+
  '<div class="v33-side-divider"></div><h3>Học thế nào cho hiệu quả?</h3><ol><li>Học và nghe phát âm theo nhóm chữ.</li><li>Luyện nhớ không nhìn gợi ý.</li><li>Trộn chữ ngẫu nhiên để tránh nhớ vị trí.</li><li>Ôn lại cả câu sai và câu đúng chậm.</li></ol><small>Ngưỡng tham khảo: 5 giây cho nhận diện; nghe, ghép từ có thời gian dài hơn.</small></aside>';
- return navigationFor(cfg)+'<div class="v33-workspace">'+body+panel+'</div>';
+ return navigationFor(cfg)+'<div class="v33-workspace v38-task-area">'+body+panel+intro+'</div>';
 }
 
 function modulePage(cfg){
@@ -381,11 +413,12 @@ function perform(el){
  if(!cfg.mod)return;
  if(op==='guide-ok'){dismissCoach();return;}
  if(op==='pronounce'&&cfg.mode==='learn'){pronounce(value,el.dataset.reading||'',el.dataset.kind==='basic');dismissCoach();return;}
- if(op==='listen-audio'&&cfg.mode==='listen'){const state=ensurePlay(cfg),q=state.questions[state.index];if(q)pronounce(q.item.glyph,q.item.read,true);return;}
+ if(op==='listen-audio'&&(cfg.mode==='listen'||cfg.mode==='mix'||cfg.mode==='review')){const state=ensurePlay(cfg),q=state.questions[state.index];if(q)pronounce(q.item.glyph,q.item.read,true);return;}
  if(op==='feedback-audio'&&cfg.mode!=='learn'){const state=ensurePlay(cfg),q=state.questions?.[state.index];if(q&&state.choice)pronounce(q.item.glyph,q.item.read,true);return;}
  if(op==='flash-audio'&&cfg.mode==='flash'){const state=ensurePlay(cfg);if(state.flipped)pronounce(state.cards[state.index]?.glyph,state.cards[state.index]?.read,true);return;}
  if(cfg.mode==='learn')return;
  const s=ensurePlay(cfg);
+ if(!s.ready&&s.kind!=='flash')return;
  if(op==='tile'&&s.kind==='build'&&!s.answer){
   const i=Number(value);if(!Number.isInteger(i)||i<0||i>=s.tileOrder.length||s.selected.includes(i))return;
   s.selected.push(i);
@@ -492,10 +525,11 @@ document.addEventListener('change',event=>{
  localSwitch(node.dataset.f34,node.value);
 });
 document.addEventListener('click',event=>{
+ const startAction=event.target.closest?.('[data-f38]');if(startAction&&document.querySelector('.v34-workspace-shell')){event.preventDefault();const cfg=current(),s=ensurePlay(cfg);if(startAction.dataset.f38==='start'){s.ready=true;resetClock(s);refresh();}else if(startAction.dataset.f38==='cancel'){localSwitch('tab','learn');}return;}
  const nav=event.target.closest('[data-f34="tab"],[data-f34="mode"]');if(nav?.dataset?.f34&&document.querySelector('.v34-workspace-shell')){event.preventDefault();localSwitch(nav.dataset.f34,nav.dataset.value);return;}
  const b=event.target.closest('[data-f33]');if(!b)return;
  if(!document.querySelector('.v33-foundation'))return;
  event.preventDefault();perform(b);
 });
-window.NPFoundationCourse={version:'v37',page,store,stats:countStats,path,questionFor,choosePool,session:()=>play};
+window.NPFoundationCourse={version:'v38',page,store,stats:countStats,path,questionFor,choosePool,session:()=>play};
 })();
