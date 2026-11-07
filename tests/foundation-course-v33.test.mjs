@@ -368,7 +368,7 @@ test('Global UI footer shows unobtrusive v1.01 beside HORIZON tagline',()=>{
  const app=load('app.js'),hub=load('learning-hub-v25.js');
  assert.ok(app.includes('Học theo cách của bạn'));
  assert.ok(app.includes('horizon-ui-version'));
- assert.ok(app.includes('v1.03'));
+ assert.ok(app.includes('v1.04'));
  assert.ok(!hub.includes('HORIZON · Learning Hub v33 · Recorded progress'));
 });
 test('Book index uses a warm connected selected tab and responsive separation',()=>{
@@ -382,7 +382,7 @@ test('Book index uses a warm connected selected tab and responsive separation',(
 test('v1.01 has both match columns and persistent line overlay for user selected pairs',()=>{
  const h=harness(),route='learn/foundation/hiragana/all/match';
  h.location.hash='#'+route;const html=h.ui.page(route);
- assert.match(html,/v101-match-grid/);
+ assert.match(html,/v104-match-board/);
  assert.match(html,/v101-match-lines/);
  assert.match(html,/>KANA</);
  assert.match(html,/>ROMAJI</);
@@ -416,26 +416,27 @@ test('v1.01 offers three hints and records assisted correct answers for review',
 });
 test('v1.01 includes answer audio and precise connected-book CSS',()=>{
  const app=load('app.js'),html=load('index.html'),css=load('foundation-course-v101.css');
- assert.ok(app.includes('v1.03'));
+ assert.ok(app.includes('v1.04'));
  assert.ok(html.includes('foundation-course-v101.css?v=101'));
  assert.ok(html.includes('foundation-course-v102.css?v=102'));
  assert.ok(html.includes('foundation-course-v103.css?v=103'));
+ assert.ok(html.includes('foundation-course-v104.css?v=104'));
  assert.ok(html.includes('foundation-curriculum-v33.js?v=101'));
- assert.ok(html.includes('foundation-course-v33.js?v=103'));
+ assert.ok(html.includes('foundation-course-v33.js?v=104'));
  assert.ok(css.includes('v101-match-grid'));
  assert.ok(css.includes('[data-connected="yes"]'));
 });
 test('v1.03 workbook avoids nested scroll containers and renders both matching columns',()=>{
  const h=harness(),route='learn/foundation/hiragana/all/match';
  h.location.hash='#'+route;const html=h.ui.page(route),css=load('foundation-course-v103.css');
- assert.match(html,/v101-match-grid/);
+ assert.match(html,/v104-match-board/);
  assert.match(html,/>KANA</);
  assert.match(html,/>ROMAJI</);
  assert.equal((html.match(/data-side="right"/g)||[]).length,6);
  assert.equal((html.match(/data-side="left"/g)||[]).length,6);
  assert.doesNotMatch(html,/v102-connector-lane/);
  assert.match(css,/grid-template-columns:minmax\(0,1fr\) minmax\(0,1fr\)!important/);
- assert.match(css,/\.v101-match-grid>.v33-match-column:last-child/);
+ assert.match(load('foundation-course-v104.css'),/\.v104-match-board>\.v104-match-column/);
  assert.match(css,/overflow:visible!important/);
  assert.match(html,/v103-nav-group/);
 });
@@ -459,10 +460,36 @@ test('v1.03 matching feedback uses the most recently correct pair for learning c
  assert.equal(s.lastMatched,x.id);
  assert.match(h.ui.page(route),/Hiểu thêm & nhớ lâu/);
 });
+test('v1.04 answer buttons show exact success/failure markers and sticky next action',()=>{
+ const h=harness(),route='learn/foundation/hiragana/all/truefalse';
+ h.location.hash='#'+route;h.ui.page(route);const s=h.ui.session(),q=s.questions[0];
+ let html=h.ui.page(route);
+ assert.match(html,/v104-truefalse/);
+ assert.match(html,/v104-choice-symbol/);
+ assert.ok(!html.includes('v104-sticky-next'));
+ const wrong=q.choices.find(x=>x.id!==q.correct);
+ h.click('answer',wrong.id);
+ html=h.ui.page(route);
+ assert.match(html,/v104-answer-result is-correct/);
+ assert.match(html,/v104-answer-result is-wrong/);
+ assert.match(html,/v104-sticky-next/);
+ assert.match(html,/data-f33="next"/);
+});
+test('v1.04 matches use two flex columns plus out-of-flow SVG',()=>{
+ const h=harness(),route='learn/foundation/hiragana/all/match';h.location.hash='#'+route;
+ const html=h.ui.page(route),css=load('foundation-course-v104.css');
+ assert.equal((html.match(/class="v104-match-column"/g)||[]).length,2);
+ assert.equal((html.match(/data-side="right"/g)||[]).length,6);
+ assert.match(html,/ROMAJI/);
+ assert.match(css,/display:flex!important/);
+ assert.match(css,/flex:1 1 0!important/);
+ assert.match(css,/position:absolute!important/);
+ assert.ok(!html.includes('v101-match-grid'));
+});
 test('The learning UI does not alter the existing lesson engine or global learner records',()=>{
  const html=load('index.html');
  assert.ok(html.includes('foundation-curriculum-v33.js?v=101'));
- assert.ok(html.includes('foundation-course-v33.js?v=103'));
+ assert.ok(html.includes('foundation-course-v33.js?v=104'));
  assert.ok(html.includes('foundation-course-v34.css?v=34'));
  assert.ok(html.includes('foundation-course-v35.css?v=35'));
  assert.ok(html.includes('foundation-course-v36.css?v=36'));
@@ -471,10 +498,10 @@ test('The learning UI does not alter the existing lesson engine or global learne
  assert.ok(html.includes('foundation-course-v39.css?v=39'));
  assert.ok(html.includes('foundation-course-v40.css?v=100'));
  assert.ok(html.includes('foundation-course-v101.css?v=101'));
- assert.ok(html.includes('app.js?v=103'));
+ assert.ok(html.includes('app.js?v=104'));
  assert.ok(html.includes('learning-hub-v25.js?v=100'));
- assert.ok(html.includes('foundation-course-v33.js?v=103'));
- assert.ok(html.includes('foundation-course-v33.js?v=103'));
+ assert.ok(html.includes('foundation-course-v33.js?v=104'));
+ assert.ok(html.includes('foundation-course-v33.js?v=104'));
  assert.ok(load('foundation-course-v33.js').includes('data-f38="start"'));
  assert.ok(!load('foundation-course-v36.css').includes('max-height:405px'));
  assert.match(load('foundation-course-v36.css'),/max-height:none!important/);
