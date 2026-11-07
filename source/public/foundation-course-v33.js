@@ -231,7 +231,7 @@ function roundSummaryView(s,cfg){
  metric(report.wrongAttempts,'Lượt ghép sai')+metric(formatDuration(report.totalElapsedMs),'Tổng thời gian')+'</div>'+
  '<div class="v107-body"><div class="v107-insight"><h4>✧ Nhận xét sau ván</h4><p>'+notes+'</p><p>Đúng ngay lần đầu: <strong>'+report.firstTryAccuracy+'%</strong> · Đúng theo lượt ghép: <strong>'+report.attemptAccuracy+'%</strong>.</p>'+
  (['listen-match','game-listen'].includes(s.kind)?'<p>Số lần nghe lại: <strong>'+report.audioReplays+' lượt</strong> (không tính lượt nghe đầu tiên hay phát đáp án tự động).</p>':'')+
- '<p>Thời gian trung bình theo cặp: '+formatDuration(report.averagePairMs)+'. Đây là luyện tập, không có giới hạn thời gian.</p></div>'+
+ '<p>Trung bình theo cặp: <strong>'+formatDuration(report.averagePairMs)+'</strong>. Nhanh nhất: <strong>'+formatDuration(report.fastestPairMs)+'</strong>; lâu nhất: <strong>'+formatDuration(report.slowestPairMs)+'</strong>.</p><p>Luyện tập không có giới hạn thời gian; số liệu chỉ dùng tham khảo.</p></div>'+
  '<div class="v107-review"><h4>'+ (canReview?'Cặp nên ôn lại':'Gợi ý tiếp theo')+'</h4>'+
  (canReview?'<div class="v107-review-tiles">'+review.map(p=>'<span lang="ja">'+clean(p.glyph)+' <small>'+clean(p.romaji)+' · ghép sai '+p.wrongAttempts+' lượt</small></span>').join('')+'</div>':
  '<p>Hãy thử thêm một ván với các chữ và thứ tự mới, sau đó ôn lại sau một khoảng nghỉ.</p>')+
@@ -240,6 +240,11 @@ function roundSummaryView(s,cfg){
  '<button type="button" class="'+(canReview?'v33-secondary':'v33-primary')+'" data-f33="summary-new">↻ Ván mới</button>'+
  '<button type="button" class="v33-secondary" data-f33="summary-next">'+(['match','game'].includes(s.kind)?'Chuyển sang Nghe & ghép':'Kiểm tra tổng hợp')+'</button>'+
  '<button type="button" class="v33-secondary" data-f33="summary-close">Đóng</button></div></section></div>';
+}
+function focusRoundReturn(){
+ if(typeof queueMicrotask==='function')queueMicrotask(()=>{
+  const btn=document.querySelector?.('[data-f33="summary-open"]');if(btn?.focus)try{btn.focus()}catch(e){}
+ });
 }
 function focusRoundSummary(){
  if(typeof queueMicrotask==='function')queueMicrotask(()=>{
@@ -671,7 +676,7 @@ function perform(el){
  if(!cfg.mod)return;
  if(op==='guide-ok'){dismissCoach();return;}
  if(op==='toggle-audio'){toggleAudioPref();refresh();return;}
- if(op==='summary-close'&&play?.round){play.round.summaryOpen=false;refresh();return;}
+ if(op==='summary-close'&&play?.round){play.round.summaryOpen=false;refresh();focusRoundReturn();return;}
  if(op==='summary-open'&&play?.round?.summary){play.round.summaryOpen=true;refresh();focusRoundSummary();return;}
  if(op==='summary-new'&&play?.round?.summary){play=null;ensurePlay(cfg);refresh();return;}
  if(op==='summary-review'&&play?.round?.summary){if(roundReview(play,cfg))refresh();return;}
@@ -812,7 +817,7 @@ if(typeof window!=='undefined'&&window.addEventListener)window.addEventListener(
 document.addEventListener('keydown',event=>{
  const modal=document.querySelector?.('[data-v107-dialog]');
  if(modal){
-  if(event.key==='Escape'){event.preventDefault();if(play?.round){play.round.summaryOpen=false;refresh();}return;}
+  if(event.key==='Escape'){event.preventDefault();if(play?.round){play.round.summaryOpen=false;refresh();focusRoundReturn();}return;}
   if(event.key==='Tab'){
    const actions=Array.from(modal.querySelectorAll?.('button,[href],summary')||[]).filter(x=>!x.disabled);
    if(actions.length){const first=actions[0],last=actions[actions.length-1],active=document.activeElement;
