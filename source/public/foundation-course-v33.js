@@ -156,7 +156,7 @@ function ensurePlay(config){
   play={key,kind,cards,index:0,selected:[],tileOrder:cards.length?shuffle(Array.from(cards[0].glyph).map((glyph,i)=>({glyph,i}))):[],answer:null,correct:0,finished:cards.length===0,startedAt:Date.now()};
  }else if(kind==='match'||kind==='listen-match'){
   const permitted=kind==='listen-match'?list.filter(x=>x.stage!=='small'&&Array.from(x.glyph).length<=3):list;
-  const cards=chooseTargets(permitted,Math.min(6,permitted.length));
+  const cards=chooseTargets(kind==='listen-match'&&config.script==='both'?permitted.filter(x=>x.script==='hira'):permitted,Math.min(6,permitted.length));
   play={key,kind,cards,left:shuffle(cards),right:shuffle(cards),leftId:null,rightId:null,matched:[],mistakes:0,answered:0,feedback:'',finished:cards.length===0,startedAt:Date.now()};
  }else if(kind==='flash'){
   play={key,kind,cards:shuffle(list),index:0,flipped:false,remembered:0,needsReview:0};
@@ -334,9 +334,9 @@ function buildView(cfg,s){
 function matchingView(cfg,s){
  if(!s.cards.length)return noData('Nhóm này chưa có đủ cặp duy nhất. Hãy chọn bảng hoặc nhóm khác.');
  const complete=s.matched.length===s.cards.length;
- const left=items=>items.map(x=>'<button data-f33="match" data-side="left" data-value="'+clean(x.id)+'" draggable="true" class="v33-match-tile '+(s.matched.includes(x.id)?'done':s.leftId===x.id?'selected':'')+'" '+(s.matched.includes(x.id)?'disabled':'')+' lang="ja">'+clean(x.glyph)+'</button>').join('');
- const right=items=>items.map(x=>'<button data-f33="match" data-side="right" data-value="'+clean(x.id)+'" data-f35-drop="match" class="v33-match-tile '+(s.matched.includes(x.id)?'done':s.rightId===x.id?'selected':'')+'" '+(s.matched.includes(x.id)?'disabled':'')+'>'+clean(readable(x))+(cfg.script==='both'&&cfg.mod.script==='both'?' <small>· '+(x.script==='hira'?'Hira':'Kata')+'</small>':'')+'</button>').join('');
- return '<section class="v33-pane"><div class="v33-pane-head"><div><p class="v33-eyebrow">GHÉP CẶP · 2 CỘT</p><h3>Ghép chữ và cách đọc</h3><p>Chọn một ô bên trái, rồi ô tương ứng bên phải. Có thể dùng bàn phím; không cần kéo thả.</p></div>'+tag(s.matched.length+'/'+s.cards.length+' cặp')+'</div>'+
+ const left=items=>items.map((x,i)=>'<button data-f33="match" data-side="left" data-value="'+clean(x.id)+'" draggable="true" class="v33-match-tile '+(s.matched.includes(x.id)?'done':s.leftId===x.id?'selected':'')+'" '+(s.matched.includes(x.id)?'disabled':'')+'>'+(s.kind==='listen-match'?'<span aria-hidden="true">▶ '+(i+1)+'</span><span class="v37-sr">Nghe âm số '+(i+1)+'</span>':'<span lang="ja">'+clean(x.glyph)+'</span>')+'</button>').join('');
+ const right=items=>items.map(x=>'<button data-f33="match" data-side="right" data-value="'+clean(x.id)+'" data-f35-drop="match" class="v33-match-tile '+(s.matched.includes(x.id)?'done':s.rightId===x.id?'selected':'')+'>'+(s.kind==='listen-match'?'<span lang="ja">'+clean(x.glyph)+'</span>':clean(readable(x)))+(cfg.script==='both'&&cfg.mod.script==='both'&&s.kind!=='listen-match'?' <small>· '+(x.script==='hira'?'Hira':'Kata')+'</small>':'')+'</button>').join('');
+ return '<section class="v33-pane"><div class="v33-pane-head"><div><p class="v33-eyebrow">'+(s.kind==='listen-match'?'NGHE & GHÉP':'GHÉP CẶP · 2 CỘT')+'</p><h3>'+(s.kind==='listen-match'?'Nghe và ghép đúng chữ':'Ghép chữ và cách đọc')+'</h3><p>'+(s.kind==='listen-match'?'Nhấn nút nghe bên trái rồi ghép chữ tương ứng bên phải.':'Chọn một ô bên trái, rồi ô tương ứng bên phải. Có thể dùng bàn phím.')+'</p></div>'+clock(s,s.finished)+'</div>'+
  (complete?'<div class="v33-feedback positive"><strong>Đã ghép xong!</strong><p>Số lần chọn sai: '+s.mistakes+'. Nếu chọn sai nhiều, hãy thử lại sau khi ôn Flashcard.</p></div>':'<p class="v33-subline">'+clean(s.feedback||'Chọn 1 chữ và 1 cách đọc để ghép cặp.')+'</p>')+
  '<div class="v33-match-grid"><div class="v33-match-column">'+left(s.left)+'</div><div class="v33-match-column">'+right(s.right)+'</div></div>'+
  (complete?'<div class="v33-pane-actions"><button data-f33="restart" class="v33-primary">Ghép lại với thứ tự khác</button></div>':'')+'</section>';
@@ -393,11 +393,11 @@ function perform(el){
   refresh();return;
  }
  if(op==='next'&&s.choice){s.index++;s.choice=null;s.grade=null;s.startedAt=Date.now();s.finished=s.index>=s.questions.length;refresh();return}
- if(op==='match'&&s.kind==='match'&&!s.matched.includes(value)&&s.cards.some(x=>x.id===value)){
-  if(side==='left')s.leftId=value;else if(side==='right')s.rightId=value;
+ if(op==='match'&&(s.kind==='match'||s.kind==='listen-match')&&!s.matched.includes(value)&&s.cards.some(x=>x.id===value)){
+  if(side==='left'){s.leftId=value;if(s.kind==='listen-match'){const sample=s.cards.find(x=>x.id===value);if(sample)pronounce(sample.glyph,sample.read,true);}}else if(side==='right')s.rightId=value;
   if(s.leftId&&s.rightId){
    const ok=s.leftId===s.rightId;const item=s.cards.find(x=>x.id===s.leftId);
-   record(item,ok,'match');
+   record(item,ok,s.kind,elapsed(s));s.startedAt=Date.now();
    if(ok){s.matched.push(item.id);s.feedback='Đúng! Hãy ghép cặp tiếp theo.';}
    else{s.mistakes++;s.feedback='Chưa đúng. Thử ghép lại hai ô.';}
    s.leftId=null;s.rightId=null;
