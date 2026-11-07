@@ -382,7 +382,7 @@ test('Book index uses a warm connected selected tab and responsive separation',(
 test('The learning UI does not alter the existing lesson engine or global learner records',()=>{
  const html=load('index.html');
  assert.ok(html.includes('foundation-curriculum-v33.js?v=33'));
- assert.ok(html.includes('foundation-course-v33.js?v=39'));
+ assert.ok(html.includes('foundation-course-v33.js?v=100'));
  assert.ok(html.includes('foundation-course-v34.css?v=34'));
  assert.ok(html.includes('foundation-course-v35.css?v=35'));
  assert.ok(html.includes('foundation-course-v36.css?v=36'));
