@@ -402,7 +402,7 @@ function refresh(){
 }
 function wrap(content,crumb='Nền tảng'){
  // Breadcrumb = location. Step tabs = actions. Never add a second menu rail.
- const moduleName=crumb==='Nền tảng'?'':String(crumb).replace(/^\\d+\\s*[·.:-]\\s*/,'');
+ const moduleName=crumb==='Nền tảng'?'':String(crumb).replace(/^\d+\s*[·.:-]\s*/,'');
  const item=(label,href,current)=>'<li class="v115-crumb-item'+(current?' is-current':'')+'">'+
   (current?'<span aria-current="page">'+clean(label)+'</span>':'<a href="'+href+'">'+clean(label)+'</a>')+'</li>';
  const locationTrail='<nav class="v115-breadcrumb" aria-label="Vị trí trong lộ trình">'+
