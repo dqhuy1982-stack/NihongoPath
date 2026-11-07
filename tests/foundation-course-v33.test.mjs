@@ -211,7 +211,7 @@ test('Incorrect answer is routed to targeted review and timed feedback',()=>{
  const rec=h.ui.store().items[q.item.id];
  assert.equal(rec.latestOutcome,'incorrect');
  assert.equal(rec.errorCount,1);
- assert.ok(h.ui.page(route).includes('Đã lưu câu sai vào sổ ôn'));
+ assert.ok(h.ui.page(route).includes('Đã thêm chữ cần ôn'));
  const reviewRoute='learn/foundation/hiragana/all/review';
  h.location.hash='#'+reviewRoute;h.ui.page(reviewRoute);
  assert.ok(h.ui.session().questions.some(x=>x.item.id===q.item.id));
@@ -239,7 +239,7 @@ test('Clock is per question and feedback freezes elapsed time until next item',(
  const h=harness(),route='learn/foundation/hiragana/all/mix';
  h.location.hash='#'+route;
  let html=h.ui.page(route);h.start();
- assert.ok(!html.includes('data-f38="start"'));
+ assert.ok(html.includes('data-f38="start"'));
  const s=h.ui.session(),q=s.questions[0];s.startedAt=Date.now()-12500;
  h.click('answer',q.correct);
  const first=s.lastMs;assert.ok(first>=12000);
@@ -317,19 +317,16 @@ test('Practice and word building are ready immediately and never display preflig
    assert.ok(!html.includes('data-f37-timer'),mode);
  }
 });
-test('Review and mixed sessions expose guidance, without claiming a fast answer means mastery',()=>{
+test('Only final examination shows mastery guidance; untimed review opens immediately',()=>{
  const h=harness();
- for(const mode of ['review','mix']){
-   const route='learn/foundation/hiragana/all/'+mode;
-   h.location.hash='#'+route;
-   const html=h.ui.page(route);
-   assert.ok(html.includes('tạm đạt'),mode);
-   assert.ok(html.includes('cần ôn'),mode);
-   assert.ok(html.includes('chưa vững'),mode);
-   assert.ok(html.includes('đã nhớ'),mode);
- }
+ const review='learn/foundation/hiragana/all/review';h.location.hash='#'+review;
+ const practice=h.ui.page(review);
+ assert.ok(!practice.includes('data-f38="start"'));
+ assert.ok(practice.includes('v39-book-layout'));
+ const mixed='learn/foundation/hiragana/all/mix';h.location.hash='#'+mixed;
+ const html=h.ui.page(mixed);
+ for(const phrase of ['tạm đạt','cần ôn','chưa vững','đã nhớ'])assert.ok(html.includes(phrase),phrase);
 });
-
 test('Five learning destinations include Game and book-style exercise navigation',()=>{
  const h=harness();
  for(const mode of ['quiz','reverse','match','build','game','game-build','game-listen']){
