@@ -802,7 +802,7 @@ test('v1.15 finish bar is opaque and buttons remain legible after body portal',(
  assert.match(code,/getComputedStyle/);
  const h=harness(),route='learn/foundation/hiragana/all/match';
  h.location.hash='#'+route;const html=h.ui.page(route);
- assert.doesNotMatch(html,/<a href="#learn\/overview">Học<\/a>/);
+ assert.match(html,/<a href="#learn\/overview">Học<\/a>/);
  assert.match(html,/Các chặng/);
 });
 
