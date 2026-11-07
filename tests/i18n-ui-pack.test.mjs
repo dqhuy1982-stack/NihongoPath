@@ -157,9 +157,9 @@ test('Locale engine has keyed access and language change is propagated to routes
 });
 test('All UI pack resources load before runtime and route modules',()=>{
  const html=read('index.html');
- const ui=html.indexOf('src="i18n/ui-pack.js?v=31"');
+ const ui=html.indexOf('src="i18n/ui-pack.js?v=32"');
  assert.ok(ui>=0);
  assert.ok(ui<html.indexOf('src="locales.js?v=16"'));
  assert.ok(html.includes('src="app.js?v=18"'));
- assert.ok(html.includes('src="lesson-ui.js?v=31"'));
+ assert.ok(html.includes('src="lesson-ui.js?v=32"'));
 });
