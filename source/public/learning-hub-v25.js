@@ -242,5 +242,5 @@ learnPage=function(){const r=route();if((r==='learn/foundation'||r.startsWith('l
 coursePage=function(id){if(id==='foundation'&&window.NPFoundationCourse)return window.NPFoundationCourse.page('course/foundation');return detail(id)};
 titleOf=function(r){return r==='learn'||r==='learn/overview'?'Không gian học tập':originalTitle(r)};
 window.NPHorizonV25={version:'v33',model,activities:()=>activities.map(a=>({...a})),shell:(selected='catalog')=>'<div class="v28-header-shell"><header class="v25-header"><div class="v25-hero-copy"><h1>Không gian học tập</h1><p>Học tiếng Nhật theo từng bước, dễ tìm bài và ôn lại.</p></div></header>'+navigation(selected)+'</div>'};
-if(location.hash==='#learn'||location.hash==='#learn/overview')queueMicrotask(()=>render(false));
+if(location.hash==='#learn'||location.hash==='#learn/overview'||location.hash.startsWith('#learn/foundation/')||location.hash==='#learn/foundation'||location.hash==='#course/foundation')queueMicrotask(()=>render(false));
 })();
