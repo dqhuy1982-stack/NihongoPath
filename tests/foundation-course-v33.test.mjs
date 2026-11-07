@@ -114,7 +114,7 @@ test('Compact course presents 46 Hiragana together, with audio and four action t
  assert.ok(html.includes('v35-kana-guide'));
  assert.ok(!html.includes('v33-audio'));
  assert.ok(html.includes('aria-label="Nghe '));
- assert.equal((html.match(/data-f34="tab"/g)||[]).length,4);
+ assert.equal((html.match(/class="v34-stage-tab /g)||[]).length,4);
  assert.ok(!html.includes('v33-row-chip'));
  assert.ok(html.includes('data-f34="module"'));
 });
