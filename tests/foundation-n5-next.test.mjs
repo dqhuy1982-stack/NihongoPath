@@ -8,10 +8,10 @@ const E=engineContext.window.NPLessonEngine;
 function load(name){
  const window={};
  runInNewContext(readFileSync(new URL('../source/public/'+name,import.meta.url),'utf8'),{window});
- return name.includes('foundation-k')?window.NP_FOUNDATION_K_CONTENT:window.NP_N5_GREETINGS_CONTENT;
+ return Object.values(window)[0];
 }
-const lessons=[load('foundation-k-content.js'),load('n5-greetings-content.js')];
-test('Foundation K and N5 greetings both expose complete, versioned lessons',()=>{
+const lessons=['foundation-k-content.js','foundation-s-content.js','foundation-t-content.js','n5-greetings-content.js','n5-demonstratives-content.js'].map(load);
+test('Foundation K/S/T and N5 greetings/demonstratives expose complete, versioned lessons',()=>{
  for(const content of lessons){
   assert.equal(content.version,1);
   assert.equal(content.questions.length,content.concepts.length);
@@ -27,7 +27,7 @@ test('Foundation K and N5 greetings both expose complete, versioned lessons',()=
   }
  }
 });
-test('Both paths complete, score and schedule independent spaced review',()=>{
+test('Every new lesson completes, scores and schedules independent spaced review',()=>{
  for(const content of lessons){
   const state=E.create(content.id+'-learner');
   const s=E.start(state,content,{minutes:5,random:()=>.5,now:'2026-11-07T03:00:00Z'});
@@ -59,4 +59,14 @@ test('Learner results remain isolated; incorrect answer schedules review without
  assert.equal(bob.sessions.length,0);
  assert.equal(bob.attempts.length,0);
  assert.equal(bob.reviews.length,0);
+});
+
+test('Course and lesson UI expose contextual tests without counting tools as lessons',()=>{
+ const js=readFileSync(new URL('../source/public/learning-hub-v25.js',import.meta.url),'utf8');
+ assert.match(js,/function testRoute\(act\)/);
+ assert.match(js,/kind:'tool'/);
+ assert.match(js,/kind:'lesson'/);
+ assert.match(js,/quiz\//);
+ const index=readFileSync(new URL('../source/public/index.html',import.meta.url),'utf8');
+ for(const file of ['foundation-s-content.js?v=32','foundation-t-content.js?v=32','n5-demonstratives-content.js?v=32','learning-hub-v32.css?v=32']) assert.ok(index.includes(file),file);
 });
