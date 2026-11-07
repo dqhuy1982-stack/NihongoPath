@@ -851,3 +851,28 @@ test('v1.15 breadcrumbs show actual route ancestry and link to parent destinatio
  assert.ok(style.includes('.shell:has(.v115-foundation) > .topbar .breadcrumb'));
  assert.ok(style.includes('.v115-foundation .v115-breadcrumb'));
 });
+
+test('v1.16 restores Foundation styling scope for study and practice on every chapter',()=>{
+ const h=harness();
+ for(const [id,mode] of [['hiragana','learn'],['dakuten','learn'],['yoon','quiz'],['mixed','match']]){
+  const route='learn/foundation/'+id+'/all/'+mode;
+  h.location.hash='#'+route;
+  const html=h.ui.page(route);
+  assert.match(html,/v115-foundation v34-studying"/,id+' '+mode);
+  assert.match(html,/class="v115-breadcrumb"/,id);
+  if(mode==='learn'){
+   assert.match(html,/v35-kana-button/,id);
+   assert.equal((html.match(/Chạm để nghe/g)||[]).length,0,'No repeated row hint');
+   assert.equal((html.match(/Nhấn vào ô chữ để nghe phát âm/g)||[]).length,1,'Audio guidance once');
+  }else{
+   assert.match(html,/v39-book-layout/,id);
+   assert.match(html,/v39-book-nav/,id);
+  }
+ }
+ const js=load('foundation-course-v33.js');
+ assert.ok(js.includes("document.querySelector('.v115-breadcrumb [aria-current=\"page\"]')"));
+ assert.ok(js.includes("crumb.textContent=target.mod.title.replace"));
+ const css=load('foundation-course-v107.css');
+ assert.match(css,/\.v34-studying \.v113-stagebar \.v36-step-icon/);
+ assert.match(css,/\.v34-studying \.v36-kana-board \.v35-kana-button:hover/);
+});
