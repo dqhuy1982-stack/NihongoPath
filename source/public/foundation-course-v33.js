@@ -180,10 +180,12 @@ function ensurePlay(config){
  return play;
 }
 
-function elapsed(s){return Math.max(0,Date.now()-(s.startedAt||Date.now()))}
+function elapsed(s){const now=s?.hiddenAt||Date.now();return Math.max(0,now-(s.startedAt||now)-(s.pausedMs||0))}
+function resetClock(s){s.startedAt=Date.now();s.pausedMs=0;s.hiddenAt=null;}
 function clock(s,answered=false){return '<div class="v37-clock" aria-label="Thời gian phản hồi"><span aria-hidden="true">◷</span><strong data-f37-timer>'+timeLabel(answered?(s.lastMs||0):elapsed(s))+'</strong><small>'+(answered?'Đã trả lời':'Đang tính giờ')+'</small></div>';}
-let ticker=null;
-function tickClock(){if(typeof setInterval!=='function'||ticker!==null)return;ticker=setInterval(()=>{const el=document.querySelector?.('[data-f37-timer]');if(el&&play&&!play.finished&&!play.choice&&!play.answer&&play.kind!=='flash')el.textContent=timeLabel(elapsed(play));},100);}
+let ticker=null,absentTicks=0;
+function tickClock(){if(typeof setInterval!=='function'||ticker!==null)return;ticker=setInterval(()=>{const present=!!document.querySelector?.('.v34-workspace-shell');if(!present){if(++absentTicks>20){clearInterval(ticker);ticker=null;absentTicks=0;}return;}absentTicks=0;const el=document.querySelector?.('[data-f37-timer]');if(el&&play&&!play.finished&&!play.choice&&!play.answer&&play.kind!=='flash')el.textContent=timeLabel(elapsed(play));},100);}
+document.addEventListener('visibilitychange',()=>{if(!play||play.finished||play.choice||play.answer||play.kind==='flash')return;if(document.hidden){if(!play.hiddenAt)play.hiddenAt=Date.now()}else if(play.hiddenAt){play.pausedMs=(play.pausedMs||0)+(Date.now()-play.hiddenAt);play.hiddenAt=null;}});
 function weakList(cfg){const rec=store().items;return DATA.take(cfg.id,'all',cfg.script).filter(x=>{const v=rec[x.id];return v&&(v.latestOutcome!=='correct'||new Date(v.nextAt).getTime()<=Date.now())}).sort((a,b)=>priority(b)-priority(a)).slice(0,6);}
 function navigate(route){location.hash='#'+route}
 function refresh(){
@@ -397,7 +399,7 @@ function perform(el){
  if(op==='undo'&&s.kind==='build'&&!s.answer){s.selected.pop();refresh();return}
  if(op==='build-next'&&s.kind==='build'&&s.answer){
   s.index++;s.finished=s.index>=s.cards.length;s.selected=[];s.answer=null;
-  if(!s.finished){s.tileOrder=shuffle(Array.from(s.cards[s.index].glyph).map((glyph,i)=>({glyph,i})));s.startedAt=Date.now();}
+  if(!s.finished){s.tileOrder=shuffle(Array.from(s.cards[s.index].glyph).map((glyph,i)=>({glyph,i})));resetClock(s);}
   refresh();return;
  }
  if(op==='flip'){s.flipped=!s.flipped;refresh();return}
@@ -412,12 +414,12 @@ function perform(el){
   s.grade=record(q.item,ok,q.mode||cfg.mode,took);s.roundMs.push(took);if(s.grade.slow)s.slow++;if(!ok)s.errors++;
   refresh();return;
  }
- if(op==='next'&&s.choice){s.index++;s.choice=null;s.grade=null;s.startedAt=Date.now();s.finished=s.index>=s.questions.length;refresh();return}
+ if(op==='next'&&s.choice){s.index++;s.choice=null;s.grade=null;resetClock(s);s.finished=s.index>=s.questions.length;refresh();return}
  if(op==='match'&&(s.kind==='match'||s.kind==='listen-match')&&!s.matched.includes(value)&&s.cards.some(x=>x.id===value)){
   if(side==='left'){s.leftId=value;if(s.kind==='listen-match'){const sample=s.cards.find(x=>x.id===value);if(sample)pronounce(sample.glyph,sample.read,true);}}else if(side==='right')s.rightId=value;
   if(s.leftId&&s.rightId){
    const ok=s.leftId===s.rightId;const item=s.cards.find(x=>x.id===s.leftId);
-   record(item,ok,s.kind,elapsed(s));s.startedAt=Date.now();
+   record(item,ok,s.kind,elapsed(s));resetClock(s);
    if(ok){s.matched.push(item.id);s.feedback='Đúng! Hãy ghép cặp tiếp theo.';}
    else{s.mistakes++;s.feedback='Chưa đúng. Thử ghép lại hai ô.';}
    s.leftId=null;s.rightId=null;
