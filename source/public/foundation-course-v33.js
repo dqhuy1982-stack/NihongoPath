@@ -364,6 +364,27 @@ function scheduleFoundationOverlay(){
 }
 /* Move the completed-round dock outside scrollable/transformed application shells.
    Delegated click actions still work after relocation. */
+/* v1.19B: portal only the completion modal to the viewport.
+   A scoped host preserves .v34-studying typography and colors without
+   modifying global body styles or changing the quiz/lesson layout. */
+function removeSummaryHost(){
+ const host=document.querySelector?.('body > .v119-summary-host');
+ host?.remove?.();
+}
+function mountSummaryHost(){
+ if(typeof document==='undefined'||!document.body?.appendChild)return;
+ const overlay=document.querySelector?.('.v34-workspace-shell [data-v107-dialog]');
+ if(!overlay)return;
+ removeSummaryHost();
+ const host=document.createElement('div');
+ host.className='v34-studying v119-summary-host';
+ host.appendChild(overlay);
+ document.body.appendChild(host);
+}
+function scheduleSummaryHost(){
+ if(typeof queueMicrotask==='function')queueMicrotask(mountSummaryHost);
+ else if(typeof requestAnimationFrame==='function')requestAnimationFrame(mountSummaryHost);
+}
 function removeFinishDock(){
  const dock=document.querySelector?.('body > .v108-dock');
  dock?.remove?.();
@@ -381,13 +402,14 @@ function pulseGradedFeedback(correct,kind='answer'){
  panel.classList.add('v117-feedback-pulse',correct?'v117-pulse-correct':'v117-pulse-wrong');
 }
 function refresh(){
+ removeSummaryHost();
  removeFoundationOverlay();
  removeFinishDock();
  const stage=document.querySelector('.v34-workspace-shell');
  if(stage){
   const rail=stage.querySelector?.('.v39-book-nav'),saved=rail?rail.scrollTop:null;
   stage.innerHTML=workspace(current());
-  restoreBookViewport(saved);tickClock();scheduleMatchLines();scheduleFinishDock();
+  restoreBookViewport(saved);tickClock();scheduleMatchLines();scheduleFinishDock();scheduleSummaryHost();
   return;
  }
  render(false);
@@ -740,7 +762,7 @@ function workspace(cfg){
  return navigationFor(cfg)+'<div class="v38-task-area"><div class="'+(gameOrPractice?'v39-book-layout':'v33-workspace')+'"'+(intro?' inert':'')+'>'+(gameOrPractice?activityBook(cfg)+body:body+panel)+'</div>'+intro+(s&&MATCH_KINDS.includes(s.kind)?roundSummaryView(s,cfg):'')+'</div>';
 }
 function modulePage(cfg){
- scheduleFoundationOverlay();scheduleMatchLines();scheduleFinishDock();tickClock();if(typeof queueMicrotask==='function')queueMicrotask(()=>restoreBookViewport());return wrap('<div class="v34-workspace-shell">'+workspace(cfg)+'</div>',cfg.mod.title)
+ scheduleFoundationOverlay();scheduleMatchLines();scheduleFinishDock();scheduleSummaryHost();tickClock();if(typeof queueMicrotask==='function')queueMicrotask(()=>restoreBookViewport());return wrap('<div class="v34-workspace-shell">'+workspace(cfg)+'</div>',cfg.mod.title)
   .replace('class="v25-wrap v33-foundation v112-foundation v115-foundation"',
            'class="v25-wrap v33-foundation v112-foundation v115-foundation v34-studying"');
 }
@@ -833,6 +855,7 @@ function perform(el){
 }
 /* Local switching preserves the page viewport and avoids hash navigation on every exercise tab. */
 function localSwitch(kind,value){
+ removeSummaryHost();
  removeFoundationOverlay();
  removeFinishDock();
  const cfg=current();if(!cfg.mod)return;
@@ -858,7 +881,7 @@ function localSwitch(kind,value){
  if(typeof history!=='undefined'&&history.replaceState)history.replaceState(null,'','#'+next);
  else location.hash='#'+next;
  const stage=document.querySelector('.v34-workspace-shell');
- if(stage){const rail=stage.querySelector?.('.v39-book-nav'),saved=rail?rail.scrollTop:null;stage.innerHTML=workspace(target);restoreBookViewport(saved);mountFoundationOverlay();tickClock();scheduleMatchLines();scheduleFinishDock();const crumb=document.querySelector('.v115-breadcrumb [aria-current="page"]');
+ if(stage){const rail=stage.querySelector?.('.v39-book-nav'),saved=rail?rail.scrollTop:null;stage.innerHTML=workspace(target);restoreBookViewport(saved);mountFoundationOverlay();tickClock();scheduleMatchLines();scheduleFinishDock();scheduleSummaryHost();const crumb=document.querySelector('.v115-breadcrumb [aria-current="page"]');
   if(crumb)crumb.textContent=target.mod.title.replace(/^\d+\s*[·.:-]\s*/,'');}
 }
 /* Optional desktop dragging; touch and keyboard selection remain the primary accessible controls. */
@@ -897,7 +920,7 @@ document.addEventListener('change',event=>{
  const node=event.target.closest?.('[data-f34]');if(!node||!document.querySelector('.v34-workspace-shell'))return;
  localSwitch(node.dataset.f34,node.value);
 });
-if(typeof window!=='undefined'&&window.addEventListener)window.addEventListener('hashchange',()=>{removeFoundationOverlay();removeFinishDock();});
+if(typeof window!=='undefined'&&window.addEventListener)window.addEventListener('hashchange',()=>{removeSummaryHost();removeFoundationOverlay();removeFinishDock();});
 document.addEventListener('keydown',event=>{
  const modal=document.querySelector?.('[data-v107-dialog]');
  if(modal){
