@@ -139,3 +139,7 @@
  .v34-studying .v109-overlay,.v34-studying .v109-dialog,.v34-studying .v109-medal-art{animation:none!important}
  .v34-studying .v109-closing,.v34-studying .v109-closing .v109-dialog{animation:none!important}
 }
+
+/* The Foundation learning flow now has four destinations, not five. */
+.v34-studying .v34-stagebar{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+@media(max-width:680px){.v34-studying .v34-stagebar{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
