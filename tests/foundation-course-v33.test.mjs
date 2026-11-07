@@ -439,7 +439,7 @@ test('v1.03 workbook avoids nested scroll containers and renders both matching c
  assert.match(css,/grid-template-columns:minmax\(0,1fr\) minmax\(0,1fr\)!important/);
  assert.match(load('foundation-course-v105.css'),/\.v105-match-row/);
  assert.match(css,/overflow:visible!important/);
- assert.match(html,/v103-nav-group/);
+ assert.match(html,/v105-menu-group/);
 });
 test('v1.03 shows contextual explanation after answer, not before',()=>{
  const h=harness(),route='learn/foundation/hiragana/all/quiz';
