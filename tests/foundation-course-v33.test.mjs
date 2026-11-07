@@ -367,8 +367,10 @@ test('Refresh of deep lesson route triggers learning-hub re-render after scripts
 test('Global UI footer shows unobtrusive v1.01 beside HORIZON tagline',()=>{
  const app=load('app.js'),hub=load('learning-hub-v25.js');
  assert.ok(app.includes('Học theo cách của bạn'));
- assert.ok(app.includes('horizon-ui-version'));
+ assert.ok(app.includes('horizon-brand-version'));
  assert.ok(app.includes('v1.06'));
+ assert.ok(!app.includes('class="horizon-ui-version"'));
+ assert.ok(load('index.html').includes('horizon-brand-version.css?v=106'));
  assert.ok(!hub.includes('HORIZON · Learning Hub v33 · Recorded progress'));
 });
 test('Book index uses a warm connected selected tab and responsive separation',()=>{
@@ -612,7 +614,7 @@ test('The learning UI does not alter the existing lesson engine or global learne
  assert.ok(html.includes('foundation-course-v39.css?v=39'));
  assert.ok(html.includes('foundation-course-v40.css?v=100'));
  assert.ok(html.includes('foundation-course-v101.css?v=101'));
- assert.ok(html.includes('app.js?v=106'));
+ assert.ok(html.includes('app.js?v=106-brand'));
  assert.ok(html.includes('learning-hub-v25.js?v=100'));
  assert.ok(html.includes('foundation-course-v33.js?v=106'));
  assert.ok(html.includes('foundation-course-v33.js?v=106'));
