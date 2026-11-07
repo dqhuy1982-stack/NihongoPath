@@ -170,10 +170,15 @@ function ensurePlay(config){
  return play;
 }
 
+function elapsed(s){return Math.max(0,Date.now()-(s.startedAt||Date.now()))}
+function clock(s,answered=false){return '<div class="v37-clock" aria-label="Thời gian phản hồi"><span aria-hidden="true">◷</span><strong data-f37-timer>'+timeLabel(answered?(s.lastMs||0):elapsed(s))+'</strong><small>'+(answered?'Đã trả lời':'Đang tính giờ')+'</small></div>';}
+let ticker=null;
+function tickClock(){if(typeof setInterval!=='function'||ticker!==null)return;ticker=setInterval(()=>{const el=document.querySelector?.('[data-f37-timer]');if(el&&play&&!play.finished&&!play.choice&&!play.answer&&play.kind!=='flash')el.textContent=timeLabel(elapsed(play));},100);}
+function weakList(cfg){const rec=store().items;return DATA.take(cfg.id,'all',cfg.script).filter(x=>{const v=rec[x.id];return v&&(v.latestOutcome!=='correct'||new Date(v.nextAt).getTime()<=Date.now())}).sort((a,b)=>priority(b)-priority(a)).slice(0,6);}
 function navigate(route){location.hash='#'+route}
 function refresh(){
  const stage=document.querySelector('.v34-workspace-shell');
- if(stage){stage.innerHTML=workspace(current());return}
+ if(stage){stage.innerHTML=workspace(current());tickClock();return}
  render(false);
 }
 function wrap(content,crumb='Nền tảng'){
@@ -305,7 +310,7 @@ function noData(msg){return '<section class="v33-pane"><h3>Chưa đủ dữ li�
 function quizView(cfg,s){
  if(s.finished||s.index>=s.questions.length)return summaryView(cfg,s);
  const q=s.questions[s.index];
- return '<section class="v33-pane"><div class="v33-pane-head"><div><p class="v33-eyebrow">KIỂM TRA · '+clean(modeNames[cfg.mode])+'</p><h3>Nhớ lại không nhìn gợi ý</h3><p>'+clean(q.prompt)+'</p></div>'+tag('Câu '+(s.index+1)+' / '+s.questions.length)+'</div>'+
+ return '<section class="v33-pane"><div class="v33-pane-head"><div><p class="v33-eyebrow">KIỂM TRA · '+clean(modeNames[cfg.mode])+'</p><h3>Nhớ lại không nhìn gợi ý</h3><p>'+clean(q.prompt)+'</p></div>'+clock(s,!!s.choice)+'</div>'+
  (q.mode==='listen'?'<div class="v35-listen-panel"><p>Nghe và chọn chữ. Có thể nghe lại nhiều lần.</p><button class="v35-listen-trigger" data-f33="listen-audio" aria-label="Nghe phát âm Kana"><span aria-hidden="true">♫</span> Phát âm thanh</button></div>':'<div class="v33-question-glyph" lang="'+(q.mode.startsWith('vocab')&&q.mode==='vocab-vi-ja'?'vi':'ja')+'">'+clean(q.stimulus)+'</div>')+
  '<p class="v36-audio-status" role="status" aria-live="polite" hidden></p><div class="v33-answer-grid">'+q.choices.map(opt=>'<button class="v33-answer '+(s.choice&&opt.id===q.correct?'correct':'')+' '+(s.choice===opt.id&&s.choice!==q.correct?'wrong':'')+'" data-f33="answer" data-value="'+clean(opt.id)+'" '+(s.choice?'disabled':'')+'>'+clean(opt.label)+'</button>').join('')+'</div>'+
  (s.choice?'<div class="v33-feedback '+(s.choice===q.correct?'positive':'negative')+'" role="status"><strong>'+(s.choice===q.correct?'Chính xác.':'Chưa đúng. Đáp án: '+clean(q.choices.find(x=>x.id===q.correct)?.label))+'</strong><p>'+clean(q.note)+'</p><button class="v36-feedback-audio" data-f33="feedback-audio" type="button">▶ Nghe đáp án</button></div><div class="v33-pane-actions"><button class="v33-primary" data-f33="next">'+(s.index+1===s.questions.length?'Xem kết quả':'Câu tiếp theo')+' →</button></div>':'<p class="v33-subline">Chọn một đáp án. Kết quả và giải thích hiện ngay, không cần bấm “Kiểm tra” thêm lần nữa.</p>')+
@@ -319,7 +324,7 @@ function buildView(cfg,s){
  if(!s.cards.length)return noData('Chưa đủ từ ngữ cảnh để ghép chữ.');
  if(s.finished||s.index>=s.cards.length)return '<section class="v33-pane v33-summary"><p class="v33-eyebrow">XẾP CHỮ · TỔNG KẾT</p><h3>Đã hoàn thành lượt ghép chữ</h3><div class="v33-summary-score">'+s.correct+' <span>/ '+s.cards.length+' từ đúng</span></div><p>Luyện lại những từ sai sau khi xem mặt chữ và cách đọc.</p><div class="v33-pane-actions"><button data-f33="restart" class="v33-primary">Ghép lại từ đầu</button></div></section>';
  const word=s.cards[s.index],selected=s.selected.map(i=>s.tileOrder[i].glyph).join('');
- return '<section class="v33-pane"><div class="v33-pane-head"><div><p class="v33-eyebrow">GHÉP CHỮ THÀNH TỪ</p><h3>Xếp Kana theo đúng thứ tự</h3><p>Nhìn nghĩa tiếng Việt, chạm các mảnh chữ để ghép thành từ Nhật. Không cần kéo thả.</p></div>'+tag('Từ '+(s.index+1)+' / '+s.cards.length)+'</div>'+
+ return '<section class="v33-pane"><div class="v33-pane-head"><div><p class="v33-eyebrow">GHÉP CHỮ THÀNH TỪ</p><h3>Xếp Kana theo đúng thứ tự</h3><p>Nhìn nghĩa tiếng Việt, chạm các mảnh chữ để ghép thành từ Nhật. Không cần kéo thả.</p></div>'+clock(s,!!s.answer)+'</div>'+
  '<div class="v33-build-clue"><span>NGHĨA TIẾNG VIỆT</span><strong>'+clean(word.vi)+'</strong></div>'+
  '<div class="v33-build-answer" data-f35-drop="build" aria-label="Các chữ đã xếp" aria-live="polite">'+(selected?Array.from(selected).map(ch=>'<span lang="ja">'+clean(ch)+'</span>').join(''):'<small>Chọn ký tự bên dưới để ghép từ</small>')+'</div>'+
  '<div class="v33-build-tiles">'+s.tileOrder.map((x,i)=>'<button data-f33="tile" data-value="'+i+'" draggable="true" class="v33-build-tile" '+(s.selected.includes(i)||s.answer?'disabled':'')+' lang="ja">'+clean(x.glyph)+'</button>').join('')+'</div>'+
@@ -365,14 +370,14 @@ function perform(el){
   const word=s.cards[s.index],built=s.selected.map(n=>s.tileOrder[n].glyph).join('');
   if(s.selected.length===Array.from(word.glyph).length){
    const correct=built===word.glyph;s.answer={correct,built};if(correct)s.correct++;
-   record(word,correct,'build');
+   s.lastMs=elapsed(s);s.grade=record(word,correct,'build',s.lastMs);
   }
   refresh();return;
  }
  if(op==='undo'&&s.kind==='build'&&!s.answer){s.selected.pop();refresh();return}
  if(op==='build-next'&&s.kind==='build'&&s.answer){
   s.index++;s.finished=s.index>=s.cards.length;s.selected=[];s.answer=null;
-  if(!s.finished)s.tileOrder=shuffle(Array.from(s.cards[s.index].glyph).map((glyph,i)=>({glyph,i})));
+  if(!s.finished){s.tileOrder=shuffle(Array.from(s.cards[s.index].glyph).map((glyph,i)=>({glyph,i})));s.startedAt=Date.now();}
   refresh();return;
  }
  if(op==='flip'){s.flipped=!s.flipped;refresh();return}
@@ -383,10 +388,11 @@ function perform(el){
  }
  if(op==='answer'&&s.kind!=='match'&&s.kind!=='flash'&&!s.choice&&!s.finished){
   const q=s.questions[s.index];if(!q.choices.some(x=>x.id===value))return;
-  s.choice=value;s.answered++;const ok=value===q.correct;if(ok)s.correct++;
-  record(q.item,ok,cfg.mode);refresh();return;
+  const took=elapsed(s);s.lastMs=took;s.choice=value;s.answered++;const ok=value===q.correct;if(ok)s.correct++;
+  s.grade=record(q.item,ok,cfg.mode,took);s.roundMs.push(took);if(s.grade.slow)s.slow++;if(!ok)s.errors++;
+  refresh();return;
  }
- if(op==='next'&&s.choice){s.index++;s.choice=null;s.finished=s.index>=s.questions.length;refresh();return}
+ if(op==='next'&&s.choice){s.index++;s.choice=null;s.grade=null;s.startedAt=Date.now();s.finished=s.index>=s.questions.length;refresh();return}
  if(op==='match'&&s.kind==='match'&&!s.matched.includes(value)&&s.cards.some(x=>x.id===value)){
   if(side==='left')s.leftId=value;else if(side==='right')s.rightId=value;
   if(s.leftId&&s.rightId){
