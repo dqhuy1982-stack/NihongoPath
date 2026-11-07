@@ -404,10 +404,10 @@ function buildView(cfg,s){
  const word=s.cards[s.index],selected=s.selected.map(i=>s.tileOrder[i].glyph).join('');
  return '<section class="v33-pane"><div class="v33-pane-head"><div><p class="v33-eyebrow">GHÉP CHỮ THÀNH TỪ</p><h3>Xếp Kana theo đúng thứ tự</h3><p>Nhìn nghĩa tiếng Việt, chạm các mảnh chữ để ghép thành từ Nhật. Không cần kéo thả.</p></div><div class="v37-head-meta">'+tag('Từ '+(s.index+1)+' / '+s.cards.length)+(cfg.mode==='mix'?clock(s,!!s.answer):'')+'</div></div>'+
  '<div class="v33-build-clue"><span>NGHĨA TIẾNG VIỆT</span><strong>'+clean(word.vi)+'</strong></div>'+
- '<div class="v33-build-answer" data-f35-drop="build" aria-label="Các chữ đã xếp" aria-live="polite">'+(selected?Array.from(selected).map(ch=>'<span lang="ja">'+clean(ch)+'</span>').join(''):'<small>Chọn ký tự bên dưới để ghép từ</small>')+'</div>'+
+ '<div class="v33-build-answer v106-build-answer" data-f35-drop="build" aria-label="Các chữ đã xếp" aria-live="polite">'+(selected?s.selected.map((tileIndex,position)=>'<button type="button" data-f33="remove-tile" data-value="'+position+'" class="v106-selected-tile" '+(s.answer?'disabled':'')+' aria-label="Trả chữ '+clean(s.tileOrder[tileIndex].glyph)+' về khay" lang="ja">'+clean(s.tileOrder[tileIndex].glyph)+(s.answer?'':'<small aria-hidden="true">×</small>')+'</button>').join(''):'<small>Chọn ký tự bên dưới để ghép từ</small>')+'</div>'+
  '<div class="v33-build-tiles">'+s.tileOrder.map((x,i)=>'<button data-f33="tile" data-value="'+i+'" draggable="true" class="v33-build-tile" '+(s.selected.includes(i)||s.answer?'disabled':'')+' lang="ja">'+clean(x.glyph)+'</button>').join('')+'</div>'+
  (s.answer?'<div class="v33-feedback '+(s.answer.correct?'positive':'negative')+'" role="status"><strong>'+(s.answer.correct?'Đúng!':'Chưa đúng: '+clean(word.glyph))+'</strong><p>'+clean(word.glyph)+' → '+clean(word.read)+' · '+clean(word.vi)+'. '+clean(word.note||'')+'</p><button type="button" class="v36-feedback-audio" data-f33="feedback-audio">▶ Nghe đáp án</button></div>':'<p class="v33-subline">Câu trả lời được chấm ngay khi bạn ghép đủ số ký tự.</p>')+
- '<div class="v33-pane-actions">'+(!s.answer?'<button class="v33-secondary" data-f33="undo">Bỏ chữ cuối</button>':'<button class="v33-primary" data-f33="build-next">'+(s.index+1===s.cards.length?'Xem kết quả':'Từ tiếp theo')+' →</button>')+'</div></section>';
+ '<div class="v33-pane-actions">'+(!s.answer?'<button class="v33-secondary" data-f33="undo" '+(!s.selected.length?'disabled':'')+'>Bỏ chữ cuối</button>':(s.answer.correct?'':'<button class="v33-secondary" data-f33="retry-build">↻ Thử lại từ này</button>')+'<button class="v33-primary" data-f33="build-next">'+(s.index+1===s.cards.length?'Xem kết quả':'Từ tiếp theo')+' →</button>')+'</div></section>';
 }
 /* Matching connectors use actual button geometry, not a protruding CSS border. */
 /* Single connector lane: measure active tab relative to scrollable rail.
@@ -540,9 +540,9 @@ function activityBook(cfg){
  ];
  const entry=([id,label,symbol])=>'<button type="button" data-f34="mode" data-value="'+id+'" class="v39-book-tab '+(id===cfg.mode?'active':'')+'" '+(id===cfg.mode?'aria-current="page"':'')+'><span class="v39-book-symbol" aria-hidden="true">'+symbol+'</span><span>'+label+'</span><span aria-hidden="true" class="v39-book-chevron">›</span></button>';
  return '<nav class="v39-book-nav" aria-label="'+(isGame?'Trò chơi Kana':'Sổ bài tập')+'">'+
- '<div class="v39-book-heading"><span class="v39-book-mark" aria-hidden="true">▤</span><div><strong>'+(isGame?'Trò chơi Kana':'Sổ bài tập')+'</strong><small>'+(isGame?'Vừa chơi vừa nhớ chữ.':'Chọn dạng luyện bên trái để bắt đầu.')+'</small></div></div>'+
+ 
  '<button type="button" class="v105-audio-toggle" data-f33="toggle-audio" aria-pressed="'+audioPref()+'"><span aria-hidden="true">'+(audioPref()?'◖))':'◖×')+'</span> Âm thanh đáp án: <strong>'+(audioPref()?'Bật':'Tắt')+'</strong></button>'+
- groups.filter(([,entries])=>entries.length).map(([label,entries])=>'<details class="v105-menu-group" '+(entries.some(([id])=>id===cfg.mode)?'open':'')+'><summary>'+label+' <span aria-hidden="true">⌄</span></summary><div class="v105-menu-entries">'+entries.map(entry).join('')+'</div></details>').join('')+
+ groups.filter(([,entries])=>entries.length).map(([label,entries])=>'<div class="v106-menu-group"><div class="v106-group-heading">'+label+'</div><div class="v105-menu-entries">'+entries.map(entry).join('')+'</div></div>').join('')+
  '</nav>';
 }
 
@@ -587,6 +587,13 @@ function perform(el){
    s.lastMs=null;s.grade=record(word,correct,s.kind,null);if(audioPref())pronounce(word.glyph,word.read,true);
   }
   refresh();return;
+ }
+ if(op==='remove-tile'&&['build','game-build'].includes(s.kind)&&!s.answer){
+  const at=Number(value);if(!Number.isInteger(at)||at<0||at>=s.selected.length)return;
+  s.selected.splice(at,1);refresh();return;
+ }
+ if(op==='retry-build'&&['build','game-build'].includes(s.kind)&&s.answer&&!s.answer.correct){
+  s.answer=null;s.selected=[];refresh();return;
  }
  if(op==='undo'&&['build','game-build'].includes(s.kind)&&!s.answer){s.selected.pop();refresh();return}
  if(op==='build-next'&&['build','game-build'].includes(s.kind)&&s.answer){
