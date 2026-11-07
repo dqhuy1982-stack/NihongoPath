@@ -515,7 +515,7 @@ function activityBook(cfg){
  const title=isGame?'Trò chơi Kana':'Sổ bài tập';
  const description=isGame?'Chơi để nhận diện chữ nhanh hơn. Không giới hạn thời gian.':'Chọn một dạng ở mục lục, luyện ngay bên phải. Không có đồng hồ.';
  return '<nav class="v39-book-nav" aria-label="'+title+'"><div class="v39-book-heading"><span class="v39-book-mark" aria-hidden="true">▤</span><div><strong>'+title+'</strong><small>'+description+'</small></div></div>'+
- items.map(([id,label,symbol])=>'<button type="button" data-f34="mode" data-value="'+id+'" class="v39-book-tab '+(id===cfg.mode?'active':'')+'" '+(id===cfg.mode?'aria-current="page"':'')+'><span class="v39-book-symbol" aria-hidden="true">'+symbol+'</span><span>'+label+'</span><span aria-hidden="true" class="v39-book-chevron">›</span></button>').join('')+
+ items.map(([id,label,symbol],i)=>(!isGame&&({0:'NHẬN DIỆN',4:'GHÉP & GHI NHỚ',8:'NGHĨA & ỨNG DỤNG',10:'ÔN TẬP'})[i]?'<div class="v103-nav-group">'+({0:'NHẬN DIỆN',4:'GHÉP & GHI NHỚ',8:'NGHĨA & ỨNG DỤNG',10:'ÔN TẬP'})[i]+'</div>':'')+'<button type="button" data-f34="mode" data-value="'+id+'" class="v39-book-tab '+(id===cfg.mode?'active':'')+'" '+(id===cfg.mode?'aria-current="page"':'')+'><span class="v39-book-symbol" aria-hidden="true">'+symbol+'</span><span>'+label+'</span><span aria-hidden="true" class="v39-book-chevron">›</span></button>').join('')+
  '</nav>';
 }
 function workspace(cfg){
@@ -527,7 +527,7 @@ function workspace(cfg){
  const panel='<aside class="v33-side"><h3>Sổ ôn · Gợi ý theo kết quả</h3>'+
  (weak.length?'<div class="v37-weak-list">'+weak.map(x=>'<span lang="ja">'+clean(x.glyph)+' <small>'+clean(store().items[x.id]?.latestOutcome==='incorrect'?'Sai':'Chậm / đến hạn')+'</small></span>').join('')+'</div><button type="button" class="v37-review-link" data-f34="mode" data-value="review">Ôn những chữ này →</button>':'<p>Chưa có chữ cần ôn. Hãy thử một lượt kiểm tra.</p>')+
  '<div class="v33-side-divider"></div><p>Trả lời sai được lưu ôn; bài Luyện tập và Game không đánh giá nhanh/chậm.</p></aside>';
- return navigationFor(cfg)+'<div class="v38-task-area"><div class="'+(gameOrPractice?'v39-book-layout':'v33-workspace')+'"'+(intro?' inert':'')+'>'+(gameOrPractice?activityBook(cfg)+'<div class="v102-connector-lane" aria-hidden="true"><div class="v102-connector-bridge"></div></div>'+body:body+panel)+'</div>'+intro+'</div>';
+ return navigationFor(cfg)+'<div class="v38-task-area"><div class="'+(gameOrPractice?'v39-book-layout':'v33-workspace')+'"'+(intro?' inert':'')+'>'+(gameOrPractice?activityBook(cfg)+body:body+panel)+'</div>'+intro+'</div>';
 }
 function modulePage(cfg){
  scheduleFoundationOverlay();scheduleMatchLines();tickClock();if(typeof queueMicrotask==='function')queueMicrotask(()=>restoreBookViewport());return wrap('<div class="v34-workspace-shell">'+workspace(cfg)+'</div>',cfg.mod.title).replace('class="v25-wrap v33-foundation"','class="v25-wrap v33-foundation v34-studying"');
