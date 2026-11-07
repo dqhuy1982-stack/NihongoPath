@@ -22,7 +22,7 @@
  font-size:18px!important;line-height:1.25!important;
  visibility:visible!important;opacity:1!important;
 }
-.v34-studying .v105-match-row [data-side="right"] .v105-romaji{display:inline!important;visibility:visible!important;font:700 18px/1.25 inherit!important;letter-spacing:.01em;color:var(--v33-ink)}
+.v34-studying .v105-match-row [data-side="right"] .v105-romaji{display:inline!important;visibility:visible!important;font-weight:700!important;font-size:18px!important;line-height:1.25!important;letter-spacing:.01em;color:var(--v33-ink)}
 .v34-studying .v105-match-row .v105-tile small{font-size:9px;color:var(--muted);position:absolute;bottom:3px;right:8px}
 .v34-studying .v105-match-row .v105-tile.done{background:#e8f2e8!important;color:#2e6c3b!important;border-color:#77a37b!important;text-decoration:none!important}
 .v34-studying .v105-match-row .v105-tile.selected{border:2px solid var(--v33-ink)!important;background:var(--v33-soft)!important}
