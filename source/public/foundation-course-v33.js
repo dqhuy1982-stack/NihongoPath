@@ -102,7 +102,7 @@ function contextual(config){
  return a;
 }
 function activityPool(config,mode){
- return mode.startsWith('vocab')||mode==='build'?contextual(config):tokens(config);
+ return mode.startsWith('vocab')||mode==='build'||mode==='game-build'||mode==='missing'?contextual(config):tokens(config);
 }
 const isWord=item=>typeof item.vi==='string';
 function readable(item){return isWord(item)?item.vi:item.read}
@@ -166,8 +166,8 @@ function ensurePlay(config){
   play={key,kind,cards,index:0,selected:[],tileOrder:cards.length?shuffle(Array.from(cards[0].glyph).map((glyph,i)=>({glyph,i}))):[],answer:null,correct:0,finished:cards.length===0,startedAt:null,ready:true};
  }else if(['match','listen-match','game','game-listen'].includes(kind)){
   const permitted=['listen-match','game-listen'].includes(kind)?list.filter(x=>x.stage!=='small'&&Array.from(x.glyph).length<=3):list;
-  const base=(['listen-match','game-listen','game'].includes(kind)&&config.script==='both'&&config.mod.script==='both')?permitted.filter(x=>x.script==='hira'):permitted;
-  const distinct=kind==='game'?base.filter((x,i)=>base.findIndex(y=>y.read===x.read)===i):base;
+  const base=(['match','listen-match','game-listen','game'].includes(kind)&&config.script==='both'&&config.mod.script==='both')?permitted.filter(x=>x.script==='hira'):permitted;
+  const distinct=base.filter((x,i)=>base.findIndex(y=>y.read===x.read&&y.script===x.script)===i);
   const cards=chooseTargets(distinct,Math.min(6,distinct.length));
   play={key,kind,cards,left:shuffle(cards),right:shuffle(cards),leftId:null,rightId:null,matched:[],mistakes:0,answered:0,feedback:'',finished:cards.length===0,startedAt:null,ready:true};
  }else if(kind==='flash'){
@@ -516,7 +516,7 @@ function perform(el){
   const word=s.cards[s.index],built=s.selected.map(n=>s.tileOrder[n].glyph).join('');
   if(s.selected.length===Array.from(word.glyph).length){
    const correct=built===word.glyph;s.answer={correct,built};if(correct)s.correct++;
-   s.lastMs=null;s.grade=record(word,correct,s.kind,null);
+   s.lastMs=null;s.grade=record(word,correct,s.kind,null);pronounce(word.glyph,word.read,true);
   }
   refresh();return;
  }
@@ -535,7 +535,7 @@ function perform(el){
  if(op==='answer'&&s.kind!=='match'&&s.kind!=='flash'&&!s.choice&&!s.finished){
   const q=s.questions[s.index];if(!q.choices.some(x=>x.id===value))return;
   const took=cfg.mode==='mix'?elapsed(s):null;s.lastMs=took;s.choice=value;s.answered++;const ok=value===q.correct;if(ok)s.correct++;
-  s.grade=record(q.item,ok,q.mode||cfg.mode,took,s.hintsUsed||0,s.audioReplays||0);if(took!==null)s.roundMs.push(took);if(s.grade.slow)s.slow++;if(!ok)s.errors++;
+  s.grade=record(q.item,ok,q.mode||cfg.mode,took,s.hintsUsed||0,s.audioReplays||0);pronounce(q.item.glyph,q.item.read,true);if(took!==null)s.roundMs.push(took);if(s.grade.slow)s.slow++;if(!ok)s.errors++;
   refresh();return;
  }
  if(op==='next'&&s.choice){s.index++;s.choice=null;s.grade=null;s.hintsUsed=0;s.audioReplays=0;if(s.startedAt)resetClock(s);s.finished=s.index>=s.questions.length;refresh();return}
