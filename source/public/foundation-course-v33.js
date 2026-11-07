@@ -214,7 +214,7 @@ function scheduleFoundationOverlay(){
 function refresh(){
  removeFoundationOverlay();
  const stage=document.querySelector('.v34-workspace-shell');
- if(stage){stage.innerHTML=workspace(current());tickClock();scheduleMatchLines();scheduleBookConnector();return}
+ if(stage){const rail=stage.querySelector('.v39-book-nav'),saved=rail?rail.scrollTop:null;stage.innerHTML=workspace(current());restoreBookViewport(saved);tickClock();scheduleMatchLines();return}
  render(false);
 }
 function wrap(content,crumb='Nền tảng'){
@@ -390,17 +390,40 @@ function buildView(cfg,s){
  '<div class="v33-pane-actions">'+(!s.answer?'<button class="v33-secondary" data-f33="undo">Bỏ chữ cuối</button>':'<button class="v33-primary" data-f33="build-next">'+(s.index+1===s.cards.length?'Xem kết quả':'Từ tiếp theo')+' →</button>')+'</div></section>';
 }
 /* Matching connectors use actual button geometry, not a protruding CSS border. */
+/* Single connector lane: measure active tab relative to scrollable rail.
+   The right page has no left border; no pseudo-elements or cuts are needed. */
 function updateBookConnector(){
- const area=document.querySelector?.('.v39-book-layout'),active=area?.querySelector?.('.v39-book-tab.active'),pane=area?.querySelector?.(':scope > .v33-pane');
- if(!area||!active||!pane||!active.getBoundingClientRect||!pane.getBoundingClientRect)return;
- const r=active.getBoundingClientRect(),p=pane.getBoundingClientRect();
- const can=r.top>=p.top+2&&r.bottom<=p.bottom-2&&p.left>r.right;
- active.dataset.connected=can?'yes':'no';
- if(can)active.style.setProperty('--v101-link-width',Math.max(0,p.left-r.right+1)+'px');
+ const area=document.querySelector?.('.v39-book-layout');
+ const nav=area?.querySelector?.('.v39-book-nav');
+ const active=nav?.querySelector?.('.v39-book-tab.active');
+ const lane=area?.querySelector?.('.v102-connector-lane');
+ const bridge=lane?.querySelector?.('.v102-connector-bridge');
+ if(!nav||!active||!lane||!bridge||!lane.getBoundingClientRect)return;
+ const a=active.getBoundingClientRect(),l=lane.getBoundingClientRect();
+ const y=a.top-l.top,h=a.height;
+ const visible=y>=0&&y+h<=l.height;
+ lane.classList.toggle('v102-outside',!visible);
+ bridge.style.top=y+'px';bridge.style.height=h+'px';
 }
+let bookFramePending=false;
 function scheduleBookConnector(){
- if(typeof requestAnimationFrame==='function')requestAnimationFrame(updateBookConnector);
- else if(typeof queueMicrotask==='function')queueMicrotask(updateBookConnector);
+ if(bookFramePending)return;
+ bookFramePending=true;
+ const run=()=>{bookFramePending=false;updateBookConnector();};
+ if(typeof requestAnimationFrame==='function')requestAnimationFrame(run);
+ else if(typeof queueMicrotask==='function')queueMicrotask(run);
+ else run();
+}
+function restoreBookViewport(scrollTop=null){
+ const nav=document.querySelector?.('.v39-book-layout .v39-book-nav');
+ if(!nav)return;
+ if(Number.isFinite(scrollTop))nav.scrollTop=scrollTop;
+ else {
+  const active=nav.querySelector?.('.v39-book-tab.active');
+  if(active&&active.offsetTop+active.offsetHeight>nav.scrollTop+nav.clientHeight)
+   nav.scrollTop=Math.max(0,active.offsetTop+active.offsetHeight-nav.clientHeight+12);
+ }
+ scheduleBookConnector();
 }
 function drawMatchLines(){
  const board=document.querySelector?.('[data-match-board]');
@@ -426,6 +449,7 @@ function scheduleMatchLines(){
  else if(typeof queueMicrotask==='function')queueMicrotask(drawMatchLines);
 }
 if(typeof window!=='undefined'&&window.addEventListener)window.addEventListener('resize',()=>{scheduleMatchLines();scheduleBookConnector();});
+document.addEventListener('scroll',event=>{if(event.target?.classList?.contains('v39-book-nav'))scheduleBookConnector();},true);
 function matchingView(cfg,s){
  if(!s.cards.length)return noData('Nhóm này chưa có đủ cặp duy nhất. Hãy chọn bảng hoặc nhóm khác.');
  const complete=s.matched.length===s.cards.length;
@@ -489,10 +513,10 @@ function workspace(cfg){
  const panel='<aside class="v33-side"><h3>Sổ ôn · Gợi ý theo kết quả</h3>'+
  (weak.length?'<div class="v37-weak-list">'+weak.map(x=>'<span lang="ja">'+clean(x.glyph)+' <small>'+clean(store().items[x.id]?.latestOutcome==='incorrect'?'Sai':'Chậm / đến hạn')+'</small></span>').join('')+'</div><button type="button" class="v37-review-link" data-f34="mode" data-value="review">Ôn những chữ này →</button>':'<p>Chưa có chữ cần ôn. Hãy thử một lượt kiểm tra.</p>')+
  '<div class="v33-side-divider"></div><p>Trả lời sai được lưu ôn; bài Luyện tập và Game không đánh giá nhanh/chậm.</p></aside>';
- return navigationFor(cfg)+'<div class="v38-task-area"><div class="'+(gameOrPractice?'v39-book-layout':'v33-workspace')+'"'+(intro?' inert':'')+'>'+(gameOrPractice?activityBook(cfg)+body:body+panel)+'</div>'+intro+'</div>';
+ return navigationFor(cfg)+'<div class="v38-task-area"><div class="'+(gameOrPractice?'v39-book-layout':'v33-workspace')+'"'+(intro?' inert':'')+'>'+(gameOrPractice?activityBook(cfg)+'<div class="v102-connector-lane" aria-hidden="true"><div class="v102-connector-bridge"></div></div>'+body:body+panel)+'</div>'+intro+'</div>';
 }
 function modulePage(cfg){
- scheduleFoundationOverlay();scheduleMatchLines();scheduleBookConnector();tickClock();return wrap('<div class="v34-workspace-shell">'+workspace(cfg)+'</div>',cfg.mod.title).replace('class="v25-wrap v33-foundation"','class="v25-wrap v33-foundation v34-studying"');
+ scheduleFoundationOverlay();scheduleMatchLines();tickClock();if(typeof queueMicrotask==='function')queueMicrotask(()=>restoreBookViewport());return wrap('<div class="v34-workspace-shell">'+workspace(cfg)+'</div>',cfg.mod.title).replace('class="v25-wrap v33-foundation"','class="v25-wrap v33-foundation v34-studying"');
 }
 function page(route){
  if(!route||route==='course/foundation'||route===routePrefix)return indexPage();
@@ -578,7 +602,7 @@ function localSwitch(kind,value){
  if(typeof history!=='undefined'&&history.replaceState)history.replaceState(null,'','#'+next);
  else location.hash='#'+next;
  const stage=document.querySelector('.v34-workspace-shell');
- if(stage){stage.innerHTML=workspace(target);mountFoundationOverlay();tickClock();scheduleMatchLines();scheduleBookConnector();const crumb=document.querySelector('.v33-foundation .v25-breadcrumb [aria-current="page"]');if(crumb)crumb.textContent=target.mod.title;}
+ if(stage){const rail=stage.querySelector('.v39-book-nav'),saved=rail?rail.scrollTop:null;stage.innerHTML=workspace(target);restoreBookViewport(saved);mountFoundationOverlay();tickClock();scheduleMatchLines();const crumb=document.querySelector('.v33-foundation .v25-breadcrumb [aria-current="page"]');if(crumb)crumb.textContent=target.mod.title;}
 }
 /* Optional desktop dragging; touch and keyboard selection remain the primary accessible controls. */
 let dragging=null;
