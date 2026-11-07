@@ -360,13 +360,27 @@ function hintView(q,s){
  (count?'<div role="status" class="v101-hint-content">'+arr.slice(0,count).map((h,i)=>'<p><strong>'+['I','II','III'][i]+'.</strong> '+clean(h)+'</p>').join('')+'</div>':'')+
  '<small>Câu đúng sau gợi ý vẫn được tính đúng, nhưng sẽ đưa vào sổ ôn.</small></div>';
 }
+function insightPanel(item,cfg){
+ if(!item)return '';
+ const all=DATA.take(cfg.id,'all',cfg.script),same=all.filter(x=>x.id!==item.id&&x.script===item.script&&x.group===item.group).slice(0,3);
+ const words=(DATA.words||[]).filter(w=>w.script===item.script&&w.glyph.includes(item.glyph)&&w.glyph!==item.glyph).slice(0,3);
+ const isLexical=typeof item.vi==='string';
+ const examples=isLexical?[item]:words;
+ const note=item.note||(!isLexical?'Đọc chữ này, sau đó so sánh với các chữ ở cùng nhóm.':'Đọc trọn từ và nhớ nghĩa trong ngữ cảnh.');
+ return '<section class="v103-insight" aria-label="Hiểu thêm và nhớ lâu"><div class="v103-insight-title"><span aria-hidden="true">✦</span><div><strong>Hiểu thêm & nhớ lâu</strong><small>Giải thích sau khi trả lời · không cần mở trang khác</small></div></div>'+
+ '<div class="v103-insight-main"><span lang="ja">'+clean(item.glyph)+'</span><div><strong>'+clean(item.read)+'</strong>'+(isLexical?'<small>'+clean(item.vi)+'</small>':'<small>Nhóm '+clean(item.group||item.stage||'Kana')+'</small>')+'</div><button type="button" class="v103-audio" data-f33="insight-audio" data-value="'+clean(item.glyph)+'" data-reading="'+clean(item.read)+'">▶ Nghe</button></div>'+
+ '<div class="v103-insight-sections"><div><b>Giải thích</b><p>'+clean(note)+'</p></div>'+
+ (same.length?'<div><b>So sánh trong cùng nhóm</b><div class="v103-compare">'+same.map(x=>'<span lang="ja">'+clean(x.glyph)+' <small>'+clean(x.read)+'</small></span>').join('')+'</div></div>':'')+
+ (examples.length?'<div class="v103-examples"><b>Ví dụ thực tế</b>'+examples.map(w=>'<button type="button" data-f33="insight-audio" data-value="'+clean(w.glyph)+'" data-reading="'+clean(w.read)+'"><span lang="ja">'+clean(w.glyph)+'</span><span>'+clean(w.read)+' · '+clean(w.vi)+'</span><span aria-hidden="true">▶</span></button>').join('')+'</div>':'')+
+ '</div></section>';
+}
 function quizView(cfg,s){
  if(s.finished||s.index>=s.questions.length)return summaryView(cfg,s);
  const q=s.questions[s.index];
  return '<section class="v33-pane"><div class="v33-pane-head"><div><p class="v33-eyebrow">'+(cfg.mode==='mix'?'KIỂM TRA TỔNG HỢP':'BÀI LUYỆN')+' · '+clean(modeNames[cfg.mode])+'</p><h3>Nhớ lại không nhìn gợi ý</h3><p>'+clean(q.prompt)+'</p></div><div class="v37-head-meta">'+tag('Câu '+(s.index+1)+' / '+s.questions.length)+(cfg.mode==='mix'?clock(s,!!s.choice):'')+'</div></div>'+
  (q.mode==='listen'?'<div class="v35-listen-panel"><p>Nghe và chọn chữ. Có thể nghe lại nhiều lần.</p><button class="v35-listen-trigger" data-f33="listen-audio" aria-label="Nghe phát âm Kana"><span aria-hidden="true">♫</span> Phát âm thanh</button></div>':'<div class="v33-question-glyph" lang="'+(q.mode.startsWith('vocab')&&q.mode==='vocab-vi-ja'?'vi':'ja')+'">'+clean(q.stimulus)+'</div>')+
  '<p class="v36-audio-status" role="status" aria-live="polite" hidden></p>'+hintView(q,s)+'<div class="v33-answer-grid">'+q.choices.map(opt=>'<button class="v33-answer '+(s.choice&&opt.id===q.correct?'correct':'')+' '+(s.choice===opt.id&&s.choice!==q.correct?'wrong':'')+'" data-f33="answer" data-value="'+clean(opt.id)+'" '+(s.choice?'disabled':'')+'>'+clean(opt.label)+'</button>').join('')+'</div>'+
- (s.choice?'<div class="v33-feedback '+(s.choice===q.correct?'positive':'negative')+'" role="status"><strong>'+(s.choice===q.correct?(s.grade?.slow?'Đúng nhưng cần luyện phản xạ.':'Chính xác.'):'Chưa đúng. Đáp án: '+clean(q.choices.find(x=>x.id===q.correct)?.label))+'</strong>'+(cfg.mode==='mix'?'<small class="v37-answer-speed">'+timeLabel(s.lastMs)+' · '+(s.grade?.outcome==='incorrect'?'Đã lưu câu sai vào sổ ôn':s.grade?.slow?'Đã lưu vào sổ ôn vì chậm':'Đúng trong ngưỡng luyện')+'</small>':'<small class="v39-casual-feedback">'+(s.choice===q.correct?'Đã ghi nhận câu đúng':'Đã thêm chữ cần ôn')+' · Không tính thời gian</small>')+'<p>'+clean(q.note)+'</p>'+(s.hintsUsed?'<small class="v101-assisted">Có dùng '+s.hintsUsed+' gợi ý — cần ôn lại không trợ giúp.</small>':'')+'<button class="v36-feedback-audio" data-f33="feedback-audio" type="button">▶ Nghe đáp án</button></div><div class="v33-pane-actions"><button class="v33-primary" data-f33="next">'+(s.index+1===s.questions.length?'Xem kết quả':'Câu tiếp theo')+' →</button></div>':'<p class="v33-subline">Chọn một đáp án. Kết quả và giải thích hiện ngay, không cần bấm “Kiểm tra” thêm lần nữa.</p>')+
+ (s.choice?'<div class="v33-feedback '+(s.choice===q.correct?'positive':'negative')+'" role="status"><strong>'+(s.choice===q.correct?(s.grade?.slow?'Đúng nhưng cần luyện phản xạ.':'Chính xác.'):'Chưa đúng. Đáp án: '+clean(q.choices.find(x=>x.id===q.correct)?.label))+'</strong>'+(cfg.mode==='mix'?'<small class="v37-answer-speed">'+timeLabel(s.lastMs)+' · '+(s.grade?.outcome==='incorrect'?'Đã lưu câu sai vào sổ ôn':s.grade?.slow?'Đã lưu vào sổ ôn vì chậm':'Đúng trong ngưỡng luyện')+'</small>':'<small class="v39-casual-feedback">'+(s.choice===q.correct?'Đã ghi nhận câu đúng':'Đã thêm chữ cần ôn')+' · Không tính thời gian</small>')+'<p>'+clean(q.note)+'</p>'+(s.hintsUsed?'<small class="v101-assisted">Có dùng '+s.hintsUsed+' gợi ý — cần ôn lại không trợ giúp.</small>':'')+'<button class="v36-feedback-audio" data-f33="feedback-audio" type="button">▶ Nghe đáp án</button></div>'+insightPanel(q.item,cfg)+'<div class="v33-pane-actions"><button class="v33-primary" data-f33="next">'+(s.index+1===s.questions.length?'Xem kết quả':'Câu tiếp theo')+' →</button></div>':'<p class="v33-subline">Chọn một đáp án. Kết quả và giải thích hiện ngay, không cần bấm “Kiểm tra” thêm lần nữa.</p>')+
  '</section>';
 }
 function summaryView(cfg,s){
@@ -458,7 +472,7 @@ function matchingView(cfg,s){
  return '<section class="v33-pane"><div class="v33-pane-head"><div><p class="v33-eyebrow">'+(['listen-match','game-listen'].includes(s.kind)?'NGHE & GHÉP':s.kind==='game'?'GAME · GHÉP CẶP':'GHÉP CẶP · 2 CỘT')+'</p><h3>'+(['listen-match','game-listen'].includes(s.kind)?'Nghe và ghép đúng chữ':'Ghép Kana với Romaji')+'</h3><p>'+(['listen-match','game-listen'].includes(s.kind)?'Nhấn nút nghe bên trái rồi ghép chữ tương ứng bên phải.':'Chọn một ô bên trái, rồi ô tương ứng bên phải. Có thể dùng bàn phím.')+'</p></div><div class="v37-head-meta">'+tag(s.matched.length+' / '+s.cards.length+' cặp')+(cfg.mode==='mix'?clock(s,s.finished):'')+'</div></div>'+
  (complete?'<div class="v33-feedback positive"><strong>Đã ghép xong!</strong><p>Số lần chọn sai: '+s.mistakes+'. Nếu chọn sai nhiều, hãy thử lại sau khi ôn Flashcard.</p></div>':'<p class="v33-subline">'+clean(s.feedback||'Chọn 1 chữ và 1 cách đọc để ghép cặp.')+'</p>')+
  '<div class="v33-match-grid v101-match-grid" data-match-board="1"><div class="v33-match-column" aria-label="Cột '+(['listen-match','game-listen'].includes(s.kind)?'phát âm':'Kana')+'"><div class="v101-match-label">'+(['listen-match','game-listen'].includes(s.kind)?'NGHE ÂM':'KANA')+'</div>'+left(s.left)+'</div><svg class="v101-match-lines" aria-hidden="true" preserveAspectRatio="none"></svg><div class="v33-match-column" aria-label="Cột '+(['listen-match','game-listen'].includes(s.kind)?'Kana':'Romaji')+'"><div class="v101-match-label">'+(['listen-match','game-listen'].includes(s.kind)?'KANA':'ROMAJI')+'</div>'+right(s.right)+'</div></div>'+
- (complete?'<div class="v33-pane-actions"><button data-f33="restart" class="v33-primary">Ghép lại với thứ tự khác</button></div>':'')+'</section>';
+ (s.lastMatched?insightPanel(s.cards.find(x=>x.id===s.lastMatched),cfg):'')+(complete?'<div class="v33-pane-actions"><button data-f33="restart" class="v33-primary">Ghép lại với thứ tự khác</button></div>':'')+'</section>';
 }
 function modeDirections(mode){
  const instructions={
@@ -526,6 +540,7 @@ function perform(el){
  const cfg=current(),op=el.dataset.f33,value=el.dataset.value,side=el.dataset.side;
  if(!cfg.mod)return;
  if(op==='guide-ok'){dismissCoach();return;}
+ if(op==='insight-audio'){pronounce(value,el.dataset.reading||'',true);return;}
  if(op==='pronounce'&&cfg.mode==='learn'){pronounce(value,el.dataset.reading||'',el.dataset.kind==='basic');dismissCoach();return;}
  if(op==='listen-audio'&&(cfg.mode==='listen'||cfg.mode==='mix'||cfg.mode==='review')){const state=ensurePlay(cfg),q=state.questions[state.index];if(q){state.audioReplays=(state.audioReplays||0)+1;pronounce(q.item.glyph,q.item.read,true);}return;}
  if(op==='feedback-audio'&&cfg.mode!=='learn'){const state=ensurePlay(cfg),q=state.questions?.[state.index],word=state.cards?.[state.index];if(q&&state.choice)pronounce(q.item.glyph,q.item.read,true);else if(word&&state.answer)pronounce(word.glyph,word.read,true);return;}
@@ -568,7 +583,7 @@ function perform(el){
   if(s.leftId&&s.rightId){
    const ok=s.leftId===s.rightId;const item=s.cards.find(x=>x.id===s.leftId);
    record(item,ok,s.kind,null);
-   if(ok){s.matched.push(item.id);s.feedback='Đúng! Hãy ghép cặp tiếp theo.';pronounce(item.glyph,item.read,true);}
+   if(ok){s.lastMatched=item.id;s.matched.push(item.id);s.feedback='Đúng! Hãy ghép cặp tiếp theo.';pronounce(item.glyph,item.read,true);}
    else{s.mistakes++;s.feedback='Chưa đúng. Thử ghép lại hai ô.';}
    s.leftId=null;s.rightId=null;
   }
