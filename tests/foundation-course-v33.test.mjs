@@ -428,6 +428,7 @@ test('v1.01 includes answer audio and precise connected-book CSS',()=>{
  assert.ok(html.includes('foundation-curriculum-v33.js?v=101'));
  assert.ok(html.includes('foundation-course-v33.js?v=107'));
  assert.ok(html.includes('foundation-course-v107.css?v=107'));
+ assert.ok(load('app.js').includes('v1.07</small>'));
  assert.ok(css.includes('v101-match-grid'));
  assert.ok(css.includes('[data-connected="yes"]'));
 });
@@ -695,7 +696,7 @@ test('The learning UI does not alter the existing lesson engine or global learne
  assert.ok(html.includes('foundation-course-v39.css?v=39'));
  assert.ok(html.includes('foundation-course-v40.css?v=100'));
  assert.ok(html.includes('foundation-course-v101.css?v=101'));
- assert.ok(html.includes('app.js?v=106-brand'));
+ assert.ok(html.includes('app.js?v=107'));
  assert.ok(html.includes('learning-hub-v25.js?v=100'));
  assert.ok(html.includes('foundation-course-v33.js?v=107'));
  assert.ok(html.includes('foundation-course-v33.js?v=107'));
