@@ -107,8 +107,8 @@ test('Reading controls are translated across locales and do not expose the answe
 test('Mockup follows seasonal art and faithful three-panel desktop composition',()=>{
  const html=read('index.html');
  assert.ok(html.includes('href="lesson-mockup.css?v=20"'));
- assert.ok(html.includes('src="lesson-ui.js?v=22"'));
- assert.ok(html.includes('src="i18n/ui-pack.js?v=20"'));
+ assert.ok(html.includes('src="lesson-ui.js?v=31"'));
+ assert.ok(html.includes('src="i18n/ui-pack.js?v=31"'));
  assert.ok(css.includes('assets/lesson-sakura-branch.svg'));
  assert.ok(css.includes('assets/lesson-enso-sakura.svg'));
  for(const file of ['assets/lesson-sakura-branch.svg','assets/lesson-enso-sakura.svg'])
