@@ -388,6 +388,14 @@ function scheduleFinishDock(){
  if(typeof queueMicrotask==='function')queueMicrotask(syncFinishDock);
  else if(typeof requestAnimationFrame==='function')requestAnimationFrame(syncFinishDock);
 }
+/* The feedback pulse runs only immediately after a newly graded response.
+   Repainting, scrolling, or reopening a result does not replay it. */
+function pulseGradedFeedback(correct,kind='answer'){
+ const selector=kind==='match'?'.v105-match-feedback':'.v33-feedback';
+ const panel=document.querySelector?.('.v34-workspace-shell '+selector);
+ if(!panel?.classList?.add)return;
+ panel.classList.add('v117-feedback-pulse',correct?'v117-pulse-correct':'v117-pulse-wrong');
+}
 function refresh(){
  removeFoundationOverlay();
  removeFinishDock();
@@ -783,7 +791,9 @@ function perform(el){
    const correct=built===word.glyph;s.answer={correct,built};if(correct)s.correct++;
    s.lastMs=null;s.grade=record(word,correct,s.kind,null);if(audioPref())pronounce(word.glyph,word.read,true);
   }
-  refresh();return;
+  refresh();
+  if(s.answer)pulseGradedFeedback(s.answer.correct);
+  return;
  }
  if(op==='remove-tile'&&['build','game-build'].includes(s.kind)&&!s.answer){
   const at=Number(value);if(!Number.isInteger(at)||at<0||at>=s.selected.length)return;
@@ -808,7 +818,8 @@ function perform(el){
   const q=s.questions[s.index];if(!q.choices.some(x=>x.id===value))return;
   const took=cfg.mode==='mix'?elapsed(s):null;s.lastMs=took;s.choice=value;s.answered++;const ok=value===q.correct;if(ok)s.correct++;
   s.grade=record(q.item,ok,q.mode||cfg.mode,took,s.hintsUsed||0,s.audioReplays||0);if(audioPref())pronounce(q.item.glyph,q.item.read,true);if(took!==null)s.roundMs.push(took);if(s.grade.slow)s.slow++;if(!ok)s.errors++;
-  refresh();return;
+  refresh();pulseGradedFeedback(ok);
+  return;
  }
  if(op==='next'&&s.choice){s.index++;s.choice=null;s.grade=null;s.hintsUsed=0;s.audioReplays=0;if(s.startedAt)resetClock(s);s.finished=s.index>=s.questions.length;refresh();return}
  if(op==='match'&&['match','listen-match','game','game-listen'].includes(s.kind)&&!s.matched.includes(value)&&s.cards.some(x=>x.id===value)){
@@ -826,6 +837,7 @@ function perform(el){
   }
   refresh();
   if(s.round?.summaryOpen)focusRoundSummary();
+  else if(!s.leftId&&!s.rightId&&s.feedback&&s.round?.attempts?.length)pulseGradedFeedback(s.lastMatched!==null&&!!s.lastMatched,'match');
   if(s.wrongPair){
    const ref=s.wrongPair;
    if(typeof setTimeout==='function')setTimeout(()=>{if(play===s&&s.wrongPair===ref){s.wrongPair=null;s.feedback='Thử ghép lại hai ô.';refresh();}},950);
