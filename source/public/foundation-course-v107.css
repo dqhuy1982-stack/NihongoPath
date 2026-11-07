@@ -236,3 +236,124 @@ body:has([data-v107-dialog]) > .v108-dock{display:none!important}
  .v34-studying .v109-dialog,.v34-studying .v109-overlay,
  body > .v108-dock{transition:none!important}
 }
+
+/* v1.11 — Repair body-portaled toolbar and remove duplicate module headline. */
+/* On Foundation module pages, the shared application breadcrumb already identifies
+   the learning area; do not repeat the generic hero title. Keep navigation tabs. */
+.v34-studying .v28-header-shell .v25-header{
+ display:none!important;
+}
+.v34-studying .v28-header-shell{margin-top:0!important}
+.v34-studying .v25-breadcrumb{
+ margin:10px 2px 12px!important;
+}
+
+/* The dock is a direct BODY child, so inherited .v34-studying button/theme
+   selectors no longer apply. Give all states explicit legible styles. */
+body > .v108-dock{
+ position:fixed!important;
+ left:50%!important;
+ right:auto!important;
+ bottom:calc(18px + env(safe-area-inset-bottom))!important;
+ transform:translate3d(-50%,0,0)!important;
+ z-index:9990!important;
+ isolation:isolate;
+ display:flex!important;
+ align-items:center!important;
+ gap:10px!important;
+ width:min(680px,calc(100vw - 30px))!important;
+ min-height:72px!important;
+ padding:12px 14px!important;
+ box-sizing:border-box!important;
+ border:1px solid #e1cbd0!important;
+ border-radius:18px!important;
+ background:#fffafa!important;
+ background-color:#fffafa!important;
+ color:#754b5c!important;
+ opacity:1!important;
+ visibility:visible!important;
+ pointer-events:auto!important;
+ box-shadow:0 14px 42px rgba(45,28,37,.18)!important;
+ -webkit-backdrop-filter:none!important;
+ backdrop-filter:none!important;
+}
+body > .v108-dock > span{
+ display:block;
+ flex:1 1 auto;
+ min-width:0;
+ margin-right:auto;
+ color:#754b5c!important;
+ font-size:13px!important;
+ font-weight:750!important;
+ line-height:1.3;
+ opacity:1!important;
+}
+body > .v108-dock button{
+ appearance:none;
+ -webkit-appearance:none;
+ display:inline-flex!important;
+ flex:0 0 auto;
+ align-items:center;
+ justify-content:center;
+ gap:5px;
+ min-height:44px!important;
+ padding:11px 16px!important;
+ box-sizing:border-box;
+ border-radius:11px!important;
+ white-space:nowrap!important;
+ font-size:13px!important;
+ font-weight:750!important;
+ line-height:1.3!important;
+ text-align:center;
+ cursor:pointer;
+ opacity:1!important;
+ visibility:visible!important;
+ text-shadow:none!important;
+ transition:background-color .15s ease,border-color .15s ease;
+}
+body > .v108-dock button.v33-primary{
+ background:#754b5c!important;
+ color:#ffffff!important;
+ border:1px solid #754b5c!important;
+}
+body > .v108-dock button.v33-primary:hover{
+ background:#61394a!important;
+}
+body > .v108-dock button.v33-secondary{
+ background:#fffafa!important;
+ color:#754b5c!important;
+ border:1px solid #dcbfc6!important;
+}
+body > .v108-dock button.v33-secondary:hover{
+ background:#f7ecee!important;
+}
+body > .v108-dock button:focus-visible{
+ outline:3px solid #a77c8c!important;
+ outline-offset:3px;
+}
+/* A non-modal finish dock should not cover the final lesson panels. */
+.v34-studying .v34-workspace-shell:has(.v105-match-board){
+ padding-bottom:100px!important;
+}
+/* The result modal must take visual priority over the detached dock. */
+body:has(.v109-overlay) > .v108-dock{display:none!important}
+@media(max-width:680px){
+ body > .v108-dock{
+  bottom:calc(10px + env(safe-area-inset-bottom))!important;
+  width:calc(100vw - 20px)!important;
+  padding:9px!important;
+  min-height:64px!important;
+  gap:8px!important;
+ }
+ body > .v108-dock > span{display:none!important}
+ body > .v108-dock button{
+  flex:1 1 0!important;
+  min-width:0!important;
+  padding:10px 8px!important;
+  font-size:12px!important;
+  white-space:normal!important;
+ }
+ .v34-studying .v34-workspace-shell:has(.v105-match-board){
+  padding-bottom:92px!important;
+ }
+}
