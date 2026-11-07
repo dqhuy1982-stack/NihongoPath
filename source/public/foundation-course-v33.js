@@ -823,11 +823,12 @@ function perform(el){
  }
  if(op==='next'&&s.choice){s.index++;s.choice=null;s.grade=null;s.hintsUsed=0;s.audioReplays=0;if(s.startedAt)resetClock(s);s.finished=s.index>=s.questions.length;refresh();return}
  if(op==='match'&&['match','listen-match','game','game-listen'].includes(s.kind)&&!s.matched.includes(value)&&s.cards.some(x=>x.id===value)){
+  let gradedMatch=null;
   if(side==='left'){s.leftId=value;roundSelect(s,value);if(['listen-match','game-listen'].includes(s.kind)){const sample=s.cards.find(x=>x.id===value);if(sample){listenRound(s,value);pronounce(sample.glyph,sample.read,true);}}}
   else if(side==='right'){s.rightId=value;roundSelect(s,value);}
   if(s.leftId&&s.rightId){
    const left=s.leftId,right=s.rightId;
-   const ok=left===right;const item=s.cards.find(x=>x.id===left);
+   const ok=left===right;gradedMatch=ok;const item=s.cards.find(x=>x.id===left);
    roundAttempt(s,left,right,ok);
    record(item,ok,s.kind,null);
    if(ok){s.lastMatched=item.id;s.matched.push(item.id);s.feedback='Đúng! Hãy ghép cặp tiếp theo.';matchingSound(true);}
@@ -837,7 +838,7 @@ function perform(el){
   }
   refresh();
   if(s.round?.summaryOpen)focusRoundSummary();
-  else if(!s.leftId&&!s.rightId&&s.feedback&&s.round?.attempts?.length)pulseGradedFeedback(s.lastMatched!==null&&!!s.lastMatched,'match');
+  else if(gradedMatch!==null)pulseGradedFeedback(gradedMatch,'match');
   if(s.wrongPair){
    const ref=s.wrongPair;
    if(typeof setTimeout==='function')setTimeout(()=>{if(play===s&&s.wrongPair===ref){s.wrongPair=null;s.feedback='Thử ghép lại hai ô.';refresh();}},950);
