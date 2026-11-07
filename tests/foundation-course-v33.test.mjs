@@ -372,7 +372,7 @@ test('Global UI footer shows unobtrusive v1.01 beside HORIZON tagline',()=>{
  const app=load('app.js'),hub=load('learning-hub-v25.js');
  assert.ok(app.includes('Học theo cách của bạn'));
  assert.ok(app.includes('horizon-brand-version'));
- assert.ok(app.includes('v1.15'));
+ assert.ok(app.includes('v1.16'));
  assert.ok(!app.includes('class="horizon-ui-version"'));
  assert.ok(load('index.html').includes('horizon-brand-version.css?v=106'));
  assert.ok(!hub.includes('HORIZON · Learning Hub v33 · Recorded progress'));
@@ -422,7 +422,7 @@ test('v1.01 offers three hints and records assisted correct answers for review',
 });
 test('v1.01 includes answer audio and precise connected-book CSS',()=>{
  const app=load('app.js'),html=load('index.html'),css=load('foundation-course-v101.css');
- assert.ok(app.includes('v1.15'));
+ assert.ok(app.includes('v1.16'));
  assert.ok(html.includes('foundation-course-v101.css?v=101'));
  assert.ok(html.includes('foundation-course-v102.css?v=102'));
  assert.ok(html.includes('foundation-course-v103.css?v=103'));
@@ -430,9 +430,9 @@ test('v1.01 includes answer audio and precise connected-book CSS',()=>{
  assert.ok(html.includes('foundation-course-v105.css?v=105'));
  assert.ok(html.includes('foundation-course-v106.css?v=106'));
  assert.ok(html.includes('foundation-curriculum-v33.js?v=101'));
- assert.ok(html.includes('foundation-course-v33.js?v=117'));
- assert.ok(html.includes('foundation-course-v107.css?v=117'));
- assert.ok(load('app.js').includes('v1.15</small>'));
+ assert.ok(html.includes('foundation-course-v33.js?v=118'));
+ assert.ok(html.includes('foundation-course-v107.css?v=118'));
+ assert.ok(load('app.js').includes('v1.16</small>'));
  assert.ok(css.includes('v101-match-grid'));
  assert.ok(css.includes('[data-connected="yes"]'));
 });
@@ -697,7 +697,7 @@ test('v1.07 duration metrics are derived from attempts and never guessed',()=>{
 test('The learning UI does not alter the existing lesson engine or global learner records',()=>{
  const html=load('index.html');
  assert.ok(html.includes('foundation-curriculum-v33.js?v=101'));
- assert.ok(html.includes('foundation-course-v33.js?v=117'));
+ assert.ok(html.includes('foundation-course-v33.js?v=118'));
  assert.ok(html.includes('foundation-course-v34.css?v=34'));
  assert.ok(html.includes('foundation-course-v35.css?v=35'));
  assert.ok(html.includes('foundation-course-v36.css?v=36'));
@@ -706,10 +706,10 @@ test('The learning UI does not alter the existing lesson engine or global learne
  assert.ok(html.includes('foundation-course-v39.css?v=39'));
  assert.ok(html.includes('foundation-course-v40.css?v=100'));
  assert.ok(html.includes('foundation-course-v101.css?v=101'));
- assert.ok(html.includes('app.js?v=115'));
+ assert.ok(html.includes('app.js?v=116'));
  assert.ok(html.includes('learning-hub-v25.js?v=100'));
- assert.ok(html.includes('foundation-course-v33.js?v=117'));
- assert.ok(html.includes('foundation-course-v33.js?v=117'));
+ assert.ok(html.includes('foundation-course-v33.js?v=118'));
+ assert.ok(html.includes('foundation-course-v33.js?v=118'));
  assert.ok(load('foundation-course-v33.js').includes('data-f38="start"'));
  assert.ok(!load('foundation-course-v36.css').includes('max-height:405px'));
  assert.match(load('foundation-course-v36.css'),/max-height:none!important/);
@@ -772,7 +772,7 @@ test('Completion dialog has exactly two result-aware actions, no footer Close, a
  assert.equal(session.round.summaryOpen,false);
 });
 
-test('v1.15 finish dock is portaled out of scrolling stages and cleaned up on navigation',()=>{
+test('v1.16 finish dock is portaled out of scrolling stages and cleaned up on navigation',()=>{
  const code=load('foundation-course-v33.js'),css=load('foundation-course-v107.css');
  assert.ok(code.includes('function syncFinishDock()'));
  assert.ok(code.includes('document.body.appendChild(dock)'));
@@ -791,7 +791,7 @@ test('v1.15 finish dock is portaled out of scrolling stages and cleaned up on na
  assert.match(markup,/v108-dock/);
 });
 
-test('v1.15 finish bar is opaque and buttons remain legible after body portal',()=>{
+test('v1.16 finish bar is opaque and buttons remain legible after body portal',()=>{
  const css=load('foundation-course-v107.css'),code=load('foundation-course-v33.js');
  assert.match(css,/body > \.v108-dock button\.v33-primary/);
  assert.match(css,/body > \.v108-dock button\.v33-secondary/);
@@ -806,7 +806,7 @@ test('v1.15 finish bar is opaque and buttons remain legible after body portal',(
  assert.match(html,/v115-chapter-rail/);
 });
 
-test('v1.15 learners navigate adjacent chapters without a dropdown menu',()=>{
+test('v1.16 learners navigate adjacent chapters without a dropdown menu',()=>{
  const h=harness();
  const route='learn/foundation/hiragana/all/learn';
  h.location.hash='#'+route;
@@ -832,7 +832,7 @@ test('v1.15 learners navigate adjacent chapters without a dropdown menu',()=>{
  assert.ok(css.includes('@media(max-width:680px)'));
 });
 
-test('v1.15 breadcrumbs show actual route ancestry and link to parent destinations',()=>{
+test('v1.16 breadcrumbs show actual route ancestry and link to parent destinations',()=>{
  const h=harness(),moduleRoute='learn/foundation/hiragana/all/learn';
  h.location.hash='#'+moduleRoute;const html=h.ui.page(moduleRoute);
  assert.match(html,/class="v115-breadcrumb"/);
