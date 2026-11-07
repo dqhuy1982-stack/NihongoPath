@@ -446,8 +446,7 @@ function navigationFor(cfg){
  const sequence=Math.max(0,DATA.modules.findIndex(x=>x.id===cfg.id))+1;
  const moduleNumber=String(sequence).padStart(2,'0');
  const previous=DATA.modules[sequence-2]||null,next=DATA.modules[sequence]||null;
- return '<div class="v114-orientation" aria-label="Vị trí trong lộ trình">'+
- '<a href="#course/foundation" class="v114-chapters" aria-label="Quay về danh sách chặng">‹ <span>Các chặng</span></a>'+
+ return '<div class="v114-orientation v115-chapter-rail" aria-label="Chặng đang học">'+
  '<div class="v114-chapter-switch" role="group" aria-label="Chuyển chặng">'+
  '<button type="button" class="v114-arrow" data-f34="module" data-value="'+(previous?clean(previous.id):'')+'" aria-label="'+(previous?'Chặng trước: '+clean(previous.title):'Đang ở chặng đầu tiên')+'" '+(previous?'':'disabled')+'>‹</button>'+
  '<div class="v114-current-chapter"><small>CHẶNG '+moduleNumber+' / '+String(DATA.modules.length).padStart(2,'0')+'</small><strong>'+clean(m.title.replace(/^\\d+\\s*[·.:-]\\s*/,''))+'</strong></div>'+
