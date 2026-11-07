@@ -17,22 +17,26 @@ const I=name=>featureIcons[name]?'<svg class="icon v26-icon" viewBox="0 0 24 24"
 const href=(route,label,cls='v25-link')=>'<a class="'+cls+'" href="#'+route+'">'+label+'</a>';
 /* Real lesson links and companion exercises. Sample scenario completion is separate from learner records. */
 const activities=[
- {id:'vowels',title:'Năm chữ đầu tiên',desc:'あ・い・う・え・お',group:'Hiragana',module:'Hiragana',course:'foundation',route:'lesson/foundation-vowels',icon:'あ'},
- {id:'krow',title:'Hàng K · か・き・く・け・こ',desc:'Nhận diện 5 chữ Hiragana hàng K',group:'Hiragana',module:'Hiragana',course:'foundation',route:'lesson/foundation-k-row',icon:'か'},
- {id:'writing',title:'Luyện viết Kana',desc:'Quan sát từng nét và tự viết',group:'Luyện viết',module:'Kana Studio',course:'foundation',route:'kana',icon:'書'},
- {id:'recognition',title:'Kiểm tra nhận diện',desc:'Chọn âm đúng của Kana',group:'Ôn tập',module:'Kana Studio',course:'foundation',route:'kana/check',icon:'読'},
- {id:'intro',title:'Giới thiệu bản thân',desc:'N5 · Mẫu câu đầu tiên',group:'Mẫu câu',module:'N5',course:'N5',route:'lesson/n5-introduction',icon:'日'},
- {id:'greetings',title:'Lời chào theo thời điểm',desc:'おはようございます・こんにちは・こんばんは',group:'Mẫu câu',module:'N5',course:'N5',route:'lesson/n5-greetings',icon:'挨'},
- {id:'revision',title:'Ôn trí nhớ',desc:'Nhớ lại bài đã học',group:'Ôn tập',module:'N5',course:'N5',route:'review',icon:'復'},
- {id:'exam',title:'Thử đề JLPT',desc:'Bộ đề mẫu theo cấp độ',group:'Luyện đề',module:'N5',course:'N5',route:'exams',icon:'試'}
+ {id:'vowels',contentId:'foundation-vowels',kind:'lesson',title:'01 · Nguyên âm Hiragana',desc:'あ・い・う・え・お',group:'Hiragana',module:'Hiragana · các hàng cơ bản',course:'foundation',route:'lesson/foundation-vowels',icon:'あ'},
+ {id:'krow',contentId:'foundation-k-row',kind:'lesson',title:'02 · Hàng K',desc:'か・き・く・け・こ',group:'Hiragana',module:'Hiragana · các hàng cơ bản',course:'foundation',route:'lesson/foundation-k-row',icon:'か'},
+ {id:'srow',contentId:'foundation-s-row',kind:'lesson',title:'03 · Hàng S',desc:'さ・し・す・せ・そ',group:'Hiragana',module:'Hiragana · các hàng cơ bản',course:'foundation',route:'lesson/foundation-s-row',icon:'さ'},
+ {id:'trow',contentId:'foundation-t-row',kind:'lesson',title:'04 · Hàng T',desc:'た・ち・つ・て・と',group:'Hiragana',module:'Hiragana · các hàng cơ bản',course:'foundation',route:'lesson/foundation-t-row',icon:'た'},
+ {id:'writing',kind:'tool',title:'Kana Writing Studio',desc:'Xem nét và tự viết, không chấm điểm',group:'Luyện viết',module:'Luyện Kana',course:'foundation',route:'kana',icon:'書'},
+ {id:'recognition',kind:'tool',title:'Recall Lab · Kiểm tra nhận diện',desc:'Luyện nhận diện riêng, không tính vào bài học',group:'Tự kiểm tra',module:'Luyện Kana',course:'foundation',route:'kana/check',icon:'読'},
+ {id:'greetings',contentId:'n5-greetings',kind:'lesson',title:'01 · Lời chào theo thời điểm',desc:'おはようございます・こんにちは・こんばんは',group:'Giao tiếp',module:'N5 · Giao tiếp cơ bản',course:'N5',route:'lesson/n5-greetings',icon:'挨'},
+ {id:'intro',contentId:'n5-introduction',kind:'lesson',title:'02 · Giới thiệu bản thân',desc:'Tên, vai trò và câu hỏi lịch sự',group:'Giao tiếp',module:'N5 · Giao tiếp cơ bản',course:'N5',route:'lesson/n5-introduction',icon:'日'},
+ {id:'demonstratives',contentId:'n5-demonstratives',kind:'lesson',title:'03 · これ・それ・あれ',desc:'Đây, đó hay kia theo vị trí đồ vật',group:'Ngữ pháp',module:'N5 · Đồ vật & vị trí',course:'N5',route:'lesson/n5-demonstratives',icon:'物'},
+ {id:'revision',kind:'tool',title:'Ôn giãn cách',desc:'Các mẫu đến hạn ôn từ kết quả thực tế',group:'Ôn tập',module:'N5 · Luyện tập',course:'N5',route:'review',icon:'復'},
+ {id:'exam',kind:'tool',title:'Kho đề JLPT',desc:'Bộ mẫu; chưa thay cho một bài thi chuẩn',group:'Luyện đề',module:'N5 · Luyện tập',course:'N5',route:'exams',icon:'試'}
 ];
+const lessons=activities.filter(x=>x.kind==='lesson');
 /* Scenario seeds: only input observations; displayed percentages and states are derived below.
    These fixtures are not written to localStorage and never count as real learner mastery. */
 const examples={
- 'demo-a':{done:['vowels','writing','recognition'],current:'intro',step:2,steps:6,results:[true,true,false,true,true,true,false,true,true,true],minutes:[20,15,20,10],weekGoal:5,reviewDue:['kana-recognition','kana-reading'],weak:['Âm ghép','Cách đọc Kana']},
- 'demo-b':{done:['vowels','writing','recognition','intro','revision'],current:'exam',step:1,steps:5,results:[true,true,true,true,true,true,true,true,false,true,true,true],minutes:[30,30,25,20,20],weekGoal:5,reviewDue:['vocabulary'],weak:['Đọc hiểu N2','Từ vựng N2']},
- 'demo-c':{done:['vowels','writing'],current:'recognition',step:1,steps:4,results:[true,false,true,false,true,true],minutes:[15,15,10],weekGoal:4,reviewDue:['kana-recognition','kana-voiced'],weak:['Nhận diện Kana','Âm đục']},
- 'demo-d':{done:['vowels'],current:'writing',step:1,steps:5,results:[true,true,false,true],minutes:[10,10],weekGoal:4,reviewDue:['kana-writing'],weak:['Tập viết','Hình dạng Kana']}
+ 'demo-a':{done:['vowels','krow'],current:'srow',step:2,steps:10,results:[true,true,false,true,true,true],minutes:[20,15,20],weekGoal:5,reviewDue:['kana-k'],weak:['Hàng S','Hiragana']},
+ 'demo-b':{done:['vowels','krow','srow','trow','greetings','intro'],current:'demonstratives',step:2,steps:6,results:[true,true,true,false,true,true,true,true],minutes:[30,30,25,20,20],weekGoal:5,reviewDue:['n5-intro'],weak:['これ・それ・あれ']},
+ 'demo-c':{done:['vowels'],current:'krow',step:1,steps:10,results:[true,false,true,false,true,true],minutes:[15,15,10],weekGoal:4,reviewDue:['vowels'],weak:['Hàng K','Hàng S']},
+ 'demo-d':{done:[],current:'vowels',step:1,steps:10,results:[],minutes:[10],weekGoal:4,reviewDue:[],weak:[]}
 };
 const pct=(part,total)=>total>0?Math.min(100,Math.round(part/total*100)):0;
 const status=(data,id)=>data.done.has(id)?'done':data.current===id?'current':'future';
@@ -41,10 +45,10 @@ function model(){
  const learner=P(),real=window.NPLearningHub?.read?.()||{},sessions=real.sessions||[],attempts=real.attempts||[],reviews=real.reviews||[];
  const hasReal=sessions.length>0,seed=!hasReal?examples[learner.id]||null:null;
  if(seed){
-  const completed=new Set(seed.done.filter(id=>activities.some(a=>a.id===id)));
-  const current=activities.some(a=>a.id===seed.current)?seed.current:activities[0].id;
+  const completed=new Set(seed.done.filter(id=>lessons.some(a=>a.id===id)));
+  const current=lessons.some(a=>a.id===seed.current)?seed.current:lessons[0].id;
   const answered=seed.results.length,correct=seed.results.filter(Boolean).length;
-  const done=completed.size,total=activities.length;
+  const done=completed.size,total=lessons.length;
   const minutes=toMinutes(seed.minutes),goal=seed.weekGoal;
   return {learner,sample:true,done:completed,current,step:seed.step,steps:seed.steps,answered,correct,
    count:done,total,percent:pct(done,total),minutes,days:seed.minutes.length,weekGoal:goal,weekly:pct(seed.minutes.length,goal),
@@ -54,11 +58,11 @@ function model(){
  const completedSessions=sessions.filter(x=>x.status==='completed');
  const pending=sessions.filter(x=>x.status!=='completed').sort((a,b)=>String(b.updatedAt||'').localeCompare(String(a.updatedAt||'')));
  const active=pending[0]||null;
- const contentToId=id=>id==='foundation-vowels'?'vowels':id==='foundation-k-row'?'krow':id==='n5-introduction'?'intro':id==='n5-greetings'?'greetings':null;
+ const contentToId=id=>lessons.find(a=>a.contentId===id)?.id||null;
  const done=new Set(completedSessions.map(x=>contentToId(x.contentId)).filter(Boolean));
- const selected=active?contentToId(active.contentId):(!done.has('vowels')?'vowels':!done.has('krow')?'krow':'intro');
- const completedUnits=sessions.reduce((n,s)=>n+(s.completedUnits?.length||0),0);
- const totalUnits=sessions.reduce((n,s)=>n+(s.units?.length||0),0);
+ const selected=(active&&contentToId(active.contentId))||lessons.find(a=>!done.has(a.id)&&(learner.goal==='N5'?a.course==='N5':a.course==='foundation'))?.id||lessons.find(a=>!done.has(a.id))?.id||lessons[0].id;
+ const completedUnits=done.size;
+ const totalUnits=lessons.length;
  const answers=attempts.filter(a=>a.kind!=='repair');
  const minutes=Math.round(sessions.reduce((n,s)=>n+(Number(s.current?.activeMs||0)/60000),0));
  const due=reviews.filter(r=>new Date(r.dueAt).getTime()<=Date.now()).length;
@@ -67,7 +71,7 @@ function model(){
   answered:answers.length,correct:answers.filter(a=>a.correct&&!a.hintUsed).length,
   count:completedUnits,total:totalUnits,percent:pct(completedUnits,totalUnits),minutes,days:null,weekGoal:null,weekly:null,
   weak:wrong?['Câu sai cần ôn']:[],due,actualPending:!!active,actualContent:active?.contentId||null,
-  info:totalUnits?'Tiến độ bước trong các phiên đã ghi nhận.':'Chưa có phiên học được ghi nhận.'};
+  info:sessions.length?'Số bài hoàn thành ít nhất một lần; chưa kết luận ghi nhớ lâu dài.':'Chưa có phiên học được ghi nhận.'};
 }
 function label(text,cl=''){return '<span class="v25-badge '+cl+'">'+text+'</span>'}
 function navigation(selected){
@@ -86,7 +90,7 @@ function sectionHead(iconName,title,link,labelText='Xem tất cả'){
 function focus(m){
  const unit=activities.find(a=>a.id===m.current)||activities[0];
  const pending=m.actualPending;
- const focusRoute=pending?(['n5-introduction','n5-greetings','foundation-vowels','foundation-k-row'].includes(m.actualContent)?'lesson/resume':'learn/lessons'):unit.route;
+ const focusRoute=pending&&unit.contentId===m.actualContent?'lesson/resume':unit.route;
  const primary=pending?'Tiếp tục học':m.sample?'Mở hoạt động mẫu':m.done.size?'Mở bài học':'Bắt đầu học';
  const currentStep=m.steps?m.step+' / '+m.steps+' bước':m.sample?'Chưa bắt đầu': 'Chưa có dữ liệu';
  const stepPercent=m.steps?pct(Math.max(0,m.step-1),m.steps):0;
@@ -125,13 +129,14 @@ function stages(m){
  const active=m.learner.goal==='Nền tảng'?'foundation':m.learner.goal;
  return '<div class="v25-stage-rail" aria-label="Chọn cấp độ">'+levels.map(([id,title,ic])=>href('course/'+id,I(ic)+'<strong>'+title+'</strong>','v25-level '+(active===id?'current':''))).join('')+'</div>';
 }
-function cellRoute(act,m){return m.actualPending && m.actualContent===(act.id==='vowels'?'foundation-vowels':act.id==='krow'?'foundation-k-row':act.id==='intro'?'n5-introduction':act.id==='greetings'?'n5-greetings':null)?'lesson/resume':act.route}
+function cellRoute(act,m){return m.actualPending&&act?.contentId&&m.actualContent===act.contentId?'lesson/resume':act.route}
+function testRoute(act){return act?.contentId?'quiz/'+act.contentId:null}
 function activityState(act,m){
- const state=status(m,act.id);
+ const state=act.kind==='tool'?'tool':status(m,act.id);
  return '<span class="v25-row-status '+state+'">'+(state==='done'?I('check'):state==='current'?I('play-circle'):I('arrow'))+'</span>';
 }
 function hierarchy(m){
- const list=activities.filter(a=>a.course==='foundation').slice(0,3);
+ const list=lessons.filter(a=>a.course==='foundation').slice(0,3);
  return '<section class="v25-panel v25-hierarchy">'+sectionHead('route','Lộ trình học theo cấp độ','journey','Xem lộ trình')+
  stages(m)+'<div class="v25-columns">'+
  '<div class="v25-column"><h3>'+I('book')+' Khóa học</h3>'+
@@ -147,8 +152,8 @@ function hierarchy(m){
  '</div></div></section>';
 }
 function mini(m){
- const current=activities.find(a=>a.id===m.current)||activities[0];
- const next=activities.find(a=>status(m,a.id)==='future')||current;
+ const current=activities.find(a=>a.id===m.current)||lessons[0];
+ const next=lessons.find(a=>status(m,a.id)==='future')||current;
  const tiles=[
   ['play','Tiếp tục học',current.title,cellRoute(current,m),m.percent+'%'],
   ['book','Bài đang học',current.module,cellRoute(current,m),m.sample?m.step+' / '+m.steps+' bước':'Xem bài'],
@@ -178,7 +183,7 @@ function catalogueTab(m){
  return '<section class="v25-panel">'+sectionHead('book','Khóa học · Chọn lộ trình phù hợp')+
  '<p class="v25-tab-intro">Mục tiêu không phải chứng nhận trình độ. Những khóa chưa phát hành chỉ cho xem cấu trúc dự kiến.</p>'+
  '<div class="v25-course-cards">'+lv.map(([id,title,description,glyph,ready])=>{
- const count=activities.filter(a=>a.course===id&&m.done.has(a.id)).length,total=activities.filter(a=>a.course===id).length;
+ const count=lessons.filter(a=>a.course===id&&m.done.has(a.id)).length,total=lessons.filter(a=>a.course===id).length;
  return href('course/'+id,'<div class="v25-course-picture" lang="ja">'+glyph+'</div><div class="v25-course-detail"><strong>'+title+'</strong><p>'+description+'</p>'+label(ready?'Có nội dung mẫu':'Chưa phát hành',ready?'ready':'planned')+
  (ready?'<div class="v25-course-metric">'+progressBar(pct(count,total))+'<small>'+count+'/'+total+' hoạt động trong bản '+(m.sample?'mô phỏng':'ghi nhận')+'</small></div>':'')+'</div><span class="v25-course-open">Xem khóa học '+I('arrow')+'</span>','v25-course-card');
  }).join('')+'</div></section>';
@@ -216,14 +221,14 @@ function detail(id){
  const m=model(),foundation=id==='foundation',n5=id==='N5';
  const levelNames={foundation:'Nền tảng',N5:'N5',N4:'N4',N3:'N3',N2:'N2',N1:'N1'};
  if(!levelNames[id])return originalCourse(id);
- const name=levelNames[id],act=activities.filter(a=>a.course===id),done=act.filter(a=>m.done.has(a.id)).length;
+ const name=levelNames[id],act=activities.filter(a=>a.course===id),graded=act.filter(a=>a.kind==='lesson'),done=graded.filter(a=>m.done.has(a.id)).length;
  return '<div class="v25-wrap" data-learning-hub="v31">'+
  '<div class="v28-header-shell"><header class="v25-header"><div class="v25-hero-copy"><h1>'+safe(Locale.t(name))+' · '+safe(Locale.t('Lộ trình học'))+'</h1><p>'+(act.length?'Chọn hoạt động để bắt đầu hoặc tiếp tục học.':'Khung chương trình dự kiến · Nội dung chưa phát hành.')+'</p></div></header>'+
  navigation('catalog')+'</div>'+
  '<nav class="v25-breadcrumb" aria-label="Vị trí học tập">'+href('learn/overview','Tổng quan')+'<span aria-hidden="true">›</span>'+href('learn/catalog','Khóa học')+'<span aria-hidden="true">›</span><span aria-current="page">'+name+'</span></nav>'+
  (m.sample?'<div class="v25-fixture-notice">'+I('info')+' Trạng thái mô phỏng cho '+safe(m.learner.name)+' · không phải điểm bài học thật.</div>':'')+
  '<section class="v25-panel">'+sectionHead('book-open','Module & bài học')+
- '<div class="v25-detail-summary"><span>'+label(act.length?'Nội dung mẫu':'Chưa phát hành',act.length?'ready':'planned')+'</span><span>'+(act.length?done+' / '+act.length+' hoạt động minh họa':'Chưa có bài học được phát hành')+'</span>'+(act.length?progressBar(pct(done,act.length)):'')+'</div>'+
+ '<div class="v25-detail-summary"><span>'+label(act.length?'Nội dung mẫu':'Chưa phát hành',act.length?'ready':'planned')+'</span><span>'+(act.length?done+' / '+graded.length+' bài học hoàn tất':'Chưa có bài học được phát hành')+'</span>'+(act.length?progressBar(pct(done,graded.length)):'')+'</div>'+
  '<div class="v25-lesson-cards">'+(act.length?act.map((a,i)=>href(cellRoute(a,m),'<span class="v25-module-symbol" lang="ja">'+a.icon+'</span><span><small>HOẠT ĐỘNG '+(i+1)+' · '+a.module+'</small><strong>'+a.title+'</strong><em>'+a.desc+'</em></span>'+label(status(m,a.id)==='done'?'Đã hoàn tất':status(m,a.id)==='current'?'Đang học':'Sẵn sàng',status(m,a.id))+'<span class="v25-module-go">'+I('arrow')+'</span>','v25-module-card')).join(''):'<div class="v27-empty"><strong>Chưa có nội dung để bắt đầu</strong><p>Khóa học này đang ở giai đoạn lập lộ trình. Bạn có thể trở lại các khóa đã có nội dung mẫu.</p>'+href('learn/catalog','Trở lại danh sách khóa học '+I('arrow'),'v25-text-cta')+'</div>')+'</div></section>'+
  '<div class="v25-version">HORIZON · Learning Hub v31</div></div>';
 }
