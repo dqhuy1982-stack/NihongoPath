@@ -912,3 +912,75 @@ body > .v119-summary-host .v109-actions{
   animation:none!important;transition:none!important;
  }
 }
+
+/* v1.20 — Shared modal surface recovery. Both overlays retain Foundation
+   design tokens after leaving the transformed workspace shell. */
+body > .v119-summary-host,
+body > .v120-preflight-host{
+ --v33-paper:var(--v25-bg,#fffaf9);
+ --v33-line:var(--v25-line,#e7d1d5);
+ --v33-ink:var(--v25-ink,#76485a);
+ --v33-soft:var(--v25-rose,#f6e9ec);
+ --text:#39353a;
+ --muted:#71686e;
+}
+body > .v119-summary-host .v109-dialog{
+ background:#fffaf9!important;
+ background:var(--v33-paper,#fffaf9)!important;
+ color:var(--text,#39353a)!important;
+ opacity:1!important;
+ backdrop-filter:none!important;
+ -webkit-backdrop-filter:none!important;
+}
+body > .v119-summary-host .v109-hero,
+body > .v119-summary-host .v109-stats,
+body > .v119-summary-host .v109-content,
+body > .v119-summary-host .v109-actions{
+ background-color:var(--v33-paper,#fffaf9);
+}
+body > .v119-summary-host .v109-dialog::after{pointer-events:none}
+body > .v120-preflight-host{
+ position:fixed!important;inset:0!important;
+ z-index:3900!important;pointer-events:none;
+ width:100vw!important;height:100dvh!important;
+ isolation:isolate;
+}
+body > .v120-preflight-host > .v38-overlay{
+ position:fixed!important;inset:0!important;
+ z-index:1!important;pointer-events:auto;
+ display:grid!important;place-items:center!important;
+ margin:0!important;padding:clamp(12px,3vw,28px)!important;
+ background:rgba(35,25,34,.50)!important;
+ -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+ overflow-y:auto;box-sizing:border-box;
+}
+body > .v120-preflight-host .v38-dialog{
+ position:relative;z-index:2;
+ background:#fffaf9!important;
+ background:var(--v33-paper,#fffaf9)!important;
+ color:var(--text,#39353a)!important;
+ border:1px solid var(--v33-line,#e7d1d5)!important;
+ border-radius:20px!important;
+ padding:27px 28px!important;
+ width:min(570px,100%)!important;
+ max-height:calc(100dvh - 32px)!important;
+ overflow-y:auto!important;
+ opacity:1!important;
+ -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+ box-shadow:0 26px 75px rgba(41,26,34,.27)!important;
+}
+body > .v120-preflight-host .v38-dialog-spec>div{
+ background-color:var(--v33-soft,#f6e9ec);
+}
+@media(max-width:680px){
+ body > .v120-preflight-host > .v38-overlay{padding:10px!important}
+ body > .v120-preflight-host .v38-dialog{
+  padding:18px 17px!important;
+  max-height:calc(100dvh - 20px)!important;
+  border-radius:17px!important;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ body > .v120-preflight-host .v38-dialog,
+ body > .v119-summary-host .v109-dialog{animation:none!important}
+}
