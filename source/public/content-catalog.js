@@ -7,7 +7,7 @@
   const base=NP_LESSON_CONTENT,seeds=NP_AUTHORING_SEED.drafts;
   const read=()=>NPContentStore.read(localStorage,base,seeds);
   const copy=value=>NPContentModel.copy(value);
-  const bundled=()=>[window.NP_FOUNDATION_CONTENT].filter(c=>c&&typeof c.id==='string'&&Number.isInteger(c.version));
+  const bundled=()=>[window.NP_FOUNDATION_CONTENT,window.NP_FOUNDATION_K_CONTENT].filter(c=>c&&typeof c.id==='string'&&Number.isInteger(c.version));
   function get(id=base.id,version){
     const fixed=bundled().find(c=>c.id===id);
     if(fixed)return version!=null&&Number(version)!==fixed.version?null:copy(fixed);
