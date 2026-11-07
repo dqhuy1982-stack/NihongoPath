@@ -1,0 +1,104 @@
+/* HORIZON v1.00 — connected book-index selection, clear focus, quieter release mark. */
+.footnote .horizon-ui-version{
+ display:inline-block;vertical-align:baseline;margin-left:5px;padding:1px 5px;
+ border:1px solid color-mix(in srgb,var(--v33-line,#dcc6cd) 68%,transparent);
+ border-radius:5px;color:var(--muted,#89777b);background:transparent;
+ font-size:10px;font-weight:650;letter-spacing:.02em;line-height:1.4;
+ font-variant-numeric:tabular-nums;
+}
+.v34-studying .v39-book-layout{grid-template-columns:230px minmax(0,1fr);gap:12px;isolation:isolate}
+.v34-studying .v39-book-nav{
+ position:relative;z-index:1;
+ background:color-mix(in srgb,var(--v33-soft) 34%,var(--v33-paper));
+ border-color:var(--v33-line);padding:10px 11px;
+ box-shadow:none;overflow:visible;
+}
+.v34-studying .v39-book-heading{margin-bottom:7px}
+.v34-studying .v39-book-tab{
+ position:relative;isolation:isolate;
+ min-height:44px;padding:10px 11px;
+ border-color:transparent;
+ color:color-mix(in srgb,var(--v33-ink) 72%,var(--text));
+ font-weight:690;
+ transition:background .17s ease,border-color .17s ease,color .17s ease;
+}
+.v34-studying .v39-book-tab:hover:not(.active){
+ background:color-mix(in srgb,var(--v33-soft) 90%,var(--v33-paper));
+ border-color:color-mix(in srgb,var(--v33-ink) 22%,var(--v33-line));
+ color:var(--v33-ink);
+}
+.v34-studying .v39-book-tab.active{
+ z-index:3;
+ color:var(--v33-ink);
+ background:var(--v33-paper);
+ border:1px solid var(--v33-ink);
+ border-right-color:var(--v33-paper);
+ box-shadow:inset 4px 0 0 var(--v33-ink),0 3px 10px rgba(95,55,72,.055);
+ border-radius:10px 0 0 10px;
+ font-weight:800;
+}
+.v34-studying .v39-book-tab.active::after{
+ content:"";position:absolute;pointer-events:none;
+ top:-1px;bottom:-1px;left:calc(100% - 1px);width:29px;
+ background:var(--v33-paper);
+ border-top:1px solid var(--v33-ink);
+ border-bottom:1px solid var(--v33-ink);
+ z-index:3;
+}
+.v34-studying .v39-book-tab.active .v39-book-symbol{
+ color:var(--v33-ink);
+ background:var(--v33-soft);
+ border-color:color-mix(in srgb,var(--v33-ink) 43%,var(--v33-line));
+}
+.v34-studying .v39-book-tab.active .v39-book-chevron{
+ color:var(--v33-ink);font-weight:800
+}
+.v34-studying .v39-book-layout>.v33-pane{
+ position:relative;z-index:0;
+ background:var(--v33-paper);
+ border:1px solid color-mix(in srgb,var(--v33-ink) 48%,var(--v33-line));
+ box-shadow:0 6px 22px rgba(103,52,73,.055);
+ border-radius:0 15px 15px 0;
+ padding:19px 22px;
+ min-height:310px;
+}
+.v34-studying .v39-book-layout>.v33-pane::before{
+ content:"";position:absolute;left:0;top:0;bottom:0;
+ width:3px;border-radius:0;
+ background:linear-gradient(180deg,color-mix(in srgb,var(--v33-ink) 48%,transparent),transparent 60%);
+ pointer-events:none;
+}
+.v34-studying .v39-book-layout .v33-question-glyph{
+ background:color-mix(in srgb,var(--v33-soft) 70%,var(--v33-paper));
+ border-radius:12px;
+}
+.v34-studying .v39-book-layout .v33-answer:hover:not(:disabled){
+ border-color:var(--v33-ink);
+ background:color-mix(in srgb,var(--v33-soft) 40%,var(--v33-paper));
+}
+@media(max-width:920px) and (min-width:681px){
+ .v34-studying .v39-book-layout{grid-template-columns:200px minmax(0,1fr);gap:10px}
+ .v34-studying .v39-book-tab.active::after{width:25px}
+ .v34-studying .v39-book-layout>.v33-pane{padding:15px}
+}
+@media(max-width:680px){
+ .v34-studying .v39-book-layout{grid-template-columns:1fr;gap:8px}
+ .v34-studying .v39-book-nav{
+  overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;
+  padding:7px;background:var(--v33-paper);box-shadow:none;
+ }
+ .v34-studying .v39-book-tab{border:1px solid var(--v33-line);border-radius:9px;color:var(--text)}
+ .v34-studying .v39-book-tab.active{
+  border:1px solid var(--v33-ink);border-bottom-width:2px;
+  border-radius:9px;box-shadow:0 3px 10px rgba(95,55,72,.08);
+  background:var(--v33-soft);
+ }
+ .v34-studying .v39-book-tab.active::after{display:none}
+ .v34-studying .v39-book-layout>.v33-pane{
+  border-radius:13px;padding:12px;min-height:245px;
+ }
+ .v34-studying .v39-book-layout>.v33-pane::before{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+ .v34-studying .v39-book-tab{transition:none}
+}
