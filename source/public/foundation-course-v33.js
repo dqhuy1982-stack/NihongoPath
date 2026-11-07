@@ -401,9 +401,16 @@ function refresh(){
  render(false);
 }
 function wrap(content,crumb='Nền tảng'){
- // Foundation uses global navigation; no duplicated generic hero, tab rail or breadcrumbs.
- return '<div class="v25-wrap v33-foundation v112-foundation" data-learning-hub="v38">'+
- content+'<footer class="v25-version">Luyện tập mẫu · Tiến độ lưu trên thiết bị</footer></div>';
+ // Breadcrumb = location. Step tabs = actions. Never add a second menu rail.
+ const moduleName=crumb==='Nền tảng'?'':String(crumb).replace(/^\\d+\\s*[·.:-]\\s*/,'');
+ const item=(label,href,current)=>'<li class="v115-crumb-item'+(current?' is-current':'')+'">'+
+  (current?'<span aria-current="page">'+clean(label)+'</span>':'<a href="'+href+'">'+clean(label)+'</a>')+'</li>';
+ const locationTrail='<nav class="v115-breadcrumb" aria-label="Vị trí trong lộ trình">'+
+  '<ol>'+item('Học','#learn/overview',false)+item('Khóa học','#learn/catalog',false)+
+  item('Nền tảng','#course/foundation',!moduleName)+
+  (moduleName?item(moduleName,'',true):'')+'</ol></nav>';
+ return '<div class="v25-wrap v33-foundation v112-foundation v115-foundation" data-learning-hub="v38">'+
+ locationTrail+content+'<footer class="v25-version">Luyện tập mẫu · Tiến độ lưu trên thiết bị</footer></div>';
 }
 function tag(txt){return '<span class="v33-tag">'+clean(txt)+'</span>'}
 function moduleStats(module){
