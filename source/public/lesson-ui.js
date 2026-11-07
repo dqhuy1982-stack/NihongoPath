@@ -197,7 +197,7 @@
     if(sub==='preview'){C=catalog.get();return landing(E.create(P().id),mode);}
     if(sub==='review')return reviewLanding(state);
     if(sub==='resume'){const a=E.active(state);C=a?.definition||catalog.get();return a?.status==='active'?player(state,a):landing(state,a?.status==='paused'?a.mode:mode);}
-    if(mode==='practice'){const practice=E.pending(state).find(s=>s.mode==='practice');if(practice){C=practice.definition;return practice.status==='active'&&state.activeSessionId===practice.id?player(state,practice):landing(state,mode);}}
+    if(mode==='practice'){const target=sub&&sub!=='resume'?catalog.get(sub):null;const practice=E.pending(state).find(s=>s.mode==='practice'&&(!target||s.contentId===target.id));if(practice){C=practice.definition;return practice.status==='active'&&state.activeSessionId===practice.id?player(state,practice):landing(state,mode);}if(target){C=target;return landing(state,mode);}}
     C=catalog.get(sub||catalog.base.id);if(!C)return wrap(state,empty('Bài chưa có trong danh mục','Bản nháp chỉ mở trong khu xem trước; không đưa vào gợi ý cho học viên.','book',link('Về thư viện','library','btn primary')));
     const session=E.pending(state).find(s=>s.contentId===C.id&&s.mode===mode);if(session){C=session.definition;if(session.status==='active'&&state.activeSessionId===session.id)return player(state,session);}
     return landing(state,mode);
