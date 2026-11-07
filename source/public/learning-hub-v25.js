@@ -170,7 +170,7 @@ function overview(){
  '<nav class="v25-breadcrumb" aria-label="Vị trí học tập">'+href('learn','Học')+'<span aria-hidden="true">›</span>'+href('settings/goals','Mục tiêu: '+safe(m.learner.goal))+'<span aria-hidden="true">›</span>'+href('course/'+(activities.find(a=>a.id===m.current)?.course||'foundation'),'Khóa: '+(activities.find(a=>a.id===m.current)?.course==='N5'?'N5':'Nền tảng'))+'<span aria-hidden="true">›</span><span aria-current="page">Tổng quan</span></nav>'+
  (m.sample?'<div class="v25-fixture-notice">'+I('info')+' DỮ LIỆU MẪU · Mô phỏng theo hồ sơ '+safe(m.learner.name)+'. Tất cả tỷ lệ tính từ hoạt động giả lập, không phải kết quả học thực tế.</div>':'')+
  '<div class="v25-dashboard"><div class="v25-left">'+focus(m)+hierarchy(m)+'</div><div class="v25-right">'+progress(m)+weekly(m)+recommendations(m)+'</div></div>'+
- mini(m)+'<div class="v25-version">Tiến độ học · '+(m.sample?'Scenario preview':'Recorded progress')+'</div></div>';
+ mini(m)+'<div class="v25-version">Tiến độ học · '+(m.sample?'Dữ liệu minh họa':'Tiến độ đã ghi nhận')+'</div></div>';
 }
 
 function tabTop(selected,m){
@@ -219,7 +219,7 @@ function practiceTab(m){
 function otherTab(tab){
  const m=model();const content=tab==='catalog'?catalogueTab(m):tab==='modules'?modulesTab(m):tab==='lessons'?lessonsTab(m):practiceTab(m);
  return '<div class="v25-wrap" data-learning-hub="v33">'+tabTop(tab,m)+content+
- '<div class="v25-version">Tiến độ học · '+(m.sample?'Scenario preview':'Recorded progress')+'</div></div>';
+ '<div class="v25-version">Tiến độ học · '+(m.sample?'Dữ liệu minh họa':'Tiến độ đã ghi nhận')+'</div></div>';
 }
 function detail(id){
  const m=model(),foundation=id==='foundation',n5=id==='N5';
