@@ -53,7 +53,12 @@ function tokens(config){
 }
 function contextual(config){
  const a=DATA.contextual(config.id,config.script);
- return a.length>=3?a:DATA.words.filter(w=>config.script==='both'||w.script===config.script);
+ if(config.id==='hiragana'||config.id==='katakana'){
+  const rowIndex=DATA.rows.findIndex(x=>x[0]===config.group);
+  const known=new Set(DATA.rows.slice(0,Math.max(0,rowIndex)+1).flatMap(row=>Array.from(config.id==='hiragana'?row[2]:row[3])));
+  return a.filter(w=>w.stage==='basic'&&Array.from(w.glyph).every(ch=>known.has(ch)));
+ }
+ return a;
 }
 function activityPool(config,mode){
  return mode.startsWith('vocab')||mode==='build'?contextual(config):tokens(config);
@@ -148,8 +153,9 @@ function learnView(cfg){
  const selected=deck[0];
  const exampleMarkup=examples?'<div class="v33-examples">'+examples.examples.map(([glyph,read,meaning])=>'<div><b lang="ja">'+clean(glyph)+'</b><span>'+clean(read)+'</span><small>'+clean(meaning)+'</small></div>').join('')+'</div>':'';
  const note=cfg.id==='small'?'Chữ nhỏ và dấu ー được học trong từ hoặc cụm âm; không yêu cầu đọc một chữ nhỏ như âm độc lập.':selected?.note;
+ const marks=cfg.id==='small'&&examples?.marks?'<div class="v33-small-marks" lang="ja">'+clean(examples.marks)+'</div>':'';
  return '<section class="v33-pane"><div class="v33-pane-head"><div><p class="v33-eyebrow">01 / HỌC & NHẬN DIỆN</p><h3>'+(cfg.mod.groups.find(g=>g.id===cfg.group)?.title||cfg.mod.title)+'</h3><p>Quan sát nhóm chữ, đối chiếu cách đọc; sau đó ẩn gợi ý qua Flashcard.</p></div>'+tag(deck.length+' mẫu')+'</div>'+
- '<div class="v33-glyph-grid">'+grid+'</div>'+exampleMarkup+
+ marks+'<div class="v33-glyph-grid">'+grid+'</div>'+exampleMarkup+
  (note?'<div class="v33-teacher-note"><strong>Ghi chú của giáo viên</strong><p>'+clean(typeof note==='string'?note:'')+'</p></div>':'')+
  '<div class="v33-pane-actions"><a href="#'+path(cfg.id,cfg.group,'flash',cfg.script)+'" class="v33-primary">Luyện Flashcard →</a><a href="#'+path(cfg.id,cfg.group,cfg.id==='small'?'vocab-ja-vi':'quiz',cfg.script)+'" class="v33-secondary">Làm bài kiểm tra</a><a href="#kana" class="v33-secondary">Mở Writing Studio</a></div></section>';
 }
