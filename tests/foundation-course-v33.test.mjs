@@ -899,7 +899,7 @@ test('v1.19B achievement sheet is centered in viewport with scoped portal',()=>{
  const js=load('foundation-course-v33.js');
  const css=load('foundation-course-v107.css');
  assert.ok(js.includes('function mountSummaryHost()'));
- assert.ok(js.includes("host.className='v34-studying v119-summary-host'"));
+ assert.ok(js.includes("host.className='v33-foundation v34-studying v119-summary-host'"));
  assert.ok(js.includes('host.appendChild(overlay)'));
  assert.ok(js.includes('document.body.appendChild(host)'));
  assert.ok(js.includes("document.querySelector?.('body > .v119-summary-host')"));
@@ -919,4 +919,29 @@ test('v1.19B achievement sheet is centered in viewport with scoped portal',()=>{
  assert.match(html,/v109-dialog/);
  h.click('summary-close');
  assert.equal(session.round.summaryOpen,false);
+});
+
+test('v1.20 both portal dialogs preserve opaque theme on body',()=>{
+ const js=load('foundation-course-v33.js'),css=load('foundation-course-v107.css');
+ assert.ok(js.includes("host.className='v33-foundation v34-studying v119-summary-host'"));
+ assert.ok(js.includes("host.className='v33-foundation v34-studying v120-preflight-host'"));
+ assert.ok(js.includes("document.querySelector?.('body > .v120-preflight-host')?.remove?.()"));
+ assert.ok(css.includes('body > .v119-summary-host .v109-dialog'));
+ assert.ok(css.includes('body > .v120-preflight-host .v38-dialog'));
+ assert.ok(css.includes('background:#fffaf9!important'));
+ assert.ok(css.includes('background:var(--v33-paper,#fffaf9)!important'));
+ assert.ok(css.includes('--v33-paper:var(--v25-bg,#fffaf9)'));
+ assert.ok(css.includes('body > .v120-preflight-host > .v38-overlay'));
+ const h=harness(),route='learn/foundation/hiragana/all/quiz';
+ h.location.hash='#'+route;
+ const markup=h.ui.page(route);
+ assert.match(markup,/class="v38-overlay"/);
+ assert.match(markup,/class="v38-dialog"/);
+ const round=harness(),r='learn/foundation/hiragana/all/match';
+ round.location.hash='#'+r;round.ui.page(r);
+ const session=round.ui.session();
+ for(const item of session.cards){round.click('match',item.id,'left');round.click('match',item.id,'right');}
+ const result=round.ui.page(r);
+ assert.match(result,/class="v107-overlay v109-overlay"/);
+ assert.match(result,/class="v107-dialog v109-dialog"/);
 });
