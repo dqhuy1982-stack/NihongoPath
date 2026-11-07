@@ -22,6 +22,7 @@ const activities=[
  {id:'writing',title:'Luyện viết Kana',desc:'Quan sát từng nét và tự viết',group:'Luyện viết',module:'Kana Studio',course:'foundation',route:'kana',icon:'書'},
  {id:'recognition',title:'Kiểm tra nhận diện',desc:'Chọn âm đúng của Kana',group:'Ôn tập',module:'Kana Studio',course:'foundation',route:'kana/check',icon:'読'},
  {id:'intro',title:'Giới thiệu bản thân',desc:'N5 · Mẫu câu đầu tiên',group:'Mẫu câu',module:'N5',course:'N5',route:'lesson/n5-introduction',icon:'日'},
+ {id:'greetings',title:'Lời chào theo thời điểm',desc:'おはようございます・こんにちは・こんばんは',group:'Mẫu câu',module:'N5',course:'N5',route:'lesson/n5-greetings',icon:'挨'},
  {id:'revision',title:'Ôn trí nhớ',desc:'Nhớ lại bài đã học',group:'Ôn tập',module:'N5',course:'N5',route:'review',icon:'復'},
  {id:'exam',title:'Thử đề JLPT',desc:'Bộ đề mẫu theo cấp độ',group:'Luyện đề',module:'N5',course:'N5',route:'exams',icon:'試'}
 ];
@@ -53,7 +54,7 @@ function model(){
  const completedSessions=sessions.filter(x=>x.status==='completed');
  const pending=sessions.filter(x=>x.status!=='completed').sort((a,b)=>String(b.updatedAt||'').localeCompare(String(a.updatedAt||'')));
  const active=pending[0]||null;
- const contentToId=id=>id==='foundation-vowels'?'vowels':id==='foundation-k-row'?'krow':id==='n5-introduction'?'intro':null;
+ const contentToId=id=>id==='foundation-vowels'?'vowels':id==='foundation-k-row'?'krow':id==='n5-introduction'?'intro':id==='n5-greetings'?'greetings':null;
  const done=new Set(completedSessions.map(x=>contentToId(x.contentId)).filter(Boolean));
  const selected=active?contentToId(active.contentId):(!done.has('vowels')?'vowels':!done.has('krow')?'krow':'intro');
  const completedUnits=sessions.reduce((n,s)=>n+(s.completedUnits?.length||0),0);
@@ -85,7 +86,7 @@ function sectionHead(iconName,title,link,labelText='Xem tất cả'){
 function focus(m){
  const unit=activities.find(a=>a.id===m.current)||activities[0];
  const pending=m.actualPending;
- const focusRoute=pending?(['n5-introduction','foundation-vowels','foundation-k-row'].includes(m.actualContent)?'lesson/resume':'learn/lessons'):unit.route;
+ const focusRoute=pending?(['n5-introduction','n5-greetings','foundation-vowels','foundation-k-row'].includes(m.actualContent)?'lesson/resume':'learn/lessons'):unit.route;
  const primary=pending?'Tiếp tục học':m.sample?'Mở hoạt động mẫu':m.done.size?'Mở bài học':'Bắt đầu học';
  const currentStep=m.steps?m.step+' / '+m.steps+' bước':m.sample?'Chưa bắt đầu': 'Chưa có dữ liệu';
  const stepPercent=m.steps?pct(Math.max(0,m.step-1),m.steps):0;
@@ -124,7 +125,7 @@ function stages(m){
  const active=m.learner.goal==='Nền tảng'?'foundation':m.learner.goal;
  return '<div class="v25-stage-rail" aria-label="Chọn cấp độ">'+levels.map(([id,title,ic])=>href('course/'+id,I(ic)+'<strong>'+title+'</strong>','v25-level '+(active===id?'current':''))).join('')+'</div>';
 }
-function cellRoute(act,m){return m.actualPending && m.actualContent===(act.id==='vowels'?'foundation-vowels':act.id==='krow'?'foundation-k-row':act.id==='intro'?'n5-introduction':null)?'lesson/resume':act.route}
+function cellRoute(act,m){return m.actualPending && m.actualContent===(act.id==='vowels'?'foundation-vowels':act.id==='krow'?'foundation-k-row':act.id==='intro'?'n5-introduction':act.id==='greetings'?'n5-greetings':null)?'lesson/resume':act.route}
 function activityState(act,m){
  const state=status(m,act.id);
  return '<span class="v25-row-status '+state+'">'+(state==='done'?I('check'):state==='current'?I('play-circle'):I('arrow'))+'</span>';
@@ -183,7 +184,7 @@ function catalogueTab(m){
  }).join('')+'</div></section>';
 }
 function modulesTab(m){
- const rows=[['Hiragana','Nhận mặt chữ · あ・い・う・え・お','foundation','vowels','あ'],['Hiragana · Hàng K','Nhận mặt chữ · か・き・く・け・こ','foundation','krow','か'],['Kana Writing Studio','Học nét và tự viết','foundation','writing','書'],['Nhận diện Kana','Kiểm tra và củng cố hình dạng','foundation','recognition','読'],['Mẫu câu N5','Giới thiệu bản thân trong ngữ cảnh','N5','intro','話'],['Ôn tập N5','Nhớ lại theo lịch ôn','N5','revision','復'],['Luyện đề JLPT','Bộ bài mẫu ngắn','N5','exam','試']];
+ const rows=[['Hiragana','Nhận mặt chữ · あ・い・う・え・お','foundation','vowels','あ'],['Hiragana · Hàng K','Nhận mặt chữ · か・き・く・け・こ','foundation','krow','か'],['Kana Writing Studio','Học nét và tự viết','foundation','writing','書'],['Nhận diện Kana','Kiểm tra và củng cố hình dạng','foundation','recognition','読'],['Mẫu câu N5','Giới thiệu bản thân trong ngữ cảnh','N5','intro','話'],['N5 · Lời chào','Lời chào theo thời điểm','N5','greetings','挨'],['Ôn tập N5','Nhớ lại theo lịch ôn','N5','revision','復'],['Luyện đề JLPT','Bộ bài mẫu ngắn','N5','exam','試']];
  return '<section class="v25-panel">'+sectionHead('layers','Module · Học theo kỹ năng')+
  '<p class="v25-tab-intro">Chọn một module để mở đúng hoạt động. Trạng thái minh họa được tính từ cùng dữ liệu ở Tổng quan.</p>'+
  '<div class="v25-module-cards">'+rows.map(([name,description,course,id,glyph],i)=>{
