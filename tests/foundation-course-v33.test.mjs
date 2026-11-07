@@ -59,7 +59,7 @@ test('Page navigation is consistent and practice categories have working answers
  for(const route of ['course/foundation','learn/foundation/hiragana/a/learn','learn/foundation/katakana/k/flash','learn/foundation/dakuten/g/reverse','learn/foundation/yoon/ky/match','learn/foundation/small/pause/vocab-ja-vi','learn/foundation/mixed/mixed/mix']){
    location.hash='#'+route;const html=ui.page(route);
    assert.ok(html.includes('HORIZON · Learning Hub'),route);
-   assert.ok(html.includes('HORIZON · Foundation Studio v35'),route);
+   assert.ok(html.includes('HORIZON · Foundation Studio v36'),route);
    if(route!=='course/foundation')assert.ok(html.includes('v34-stagebar'));
  }
 });
@@ -109,11 +109,11 @@ test('Compact course presents 46 Hiragana together, with audio and four action t
  const h=harness(); const r='learn/foundation/hiragana/all/learn';h.location.hash='#'+r;
  const html=h.ui.page(r);
  assert.equal((html.match(/v33-glyph-card/g)||[]).length,46);
- assert.equal((html.match(/data-f33="audio"/g)||[]).length,46);
+ assert.equal((html.match(/data-f33="pronounce"/g)||[]).length,46);
  assert.equal((html.match(/v35-kana-button/g)||[]).length,46);
  assert.ok(html.includes('v35-kana-guide'));
  assert.ok(!html.includes('v33-audio'));
- assert.ok(html.includes('aria-label="Phát âm chữ'));
+ assert.ok(html.includes('aria-label="Nghe '));
  assert.equal((html.match(/data-f34="tab"/g)||[]).length,4);
  assert.ok(!html.includes('v33-row-chip'));
  assert.ok(html.includes('data-f34="module"'));
@@ -135,10 +135,10 @@ test('Recognition contrast and listening tests provide reliable answers and expl
 test('Kana board is one-click audio surface, not nested play buttons',()=>{
  const h=harness(),route='learn/foundation/hiragana/all/learn';h.location.hash='#'+route;
  const markup=h.ui.page(route);
- assert.equal((markup.match(/data-f33="audio"/g)||[]).length,46);
+ assert.equal((markup.match(/data-f33="pronounce"/g)||[]).length,46);
  assert.equal((markup.match(/v35-kana-button/g)||[]).length,46);
  assert.ok(!markup.includes('v33-audio'));
- assert.match(markup,/HORIZON · Foundation Studio v35/);
+ assert.match(markup,/HORIZON · Foundation Studio v36/);
 });
 test('Foundation exercises expose optional draggable tiles and accessible tap-selection',()=>{
  const h=harness(),route='learn/foundation/hiragana/all/build';h.location.hash='#'+route;
@@ -150,12 +150,43 @@ test('Foundation exercises expose optional draggable tiles and accessible tap-se
  assert.ok(matchHtml.includes('data-f35-drop="match"'));
 });
 
+test('No nested scroll board; every Kana, voiced and yoon form is a tappable pronunciation target',()=>{
+ const h=harness();
+ for(const [path,count] of [
+  ['hiragana/all',46],['katakana/all',46],['dakuten/all',50],['yoon/all',66]
+ ]){
+  const route='learn/foundation/'+path+'/learn';
+  h.location.hash='#'+route;
+  const html=h.ui.page(route);
+  assert.equal((html.match(/data-f33="pronounce"/g)||[]).length,count,route);
+  assert.ok(html.includes('v36-kana-board'));
+  assert.ok(!html.includes('tabindex="0"'),route);
+  assert.ok(!html.includes('cuộn để xem toàn bộ'),route);
+  assert.ok(html.includes('v36-kana-row'),route);
+ }
+ const route='learn/foundation/small/all/learn';
+ h.location.hash='#'+route;
+ const small=h.ui.page(route);
+ assert.ok(small.includes('data-kind="small"'));
+ assert.ok(small.includes('v36-example-button'));
+});
+test('Audio fallback handles unavailable Japanese voices without fake success',()=>{
+ const h=harness();const route='learn/foundation/yoon/all/learn';
+ h.location.hash='#'+route;h.ui.page(route);
+ assert.doesNotThrow(()=>h.click('pronounce','きゃ'));
+ const listen=h.ui.questionFor(h.data.take('yoon','ky')[0],'listen',h.data.take('yoon','all'));
+ assert.equal(listen.correct,listen.item.id);
+});
+
 test('The learning UI does not alter the existing lesson engine or global learner records',()=>{
  const html=load('index.html');
  assert.ok(html.includes('foundation-curriculum-v33.js?v=33'));
- assert.ok(html.includes('foundation-course-v33.js?v=35'));
+ assert.ok(html.includes('foundation-course-v33.js?v=36'));
  assert.ok(html.includes('foundation-course-v34.css?v=34'));
  assert.ok(html.includes('foundation-course-v35.css?v=35'));
+ assert.ok(html.includes('foundation-course-v36.css?v=36'));
+ assert.ok(!load('foundation-course-v36.css').includes('max-height:405px'));
+ assert.match(load('foundation-course-v36.css'),/max-height:none!important/);
  const code=load('foundation-course-v33.js');
  assert.ok(!code.includes('NPLessonStore.save'));
  assert.ok(!code.includes('NPLessonEngine.complete'));
