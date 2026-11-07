@@ -217,16 +217,16 @@ function buildView(cfg,s){
  const word=s.cards[s.index],selected=s.selected.map(i=>s.tileOrder[i].glyph).join('');
  return '<section class="v33-pane"><div class="v33-pane-head"><div><p class="v33-eyebrow">GHÉP CHỮ THÀNH TỪ</p><h3>Xếp Kana theo đúng thứ tự</h3><p>Nhìn nghĩa tiếng Việt, chạm các mảnh chữ để ghép thành từ Nhật. Không cần kéo thả.</p></div>'+tag('Từ '+(s.index+1)+' / '+s.cards.length)+'</div>'+
  '<div class="v33-build-clue"><span>NGHĨA TIẾNG VIỆT</span><strong>'+clean(word.vi)+'</strong></div>'+
- '<div class="v33-build-answer" aria-label="Các chữ đã xếp" aria-live="polite">'+(selected?Array.from(selected).map(ch=>'<span lang="ja">'+clean(ch)+'</span>').join(''):'<small>Chọn ký tự bên dưới để ghép từ</small>')+'</div>'+
- '<div class="v33-build-tiles">'+s.tileOrder.map((x,i)=>'<button data-f33="tile" data-value="'+i+'" class="v33-build-tile" '+(s.selected.includes(i)||s.answer?'disabled':'')+' lang="ja">'+clean(x.glyph)+'</button>').join('')+'</div>'+
+ '<div class="v33-build-answer" data-f35-drop="build" aria-label="Các chữ đã xếp" aria-live="polite">'+(selected?Array.from(selected).map(ch=>'<span lang="ja">'+clean(ch)+'</span>').join(''):'<small>Chọn ký tự bên dưới để ghép từ</small>')+'</div>'+
+ '<div class="v33-build-tiles">'+s.tileOrder.map((x,i)=>'<button data-f33="tile" data-value="'+i+'" draggable="true" class="v33-build-tile" '+(s.selected.includes(i)||s.answer?'disabled':'')+' lang="ja">'+clean(x.glyph)+'</button>').join('')+'</div>'+
  (s.answer?'<div class="v33-feedback '+(s.answer.correct?'positive':'negative')+'" role="status"><strong>'+(s.answer.correct?'Đúng!':'Chưa đúng: '+clean(word.glyph))+'</strong><p>'+clean(word.glyph)+' → '+clean(word.read)+' · '+clean(word.vi)+'. '+clean(word.note||'')+'</p></div>':'<p class="v33-subline">Câu trả lời được chấm ngay khi bạn ghép đủ số ký tự.</p>')+
  '<div class="v33-pane-actions">'+(!s.answer?'<button class="v33-secondary" data-f33="undo">Bỏ chữ cuối</button>':'<button class="v33-primary" data-f33="build-next">'+(s.index+1===s.cards.length?'Xem kết quả':'Từ tiếp theo')+' →</button>')+'</div></section>';
 }
 function matchingView(cfg,s){
  if(!s.cards.length)return noData('Nhóm này chưa có đủ cặp duy nhất. Hãy chọn bảng hoặc nhóm khác.');
  const complete=s.matched.length===s.cards.length;
- const left=items=>items.map(x=>'<button data-f33="match" data-side="left" data-value="'+clean(x.id)+'" class="v33-match-tile '+(s.matched.includes(x.id)?'done':s.leftId===x.id?'selected':'')+'" '+(s.matched.includes(x.id)?'disabled':'')+' lang="ja">'+clean(x.glyph)+'</button>').join('');
- const right=items=>items.map(x=>'<button data-f33="match" data-side="right" data-value="'+clean(x.id)+'" class="v33-match-tile '+(s.matched.includes(x.id)?'done':s.rightId===x.id?'selected':'')+'" '+(s.matched.includes(x.id)?'disabled':'')+'>'+clean(readable(x))+(cfg.script==='both'&&cfg.mod.script==='both'?' <small>· '+(x.script==='hira'?'Hira':'Kata')+'</small>':'')+'</button>').join('');
+ const left=items=>items.map(x=>'<button data-f33="match" data-side="left" data-value="'+clean(x.id)+'" draggable="true" class="v33-match-tile '+(s.matched.includes(x.id)?'done':s.leftId===x.id?'selected':'')+'" '+(s.matched.includes(x.id)?'disabled':'')+' lang="ja">'+clean(x.glyph)+'</button>').join('');
+ const right=items=>items.map(x=>'<button data-f33="match" data-side="right" data-value="'+clean(x.id)+'" data-f35-drop="match" class="v33-match-tile '+(s.matched.includes(x.id)?'done':s.rightId===x.id?'selected':'')+'" '+(s.matched.includes(x.id)?'disabled':'')+'>'+clean(readable(x))+(cfg.script==='both'&&cfg.mod.script==='both'?' <small>· '+(x.script==='hira'?'Hira':'Kata')+'</small>':'')+'</button>').join('');
  return '<section class="v33-pane"><div class="v33-pane-head"><div><p class="v33-eyebrow">GHÉP CẶP · 2 CỘT</p><h3>Ghép chữ và cách đọc</h3><p>Chọn một ô bên trái, rồi ô tương ứng bên phải. Có thể dùng bàn phím; không cần kéo thả.</p></div>'+tag(s.matched.length+'/'+s.cards.length+' cặp')+'</div>'+
  (complete?'<div class="v33-feedback positive"><strong>Đã ghép xong!</strong><p>Số lần chọn sai: '+s.mistakes+'. Nếu chọn sai nhiều, hãy thử lại sau khi ôn Flashcard.</p></div>':'<p class="v33-subline">'+clean(s.feedback||'Chọn 1 chữ và 1 cách đọc để ghép cặp.')+'</p>')+
  '<div class="v33-match-grid"><div class="v33-match-column">'+left(s.left)+'</div><div class="v33-match-column">'+right(s.right)+'</div></div>'+
@@ -321,6 +321,38 @@ function localSwitch(kind,value){
  const stage=document.querySelector('.v34-workspace-shell');
  if(stage){stage.innerHTML=workspace(target);const crumb=document.querySelector('.v33-foundation .v25-breadcrumb [aria-current="page"]');if(crumb)crumb.textContent=target.mod.title;}
 }
+/* Optional desktop dragging; touch and keyboard selection remain the primary accessible controls. */
+let dragging=null;
+document.addEventListener('dragstart',event=>{
+ const tile=event.target.closest?.('.v34-studying [draggable="true"]');
+ if(!tile)return;
+ dragging={kind:tile.dataset.f33,id:tile.dataset.value,side:tile.dataset.side};
+ if(event.dataTransfer){event.dataTransfer.effectAllowed='move';event.dataTransfer.setData('text/plain',dragging.id)}
+});
+document.addEventListener('dragover',event=>{
+ if(!dragging)return;
+ const target=event.target.closest?.('[data-f35-drop]');
+ if(target&&(dragging.kind==='tile'&&target.dataset.f35Drop==='build'||dragging.kind==='match'&&target.dataset.f35Drop==='match')){
+  event.preventDefault();if(event.dataTransfer)event.dataTransfer.dropEffect='move';
+  target.classList.add('v35-drop-active');
+ }
+});
+document.addEventListener('dragleave',event=>{
+ const node=event.target.closest?.('[data-f35-drop]');if(node)node.classList.remove('v35-drop-active');
+});
+document.addEventListener('drop',event=>{
+ const target=event.target.closest?.('[data-f35-drop]');
+ if(!target||!dragging)return;
+ const dragged=dragging;dragging=null;target.classList.remove('v35-drop-active');
+ if(dragged.kind==='tile'&&target.dataset.f35Drop==='build'){
+  event.preventDefault();perform({dataset:{f33:'tile',value:dragged.id}});return;
+ }
+ if(dragged.kind==='match'&&target.dataset.f35Drop==='match'&&dragged.side==='left'){
+  event.preventDefault();perform({dataset:{f33:'match',value:dragged.id,side:'left'}});
+  perform({dataset:{f33:'match',value:target.dataset.value,side:'right'}});
+ }
+});
+document.addEventListener('dragend',()=>{dragging=null});
 document.addEventListener('change',event=>{
  const node=event.target.closest?.('[data-f34]');if(!node||!document.querySelector('.v34-workspace-shell'))return;
  localSwitch(node.dataset.f34,node.value);
