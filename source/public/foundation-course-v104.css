@@ -1,0 +1,65 @@
+/* HORIZON Foundation v1.04 — real two-column matching; answer clarity and navigation. */
+/* Deliberately not using v33-match-grid: legacy grid styles placed the SVG in column two. */
+.v34-studying .v104-match-board {
+ position:relative!important;display:flex!important;
+ flex-direction:row!important;align-items:flex-start!important;
+ justify-content:space-between!important;gap:clamp(18px,4vw,52px)!important;
+ width:100%!important;min-width:0;max-width:100%!important;
+ padding:0!important;isolation:isolate!important;box-sizing:border-box!important;
+}
+.v34-studying .v104-match-board>.v104-match-column {
+ position:relative!important;z-index:2!important;
+ display:flex!important;flex-direction:column!important;
+ flex:1 1 0!important;width:0!important;min-width:0!important;max-width:none!important;
+ gap:8px!important;box-sizing:border-box!important;
+}
+.v34-studying .v104-match-board .v33-match-tile {
+ display:flex!important;width:100%!important;min-height:51px!important;
+ padding:8px 10px!important;box-sizing:border-box!important;
+ justify-content:center!important;align-items:center!important;
+ white-space:normal!important;word-break:normal!important;
+}
+.v34-studying .v104-match-board .v101-match-label{flex:0 0 auto;text-align:center}
+.v34-studying .v104-match-board>.v101-match-lines{
+ position:absolute!important;inset:0!important;
+ width:100%!important;height:100%!important;
+ pointer-events:none!important;z-index:1!important;
+ display:block!important;overflow:visible!important;
+}
+.v34-studying .v104-answer{display:flex!important;align-items:center!important;justify-content:center!important;gap:9px!important;position:relative;min-width:0}
+.v34-studying .v104-answer .v104-answer-label{flex:0 1 auto}
+.v34-studying .v104-answer .v104-answer-result{
+ display:grid;place-items:center;position:absolute;right:12px;top:50%;transform:translateY(-50%);
+ width:26px;height:26px;border-radius:50%;font-weight:800;font-size:18px;
+}
+.v34-studying .v104-answer .v104-answer-result.is-correct{background:#e0eee0;color:#2e6f3d}
+.v34-studying .v104-answer .v104-answer-result.is-wrong{background:#fbe4e3;color:#a53b3b}
+.v34-studying .v104-truefalse{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.v34-studying .v104-truefalse .v104-answer{min-height:72px!important;font-size:18px}
+.v34-studying .v104-choice-symbol{
+ display:grid;place-items:center;flex:0 0 30px;width:30px;height:30px;
+ border:1px solid var(--v33-line);border-radius:50%;font-size:21px;line-height:1;
+ color:var(--v33-ink);background:var(--v33-paper)
+}
+.v34-studying .v104-answer.correct{border:2px solid #6c9b72!important;background:#e8f2e8!important;color:#245c32!important}
+.v34-studying .v104-answer.wrong{border:2px solid #cb746f!important;background:#fff0ef!important;color:#8d3330!important}
+.v34-studying .v104-sticky-next{
+ position:sticky!important;bottom:12px!important;z-index:15!important;
+ display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;
+ background:color-mix(in srgb,var(--v33-paper) 96%,transparent)!important;
+ border:1px solid var(--v33-line)!important;border-radius:12px!important;
+ padding:10px 12px!important;margin:14px 0 0!important;
+ box-shadow:0 6px 22px rgba(86,45,60,.12)!important;
+ backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+}
+.v34-studying .v104-sticky-next .v33-primary{
+ min-height:42px!important;white-space:nowrap;cursor:pointer;
+}
+.v34-studying .v104-next-caption{font-size:11px;color:var(--muted);line-height:1.5}
+@media(max-width:680px){
+ .v34-studying .v104-match-board{gap:10px!important}
+ .v34-studying .v104-match-board>.v104-match-column{gap:6px!important}
+ .v34-studying .v104-match-board .v33-match-tile{min-height:45px!important;font-size:14px!important;padding:7px 3px!important}
+ .v34-studying .v104-sticky-next{bottom:calc(66px + env(safe-area-inset-bottom,0px))!important}
+ .v34-studying .v104-next-caption{font-size:10px}
+}
