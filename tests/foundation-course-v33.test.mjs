@@ -63,7 +63,7 @@ test('Page navigation is consistent and practice categories have working answers
  const {ui,location}=harness();
  for(const route of ['course/foundation','learn/foundation/hiragana/a/learn','learn/foundation/katakana/k/flash','learn/foundation/dakuten/g/reverse','learn/foundation/yoon/ky/match','learn/foundation/small/pause/vocab-ja-vi','learn/foundation/mixed/mixed/mix']){
    location.hash='#'+route;const html=ui.page(route);
-   assert.ok(html.includes('HORIZON · Learning Hub'),route);
+   assert.ok(html.includes('v112-foundation'),route);
    assert.ok(html.includes('Luyện tập mẫu · Tiến độ lưu trên thiết bị'),route);
    if(route!=='course/foundation')assert.ok(html.includes('v34-stagebar'));
  }
