@@ -62,7 +62,7 @@ test('Complete dictionary loads before switcher and the HTML uses versioned JS',
  assert.ok(page.indexOf('src="locale-data.js"')<page.indexOf('src="locale-coverage.js?v=15"'));
  assert.ok(page.indexOf('src="locale-coverage.js?v=15"')<page.indexOf('src="locales.js?v=16"'));
  for(const name of ['app.js','journey.js','login-ui.js','family-pin-ui.js'])
-  assert.ok(page.includes(name+'?v='+(name==='app.js'?'118':'13')),name);
+  assert.ok(page.includes(name+'?v='+(name==='app.js'?'119':'13')),name);
 });
 
 test('VI → EN → JA → VI switches both text and attributes without rewriting personal notes',()=>{
