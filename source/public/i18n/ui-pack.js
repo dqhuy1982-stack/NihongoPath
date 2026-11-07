@@ -70,6 +70,8 @@ const NP_UI_PACK=Object.freeze({
  "foundation.statusPlanned":{"vi":"Đang biên soạn","en":"In preparation","ja":"準備中"},
  "foundation.unit.f01":{"vi":"Hiragana cơ bản · nhóm nhỏ","en":"Basic Hiragana · short groups","ja":"ひらがなの基本・小グループ"},
  "foundation.unit.f01b":{"vi":"Hiragana · Hàng K: か・き・く・け・こ","en":"Hiragana · K row: か・き・く・け・こ","ja":"ひらがな・か行：か・き・く・け・こ"},
+ "foundation.unit.f01c":{"vi":"Hiragana · Hàng S: さ・し・す・せ・そ","en":"Hiragana · S row: さ・し・す・せ・そ","ja":"ひらがな・さ行：さ・し・す・せ・そ"},
+ "foundation.unit.f01d":{"vi":"Hiragana · Hàng T: た・ち・つ・て・と","en":"Hiragana · T row: た・ち・つ・て・と","ja":"ひらがな・た行：た・ち・つ・て・と"},
  "foundation.unit.f02":{"vi":"Katakana cơ bản · nhóm nhỏ","en":"Basic Katakana · short groups","ja":"カタカナの基本・小グループ"},
  "foundation.unit.f03":{"vi":"Âm đục và âm bán đục","en":"Voiced and semi-voiced sounds","ja":"濁音・半濁音"},
  "foundation.unit.f04":{"vi":"Âm ghép, âm ngắt và trường âm","en":"Combined sounds, small っ and long vowels","ja":"拗音・促音・長音"},
