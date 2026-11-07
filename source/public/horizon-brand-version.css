@@ -1,0 +1,20 @@
+/* Tiny release marker next to HORIZON wordmark; never competes with logo. */
+.brand .horizon-wordmark{
+ display:inline-flex;align-items:baseline;gap:7px;min-width:0;white-space:nowrap;
+}
+.brand .horizon-brand-version{
+ display:inline-block;flex:0 0 auto;
+ font-family:var(--sans,system-ui,sans-serif);font-size:9px;
+ font-style:normal;font-weight:650;line-height:1.3;letter-spacing:.025em;
+ color:rgba(245,235,240,.65);
+ padding:2px 4px;border:1px solid rgba(245,235,240,.22);
+ border-radius:5px;background:rgba(255,255,255,.035);
+ font-variant-numeric:tabular-nums;
+}
+.brand:hover .horizon-brand-version,.brand:focus-visible .horizon-brand-version{
+ color:rgba(255,255,255,.94);border-color:rgba(255,255,255,.4)
+}
+@media(max-width:680px){
+ .brand .horizon-wordmark{gap:5px}
+ .brand .horizon-brand-version{font-size:8px;padding:1px 3px}
+}
