@@ -216,6 +216,24 @@ function completeRound(s,cfg){
  for(const p of list){if(p.wrongAttempts)d.matchReview[p.itemId]={at:report.endedAt,reason:'match-attempt'};else delete d.matchReview[p.itemId];}
  persist();saveRound(report);
 }
+let feedbackAudioContext;
+function matchingSound(correct){
+ if(!audioPref())return;
+ const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+ try{
+  const ctx=feedbackAudioContext||(feedbackAudioContext=new AC());
+  if(ctx.state==='suspended')ctx.resume().catch(()=>{});
+  const now=ctx.currentTime;
+  const tone=(hz,at,ms,type)=>{
+   const oscillator=ctx.createOscillator(),gain=ctx.createGain(),start=now+at;
+   oscillator.type=type;oscillator.frequency.value=hz;
+   gain.gain.setValueAtTime(.0001,start);gain.gain.exponentialRampToValueAtTime(.055,start+.012);gain.gain.exponentialRampToValueAtTime(.0001,start+ms);
+   oscillator.connect(gain);gain.connect(ctx.destination);oscillator.start(start);oscillator.stop(start+ms+.02);
+  };
+  if(correct){tone(660,0,.10,'sine');tone(880,.09,.16,'sine');}
+  else{tone(210,0,.12,'triangle');tone(165,.09,.15,'triangle');}
+ }catch(e){}
+}
 function formatDuration(ms){return Number.isFinite(ms)?(ms/1000).toLocaleString('vi-VN',{maximumFractionDigits:1})+' giây':'Chưa ghi nhận'}
 function roundSummaryView(s,cfg){
  const r=s.round,report=r?.summary;
@@ -223,13 +241,13 @@ function roundSummaryView(s,cfg){
  const review=report.pairResults.filter(p=>p.wrongAttempts);
  const cleanRound=report.wrongAttempts===0;
  const canReview=review.length>0;
- const heading=cleanRound?'Một ván thật gọn!':'Hoàn thành ván ghép!';
- const detail=cleanRound?'Bạn đã ghép đúng ngay lần đầu cả '+report.totalPairs+' cặp. Hãy thử một ván mới để củng cố.':
+ const heading=cleanRound?'Một lượt luyện thật tốt!':'Hoàn thành lượt luyện!';
+ const detail=cleanRound?'Bạn đã ghép đúng ngay lần đầu cả '+report.totalPairs+' cặp. Hãy thử lượt luyện mới để củng cố.':
   'Bạn đã nối đủ '+report.totalPairs+' cặp, trong đó '+report.firstTryPairs+' cặp đúng ngay lần đầu và '+report.wrongAttempts+' lượt ghép chưa đúng.';
  const metric=(value,label)=>'<div class="v107-metric"><strong>'+clean(value)+'</strong><small>'+clean(label)+'</small></div>';
- const notes=review.length?'Có '+review.length+' chữ tham gia vào ít nhất một lượt ghép sai. Ôn lại trước khi chơi ván mới.':'Chưa ghi nhận cặp ghép sai trong ván này. Một ván đúng chưa có nghĩa là đã nhớ lâu.';
+ const notes=review.length?'Có '+review.length+' chữ tham gia vào ít nhất một lượt ghép sai. Ôn lại các cặp này trước khi bắt đầu lượt mới.':'Chưa ghi nhận cặp ghép sai trong ván này. Một ván đúng chưa có nghĩa là đã nhớ lâu.';
  return '<div class="v107-overlay" data-v107-dialog="1"><section class="v107-dialog" role="dialog" aria-modal="true" aria-labelledby="v107-title" tabindex="-1">'+
- '<div class="v107-header"><span class="v107-star" aria-hidden="true">✦</span><div><p class="v33-eyebrow">TỔNG KẾT VÁN HỌC</p><h3 id="v107-title">'+heading+'</h3><p>'+detail+'</p></div><button type="button" class="v107-close" data-f33="summary-close" aria-label="Đóng tổng kết">×</button></div>'+
+ '<div class="v107-header"><span class="v107-star v108-flower" role="img" aria-label="Hoa và nụ cười chúc mừng">🌸<span aria-hidden="true" class="v108-smile">☺</span><span aria-hidden="true" class="v108-spark">✦</span></span><div><p class="v33-eyebrow">TỔNG KẾT LƯỢT LUYỆN</p><h3 id="v107-title">'+heading+'</h3><p>'+detail+'</p></div><button type="button" class="v107-close" data-f33="summary-close" aria-label="Đóng tổng kết">×</button></div>'+
  '<div class="v107-stats">'+metric(report.completedPairs+' / '+report.totalPairs,'Cặp hoàn thành')+metric(report.firstTryPairs+' / '+report.totalPairs,'Đúng ngay lần đầu')+
  metric(report.wrongAttempts,'Lượt ghép sai')+metric(formatDuration(report.totalElapsedMs),'Tổng thời gian')+'</div>'+
  '<div class="v107-body"><div class="v107-insight"><h4>✧ Nhận xét sau ván</h4><p>'+notes+'</p><p>Đúng ngay lần đầu: <strong>'+report.firstTryAccuracy+'%</strong> · Đúng theo lượt ghép: <strong>'+report.attemptAccuracy+'%</strong>.</p>'+
@@ -237,10 +255,10 @@ function roundSummaryView(s,cfg){
  '<p>Trung bình theo cặp: <strong>'+formatDuration(report.averagePairMs)+'</strong>. Nhanh nhất: <strong>'+formatDuration(report.fastestPairMs)+'</strong>; lâu nhất: <strong>'+formatDuration(report.slowestPairMs)+'</strong>.</p><p>Luyện tập không có giới hạn thời gian; số liệu chỉ dùng tham khảo.</p></div>'+
  '<div class="v107-review"><h4>'+ (canReview?'Cặp nên ôn lại':'Gợi ý tiếp theo')+'</h4>'+
  (canReview?'<div class="v107-review-tiles">'+review.map(p=>'<span lang="ja">'+clean(p.glyph)+' <small>'+clean(p.romaji)+' · ghép sai '+p.wrongAttempts+' lượt</small></span>').join('')+'</div>':
- '<p>Hãy thử thêm một ván với các chữ và thứ tự mới, sau đó ôn lại sau một khoảng nghỉ.</p>')+
+ '<p>Hãy thử thêm một lượt với các chữ và thứ tự mới, sau đó ôn lại sau một khoảng nghỉ.</p>')+
  '<details class="v107-details"><summary>Chi tiết từng cặp · '+report.pairResults.length+'</summary><div>'+report.pairResults.map(p=>'<div><span lang="ja">'+clean(p.glyph)+'</span><span>'+clean(p.romaji)+'</span><small>'+p.wrongAttempts+' lần ghép sai · '+formatDuration(p.pairElapsedMs)+(p.audioReplays?' · nghe '+p.audioReplays+' lần':'')+'</small></div>').join('')+'</div></details></div></div>'+
  '<div class="v107-actions">'+(canReview?'<button type="button" class="v33-primary" data-f33="summary-review">Luyện lại cặp cần ôn</button>':'')+
- '<button type="button" class="'+(canReview?'v33-secondary':'v33-primary')+'" data-f33="summary-new">↻ Ván mới</button>'+
+ '<button type="button" class="'+(canReview?'v33-secondary':'v33-primary')+'" data-f33="summary-new">↻ Lượt luyện mới</button>'+
  '<button type="button" class="v33-secondary" data-f33="summary-next">'+(['match','game'].includes(s.kind)?'Chuyển sang Nghe & ghép':'Kiểm tra tổng hợp')+'</button>'+
  '<button type="button" class="v33-secondary" data-f33="summary-close">Đóng</button></div></section></div>';
 }
@@ -585,16 +603,16 @@ function matchingView(cfg,s){
  if(!s.cards.length)return noData('Nhóm này chưa có đủ cặp duy nhất. Hãy chọn bảng hoặc nhóm khác.');
  const complete=s.matched.length===s.cards.length;
  const listening=['listen-match','game-listen'].includes(s.kind);
- const left=x=>'<button type="button" data-f33="match" data-side="left" data-value="'+clean(x.id)+'" class="v105-tile v33-match-tile '+(s.matched.includes(x.id)?'done':s.leftId===x.id?'selected':'')+'" '+(s.matched.includes(x.id)?'disabled':'')+' aria-label="'+clean(listening?'Nghe âm '+x.read:'Kana '+x.glyph)+'">'+(listening?'▶ Nghe':'<span lang="ja">'+clean(x.glyph)+'</span>')+(s.matched.includes(x.id)?'<span class="v105-check">✓</span>':'')+'</button>';
- const right=x=>'<button type="button" data-f33="match" data-side="right" data-value="'+clean(x.id)+'" data-f35-drop="match" class="v105-tile v33-match-tile '+(s.matched.includes(x.id)?'done':s.rightId===x.id?'selected':'')+'" '+(s.matched.includes(x.id)?'disabled':'')+' aria-label="'+clean(listening?'Kana '+x.glyph:'Romaji '+x.read)+'">'+(listening?'<span lang="ja">'+clean(x.glyph)+'</span>':'<span class="v105-romaji">'+clean(x.read||'')+'</span>')+(cfg.script==='both'&&cfg.mod.script==='both'&&!listening?'<small>'+ (x.script==='hira'?'Hira':'Kata')+'</small>':'')+(s.matched.includes(x.id)?'<span class="v105-check">✓</span>':'')+'</button>';
+ const left=x=>'<button type="button" data-f33="match" data-side="left" data-value="'+clean(x.id)+'" class="v105-tile v33-match-tile '+(s.matched.includes(x.id)?'done':s.leftId===x.id?'selected':'')+' '+(s.wrongPair?.left===x.id?'v108-wrong':'')+' '+(s.lastMatched===x.id?'v108-right':'')+'" '+(s.matched.includes(x.id)?'disabled':'')+' aria-label="'+clean(listening?'Nghe âm '+x.read:'Kana '+x.glyph)+'">'+(listening?'▶ Nghe':'<span lang="ja">'+clean(x.glyph)+'</span>')+(s.matched.includes(x.id)?'<span class="v105-check">✓</span>':'')+'</button>';
+ const right=x=>'<button type="button" data-f33="match" data-side="right" data-value="'+clean(x.id)+'" data-f35-drop="match" class="v105-tile v33-match-tile '+(s.matched.includes(x.id)?'done':s.rightId===x.id?'selected':'')+' '+(s.wrongPair?.right===x.id?'v108-wrong':'')+' '+(s.lastMatched===x.id?'v108-right':'')+'" '+(s.matched.includes(x.id)?'disabled':'')+' aria-label="'+clean(listening?'Kana '+x.glyph:'Romaji '+x.read)+'">'+(listening?'<span lang="ja">'+clean(x.glyph)+'</span>':'<span class="v105-romaji">'+clean(x.read||'')+'</span>')+(cfg.script==='both'&&cfg.mod.script==='both'&&!listening?'<small>'+ (x.script==='hira'?'Hira':'Kata')+'</small>':'')+(s.matched.includes(x.id)?'<span class="v105-check">✓</span>':'')+'</button>';
  const rows=s.left.map((x,i)=>'<div class="v105-match-row">'+left(x)+right(s.right[i])+'</div>').join('');
  return '<section class="v33-pane"><div class="v33-pane-head"><div><p class="v33-eyebrow">'+(listening?'NGHE & GHÉP':s.kind==='game'?'GAME · GHÉP CẶP':'GHÉP CẶP · 2 CỘT')+'</p><h3>'+(listening?'Nghe và ghép đúng chữ':'Ghép Kana với Romaji')+'</h3><p>'+(listening?'Nghe ở bên trái, sau đó chọn chữ phù hợp bên phải.':'Chọn một ô Kana và một ô Romaji để nối cặp.')+'</p></div>'+tag(s.matched.length+' / '+s.cards.length+' cặp')+'</div>'+
- '<div class="v105-match-tools"><span>Hai bên được trộn ngẫu nhiên, không theo cùng thứ tự.</span><button type="button" class="v105-remix" data-f33="restart">↻ Ván mới</button></div>'+
+ '<div class="v105-match-tools"><span>Hai bên được trộn ngẫu nhiên, không theo cùng thứ tự.</span><button type="button" class="v105-remix" data-f33="restart">↻ Lượt luyện mới</button></div>'+
  (cfg.mod.script==='both'?'<div class="v105-script-options" role="group" aria-label="Bảng chữ">'+[['both','Cả hai'],['hira','Hiragana'],['kata','Katakana']].map(([id,label])=>'<button type="button" data-f34="script" data-value="'+id+'" aria-pressed="'+(cfg.script===id)+'">'+label+'</button>').join('')+'</div>':'')+
  '<div class="v105-match-board" data-match-board="1"><div class="v105-match-header"><strong>'+(listening?'NGHE ÂM':'KANA')+'</strong><strong>'+(listening?'KANA':'ROMAJI')+'</strong></div>'+rows+'<svg class="v101-match-lines" aria-hidden="true" preserveAspectRatio="none"></svg></div>'+
  '<p class="v105-match-feedback" aria-live="polite">'+clean(s.feedback||'Chọn một ô ở mỗi bên để ghép cặp.')+'</p>'+
  (s.lastMatched?insightPanel(s.cards.find(x=>x.id===s.lastMatched),cfg):'')+
- (complete?'<div class="v33-pane-actions"><button type="button" data-f33="summary-open" class="v33-primary">Xem lại kết quả ✦</button><button type="button" data-f33="restart" class="v33-secondary">Ván mới</button></div>':'')+
+ (complete&&!s.round?.summaryOpen?'<div class="v108-dock" role="navigation" aria-label="Thao tác sau lượt luyện"><span>✓ '+s.cards.length+' cặp đã ghép</span><button data-f33="summary-open" class="v33-primary">Xem kết quả ✦</button><button data-f33="restart" class="v33-secondary">Lượt luyện mới ↻</button></div>':'')+
  '</section>';
 }
 
@@ -737,8 +755,8 @@ function perform(el){
    const ok=left===right;const item=s.cards.find(x=>x.id===left);
    roundAttempt(s,left,right,ok);
    record(item,ok,s.kind,null);
-   if(ok){s.lastMatched=item.id;s.matched.push(item.id);s.feedback='Đúng! Hãy ghép cặp tiếp theo.';if(audioPref())pronounce(item.glyph,item.read,true);}
-   else{s.mistakes++;s.feedback='Chưa đúng. Đường đỏ chỉ cặp vừa chọn, thử lại nhé.';s.wrongPair={left,right};}
+   if(ok){s.lastMatched=item.id;s.matched.push(item.id);s.feedback='Đúng! Hãy ghép cặp tiếp theo.';matchingSound(true);}
+   else{s.mistakes++;s.feedback='Chưa đúng. Đường đỏ chỉ cặp vừa chọn, thử lại nhé.';s.wrongPair={left,right};s.lastMatched=null;matchingSound(false);}
    s.leftId=null;s.rightId=null;
    if(ok&&s.matched.length===s.cards.length)completeRound(s,cfg);
   }
