@@ -143,3 +143,28 @@
 /* The Foundation learning flow now has four destinations, not five. */
 .v34-studying .v34-stagebar{grid-template-columns:repeat(4,minmax(0,1fr))!important}
 @media(max-width:680px){.v34-studying .v34-stagebar{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
+
+/* Foundation v1.09: restrained visual hierarchy for evidence-based feedback. */
+.v34-studying .v110-feedback-card{display:flex;align-items:flex-start;gap:11px;padding:15px 14px;border-radius:13px;border:1px solid transparent;margin:4px 0 12px}
+.v34-studying .v110-feedback-card.is-positive{background:color-mix(in srgb,#e0eee5 62%,var(--v33-paper));border-color:#b7d4c2;color:#245e45}
+.v34-studying .v110-feedback-card.is-review{background:color-mix(in srgb,#f4e9db 67%,var(--v33-paper));border-color:#e2cba9;color:#855c30}
+.v34-studying .v110-feedback-icon{display:grid;place-items:center;width:28px;height:28px;flex:0 0 28px;border-radius:50%;font-size:14px;font-weight:800;background:currentColor;position:relative}
+.v34-studying .v110-feedback-icon::first-letter{color:inherit}
+.v34-studying .v110-feedback-card.is-positive .v110-feedback-icon,.v34-studying .v110-feedback-card.is-review .v110-feedback-icon{background:rgba(255,255,255,.7);border:1px solid currentColor}
+.v34-studying .v110-feedback-title{display:block;font-size:13px;line-height:1.35;font-weight:800;letter-spacing:.005em;margin:0 0 4px;color:inherit}
+.v34-studying .v110-feedback-card .v109-observation-lead{margin:0;font-size:12px;line-height:1.7;color:inherit}
+.v34-studying .v110-feedback-card .v109-observation-lead strong{font-weight:800;color:inherit}
+.v34-studying .v110-guidance{padding-left:2px;margin:0 0 14px!important;font-size:11px!important;line-height:1.7!important;color:var(--muted)!important}
+.v34-studying .v110-next-card{padding:14px 15px 13px;border:1px solid var(--v33-line);border-left:3px solid #b58b78;border-radius:0 12px 12px 0;background:color-mix(in srgb,var(--v33-soft) 47%,var(--v33-paper));margin-bottom:13px}
+.v34-studying .v110-next-card>strong{display:block;font-size:12px;color:var(--v33-ink);font-weight:800;margin-bottom:5px}
+.v34-studying .v110-next-card>p{font-size:11.5px;line-height:1.7;color:var(--text);margin:0}
+.v34-studying .v109-section-top h4{font-weight:800!important;color:var(--v33-ink)!important}
+.v34-studying .v109-mini-data{background:color-mix(in srgb,var(--v33-soft) 32%,var(--v33-paper));border-radius:10px;padding:11px 12px;border:1px solid var(--v33-line)}
+.v34-studying .v109-mini-data span{font-size:11px;color:var(--text)}
+.v34-studying .v109-mini-data strong{font-weight:800;font-size:15px}
+.v34-studying .v109-stat strong{font-weight:750}
+.v34-studying .v109-stat:nth-child(1) .v109-stat-icon,.v34-studying .v109-stat:nth-child(2) .v109-stat-icon{color:#477a61}
+.v34-studying .v109-stat:nth-child(3) .v109-stat-icon{color:#aa7d51}
+.v34-studying .v109-details summary:hover{color:var(--v33-ink);background:color-mix(in srgb,var(--v33-soft) 40%,transparent)}
+.v34-studying .v109-overlay.v109-closing{pointer-events:none}
+@media(max-width:680px){.v34-studying .v110-feedback-card{padding:12px;gap:9px}.v34-studying .v110-next-card{padding:12px}.v34-studying .v109-mini-data{padding:10px}}
