@@ -64,7 +64,7 @@ test('Page navigation is consistent and practice categories have working answers
  for(const route of ['course/foundation','learn/foundation/hiragana/a/learn','learn/foundation/katakana/k/flash','learn/foundation/dakuten/g/reverse','learn/foundation/yoon/ky/match','learn/foundation/small/pause/vocab-ja-vi','learn/foundation/mixed/mixed/mix']){
    location.hash='#'+route;const html=ui.page(route);
    assert.ok(html.includes('HORIZON · Learning Hub'),route);
-   assert.ok(html.includes('HORIZON · Foundation Studio v38'),route);
+   assert.ok(html.includes('HORIZON · Foundation Studio v39'),route);
    if(route!=='course/foundation')assert.ok(html.includes('v34-stagebar'));
  }
 });
@@ -119,7 +119,7 @@ test('Compact course presents 46 Hiragana together, with audio and four action t
  assert.ok(html.includes('v35-kana-guide'));
  assert.ok(!html.includes('v33-audio'));
  assert.ok(html.includes('aria-label="Nghe '));
- assert.equal((html.match(/class="v34-stage-tab /g)||[]).length,4);
+ assert.equal((html.match(/class="v34-stage-tab /g)||[]).length,5);
  assert.ok(!html.includes('v33-row-chip'));
  assert.ok(html.includes('data-f34="module"'));
 });
@@ -143,7 +143,7 @@ test('Kana board is one-click audio surface, not nested play buttons',()=>{
  assert.equal((markup.match(/data-f33="pronounce"/g)||[]).length,46);
  assert.equal((markup.match(/v35-kana-button/g)||[]).length,46);
  assert.ok(!markup.includes('v33-audio'));
- assert.match(markup,/HORIZON · Foundation Studio v38/);
+ assert.match(markup,/HORIZON · Foundation Studio v39/);
 });
 test('Foundation exercises expose optional draggable tiles and accessible tap-selection',()=>{
  const h=harness(),route='learn/foundation/hiragana/all/build';h.location.hash='#'+route;
@@ -185,16 +185,16 @@ test('Audio fallback handles unavailable Japanese voices without fake success',(
 
 
 test('Slow correct answers are recorded independently of raw correctness',()=>{
- const h=harness(),route='learn/foundation/hiragana/all/quiz';
+ const h=harness(),route='learn/foundation/hiragana/all/mix';
  h.location.hash='#'+route;h.ui.page(route);h.start();
  const session=h.ui.session(),q=session.questions[0];
- session.startedAt=Date.now()-7600;
+ session.startedAt=Date.now()-12000;
  h.click('answer',q.correct);
  const rec=h.ui.store().items[q.item.id];
  assert.equal(rec.correct,1);
  assert.equal(rec.slowCount,1);
  assert.equal(rec.latestOutcome,'slow');
- assert.ok(rec.lastResponseMs>=7000);
+ assert.ok(rec.lastResponseMs>=11000);
  assert.equal(rec.streak,0);
  assert.match(h.ui.page(route),/Đã lưu vào sổ ôn vì chậm/);
  assert.ok(h.ui.store().history.some(a=>a.id===q.item.id&&a.outcome==='slow'));
@@ -229,20 +229,20 @@ test('New review and listen-match modes remain within the four primary navigatio
  h.click('match',first.id,'right');
  assert.ok(s.matched.includes(first.id));
  assert.equal(h.ui.store().items[first.id].attempts,1);
- assert.ok(h.ui.store().items[first.id].lastResponseMs>=0);
+ assert.equal(h.ui.store().items[first.id].lastResponseMs,null);
  const kata='learn/foundation/katakana/all/listen-match';
  h.location.hash='#'+kata;h.ui.page(kata);
  assert.ok(h.ui.session().cards.length>0,'Katakana audio matching available');
  assert.ok(h.ui.session().cards.every(x=>x.script==='kata'));
 });
 test('Clock is per question and feedback freezes elapsed time until next item',()=>{
- const h=harness(),route='learn/foundation/hiragana/all/quiz';
+ const h=harness(),route='learn/foundation/hiragana/all/mix';
  h.location.hash='#'+route;
  let html=h.ui.page(route);h.start();
- assert.ok(html.includes('data-f37-timer'));
- const s=h.ui.session(),q=s.questions[0];s.startedAt=Date.now()-5300;
+ assert.ok(!html.includes('data-f38="start"'));
+ const s=h.ui.session(),q=s.questions[0];s.startedAt=Date.now()-12500;
  h.click('answer',q.correct);
- const first=s.lastMs;assert.ok(first>=5000);
+ const first=s.lastMs;assert.ok(first>=12000);
  html=h.ui.page(route);
  assert.ok(html.includes('Đã trả lời'));
  assert.ok(html.includes('Đúng nhưng cần luyện phản xạ.'));
@@ -254,7 +254,7 @@ test('Clock is per question and feedback freezes elapsed time until next item',(
 
 
 test('Timed practice opens with preflight, no scoring or timer before explicit start',()=>{
- const h=harness(),route='learn/foundation/hiragana/all/quiz';
+ const h=harness(),route='learn/foundation/hiragana/all/mix';
  h.location.hash='#'+route;
  let html=h.ui.page(route),s=h.ui.session(),q=s.questions[0];
  assert.equal(s.ready,false);
@@ -304,18 +304,17 @@ test('Mixed test gives specific preflight guidance and does not start timer whil
  assert.equal(h.ui.session().startedAt,null);
 });
 
-test('Audio matching and word construction cannot start timer during introduction',()=>{
+test('Practice and word building are ready immediately and never display preflight or timer',()=>{
  const h=harness();
- for(const mode of ['match','listen-match','build']){
+ for(const mode of ['quiz','match','listen-match','build','vocab-ja-vi']){
    const route='learn/foundation/hiragana/all/'+mode;
    h.location.hash='#'+route;
    const html=h.ui.page(route),session=h.ui.session();
-   assert.equal(session.ready,false,mode);
-   assert.equal(session.startedAt,null,mode);
-   assert.ok(html.includes('data-f38="start"'),mode);
-   h.start();
    assert.equal(session.ready,true,mode);
-   assert.ok(session.startedAt>0,mode);
+   assert.equal(session.startedAt,null,mode);
+   assert.ok(!html.includes('data-f38="start"'),mode);
+   assert.ok(!html.includes('v38-overlay'),mode);
+   assert.ok(!html.includes('data-f37-timer'),mode);
  }
 });
 test('Review and mixed sessions expose guidance, without claiming a fast answer means mastery',()=>{
@@ -331,16 +330,55 @@ test('Review and mixed sessions expose guidance, without claiming a fast answer 
  }
 });
 
+test('Five learning destinations include Game and book-style exercise navigation',()=>{
+ const h=harness();
+ for(const mode of ['quiz','reverse','match','build','game','game-build','game-listen']){
+  const route='learn/foundation/hiragana/all/'+mode;
+  h.location.hash='#'+route;
+  const html=h.ui.page(route);
+  assert.match(html,/v39-book-layout/);
+  assert.match(html,/v39-book-nav/);
+  assert.ok(!html.includes('Dạng luyện <select'));
+  assert.ok(!html.includes('v38-overlay'));
+ }
+ const r='learn/foundation/hiragana/all/game';
+ h.location.hash='#'+r;const html=h.ui.page(r);
+ assert.ok(html.includes('GAME · GHÉP CẶP'));
+ assert.equal((html.match(/class="v34-stage-tab /g)||[]).length,5);
+});
+test('Only formal mixed exam opens guidance and clock',()=>{
+ const h=harness(),route='learn/foundation/hiragana/all/mix';
+ h.location.hash='#'+route;
+ const html=h.ui.page(route),s=h.ui.session();
+ assert.equal(s.ready,false);
+ assert.equal(s.startedAt,null);
+ assert.match(html,/v38-overlay/);
+ assert.match(html,/data-f38="start"/);
+ h.start();
+ assert.equal(s.ready,true);
+ assert.ok(s.startedAt>0);
+ assert.match(h.ui.page(route),/data-f37-timer/);
+});
+test('Refresh of deep lesson route triggers learning-hub re-render after scripts initialize',()=>{
+ const hub=load('learning-hub-v25.js');
+ assert.ok(hub.includes("location.hash.startsWith('#learn/foundation/')"));
+ assert.ok(hub.includes("queueMicrotask(()=>render(false))"));
+ const code=load('foundation-course-v33.js');
+ assert.ok(code.includes("history.replaceState(null,'','#'+next)"));
+});
+
 test('The learning UI does not alter the existing lesson engine or global learner records',()=>{
  const html=load('index.html');
  assert.ok(html.includes('foundation-curriculum-v33.js?v=33'));
- assert.ok(html.includes('foundation-course-v33.js?v=38'));
+ assert.ok(html.includes('foundation-course-v33.js?v=39'));
  assert.ok(html.includes('foundation-course-v34.css?v=34'));
  assert.ok(html.includes('foundation-course-v35.css?v=35'));
  assert.ok(html.includes('foundation-course-v36.css?v=36'));
  assert.ok(html.includes('foundation-course-v37.css?v=37'));
  assert.ok(html.includes('foundation-course-v38.css?v=38'));
- assert.ok(html.includes('foundation-course-v33.js?v=38'));
+ assert.ok(html.includes('foundation-course-v39.css?v=39'));
+ assert.ok(html.includes('foundation-course-v33.js?v=39'));
+ assert.ok(html.includes('foundation-course-v33.js?v=39'));
  assert.ok(load('foundation-course-v33.js').includes('data-f38="start"'));
  assert.ok(!load('foundation-course-v36.css').includes('max-height:405px'));
  assert.match(load('foundation-course-v36.css'),/max-height:none!important/);
