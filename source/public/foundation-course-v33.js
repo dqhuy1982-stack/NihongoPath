@@ -375,6 +375,13 @@ function syncFinishDock(){
  const dock=document.querySelector?.('.v34-workspace-shell .v108-dock');
  if(!dock){removeFinishDock();return;}
  removeFinishDock();
+ // Preserve theme tokens before moving outside the Foundation container.
+ if(typeof getComputedStyle==='function'&&dock.style?.setProperty){
+  const styles=getComputedStyle(dock);
+  for(const key of ['--v33-paper','--v33-ink','--v33-line','--v33-soft']){
+   const value=styles.getPropertyValue(key).trim();if(value)dock.style.setProperty(key,value);
+  }
+ }
  document.body.appendChild(dock);
 }
 function scheduleFinishDock(){
@@ -396,7 +403,7 @@ function refresh(){
 function wrap(content,crumb='Nền tảng'){
  const shell=window.NPHorizonV25?.shell?.('catalog')||'<header class="v25-header"><div class="v25-hero-copy"><h1>Không gian học tập</h1></div></header>';
  return '<div class="v25-wrap v33-foundation" data-learning-hub="v38">'+shell+
- '<nav class="v25-breadcrumb" aria-label="Vị trí học tập"><a href="#learn/overview">Học</a><span aria-hidden="true">›</span><a href="#learn/catalog">Khóa học</a><span aria-hidden="true">›</span><a href="#course/foundation">Nền tảng</a>'+(crumb==='Nền tảng'?'':'<span aria-hidden="true">›</span><span aria-current="page">'+clean(crumb)+'</span>')+'</nav>'+
+ '<nav class="v25-breadcrumb" aria-label="Vị trí học tập"><a href="#course/foundation">Nền tảng</a>'+(crumb==='Nền tảng'?'':'<span aria-hidden="true">›</span><span aria-current="page">'+clean(crumb)+'</span>')+'</nav>'+
  content+'<footer class="v25-version">Luyện tập mẫu · Tiến độ lưu trên thiết bị</footer></div>';
 }
 function tag(txt){return '<span class="v33-tag">'+clean(txt)+'</span>'}
