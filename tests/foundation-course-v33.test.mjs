@@ -64,7 +64,7 @@ test('Page navigation is consistent and practice categories have working answers
  for(const route of ['course/foundation','learn/foundation/hiragana/a/learn','learn/foundation/katakana/k/flash','learn/foundation/dakuten/g/reverse','learn/foundation/yoon/ky/match','learn/foundation/small/pause/vocab-ja-vi','learn/foundation/mixed/mixed/mix']){
    location.hash='#'+route;const html=ui.page(route);
    assert.ok(html.includes('HORIZON · Learning Hub'),route);
-   assert.ok(html.includes('HORIZON · Foundation Studio v39'),route);
+   assert.ok(html.includes('Luyện tập mẫu · Tiến độ lưu trên thiết bị'),route);
    if(route!=='course/foundation')assert.ok(html.includes('v34-stagebar'));
  }
 });
@@ -143,7 +143,7 @@ test('Kana board is one-click audio surface, not nested play buttons',()=>{
  assert.equal((markup.match(/data-f33="pronounce"/g)||[]).length,46);
  assert.equal((markup.match(/v35-kana-button/g)||[]).length,46);
  assert.ok(!markup.includes('v33-audio'));
- assert.match(markup,/HORIZON · Foundation Studio v39/);
+ assert.match(markup,/Luyện tập mẫu · Tiến độ lưu trên thiết bị/);
 });
 test('Foundation exercises expose optional draggable tiles and accessible tap-selection',()=>{
  const h=harness(),route='learn/foundation/hiragana/all/build';h.location.hash='#'+route;
@@ -364,6 +364,21 @@ test('Refresh of deep lesson route triggers learning-hub re-render after scripts
  assert.ok(code.includes("history.replaceState(null,'','#'+next)"));
 });
 
+test('Global UI footer shows unobtrusive v1.00 beside HORIZON tagline',()=>{
+ const app=load('app.js'),hub=load('learning-hub-v25.js');
+ assert.ok(app.includes('Học theo cách của bạn'));
+ assert.ok(app.includes('horizon-ui-version'));
+ assert.ok(app.includes('v1.00'));
+ assert.ok(!hub.includes('HORIZON · Learning Hub v33 · Recorded progress'));
+});
+test('Book index uses a warm connected selected tab and responsive separation',()=>{
+ const css=load('foundation-course-v40.css');
+ assert.match(css,/\.v39-book-tab\.active::after/);
+ assert.match(css,/background:var\(--v33-paper\)/);
+ assert.match(css,/\.v39-book-layout>.v33-pane/);
+ assert.match(css,/@media\(max-width:680px\)/);
+ assert.match(css,/\.v39-book-tab\.active::after\{display:none\}/);
+});
 test('The learning UI does not alter the existing lesson engine or global learner records',()=>{
  const html=load('index.html');
  assert.ok(html.includes('foundation-curriculum-v33.js?v=33'));
@@ -374,6 +389,9 @@ test('The learning UI does not alter the existing lesson engine or global learne
  assert.ok(html.includes('foundation-course-v37.css?v=37'));
  assert.ok(html.includes('foundation-course-v38.css?v=38'));
  assert.ok(html.includes('foundation-course-v39.css?v=39'));
+ assert.ok(html.includes('foundation-course-v40.css?v=100'));
+ assert.ok(html.includes('app.js?v=100'));
+ assert.ok(html.includes('learning-hub-v25.js?v=100'));
  assert.ok(html.includes('foundation-course-v33.js?v=39'));
  assert.ok(html.includes('foundation-course-v33.js?v=39'));
  assert.ok(load('foundation-course-v33.js').includes('data-f38="start"'));
