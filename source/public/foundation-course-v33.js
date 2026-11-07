@@ -164,8 +164,16 @@ function ensurePlay(config){
   const targets=chooseTargets(kind==='listen'?list.filter(x=>x.stage!=='small'&&Array.from(x.glyph).length<=3):list,Math.min(10,list.length));
   const allPool=kind.startsWith('vocab')||config.id==='small'?contextual(config):DATA.take(config.id,'all',config.script);
   const valid=targets.filter(x=>allPool.filter(p=>p.id!==x.id&&isWord(p)===isWord(x)).length>=2);
-  const qMode=kind==='review'?'mix':kind;
-  play={key,kind,questions:valid.map(x=>questionFor(x,qMode,allPool)),index:0,correct:0,answered:0,choice:null,finished:valid.length===0,startedAt:Date.now(),roundMs:[],slow:0,errors:0};
+  const formats=shuffle(['quiz','truefalse','reverse','listen']);
+  const questions=valid.map((x,i)=>{
+   if(kind!=='mix'&&kind!=='review')return questionFor(x,kind,allPool);
+   const same=allPool.filter(z=>z.script===x.script&&z.read===x.read&&z.id!==x.id);
+   let mode=formats[i%formats.length];
+   if((mode==='reverse'||mode==='listen')&&same.length)mode='quiz';
+   if(mode==='listen'&&x.stage==='small')mode='truefalse';
+   return questionFor(x,mode,allPool);
+  });
+  play={key,kind,questions,index:0,correct:0,answered:0,choice:null,finished:valid.length===0,startedAt:Date.now(),roundMs:[],slow:0,errors:0};
  }
  return play;
 }
