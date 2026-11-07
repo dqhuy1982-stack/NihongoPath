@@ -771,3 +771,22 @@ test('Completion dialog has exactly two result-aware actions, no footer Close, a
  h.click('summary-close');
  assert.equal(session.round.summaryOpen,false);
 });
+
+test('v1.10 finish dock is portaled out of scrolling stages and cleaned up on navigation',()=>{
+ const code=load('foundation-course-v33.js'),css=load('foundation-course-v107.css');
+ assert.ok(code.includes('function syncFinishDock()'));
+ assert.ok(code.includes('document.body.appendChild(dock)'));
+ assert.ok(code.includes('function removeFinishDock()'));
+ assert.ok(code.includes('stage.innerHTML=workspace(current())'));
+ assert.ok(code.includes('scheduleFinishDock()'));
+ assert.ok(css.includes('body > .v108-dock'));
+ assert.ok(css.includes('body:has([data-v107-dialog]) > .v108-dock'));
+ assert.ok(css.includes('scrollbar-width:none!important'));
+ assert.ok(css.includes('overscroll-behavior:contain'));
+ const h=harness(),route='learn/foundation/hiragana/all/match';h.location.hash='#'+route;h.ui.page(route);
+ const session=h.ui.session();
+ for(const item of session.cards){h.click('match',item.id,'left');h.click('match',item.id,'right');}
+ h.click('summary-close');
+ const markup=h.ui.page(route);
+ assert.match(markup,/v108-dock/);
+});
