@@ -602,6 +602,86 @@ test('v1.06 incorrect built word can be retried without resetting the whole less
  assert.equal(s.index,0);
 });
 
+
+test('v1.07 matching completes only once and distinguishes first-try pairs from completion',()=>{
+ const h=harness(),r='learn/foundation/hiragana/all/match';h.location.hash='#'+r;h.ui.page(r);
+ const s=h.ui.session(),a=s.cards[0],b=s.cards[1];
+ h.click('match',a.id,'left');h.click('match',b.id,'right');
+ assert.equal(s.round.attempts.length,1);
+ assert.equal(s.round.wrong,1);
+ for(const item of s.cards){h.click('match',item.id,'left');h.click('match',item.id,'right');}
+ assert.equal(s.round.finalized,true);
+ assert.equal(s.round.summaryOpen,true);
+ const summary=s.round.summary;
+ assert.equal(summary.completedPairs,6);
+ assert.equal(summary.wrongAttempts,1);
+ assert.equal(summary.firstTryPairs,4);
+ assert.equal(summary.firstTryAccuracy,67);
+ assert.equal(summary.attemptAccuracy,86);
+ assert.equal(summary.attempts.length,7);
+ assert.equal(summary.reviewIds.length,2);
+ assert.match(h.ui.page(r),/TỔNG KẾT VÁN HỌC/);
+ assert.match(h.ui.page(r),/Luyện lại cặp cần ôn/);
+ h.click('summary-close');
+ assert.equal(s.round.summaryOpen,false);
+ assert.match(h.ui.page(r),/Xem lại kết quả/);
+ h.click('summary-open');
+ assert.equal(s.round.summaryOpen,true);
+ assert.equal(s.round.summary.roundId,summary.roundId);
+});
+test('v1.07 review only involves pairs that were touched in a wrong match',()=>{
+ const h=harness(),r='learn/foundation/hiragana/all/match';h.location.hash='#'+r;h.ui.page(r);
+ const s=h.ui.session(),a=s.cards[0],b=s.cards[1];
+ h.click('match',a.id,'left');h.click('match',b.id,'right');
+ for(const item of s.cards){h.click('match',item.id,'left');h.click('match',item.id,'right');}
+ h.click('summary-review');
+ const current=h.ui.session();
+ assert.notEqual(current,s);
+ assert.deepEqual([...current.cards.map(x=>x.id)].sort(),[a.id,b.id].sort());
+ assert.equal(current.round.finalized,false);
+ assert.equal(current.round.attempts.length,0);
+ assert.equal(current.round.summaryOpen,false);
+});
+test('v1.07 clean round has no fake weakness and offers a new round',()=>{
+ const h=harness(),r='learn/foundation/hiragana/all/match';h.location.hash='#'+r;h.ui.page(r);
+ const s=h.ui.session();
+ for(const item of s.cards){h.click('match',item.id,'left');h.click('match',item.id,'right');}
+ const summary=s.round.summary;
+ assert.equal(summary.firstTryPairs,6);
+ assert.equal(summary.wrongAttempts,0);
+ assert.equal(summary.reviewIds.length,0);
+ assert.match(h.ui.page(r),/Một ván thật gọn/);
+ assert.doesNotMatch(h.ui.page(r),/data-f33="summary-review"/);
+ h.click('summary-new');
+ const next=h.ui.session();
+ assert.notEqual(next,s);
+ assert.equal(next.round.finalized,false);
+ assert.equal(next.matched.length,0);
+});
+test('v1.07 listening counts manual prompt replays not automatic answer sound',()=>{
+ const h=harness(),r='learn/foundation/hiragana/all/listen-match';h.location.hash='#'+r;h.ui.page(r);
+ const s=h.ui.session(),first=s.cards[0];
+ h.click('match',first.id,'left');
+ assert.equal(s.round.pairs[first.id].audioReplays,0);
+ h.click('match',first.id,'left');
+ assert.equal(s.round.pairs[first.id].audioReplays,1);
+ for(const item of s.cards){h.click('match',item.id,'left');h.click('match',item.id,'right');}
+ assert.equal(s.round.summary.audioReplays,1);
+ assert.match(h.ui.page(r),/Số lần nghe lại/);
+});
+test('v1.07 duration metrics are derived from attempts and never guessed',()=>{
+ const h=harness(),r='learn/foundation/hiragana/all/match';h.location.hash='#'+r;h.ui.page(r);
+ const s=h.ui.session();
+ for(const item of s.cards){h.click('match',item.id,'left');h.click('match',item.id,'right');}
+ assert.equal(s.round.summary.pairResults.length,6);
+ assert.ok(s.round.summary.pairResults.every(p=>p.pairElapsedMs===null||p.pairElapsedMs>=0));
+ assert.ok(s.round.summary.totalElapsedMs>=0);
+ const ui=h.ui.page(r);
+ assert.match(ui,/Chi tiết từng cặp/);
+ assert.match(ui,/Tổng thời gian/);
+ assert.match(load('foundation-course-v107.css'),/prefers-reduced-motion/);
+});
+
 test('The learning UI does not alter the existing lesson engine or global learner records',()=>{
  const html=load('index.html');
  assert.ok(html.includes('foundation-curriculum-v33.js?v=101'));
