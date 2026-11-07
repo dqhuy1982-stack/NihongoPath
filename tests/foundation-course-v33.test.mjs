@@ -14,9 +14,14 @@ function harness(){
  const ctx={window,document,location,localStorage,render:()=>{renders++},P:()=>({id:profile}),Audio:class{play(){return Promise.resolve()}}};
  runInNewContext(load('foundation-course-v33.js'),ctx);
  const click=(action,value,side)=>{
-   hooks.click({target:{closest:()=>({dataset:{f33:action,value,side}})},preventDefault(){}});
+   const selector=(s)=>{
+     if(action==='start'||action==='cancel')return s==='[data-f38]'?{dataset:{f38:action}}:null;
+     return s==='[data-f33]'?{dataset:{f33:action,value,side}}:null;
+   };
+   hooks.click({target:{closest:selector},preventDefault(){}});
  };
- return {data:window.NPFoundationCurriculum,ui:window.NPFoundationCourse,location,click,setProfile:v=>profile=v,getRenders:()=>renders};
+ const start=()=>click('start');
+ return {data:window.NPFoundationCurriculum,ui:window.NPFoundationCourse,location,click,start,setProfile:v=>profile=v,getRenders:()=>renders};
 }
 test('Foundational syllabus has complete canonical counts and meaningful distinct modules',()=>{
  const {data}=harness();
@@ -59,13 +64,13 @@ test('Page navigation is consistent and practice categories have working answers
  for(const route of ['course/foundation','learn/foundation/hiragana/a/learn','learn/foundation/katakana/k/flash','learn/foundation/dakuten/g/reverse','learn/foundation/yoon/ky/match','learn/foundation/small/pause/vocab-ja-vi','learn/foundation/mixed/mixed/mix']){
    location.hash='#'+route;const html=ui.page(route);
    assert.ok(html.includes('HORIZON · Learning Hub'),route);
-   assert.ok(html.includes('HORIZON · Foundation Studio v37'),route);
+   assert.ok(html.includes('HORIZON · Foundation Studio v38'),route);
    if(route!=='course/foundation')assert.ok(html.includes('v34-stagebar'));
  }
 });
 test('Answer immediately shows feedback and records isolated scored attempt, not completion',()=>{
  const h=harness(),r='learn/foundation/hiragana/a/quiz';h.location.hash='#'+r;
- h.ui.page(r);const s=h.ui.session();assert.ok(s.questions.length>=3);
+ h.ui.page(r);h.start();const s=h.ui.session();assert.ok(s.questions.length>=3);
  const q=s.questions[0];h.click('answer',q.correct);
  assert.equal(s.choice,q.correct);
  assert.ok(h.ui.page(r).includes('Chính xác.'));
@@ -82,7 +87,7 @@ test('Flashcard self-rating does not change test accuracy or scored study progre
 });
 test('Matching two columns is accessible with buttons, checks answers, and counts wrong choices',()=>{
  const h=harness(),r='learn/foundation/hiragana/k/match';h.location.hash='#'+r;h.ui.page(r);
- const s=h.ui.session();assert.ok(s.cards.length>=3);
+ h.start();const s=h.ui.session();assert.ok(s.cards.length>=3);
  const first=s.cards[0],wrong=s.cards.find(x=>x.id!==first.id);
  h.click('match',first.id,'left');h.click('match',wrong.id,'right');
  assert.equal(s.mistakes,1);
@@ -92,7 +97,7 @@ test('Matching two columns is accessible with buttons, checks answers, and count
 });
 test('Word-builder supports repeated Kana tiles, immediate marking and replay',()=>{
  const h=harness(),route='learn/foundation/small/pause/build';h.location.hash='#'+route;
- const html=h.ui.page(route),s=h.ui.session();assert.ok(html.includes('v33-build-tile'));
+ const html=h.ui.page(route),s=h.ui.session();assert.ok(html.includes('v33-build-tile'));h.start();
  const word=s.cards[0];
  for(const ch of Array.from(word.glyph)){
    const idx=s.tileOrder.findIndex((tile,i)=>tile.glyph===ch&&!s.selected.includes(i));
@@ -138,7 +143,7 @@ test('Kana board is one-click audio surface, not nested play buttons',()=>{
  assert.equal((markup.match(/data-f33="pronounce"/g)||[]).length,46);
  assert.equal((markup.match(/v35-kana-button/g)||[]).length,46);
  assert.ok(!markup.includes('v33-audio'));
- assert.match(markup,/HORIZON · Foundation Studio v37/);
+ assert.match(markup,/HORIZON · Foundation Studio v38/);
 });
 test('Foundation exercises expose optional draggable tiles and accessible tap-selection',()=>{
  const h=harness(),route='learn/foundation/hiragana/all/build';h.location.hash='#'+route;
@@ -181,7 +186,7 @@ test('Audio fallback handles unavailable Japanese voices without fake success',(
 
 test('Slow correct answers are recorded independently of raw correctness',()=>{
  const h=harness(),route='learn/foundation/hiragana/all/quiz';
- h.location.hash='#'+route;h.ui.page(route);
+ h.location.hash='#'+route;h.ui.page(route);h.start();
  const session=h.ui.session(),q=session.questions[0];
  session.startedAt=Date.now()-7600;
  h.click('answer',q.correct);
@@ -198,7 +203,7 @@ test('Slow correct answers are recorded independently of raw correctness',()=>{
 });
 test('Incorrect answer is routed to targeted review and timed feedback',()=>{
  const h=harness(),route='learn/foundation/hiragana/all/quiz';
- h.location.hash='#'+route;h.ui.page(route);
+ h.location.hash='#'+route;h.ui.page(route);h.start();
  const s=h.ui.session(),q=s.questions[0];
  const wrong=q.choices.find(x=>x.id!==q.correct);
  assert.ok(wrong);
@@ -214,7 +219,7 @@ test('Incorrect answer is routed to targeted review and timed feedback',()=>{
 test('New review and listen-match modes remain within the four primary navigation steps',()=>{
  const h=harness(),route='learn/foundation/hiragana/all/listen-match';
  h.location.hash='#'+route;
- const html=h.ui.page(route),s=h.ui.session();
+ const html=h.ui.page(route),s=h.ui.session();h.start();
  assert.equal(s.kind,'listen-match');
  assert.ok(s.cards.length>0);
  assert.ok(html.includes('NGHE & GHÉP'));
@@ -233,7 +238,7 @@ test('New review and listen-match modes remain within the four primary navigatio
 test('Clock is per question and feedback freezes elapsed time until next item',()=>{
  const h=harness(),route='learn/foundation/hiragana/all/quiz';
  h.location.hash='#'+route;
- let html=h.ui.page(route);
+ let html=h.ui.page(route);h.start();
  assert.ok(html.includes('data-f37-timer'));
  const s=h.ui.session(),q=s.questions[0];s.startedAt=Date.now()-5300;
  h.click('answer',q.correct);
@@ -247,14 +252,67 @@ test('Clock is per question and feedback freezes elapsed time until next item',(
  assert.ok(s.startedAt>0);
 });
 
+
+test('Timed practice opens with preflight, no scoring or timer before explicit start',()=>{
+ const h=harness(),route='learn/foundation/hiragana/all/quiz';
+ h.location.hash='#'+route;
+ let html=h.ui.page(route),s=h.ui.session(),q=s.questions[0];
+ assert.equal(s.ready,false);
+ assert.equal(s.startedAt,null);
+ assert.match(html,/role="dialog" aria-modal="true"/);
+ assert.match(html,/data-f38="start"/);
+ assert.match(html,/đúng nhưng chậm|Đúng nhưng chậm/);
+ h.click('answer',q.correct);
+ assert.equal(s.choice,null);
+ assert.equal(Object.keys(h.ui.store().items).length,0);
+ h.start();
+ assert.equal(s.ready,true);
+ assert.ok(s.startedAt>0);
+ html=h.ui.page(route);
+ assert.ok(!html.includes('data-f38="start"'));
+ h.click('answer',q.correct);
+ assert.equal(s.choice,q.correct);
+});
+test('Mixed listening question plays Japanese audio only after start, with manual playback action',()=>{
+ const h=harness(),route='learn/foundation/hiragana/all/mix';
+ h.location.hash='#'+route;
+ h.ui.page(route);const s=h.ui.session();
+ const i=s.questions.findIndex(q=>q.mode==='listen');
+ assert.ok(i>=0);
+ s.index=i;
+ let html=h.ui.page(route);
+ assert.match(html,/data-f38="start"/);
+ assert.match(html,/Phát âm thanh/);
+ h.start();
+ html=h.ui.page(route);
+ assert.match(html,/data-f33="listen-audio"/);
+ const before=s.choice;
+ assert.doesNotThrow(()=>h.click('listen-audio'));
+ assert.equal(s.choice,before);
+ assert.equal(h.ui.store().history.length,0,'listening does not count as an answer');
+});
+test('Mixed test gives specific preflight guidance and does not start timer while reading',()=>{
+ const h=harness(),route='learn/foundation/hiragana/all/mix';
+ h.location.hash='#'+route;const html=h.ui.page(route);
+ assert.match(html,/Kiểm tra tổng hợp/);
+ assert.match(html,/Chữ→Âm, Âm→Chữ, Đúng\/Sai và Nghe→Chữ/);
+ assert.match(html,/Thời gian chỉ bắt đầu sau khi nhấn/);
+ assert.match(html,/5–9 giây/);
+ assert.match(html,/không có thời hạn bắt buộc/);
+ assert.equal(h.ui.session().startedAt,null);
+});
+
 test('The learning UI does not alter the existing lesson engine or global learner records',()=>{
  const html=load('index.html');
  assert.ok(html.includes('foundation-curriculum-v33.js?v=33'));
- assert.ok(html.includes('foundation-course-v33.js?v=37'));
+ assert.ok(html.includes('foundation-course-v33.js?v=38'));
  assert.ok(html.includes('foundation-course-v34.css?v=34'));
  assert.ok(html.includes('foundation-course-v35.css?v=35'));
  assert.ok(html.includes('foundation-course-v36.css?v=36'));
  assert.ok(html.includes('foundation-course-v37.css?v=37'));
+ assert.ok(html.includes('foundation-course-v38.css?v=38'));
+ assert.ok(html.includes('foundation-course-v33.js?v=38'));
+ assert.ok(load('foundation-course-v33.js').includes('data-f38="start"'));
  assert.ok(!load('foundation-course-v36.css').includes('max-height:405px'));
  assert.match(load('foundation-course-v36.css'),/max-height:none!important/);
  const code=load('foundation-course-v33.js');
