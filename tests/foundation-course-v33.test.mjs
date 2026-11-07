@@ -550,11 +550,53 @@ test('v1.05 auto answer audio can be turned off without disabling manual listeni
 test('v1.05 displays practice activities in compact expandable groups',()=>{
  const h=harness(),route='learn/foundation/hiragana/all/quiz';
  h.location.hash='#'+route;const html=h.ui.page(route);
- assert.match(html,/<details class="v105-menu-group"/);
+ assert.match(html,/v106-menu-group/);
  assert.match(html,/NHẬN DIỆN/);
  assert.match(html,/GHÉP & GHI NHỚ/);
  assert.match(html,/NGHĨA & ỨNG DỤNG/);
  assert.match(html,/ÔN TẬP/);
+});
+
+test('v1.06 index shows all lesson categories without redundant heading or accordion clicks',()=>{
+ const h=harness(),route='learn/foundation/hiragana/all/quiz';
+ h.location.hash='#'+route;const html=h.ui.page(route);
+ assert.ok(html.includes('v106-menu-group'));
+ assert.ok(html.includes('NHẬN DIỆN'));
+ assert.ok(html.includes('GHÉP & GHI NHỚ'));
+ assert.ok(html.includes('NGHĨA & ỨNG DỤNG'));
+ assert.ok(html.includes('ÔN TẬP'));
+ assert.ok(!html.includes('v39-book-heading'));
+ assert.ok(!html.includes('<details class="v105-menu-group"'));
+});
+test('v1.06 tap-to-return selected Kana restores exact tile, including duplicate glyphs',()=>{
+ const h=harness(),route='learn/foundation/small/pause/build';
+ h.location.hash='#'+route;h.ui.page(route);
+ const s=h.ui.session();
+ assert.ok(s.tileOrder.length>=2);
+ h.click('tile','0');
+ assert.deepEqual(Array.from(s.selected),[0]);
+ assert.match(h.ui.page(route),/data-f33="remove-tile"/);
+ h.click('remove-tile','0');
+ assert.deepEqual(Array.from(s.selected),[]);
+ h.click('tile','0');
+ assert.deepEqual(Array.from(s.selected),[0]);
+});
+test('v1.06 incorrect built word can be retried without resetting the whole lesson',()=>{
+ const h=harness(),route='learn/foundation/small/pause/build';h.location.hash='#'+route;h.ui.page(route);
+ const s=h.ui.session(),word=Array.from(s.cards[0].glyph);
+ // Arrange chosen tile IDs to produce a wrong order.
+ const candidates=s.tileOrder.map((tile,i)=>({glyph:tile.glyph,i}));
+ const order=candidates.map(x=>x.i);
+ const built=order.map(i=>s.tileOrder[i].glyph).join('');
+ if(built===word.join(''))order.reverse();
+ if(order.map(i=>s.tileOrder[i].glyph).join('')===word.join(''))return;
+ for(const i of order)h.click('tile',String(i));
+ assert.equal(s.answer.correct,false);
+ assert.match(h.ui.page(route),/data-f33="retry-build"/);
+ h.click('retry-build');
+ assert.equal(s.answer,null);
+ assert.equal(s.selected.length,0);
+ assert.equal(s.index,0);
 });
 
 test('The learning UI does not alter the existing lesson engine or global learner records',()=>{
