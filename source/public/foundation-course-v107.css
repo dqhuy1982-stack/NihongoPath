@@ -531,3 +531,77 @@ body:has(.v109-overlay) > .v108-dock{display:none!important}
  .v113-learning-nav .v113-module-select select{max-width:133px}
  .v112-foundation .v113-stagebar .v34-stage-tab{font-size:10px;flex-direction:column}
 }
+
+/* HORIZON Foundation v1.14 — guided learning, not a menu maze.
+   One chapter selector (previous/next), one set of activity tabs. */
+.v112-foundation .v114-orientation{
+ display:grid;grid-template-columns:minmax(115px,1fr) auto minmax(115px,1fr);
+ align-items:center;gap:15px;margin:7px 0 0;padding:12px 18px;
+ border:1px solid var(--v33-line);border-radius:17px 17px 0 0;
+ background:var(--v33-paper);color:var(--v33-ink);
+}
+.v112-foundation .v114-chapters{
+ justify-self:start;display:inline-flex;align-items:center;gap:6px;
+ color:var(--v33-ink);font-size:12px;font-weight:720;
+ text-decoration:none;border-bottom:1px solid transparent;
+ white-space:nowrap;padding:8px 2px;
+}
+.v112-foundation .v114-chapters:hover{border-color:currentColor}
+.v112-foundation .v114-chapter-switch{
+ display:flex;align-items:center;justify-content:center;gap:11px;min-width:0;
+}
+.v112-foundation .v114-arrow{
+ appearance:none;display:grid;place-items:center;
+ flex:0 0 36px;width:36px;height:36px;
+ border:1px solid var(--v33-line);border-radius:50%;
+ background:var(--v33-paper);color:var(--v33-ink);
+ font-size:25px;line-height:1;cursor:pointer;
+ transition:background-color .15s ease,border-color .15s ease;
+}
+.v112-foundation .v114-arrow:not(:disabled):hover{
+ background:var(--v33-soft);border-color:var(--v33-ink);
+}
+.v112-foundation .v114-arrow:disabled{opacity:.28;cursor:default}
+.v112-foundation .v114-current-chapter{text-align:center;min-width:138px}
+.v112-foundation .v114-current-chapter small{
+ display:block;font-size:9px;letter-spacing:.13em;
+ font-weight:720;color:var(--muted);margin-bottom:2px;
+}
+.v112-foundation .v114-current-chapter strong{
+ display:block;font-size:16px;letter-spacing:-.01em;
+ line-height:1.3;color:var(--v33-ink);font-weight:760;white-space:nowrap;
+}
+.v112-foundation .v114-progress{
+ justify-self:end;white-space:nowrap;font-size:11px;color:var(--muted);
+}
+.v112-foundation .v113-stagebar{
+ grid-template-columns:repeat(4,minmax(0,1fr))!important;
+ border-top:0!important;
+}
+.v112-foundation .v113-stagebar .v34-stage-tab{
+ min-height:49px!important;font-size:12px;
+}
+.v112-foundation .v114-orientation button:focus-visible,
+.v112-foundation .v114-orientation a:focus-visible{
+ outline:2px solid var(--v33-ink);outline-offset:3px;
+}
+@media(max-width:680px){
+ .v112-foundation .v114-orientation{
+  grid-template-columns:auto minmax(0,1fr);gap:8px;
+  padding:10px 11px;border-radius:14px 14px 0 0;
+ }
+ .v112-foundation .v114-chapters{font-size:11px}
+ .v112-foundation .v114-chapter-switch{justify-content:flex-end;gap:5px}
+ .v112-foundation .v114-arrow{width:33px;height:33px;flex-basis:33px}
+ .v112-foundation .v114-current-chapter{min-width:90px}
+ .v112-foundation .v114-current-chapter strong{font-size:13px}
+ .v112-foundation .v114-current-chapter small{font-size:8px}
+ .v112-foundation .v114-progress{display:none}
+ .v112-foundation .v113-stagebar .v34-stage-tab{font-size:11px}
+}
+@media(max-width:375px){
+ .v112-foundation .v114-chapters span{display:none}
+ .v112-foundation .v114-chapters{font-size:22px;width:35px;justify-content:center}
+ .v112-foundation .v114-chapter-switch{justify-content:center}
+ .v112-foundation .v113-stagebar .v34-stage-tab{font-size:10px;flex-direction:column}
+}
