@@ -803,7 +803,7 @@ test('v1.14 finish bar is opaque and buttons remain legible after body portal',(
  const h=harness(),route='learn/foundation/hiragana/all/match';
  h.location.hash='#'+route;const html=h.ui.page(route);
  assert.doesNotMatch(html,/<a href="#learn\/overview">Học<\/a>/);
- assert.match(html,/Nền tảng/);
+ assert.match(html,/Các chặng/);
 });
 
 test('v1.14 learners navigate adjacent chapters without a dropdown menu',()=>{
