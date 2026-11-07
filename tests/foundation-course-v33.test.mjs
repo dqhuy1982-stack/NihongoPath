@@ -790,3 +790,18 @@ test('v1.11 finish dock is portaled out of scrolling stages and cleaned up on na
  const markup=h.ui.page(route);
  assert.match(markup,/v108-dock/);
 });
+
+test('v1.11 finish bar is opaque and buttons remain legible after body portal',()=>{
+ const css=load('foundation-course-v107.css'),code=load('foundation-course-v33.js');
+ assert.match(css,/body > \.v108-dock button\.v33-primary/);
+ assert.match(css,/body > \.v108-dock button\.v33-secondary/);
+ assert.match(css,/background:#fffafa!important/);
+ assert.match(css,/color:#ffffff!important/);
+ assert.match(css,/\.v28-header-shell \.v25-header/);
+ assert.match(code,/document\.body\.appendChild\(dock\)/);
+ assert.match(code,/getComputedStyle/);
+ const h=harness(),route='learn/foundation/hiragana/all/match';
+ h.location.hash='#'+route;const html=h.ui.page(route);
+ assert.doesNotMatch(html,/<a href="#learn\/overview">Học<\/a>/);
+ assert.match(html,/Nền tảng/);
+});
