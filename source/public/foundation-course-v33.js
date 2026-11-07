@@ -350,13 +350,22 @@ document.addEventListener('visibilitychange',()=>{if(play?.round&&!play.round.fi
 function weakList(cfg){const d=store(),rec=d.items;return DATA.take(cfg.id,'all',cfg.script).filter(x=>{const v=rec[x.id],flag=d.matchReview?.[x.id];return !!flag||(v&&(v.latestOutcome!=='correct'||new Date(v.nextAt).getTime()<=Date.now()))}).sort((a,b)=>priority(b)-priority(a)).slice(0,6);}
 function navigate(route){location.hash='#'+route}
 function removeFoundationOverlay(){
- const overlay=document.querySelector?.('body > .v38-overlay');
- if(overlay?.remove)overlay.remove();
+ // Remove both the new scoped portal and any legacy body-level overlay.
+ document.querySelector?.('body > .v120-preflight-host')?.remove?.();
+ document.querySelector?.('body > .v38-overlay')?.remove?.();
 }
 function mountFoundationOverlay(){
  if(typeof document==='undefined'||!document.body?.appendChild)return;
- const overlay=document.querySelector('.v34-workspace-shell .v38-overlay');
- if(overlay&&!document.querySelector('body > .v38-overlay')){document.body.appendChild(overlay);const start=overlay.querySelector?.('[data-f38="start"]');if(start?.focus)start.focus();}
+ const overlay=document.querySelector?.('.v34-workspace-shell .v38-overlay');
+ if(!overlay)return;
+ removeFoundationOverlay();
+ const host=document.createElement('div');
+ // Variables and .v34-studying selectors are normally provided by the course root.
+ host.className='v33-foundation v34-studying v120-preflight-host';
+ host.appendChild(overlay);
+ document.body.appendChild(host);
+ const start=overlay.querySelector?.('[data-f38="start"]');
+ if(start?.focus)start.focus();
 }
 function scheduleFoundationOverlay(){
  if(typeof queueMicrotask==='function')queueMicrotask(mountFoundationOverlay);
@@ -377,7 +386,7 @@ function mountSummaryHost(){
  if(!overlay)return;
  removeSummaryHost();
  const host=document.createElement('div');
- host.className='v34-studying v119-summary-host';
+ host.className='v33-foundation v34-studying v119-summary-host';
  host.appendChild(overlay);
  document.body.appendChild(host);
 }
