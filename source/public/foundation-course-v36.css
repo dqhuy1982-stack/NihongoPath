@@ -78,3 +78,31 @@
 @media(prefers-reduced-motion:reduce){
  .v34-studying .v36-kana-board .v35-kana-button{transition:none}
 }
+
+.v34-studying .v36-feedback-audio{
+ margin-top:9px;min-height:36px;padding:7px 12px;
+ border:1px solid var(--v33-ink);border-radius:8px;
+ background:var(--v33-paper);color:var(--v33-ink);
+ font-size:11px;font-weight:770;cursor:pointer;
+}
+.v34-studying .v36-feedback-audio:hover{background:var(--v33-soft)}
+.v34-studying .v33-examples .v36-example-button{
+ display:flex;flex-direction:column;align-items:center;gap:5px;
+ padding:11px;border:1px solid var(--v33-line);border-radius:10px;
+ background:var(--v33-paper);color:inherit;text-align:center;min-width:0;
+ cursor:pointer;transition:transform .15s ease,box-shadow .15s ease;
+}
+.v34-studying .v33-examples .v36-example-button:hover,
+.v34-studying .v33-examples .v36-example-button:focus-visible{
+ transform:translateY(-2px);border-color:var(--v33-ink);
+ box-shadow:0 5px 14px rgba(98,49,72,.10);
+}
+.v34-studying .v33-examples .v36-example-button b{
+ font-family:'Noto Serif JP',serif;font-size:24px;
+}
+.v34-studying .v33-examples .v36-example-button span{font-size:12px;font-weight:700;color:var(--v33-ink)}
+.v34-studying .v33-examples .v36-example-button small{font-size:10px;color:var(--muted);line-height:1.4}
+@media(max-width:600px){
+ .v34-studying .v33-examples .v36-example-button{flex-direction:row;justify-content:space-between;text-align:left}
+ .v34-studying .v33-examples .v36-example-button small{max-width:55%}
+}
