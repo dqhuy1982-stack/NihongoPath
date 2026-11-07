@@ -206,7 +206,7 @@ function scheduleFoundationOverlay(){
 function refresh(){
  removeFoundationOverlay();
  const stage=document.querySelector('.v34-workspace-shell');
- if(stage){stage.innerHTML=workspace(current());tickClock();scheduleMatchLines();return}
+ if(stage){stage.innerHTML=workspace(current());tickClock();scheduleMatchLines();scheduleBookConnector();return}
  render(false);
 }
 function wrap(content,crumb='Nền tảng'){
@@ -381,6 +381,18 @@ function buildView(cfg,s){
  '<div class="v33-pane-actions">'+(!s.answer?'<button class="v33-secondary" data-f33="undo">Bỏ chữ cuối</button>':'<button class="v33-primary" data-f33="build-next">'+(s.index+1===s.cards.length?'Xem kết quả':'Từ tiếp theo')+' →</button>')+'</div></section>';
 }
 /* Matching connectors use actual button geometry, not a protruding CSS border. */
+function updateBookConnector(){
+ const area=document.querySelector?.('.v39-book-layout'),active=area?.querySelector?.('.v39-book-tab.active'),pane=area?.querySelector?.(':scope > .v33-pane');
+ if(!area||!active||!pane||!active.getBoundingClientRect||!pane.getBoundingClientRect)return;
+ const r=active.getBoundingClientRect(),p=pane.getBoundingClientRect();
+ const can=r.top>=p.top+2&&r.bottom<=p.bottom-2&&p.left>r.right;
+ active.dataset.connected=can?'yes':'no';
+ if(can)active.style.setProperty('--v101-link-width',Math.max(0,p.left-r.right+1)+'px');
+}
+function scheduleBookConnector(){
+ if(typeof requestAnimationFrame==='function')requestAnimationFrame(updateBookConnector);
+ else if(typeof queueMicrotask==='function')queueMicrotask(updateBookConnector);
+}
 function drawMatchLines(){
  const board=document.querySelector?.('[data-match-board]');
  const svg=board?.querySelector?.('.v101-match-lines');
@@ -404,7 +416,7 @@ function scheduleMatchLines(){
  if(typeof requestAnimationFrame==='function')requestAnimationFrame(drawMatchLines);
  else if(typeof queueMicrotask==='function')queueMicrotask(drawMatchLines);
 }
-if(typeof window!=='undefined'&&window.addEventListener)window.addEventListener('resize',scheduleMatchLines);
+if(typeof window!=='undefined'&&window.addEventListener)window.addEventListener('resize',()=>{scheduleMatchLines();scheduleBookConnector();});
 function matchingView(cfg,s){
  if(!s.cards.length)return noData('Nhóm này chưa có đủ cặp duy nhất. Hãy chọn bảng hoặc nhóm khác.');
  const complete=s.matched.length===s.cards.length;
@@ -471,7 +483,7 @@ function workspace(cfg){
  return navigationFor(cfg)+'<div class="v38-task-area"><div class="'+(gameOrPractice?'v39-book-layout':'v33-workspace')+'"'+(intro?' inert':'')+'>'+(gameOrPractice?activityBook(cfg)+body:body+panel)+'</div>'+intro+'</div>';
 }
 function modulePage(cfg){
- scheduleFoundationOverlay();scheduleMatchLines();tickClock();return wrap('<div class="v34-workspace-shell">'+workspace(cfg)+'</div>',cfg.mod.title).replace('class="v25-wrap v33-foundation"','class="v25-wrap v33-foundation v34-studying"');
+ scheduleFoundationOverlay();scheduleMatchLines();scheduleBookConnector();tickClock();return wrap('<div class="v34-workspace-shell">'+workspace(cfg)+'</div>',cfg.mod.title).replace('class="v25-wrap v33-foundation"','class="v25-wrap v33-foundation v34-studying"');
 }
 function page(route){
  if(!route||route==='course/foundation'||route===routePrefix)return indexPage();
@@ -557,7 +569,7 @@ function localSwitch(kind,value){
  if(typeof history!=='undefined'&&history.replaceState)history.replaceState(null,'','#'+next);
  else location.hash='#'+next;
  const stage=document.querySelector('.v34-workspace-shell');
- if(stage){stage.innerHTML=workspace(target);mountFoundationOverlay();tickClock();scheduleMatchLines();const crumb=document.querySelector('.v33-foundation .v25-breadcrumb [aria-current="page"]');if(crumb)crumb.textContent=target.mod.title;}
+ if(stage){stage.innerHTML=workspace(target);mountFoundationOverlay();tickClock();scheduleMatchLines();scheduleBookConnector();const crumb=document.querySelector('.v33-foundation .v25-breadcrumb [aria-current="page"]');if(crumb)crumb.textContent=target.mod.title;}
 }
 /* Optional desktop dragging; touch and keyboard selection remain the primary accessible controls. */
 let dragging=null;
