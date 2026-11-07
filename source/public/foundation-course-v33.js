@@ -388,7 +388,7 @@ function introPopup(cfg,s){
  '<div class="v38-rule-list"><p><strong>Đúng trong ngưỡng:</strong> ghi nhận để ôn lại theo lịch.</p><p><strong>Đúng nhưng chậm:</strong> vẫn được tính đúng, nhưng đưa vào Sổ ôn.</p><p><strong>Trả lời sai:</strong> xem đáp án/giải thích và đưa vào Sổ ôn.</p></div>'+
  '<p class="v38-disclaimer">Thời gian chỉ bắt đầu sau khi nhấn “Bắt đầu”. Không trừ điểm khi nghe lại; không có thời hạn bắt buộc. Ngưỡng là tiêu chí luyện tập thử nghiệm, không phải chuẩn JLPT.</p>'+
  (mode==='mix'||mode==='review'?'<p class="v38-audio-tip">♫ Bài nghe: nhấn nút <strong>Phát âm thanh</strong> để nghe. Trình duyệt có thể chặn tự phát âm thanh.</p>':'')+
- '<div class="v38-dialog-actions"><button class="v33-secondary" type="button" data-f38="cancel">Quay về Học</button><button class="v33-primary" type="button" data-f38="start">Bắt đầu '+(mode==='mix'?'kiểm tra':'luyện tập')+' →</button></div></section></div>';
+ '<div class="v38-dialog-actions"><button class="v33-secondary" type="button" data-f38="cancel">Quay về Học</button><button class="v33-primary" type="button" data-f38="start" autofocus>Bắt đầu '+(mode==='mix'?'kiểm tra':'luyện tập')+' →</button></div></section></div>';
 }
 function workspace(cfg){
  const s=cfg.mode==='learn'?null:ensurePlay(cfg);
@@ -398,7 +398,7 @@ function workspace(cfg){
  const panel='<aside class="v33-side"><h3>Sổ ôn · Gợi ý theo kết quả</h3>'+
  (weak.length?'<div class="v37-weak-list">'+weak.map(x=>'<span lang="ja">'+clean(x.glyph)+' <small>'+clean(store().items[x.id]?.latestOutcome==='incorrect'?'Sai':'Chậm / đến hạn')+'</small></span>').join('')+'</div><button type="button" class="v37-review-link" data-f34="mode" data-value="review">Ôn những chữ này →</button>':'<p>Chưa có chữ sai hoặc chậm cần ôn. Hãy làm một lượt kiểm tra.</p>')+
  '<div class="v33-side-divider"></div><h3>Học thế nào cho hiệu quả?</h3><ol><li>Học và nghe phát âm theo nhóm chữ.</li><li>Luyện nhớ không nhìn gợi ý.</li><li>Trộn chữ ngẫu nhiên để tránh nhớ vị trí.</li><li>Ôn lại cả câu sai và câu đúng chậm.</li></ol><small>Ngưỡng tham khảo: 5 giây cho nhận diện; nghe, ghép từ có thời gian dài hơn.</small></aside>';
- return navigationFor(cfg)+'<div class="v33-workspace v38-task-area">'+body+panel+intro+'</div>';
+ return navigationFor(cfg)+'<div class="v38-task-area"><div class="v33-workspace"'+(intro?' inert':'')+'>'+body+panel+'</div>'+intro+'</div>';
 }
 
 function modulePage(cfg){
@@ -524,6 +524,7 @@ document.addEventListener('change',event=>{
  const node=event.target.closest?.('[data-f34]');if(!node||!document.querySelector('.v34-workspace-shell'))return;
  localSwitch(node.dataset.f34,node.value);
 });
+document.addEventListener('keydown',event=>{if(event.key!=='Escape'||!document.querySelector?.('.v38-dialog'))return;event.preventDefault();localSwitch('tab','learn');});
 document.addEventListener('click',event=>{
  const startAction=event.target.closest?.('[data-f38]');if(startAction&&document.querySelector('.v34-workspace-shell')){event.preventDefault();const cfg=current(),s=ensurePlay(cfg);if(startAction.dataset.f38==='start'){s.ready=true;resetClock(s);refresh();}else if(startAction.dataset.f38==='cancel'){localSwitch('tab','learn');}return;}
  const nav=event.target.closest('[data-f34="tab"],[data-f34="mode"]');if(nav?.dataset?.f34&&document.querySelector('.v34-workspace-shell')){event.preventDefault();localSwitch(nav.dataset.f34,nav.dataset.value);return;}
