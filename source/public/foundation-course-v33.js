@@ -156,6 +156,107 @@ function questionFor(item,mode,pool){
 }
 let play=null;
 const sessionKey=config=>learnerId()+':'+config.id+':'+config.group+':'+config.mode+':'+config.script;
+/* v1.07 round data is isolated from existing item progress and safe for demos. */
+const MATCH_KINDS=['match','listen-match','game','game-listen'];
+const summaryKey=()=>'Horizon.FoundationRoundSummaries.v1.'+learnerId();
+const timeNow=()=>typeof performance!=='undefined'&&performance.now?performance.now():Date.now();
+function roundClock(s){
+ if(!s.round)return 0;
+ const r=s.round,now=timeNow();
+ return Math.max(0,Math.round((r.pausedAt??now)-r.startedTick-r.pausedMs));
+}
+function startRound(s,config){
+ const startedAt=new Date().toISOString();
+ s.round={roundId:startedAt+'-'+Math.random().toString(36).slice(2,10),startedAt,startedTick:timeNow(),pausedAt:null,pausedMs:0,
+  attempts:[],pairs:{},replays:{},wrong:0,finalized:false,summaryOpen:false,summary:null};
+ for(const x of s.cards)s.round.pairs[x.id]={itemId:x.id,script:x.script,glyph:x.glyph,romaji:x.read,firstAt:null,completedAt:null,wrongAttempts:0,audioReplays:0};
+}
+function roundSelect(s,id){
+ const r=s.round,p=r?.pairs[id];if(p&&p.firstAt===null)p.firstAt=roundClock(s);
+}
+function listenRound(s,id){
+ const r=s.round,p=r?.pairs[id];if(p){roundSelect(s,id);p.audioReplays++;r.replays[id]=(r.replays[id]||0)+1}
+}
+function roundAttempt(s,left,right,ok){
+ const r=s.round;if(!r||r.finalized)return;
+ const at=roundClock(s);
+ r.attempts.push({leftId:left,rightId:right,correct:ok,elapsedMsFromRoundStart:at});
+ if(!ok){r.wrong++;for(const id of new Set([left,right]))if(r.pairs[id])r.pairs[id].wrongAttempts++;}
+ else{
+  const p=r.pairs[left];if(p){p.completedAt=at;p.pairElapsedMs=p.firstAt===null?null:Math.max(0,at-p.firstAt);}
+ }
+}
+function saveRound(summary){
+ try{
+  const key=summaryKey(),all=JSON.parse(localStorage.getItem(key)||'[]');
+  const items=Array.isArray(all)?all:[];
+  if(!items.some(x=>x.roundId===summary.roundId)){items.push(summary);localStorage.setItem(key,JSON.stringify(items.slice(-80)));}
+ }catch(e){/* local demo with storage blocked: preserve in-memory round */ }
+}
+function completeRound(s,cfg){
+ if(!s.round||s.round.finalized||s.matched.length!==s.cards.length)return;
+ const r=s.round;r.finalized=true;
+ const list=Object.values(r.pairs);
+ const firstTry=list.filter(p=>p.completedAt!==null&&!p.wrongAttempts).length;
+ const totalMs=roundClock(s);
+ const durations=list.map(p=>p.pairElapsedMs).filter(Number.isFinite);
+ const review=list.filter(p=>p.wrongAttempts>0);
+ const report={schemaVersion:1,roundId:r.roundId,learnerProfileId:learnerId(),mode:s.kind,script:cfg.script,moduleId:cfg.id,
+   startedAt:r.startedAt,endedAt:new Date().toISOString(),totalElapsedMs:totalMs,
+   totalPairs:list.length,completedPairs:s.matched.length,wrongAttempts:r.wrong,
+   firstTryPairs:firstTry,firstTryAccuracy:list.length?Math.round(firstTry/list.length*100):0,
+   attemptAccuracy:r.attempts.length?Math.round(s.matched.length/r.attempts.length*100):0,
+   averagePairMs:durations.length===list.length?Math.round(durations.reduce((a,b)=>a+b,0)/durations.length):null,
+   fastestPairMs:durations.length===list.length?Math.min(...durations):null,
+   slowestPairMs:durations.length===list.length?Math.max(...durations):null,
+   audioReplays:list.reduce((n,p)=>n+p.audioReplays,0),attempts:r.attempts.slice(),
+   pairResults:list,reviewIds:review.map(p=>p.itemId)};
+ r.summary=report;r.summaryOpen=true;saveRound(report);
+}
+function formatDuration(ms){return Number.isFinite(ms)?(ms/1000).toLocaleString('vi-VN',{maximumFractionDigits:1})+' giây':'Chưa ghi nhận'}
+function summaryView(s,cfg){
+ const r=s.round,report=r?.summary;
+ if(!report||!r.summaryOpen)return '';
+ const review=report.pairResults.filter(p=>p.wrongAttempts);
+ const cleanRound=report.wrongAttempts===0;
+ const canReview=review.length>0;
+ const heading=cleanRound?'Một ván thật gọn!':'Hoàn thành ván ghép!';
+ const detail=cleanRound?'Bạn đã ghép đúng ngay lần đầu cả '+report.totalPairs+' cặp. Hãy thử một ván mới để củng cố.':
+  'Bạn đã nối đủ '+report.totalPairs+' cặp, trong đó '+report.firstTryPairs+' cặp đúng ngay lần đầu và '+report.wrongAttempts+' lượt ghép chưa đúng.';
+ const metric=(value,label)=>'<div class="v107-metric"><strong>'+clean(value)+'</strong><small>'+clean(label)+'</small></div>';
+ const notes=review.length?'Có '+review.length+' chữ tham gia vào ít nhất một lượt ghép sai. Ôn lại trước khi chơi ván mới.':'Chưa ghi nhận cặp ghép sai trong ván này. Một ván đúng chưa có nghĩa là đã nhớ lâu.';
+ return '<div class="v107-overlay" data-v107-dialog="1"><section class="v107-dialog" role="dialog" aria-modal="true" aria-labelledby="v107-title" tabindex="-1">'+
+ '<div class="v107-header"><span class="v107-star" aria-hidden="true">✦</span><div><p class="v33-eyebrow">TỔNG KẾT VÁN HỌC</p><h3 id="v107-title">'+heading+'</h3><p>'+detail+'</p></div><button type="button" class="v107-close" data-f33="summary-close" aria-label="Đóng tổng kết">×</button></div>'+
+ '<div class="v107-stats">'+metric(report.completedPairs+' / '+report.totalPairs,'Cặp hoàn thành')+metric(report.firstTryPairs+' / '+report.totalPairs,'Đúng ngay lần đầu')+
+ metric(report.wrongAttempts,'Lượt ghép sai')+metric(formatDuration(report.totalElapsedMs),'Tổng thời gian')+'</div>'+
+ '<div class="v107-body"><div class="v107-insight"><h4>✧ Nhận xét sau ván</h4><p>'+notes+'</p><p>Đúng ngay lần đầu: <strong>'+report.firstTryAccuracy+'%</strong> · Đúng theo lượt ghép: <strong>'+report.attemptAccuracy+'%</strong>.</p>'+
+ (['listen-match','game-listen'].includes(s.kind)?'<p>Đã nghe âm theo thao tác: <strong>'+report.audioReplays+' lượt</strong> (không tính phát đáp án tự động).</p>':'')+
+ '<p>Thời gian trung bình theo cặp: '+formatDuration(report.averagePairMs)+'. Đây là luyện tập, không có giới hạn thời gian.</p></div>'+
+ '<div class="v107-review"><h4>'+ (canReview?'Cặp nên ôn lại':'Gợi ý tiếp theo')+'</h4>'+
+ (canReview?'<div class="v107-review-tiles">'+review.map(p=>'<span lang="ja">'+clean(p.glyph)+' <small>'+clean(p.romaji)+' · ghép sai '+p.wrongAttempts+' lượt</small></span>').join('')+'</div>':
+ '<p>Hãy thử thêm một ván với các chữ và thứ tự mới, sau đó ôn lại sau một khoảng nghỉ.</p>')+
+ '<details class="v107-details"><summary>Chi tiết từng cặp · '+report.pairResults.length+'</summary><div>'+report.pairResults.map(p=>'<div><span lang="ja">'+clean(p.glyph)+'</span><span>'+clean(p.romaji)+'</span><small>'+p.wrongAttempts+' lần ghép sai · '+formatDuration(p.pairElapsedMs)+(p.audioReplays?' · nghe '+p.audioReplays+' lần':'')+'</small></div>').join('')+'</div></details></div></div>'+
+ '<div class="v107-actions">'+(canReview?'<button type="button" class="v33-primary" data-f33="summary-review">Luyện lại cặp cần ôn</button>':'')+
+ '<button type="button" class="'+(canReview?'v33-secondary':'v33-primary')+'" data-f33="summary-new">↻ Ván mới</button>'+
+ '<button type="button" class="v33-secondary" data-f33="summary-next">'+(['match','game'].includes(s.kind)?'Chuyển sang Nghe & ghép':'Kiểm tra tổng hợp')+'</button>'+
+ '<button type="button" class="v33-secondary" data-f33="summary-close">Đóng</button></div></section></div>';
+}
+function focusRoundSummary(){
+ if(typeof queueMicrotask==='function')queueMicrotask(()=>{
+  const overlay=document.querySelector?.('[data-v107-dialog]'),dialog=overlay?.querySelector?.('.v107-dialog');
+  if(dialog&&dialog.focus)try{dialog.focus()}catch(e){}
+ });
+}
+function roundReview(s,cfg){
+ const ids=new Set(s.round?.summary?.reviewIds||[]);
+ const pool=s.cards.filter(x=>ids.has(x.id));
+ if(!pool.length)return false;
+ const selected=shuffle(pool);
+ play={...s,key:s.key,cards:selected,left:shuffle(selected),right:shuffle(selected),leftId:null,rightId:null,
+   matched:[],mistakes:0,answered:0,lastMatched:null,wrongPair:null,feedback:'',finished:false,round:null};
+ startRound(play,cfg);return true;
+}
+
 function ensurePlay(config){
  const key=sessionKey(config);if(play?.key===key)return play;
  const kind=config.mode;
@@ -176,6 +277,7 @@ function ensurePlay(config){
    cards=shuffle([...hira,...kata,...chooseTargets(distinct.filter(x=>!used.has(x.id)),size-hira.length-kata.length)]);
   }else cards=chooseTargets(distinct,size);
   play={key,kind,cards,left:shuffle(cards),right:shuffle(cards),leftId:null,rightId:null,matched:[],mistakes:0,answered:0,feedback:'',finished:cards.length===0,startedAt:null,ready:true};
+  startRound(play,config);
  }else if(kind==='flash'){
   play={key,kind,cards:shuffle(list),index:0,flipped:false,remembered:0,needsReview:0};
  }else{
@@ -484,7 +586,7 @@ function matchingView(cfg,s){
  '<div class="v105-match-board" data-match-board="1"><div class="v105-match-header"><strong>'+(listening?'NGHE ÂM':'KANA')+'</strong><strong>'+(listening?'KANA':'ROMAJI')+'</strong></div>'+rows+'<svg class="v101-match-lines" aria-hidden="true" preserveAspectRatio="none"></svg></div>'+
  '<p class="v105-match-feedback" aria-live="polite">'+clean(s.feedback||'Chọn một ô ở mỗi bên để ghép cặp.')+'</p>'+
  (s.lastMatched?insightPanel(s.cards.find(x=>x.id===s.lastMatched),cfg):'')+
- (complete?'<div class="v33-pane-actions"><button type="button" data-f33="restart" class="v33-primary">Chơi ván mới →</button></div>':'')+
+ (complete?'<div class="v33-pane-actions"><button type="button" data-f33="summary-open" class="v33-primary">Xem lại kết quả ✦</button><button type="button" data-f33="restart" class="v33-secondary">Ván mới</button></div>':'')+
  '</section>';
 }
 
@@ -555,7 +657,7 @@ function workspace(cfg){
  const panel='<aside class="v33-side"><h3>Sổ ôn · Gợi ý theo kết quả</h3>'+
  (weak.length?'<div class="v37-weak-list">'+weak.map(x=>'<span lang="ja">'+clean(x.glyph)+' <small>'+clean(store().items[x.id]?.latestOutcome==='incorrect'?'Sai':'Chậm / đến hạn')+'</small></span>').join('')+'</div><button type="button" class="v37-review-link" data-f34="mode" data-value="review">Ôn những chữ này →</button>':'<p>Chưa có chữ cần ôn. Hãy thử một lượt kiểm tra.</p>')+
  '<div class="v33-side-divider"></div><p>Trả lời sai được lưu ôn; bài Luyện tập và Game không đánh giá nhanh/chậm.</p></aside>';
- return navigationFor(cfg)+'<div class="v38-task-area"><div class="'+(gameOrPractice?'v39-book-layout':'v33-workspace')+'"'+(intro?' inert':'')+'>'+(gameOrPractice?activityBook(cfg)+body:body+panel)+'</div>'+intro+'</div>';
+ return navigationFor(cfg)+'<div class="v38-task-area"><div class="'+(gameOrPractice?'v39-book-layout':'v33-workspace')+'"'+(intro?' inert':'')+'>'+(gameOrPractice?activityBook(cfg)+body:body+panel)+'</div>'+intro+(s&&MATCH_KINDS.includes(s.kind)?summaryView(s,cfg):'')+'</div>';
 }
 function modulePage(cfg){
  scheduleFoundationOverlay();scheduleMatchLines();tickClock();if(typeof queueMicrotask==='function')queueMicrotask(()=>restoreBookViewport());return wrap('<div class="v34-workspace-shell">'+workspace(cfg)+'</div>',cfg.mod.title).replace('class="v25-wrap v33-foundation"','class="v25-wrap v33-foundation v34-studying"');
