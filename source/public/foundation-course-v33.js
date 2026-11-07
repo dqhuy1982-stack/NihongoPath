@@ -141,7 +141,7 @@ function navigationFor(cfg){
 function learnView(cfg){
  const deck=tokens(cfg);
  const s=countStats(deck),examples=cfg.id==='small'?DATA.smallSamples.find(x=>x.id===cfg.group):null;
- const grid=deck.map(x=>'<div class="v33-glyph-card"><span lang="ja">'+clean(x.glyph)+'</span><strong>'+clean(x.read)+'</strong>'+(isWord(x)?'<small>'+clean(x.vi)+'</small>':'')+'</div>').join('');
+ const grid=deck.map(x=>'<div class="v33-glyph-card"><span lang="ja">'+clean(x.glyph)+'</span><strong>'+clean(x.read)+'</strong>'+(isWord(x)?'<small>'+clean(x.vi)+'</small>':'')+(x.stage==='basic'&&x.glyph.length===1?'<button class="v33-audio" data-f33="audio" data-value="'+clean(x.read)+'" aria-label="Nghe âm '+clean(x.read)+'">◖)) Nghe</button>':'')+'</div>').join('');
  const selected=deck[0];
  const exampleMarkup=examples?'<div class="v33-examples">'+examples.examples.map(([glyph,read,meaning])=>'<div><b lang="ja">'+clean(glyph)+'</b><span>'+clean(read)+'</span><small>'+clean(meaning)+'</small></div>').join('')+'</div>':'';
  const note=cfg.id==='small'?'Chữ nhỏ và dấu ー được học trong từ hoặc cụm âm; không yêu cầu đọc một chữ nhỏ như âm độc lập.':selected?.note;
@@ -197,7 +197,9 @@ function page(route){
 }
 function perform(el){
  const cfg=current(),op=el.dataset.f33,value=el.dataset.value,side=el.dataset.side;
- if(!cfg.mod||cfg.mode==='learn')return;
+ if(!cfg.mod)return;
+ if(op==='audio'&&cfg.mode==='learn'&&/^(?:a|i|u|e|o|ka|ki|ku|ke|ko|sa|shi|su|se|so|ta|chi|tsu|te|to|na|ni|nu|ne|no|ha|hi|fu|he|ho|ma|mi|mu|me|mo|ya|yu|yo|ra|ri|ru|re|ro|wa|wo|n)$/.test(value||'')){try{const audio=new Audio('assets/kana-audio/'+value+'.mp3');audio.play().catch(()=>{});}catch(e){}return;}
+ if(cfg.mode==='learn')return;
  const s=ensurePlay(cfg);
  if(op==='flip'){s.flipped=!s.flipped;refresh();return}
  if(op==='rate'&&s.kind==='flash'&&s.flipped){
