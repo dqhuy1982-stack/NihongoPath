@@ -119,7 +119,7 @@ test('Compact course presents 46 Hiragana together, with audio and four action t
  assert.ok(html.includes('v35-kana-guide'));
  assert.ok(!html.includes('v33-audio'));
  assert.ok(html.includes('aria-label="Nghe '));
- assert.equal((html.match(/class="v34-stage-tab /g)||[]).length,5);
+ assert.equal((html.match(/class="v34-stage-tab /g)||[]).length,4);
  assert.ok(!html.includes('v33-row-chip'));
  assert.ok(html.includes('data-f34="module"'));
 });
@@ -327,9 +327,9 @@ test('Only final examination shows mastery guidance; untimed review opens immedi
  const html=h.ui.page(mixed);
  for(const phrase of ['tạm đạt','cần ôn','chưa vững','đã nhớ'])assert.ok(html.includes(phrase),phrase);
 });
-test('Five learning destinations include Game and book-style exercise navigation',()=>{
+test('Four learning destinations keep each matching activity only in Practice',()=>{
  const h=harness();
- for(const mode of ['quiz','reverse','match','build','game','game-build','game-listen']){
+ for(const mode of ['quiz','reverse','match','listen-match','build']){
   const route='learn/foundation/hiragana/all/'+mode;
   h.location.hash='#'+route;
   const html=h.ui.page(route);
@@ -337,11 +337,15 @@ test('Five learning destinations include Game and book-style exercise navigation
   assert.match(html,/v39-book-nav/);
   assert.ok(!html.includes('Dạng luyện <select'));
   assert.ok(!html.includes('v38-overlay'));
+  assert.ok(!html.includes('data-value="game"'));
+  assert.ok(!html.includes('data-value="game-build"'));
+  assert.ok(!html.includes('data-value="game-listen"'));
+  assert.equal((html.match(/class="v34-stage-tab /g)||[]).length,4);
  }
- const r='learn/foundation/hiragana/all/game';
- h.location.hash='#'+r;const html=h.ui.page(r);
- assert.ok(html.includes('GAME · GHÉP CẶP'));
- assert.equal((html.match(/class="v34-stage-tab /g)||[]).length,5);
+ for(const [legacy,target] of [['game','Ghép Kana với Romaji'],['game-build','Xếp Kana'],['game-listen','Nghe và ghép đúng chữ']]){
+  const route='learn/foundation/hiragana/all/'+legacy;h.location.hash='#'+route;
+  assert.match(h.ui.page(route),new RegExp(target));
+ }
 });
 test('Only formal mixed exam opens guidance and clock',()=>{
  const h=harness(),route='learn/foundation/hiragana/all/mix';
@@ -626,7 +630,7 @@ test('v1.07 matching completes only once and distinguishes first-try pairs from 
  assert.ok(h.ui.store().matchReview[b.id]);
  assert.equal(h.ui.store().items[b.id]?.errorCount??0,0,'partner receives review flag without being scored as an incorrect independent response');
  assert.match(h.ui.page(r),/TỔNG KẾT LƯỢT LUYỆN/);
- assert.match(h.ui.page(r),/Luyện lại cặp cần ôn/);
+ assert.match(h.ui.page(r),/Ôn lại cặp cần nhớ/);
  h.click('summary-close');
  assert.equal(s.round.summaryOpen,false);
  assert.match(h.ui.page(r),/Xem kết quả/);
@@ -723,4 +727,22 @@ test('Completion polish retains visible post-round controls and accessible feedb
  assert.match(code,/matchingSound\(false\)/);
  assert.match(styles,/v108-shake/);
  assert.match(styles,/prefers-reduced-motion:reduce/);
+});
+
+test('Completion dialog has exactly two result-aware actions, no footer Close, and animated dismissal',()=>{
+ const h=harness(),r='learn/foundation/hiragana/all/match';h.location.hash='#'+r;h.ui.page(r);
+ const session=h.ui.session();
+ for(const item of session.cards){h.click('match',item.id,'left');h.click('match',item.id,'right');}
+ const html=h.ui.page(r);
+ assert.match(html,/v109-dialog/);
+ assert.match(html,/v109-medal-art/);
+ assert.match(html,/v109-details/);
+ assert.match(html,/data-f33="summary-new"/);
+ assert.match(html,/data-f33="summary-next"/);
+ assert.doesNotMatch(html,/data-f33="summary-review"/);
+ assert.doesNotMatch(html,/<button[^>]+data-f33="summary-close">Đóng<\/button>/);
+ assert.match(load('foundation-course-v107.css'),/v109-dialog-out/);
+ assert.match(load('foundation-course-v33.js'),/event.target===backdrop/);
+ h.click('summary-close');
+ assert.equal(session.round.summaryOpen,false);
 });
