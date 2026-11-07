@@ -8,7 +8,7 @@ const routePrefix='learn/foundation',base='#'+routePrefix;
 const modes=[
  ['learn','Học','book-open'],['flash','Flashcard','layers'],['listen','Nghe → chữ','volume-2'],['truefalse','Đúng / Sai','check-circle'],['quiz','Chữ → âm','target'],
  ['reverse','Âm → chữ','arrow-left-right'],['match','Ghép cặp','grid-2x2'],['build','Xếp chữ','puzzle'],
- ['vocab-ja-vi','Nhật → Việt','languages'],['vocab-vi-ja','Việt → Nhật','languages'],['listen-match','Nghe & ghép','headphones'],['review','Ôn chữ yếu','refresh-cw'],['game','Ghép cặp vui','gamepad-2'],['game-build','Ghép từ','puzzle'],['game-listen','Nghe & nối','headphones'],['mix','Kiểm tra tổng hợp','check-circle-2']
+ ['vocab-ja-vi','Nhật → Việt','languages'],['vocab-vi-ja','Việt → Nhật','languages'],['missing','Điền Kana còn thiếu','puzzle'],['listen-match','Nghe & ghép','headphones'],['review','Ôn chữ yếu','refresh-cw'],['game','Ghép cặp vui','gamepad-2'],['game-build','Ghép từ','puzzle'],['game-listen','Nghe & nối','headphones'],['mix','Kiểm tra tổng hợp','check-circle-2']
 ];
 const modeNames=Object.fromEntries(modes.map(([id,title])=>[id,title]));
 const initialGroup=m=>m.id==='small'?'pause':'all';
@@ -120,6 +120,14 @@ function questionFor(item,mode,pool){
  const sameType=pool.filter(x=>isWord(x)===isVocab);
  const sameScript=isVocab?sameType:sameType.filter(x=>x.script===item.script);
  const ambiguous=!isVocab&&sameScript.filter(x=>x.read===item.read).length>1;
+ if(mode==='missing'){
+  const glyphs=Array.from(item.glyph||''),idx=Math.floor(Math.random()*glyphs.length),answer=glyphs[idx];
+  const symbols=Array.from(new Set(pool.flatMap(x=>Array.from(x.glyph||'')))).filter(x=>x!==answer&&/[\u3041-\u30ff]/u.test(x));
+  const distractors=pick(symbols,3).map((glyph,i)=>({id:'missing-'+i,label:glyph}));
+  return {item,mode,prompt:'Điền Kana còn thiếu để hoàn thành từ có nghĩa.',stimulus:glyphs.map((x,i)=>i===idx?'□':x).join('')+' · '+item.vi,
+   choices:shuffle([{id:item.id,label:answer},...distractors]),correct:item.id,
+   note:item.glyph+' → '+item.read+' · '+item.vi+'. '+(item.note||'')};
+ }
  if(mode==='truefalse'){
   const alternate=pick(sameScript.filter(x=>x.id!==item.id&&x.read!==item.read),1)[0];
   const shown=alternate&&Math.random()<.5?alternate.read:item.read;
@@ -152,7 +160,7 @@ function ensurePlay(config){
  const key=sessionKey(config);if(play?.key===key)return play;
  const kind=config.mode;
  const source=choosePool(config,kind);
- const list=kind==='review'?reviewPool(source):source;
+ const list=kind==='review'?reviewPool(source):kind==='missing'?contextual(config):source;
  if(kind==='build'||kind==='game-build'){
   const cards=chooseTargets(contextual(config),5);
   play={key,kind,cards,index:0,selected:[],tileOrder:cards.length?shuffle(Array.from(cards[0].glyph).map((glyph,i)=>({glyph,i}))):[],answer:null,correct:0,finished:cards.length===0,startedAt:null,ready:true};
@@ -166,7 +174,7 @@ function ensurePlay(config){
   play={key,kind,cards:shuffle(list),index:0,flipped:false,remembered:0,needsReview:0};
  }else{
   const targets=chooseTargets(kind==='listen'?list.filter(x=>x.stage!=='small'&&Array.from(x.glyph).length<=3):list,Math.min(10,list.length));
-  const allPool=kind.startsWith('vocab')||config.id==='small'?contextual(config):DATA.take(config.id,'all',config.script);
+  const allPool=kind.startsWith('vocab')||kind==='missing'||config.id==='small'?contextual(config):DATA.take(config.id,'all',config.script);
   const valid=targets.filter(x=>allPool.filter(p=>p.id!==x.id&&isWord(p)===isWord(x)).length>=2);
   const formats=shuffle(['quiz','truefalse','reverse','listen']);
   const questions=valid.map((x,i)=>{
@@ -340,6 +348,7 @@ function noData(msg){return '<section class="v33-pane"><h3>Chưa đủ dữ li�
 function questionHints(q){
  const item=q.item,rom=String(item.read||'');
  if(q.mode==='listen')return ['Nghe lại và chú ý âm đầu.','Quan sát hình nét và so sánh các đáp án.','Nghe thêm một lần và tự đọc trước khi chọn.'];
+ if(q.mode==='missing')return ['Nhìn nghĩa tiếng Việt rồi nhớ lại cả từ.','Thử đọc các chữ còn lại theo từng nhịp.','Xem lại dạng chữ ở vị trí trống, không chọn theo vị trí đáp án.'];
  if(q.mode.startsWith('vocab'))return ['Đây là từ có nghĩa, không phải chữ rời.','Tìm các Kana bạn đã học trong từ.','Đọc từ chậm theo từng nhịp trước khi chọn nghĩa.'];
  if(q.mode==='truefalse')return ['Quan sát chữ và âm được cho.','Thử đọc chữ không nhìn Romaji.','Đối chiếu cả âm đầu và nguyên âm cuối.'];
  return ['Chữ thuộc nhóm '+(item.group||'Kana')+'.','Cách đọc bắt đầu với '+(rom.slice(0,1)||'một âm')+'…','Hãy xác định âm cuối '+(rom.slice(-1)||'')+' và tự đọc trước khi chọn.'];
@@ -458,7 +467,7 @@ function introPopup(cfg,s){
  (mode==='mix'||mode==='review'?'<p class="v38-audio-tip">♫ Bài nghe: nhấn nút <strong>Phát âm thanh</strong> để nghe. Trình duyệt có thể chặn tự phát âm thanh.</p>':'')+
  '<div class="v38-dialog-actions"><button class="v33-secondary" type="button" data-f38="cancel">Quay về Học</button><button class="v33-primary" type="button" data-f38="start" autofocus>Bắt đầu '+(mode==='mix'?'kiểm tra':'luyện tập')+' →</button></div></section></div>';
 }
-const PRACTICE_MODES=[['quiz','Chữ → âm','あ'],['reverse','Âm → chữ','a'],['listen','Nghe → chữ','♫'],['truefalse','Đúng / Sai','✓'],['match','Ghép chữ & âm','⇄'],['listen-match','Nghe & ghép','◖'],['build','Xếp chữ thành từ','文'],['vocab-ja-vi','Nhật → Việt','日'],['vocab-vi-ja','Việt → Nhật','VI'],['review','Sổ ôn chữ yếu','↻']];
+const PRACTICE_MODES=[['quiz','Chữ → âm','あ'],['reverse','Âm → chữ','a'],['listen','Nghe → chữ','♫'],['truefalse','Đúng / Sai','✓'],['match','Ghép chữ & âm','⇄'],['listen-match','Nghe & ghép','◖'],['build','Xếp chữ thành từ','文'],['missing','Điền chữ còn thiếu','□'],['vocab-ja-vi','Nhật → Việt','日'],['vocab-vi-ja','Việt → Nhật','VI'],['review','Sổ ôn chữ yếu','↻']];
 const GAME_MODES=[['game','Ghép cặp Kana','⇄'],['game-build','Xếp từ vui','文'],['game-listen','Nghe & nối','♫']];
 function activityBook(cfg){
  const isGame=cfg.mode.startsWith('game'),items=(isGame?GAME_MODES:PRACTICE_MODES).filter(([id])=>{
@@ -558,7 +567,7 @@ function localSwitch(kind,value){
   if(!['all','pause','length','vowels'].includes(value))return;
   target.group=value;
  }else if(kind==='mode'){
-  if(!['quiz','reverse','listen','listen-match','review','truefalse','match','build','vocab-ja-vi','vocab-vi-ja','game','game-build','game-listen'].includes(value))return;
+  if(!['quiz','reverse','listen','listen-match','review','truefalse','match','build','vocab-ja-vi','vocab-vi-ja','missing','game','game-build','game-listen'].includes(value))return;
   target.mode=value;
  }else if(kind==='tab'){
   if(!['learn','flash','practice','game','mix'].includes(value))return;
