@@ -605,3 +605,58 @@ body:has(.v109-overlay) > .v108-dock{display:none!important}
  .v112-foundation .v114-chapter-switch{justify-content:center}
  .v112-foundation .v113-stagebar .v34-stage-tab{font-size:10px;flex-direction:column}
 }
+
+/* HORIZON Foundation v1.15 — orientation trail, not another navigation menu. */
+/* The top app bar retains profile/tools; one location trail lives in the lesson. */
+.shell:has(.v115-foundation) > .topbar .breadcrumb{display:none!important}
+.shell:has(.v115-foundation) > .topbar .top-actions{margin-left:auto}
+.v115-foundation .v115-breadcrumb{
+ margin:3px 0 10px;padding:0 3px;
+ font-size:11px;line-height:1.55;
+ color:var(--muted,#827980);
+}
+.v115-foundation .v115-breadcrumb ol{
+ display:flex;align-items:center;flex-wrap:wrap;
+ gap:0;margin:0;padding:0;list-style:none;
+}
+.v115-foundation .v115-crumb-item{
+ display:inline-flex;align-items:center;gap:10px;min-width:0;
+}
+.v115-foundation .v115-crumb-item:not(:first-child)::before{
+ content:"›";display:inline-block;margin:0 10px 0 2px;
+ font-size:14px;color:color-mix(in srgb,var(--v33-ink,#754b5c) 42%,transparent);
+ font-weight:400;
+}
+.v115-foundation .v115-crumb-item a{
+ display:inline-flex;align-items:center;padding:6px 2px;
+ font-weight:550;color:var(--muted,#827980);
+ text-decoration:none;border-radius:4px;
+ text-underline-offset:4px;
+}
+.v115-foundation .v115-crumb-item a:hover{
+ color:var(--v33-ink,#754b5c);text-decoration:underline;
+}
+.v115-foundation .v115-crumb-item.is-current>span{
+ display:inline-block;max-width:260px;min-width:0;overflow:hidden;
+ text-overflow:ellipsis;white-space:nowrap;
+ font-weight:750;color:var(--v33-ink,#754b5c);
+}
+.v115-foundation .v115-crumb-item a:focus-visible{
+ outline:2px solid var(--v33-ink,#754b5c);outline-offset:2px;
+}
+.v115-foundation .v114-orientation{
+ margin-top:2px!important;
+}
+@media(max-width:680px){
+ .v115-foundation .v115-breadcrumb{margin:2px 0 7px;padding:0 1px;font-size:10.5px}
+ .v115-foundation .v115-crumb-item{gap:4px}
+ .v115-foundation .v115-crumb-item:not(:first-child)::before{
+  margin:0 6px 0 1px;
+ }
+ .v115-foundation .v115-crumb-item.is-current>span{max-width:130px}
+}
+@media(max-width:390px){
+ /* Preserve clickable route ancestry without squeezing the active chapter. */
+ .v115-foundation .v115-crumb-item:nth-child(2){display:none}
+ .v115-foundation .v115-crumb-item.is-current>span{max-width:122px}
+}
