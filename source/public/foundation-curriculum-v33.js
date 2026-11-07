@@ -62,6 +62,24 @@ for(const [group,hir,kata,rom] of blends){
 /* Context decks are real vocabulary. These — unlike isolated kana symbols — can be translated VI <-> JP.
    No audio or handwriting grading is asserted. */
 const words=[
+ ['あい','tình yêu','ai','hira','basic','Từ gồm các nguyên âm đã học.'],
+ ['あお','màu xanh dương','ao','hira','basic','Hai chữ nguyên âm.'],
+ ['いえ','ngôi nhà','ie','hira','basic','Tập đọc hai nguyên âm.'],
+ ['うえ','phía trên','ue','hira','basic','Chỉ vị trí; gồm các nguyên âm.'],
+ ['かお','khuôn mặt','kao','hira','basic','Kết hợp hàng K và nguyên âm.'],
+ ['こえ','giọng nói','koe','hira','basic','Kết hợp hàng K và nguyên âm.'],
+ ['いか','con mực','ika','hira','basic','Một từ chỉ sinh vật.'],
+ ['かき','quả hồng','kaki','hira','basic','Một nghĩa thường gặp của かき.'],
+ ['あし','bàn chân','ashi','hira','basic','し đọc shi.'],
+ ['くつ','đôi giày','kutsu','hira','basic','つ đọc tsu.'],
+ ['つき','mặt trăng','tsuki','hira','basic','つ đọc tsu.'],
+ ['とけい','đồng hồ','tokei','hira','basic','Từ ghép từ các hàng đã gặp.'],
+ ['ココア','ca cao nóng','kokoa','kata','basic','Từ mượn viết bằng Katakana.'],
+ ['カカオ','ca cao (hạt)','kakao','kata','basic','Cách viết Katakana.'],
+ ['イカ','con mực','ika','kata','basic','Tên sinh vật đôi khi viết Katakana.'],
+ ['アイス','kem / đá lạnh','aisu','kata','basic','Katakana thường gặp trên thực đơn.'],
+ ['タコ','con bạch tuộc','tako','kata','basic','Tên sinh vật thường viết Katakana.'],
+ ['テスト','bài kiểm tra','tesuto','kata','basic','Từ mượn viết bằng Katakana.'],
  ['ねこ','con mèo','neko','hira','basic','Ví dụ đơn giản để ghép các chữ đã học.'],
  ['いぬ','con chó','inu','hira','basic','Đọc liền hai chữ, không dừng giữa từ.'],
  ['やま','ngọn núi','yama','hira','basic','Luyện hàng Y và M.'],
@@ -93,9 +111,9 @@ const modules=[
  {id:'mixed',title:'06 · Tổng ôn Kana',subtitle:'Hiragana + Katakana + âm đặc biệt',script:'both',stage:'mixed',groups:[{id:'mixed',title:'Tổng hợp'}],note:'Trộn chữ và dạng bài sau khi đã luyện riêng; kết quả bài kiểm tra chỉ phản ánh đúng lượt làm.'}
 ];
 const smallSamples=[
- {id:'pause',title:'っ / ッ — ngắt âm',examples:[['きて','kite','Hãy đến'],['きって','kitte','Tem thư'],['ベッド','beddo','Giường']]},
- {id:'length',title:'ー — kéo dài nguyên âm',examples:[['コヒ','kohi','Không phải cách viết chuẩn của コーヒー'],['コーヒー','kōhī','Cà phê'],['ケーキ','kēki','Bánh kem']]},
- {id:'vowels',title:'ゃゅょ, ァィゥェォ — chữ nhỏ',examples:[['きや','kiya','Hai nhịp'],['きゃ','kya','Một nhịp âm ghép'],['ファイル','fairu','Tệp tin; フ + ァ thành fa']]}
+ {id:'pause',marks:'っ · ッ',title:'っ / ッ — ngắt âm',examples:[['きて','kite','Hãy đến'],['きって','kitte','Tem thư'],['ベッド','beddo','Giường']]},
+ {id:'length',marks:'ー',title:'ー — kéo dài nguyên âm',examples:[['コヒ','kohi','Không phải cách viết chuẩn của コーヒー'],['コーヒー','kōhī','Cà phê'],['ケーキ','kēki','Bánh kem']]},
+ {id:'vowels',marks:'ぁ ぃ ぅ ぇ ぉ · ァ ィ ゥ ェ ォ · ゃ ゅ ょ · ャ ュ ョ',title:'ゃゅょ, ァィゥェォ — chữ nhỏ',examples:[['きや','kiya','Hai nhịp'],['きゃ','kya','Một nhịp âm ghép'],['ファイル','fairu','Tệp tin; フ + ァ thành fa']]}
 ];
 const byId=Object.fromEntries(modules.map(m=>[m.id,m]));
 const take=(id,group='all',script='both')=>{
