@@ -158,7 +158,9 @@ function ensurePlay(config){
   play={key,kind,cards,index:0,selected:[],tileOrder:cards.length?shuffle(Array.from(cards[0].glyph).map((glyph,i)=>({glyph,i}))):[],answer:null,correct:0,finished:cards.length===0,startedAt:null,ready:true};
  }else if(['match','listen-match','game','game-listen'].includes(kind)){
   const permitted=['listen-match','game-listen'].includes(kind)?list.filter(x=>x.stage!=='small'&&Array.from(x.glyph).length<=3):list;
-  const cards=chooseTargets((['listen-match','game-listen','game'].includes(kind)&&config.script==='both'&&config.mod.script==='both')?permitted.filter(x=>x.script==='hira'):permitted,Math.min(6,permitted.length));
+  const base=(['listen-match','game-listen','game'].includes(kind)&&config.script==='both'&&config.mod.script==='both')?permitted.filter(x=>x.script==='hira'):permitted;
+  const distinct=kind==='game'?base.filter((x,i)=>base.findIndex(y=>y.read===x.read)===i):base;
+  const cards=chooseTargets(distinct,Math.min(6,distinct.length));
   play={key,kind,cards,left:shuffle(cards),right:shuffle(cards),leftId:null,rightId:null,matched:[],mistakes:0,answered:0,feedback:'',finished:cards.length===0,startedAt:null,ready:true};
  }else if(kind==='flash'){
   play={key,kind,cards:shuffle(list),index:0,flipped:false,remembered:0,needsReview:0};
@@ -195,7 +197,7 @@ function removeFoundationOverlay(){
 function mountFoundationOverlay(){
  if(typeof document==='undefined'||!document.body?.appendChild)return;
  const overlay=document.querySelector('.v34-workspace-shell .v38-overlay');
- if(overlay&&!document.querySelector('body > .v38-overlay'))document.body.appendChild(overlay);
+ if(overlay&&!document.querySelector('body > .v38-overlay')){document.body.appendChild(overlay);const start=overlay.querySelector?.('[data-f38="start"]');if(start?.focus)start.focus();}
 }
 function scheduleFoundationOverlay(){
  if(typeof queueMicrotask==='function')queueMicrotask(mountFoundationOverlay);
@@ -250,7 +252,7 @@ function navigationFor(cfg){
  '<div class="v34-options">'+(m.script==='both'?'<label>Bảng chữ <select data-f34="script" aria-label="Chọn bảng chữ">'+[['both','Cả hai'],['hira','Hiragana'],['kata','Katakana']].map(([id,t])=>'<option value="'+id+'" '+(cfg.script===id?'selected':'')+'>'+t+'</option>').join('')+'</select></label>':'')+
  
  (cfg.id==='small'&&group==='learn'?'<label>Chủ đề <select data-f34="small" aria-label="Chọn chủ đề chữ nhỏ">'+[['all','Tất cả'],['pause','っ / ッ'],['length','Âm dài ー'],['vowels','Nguyên âm nhỏ']].map(([id,t])=>'<option value="'+id+'" '+(cfg.group===id?'selected':'')+'>'+t+'</option>').join('')+'</select></label>':'')+
- (toReview&&group!=='practice'&&group!=='game'?'<button type="button" data-f34="mode" data-value="review" class="v37-review-chip">↻ Sổ ôn · '+toReview+' mẫu</button>':'')+'<span class="v34-hint">'+(group==='learn'?'46 chữ hiển thị cùng nhau, nhấn loa để nghe.':group==='flash'?'Nhớ trước, lật sau.':group==='mix'?'Bài kiểm tra có hướng dẫn và tính giờ từng câu.':group==='game'?'Học mà chơi · không tính giờ.':'Chọn bài từ mục lục bên trái · không tính giờ.')+'</span></div>';
+ (toReview&&group!=='practice'&&group!=='game'?'<button type="button" data-f34="mode" data-value="review" class="v37-review-chip">↻ Sổ ôn · '+toReview+' mẫu</button>':'')+'<span class="v34-hint">'+(group==='learn'?'Chạm vào ô chữ để nghe phát âm.':group==='flash'?'Nhớ trước, lật sau.':group==='mix'?'Bài kiểm tra có hướng dẫn và tính giờ từng câu.':group==='game'?'Học mà chơi · không tính giờ.':'Chọn bài từ mục lục bên trái · không tính giờ.')+'</span></div>';
 }
 function coachSeen(){try{return localStorage.getItem('Horizon.KanaTapGuide.v1.'+learnerId())==='yes'}catch{return false}}
 function dismissCoach(){try{localStorage.setItem('Horizon.KanaTapGuide.v1.'+learnerId(),'yes')}catch(e){}const tip=document.querySelector('.v35-kana-guide');if(tip?.remove)tip.remove();const first=document.querySelector('.v35-first-kana');if(first?.classList?.remove)first.classList.remove('v35-first-kana')}
@@ -338,7 +340,7 @@ function noData(msg){return '<section class="v33-pane"><h3>Chưa đủ dữ li�
 function quizView(cfg,s){
  if(s.finished||s.index>=s.questions.length)return summaryView(cfg,s);
  const q=s.questions[s.index];
- return '<section class="v33-pane"><div class="v33-pane-head"><div><p class="v33-eyebrow">KIỂM TRA · '+clean(modeNames[cfg.mode])+'</p><h3>Nhớ lại không nhìn gợi ý</h3><p>'+clean(q.prompt)+'</p></div><div class="v37-head-meta">'+tag('Câu '+(s.index+1)+' / '+s.questions.length)+(cfg.mode==='mix'?clock(s,!!s.choice):'')+'</div></div>'+
+ return '<section class="v33-pane"><div class="v33-pane-head"><div><p class="v33-eyebrow">'+(cfg.mode==='mix'?'KIỂM TRA TỔNG HỢP':'BÀI LUYỆN')+' · '+clean(modeNames[cfg.mode])+'</p><h3>Nhớ lại không nhìn gợi ý</h3><p>'+clean(q.prompt)+'</p></div><div class="v37-head-meta">'+tag('Câu '+(s.index+1)+' / '+s.questions.length)+(cfg.mode==='mix'?clock(s,!!s.choice):'')+'</div></div>'+
  (q.mode==='listen'?'<div class="v35-listen-panel"><p>Nghe và chọn chữ. Có thể nghe lại nhiều lần.</p><button class="v35-listen-trigger" data-f33="listen-audio" aria-label="Nghe phát âm Kana"><span aria-hidden="true">♫</span> Phát âm thanh</button></div>':'<div class="v33-question-glyph" lang="'+(q.mode.startsWith('vocab')&&q.mode==='vocab-vi-ja'?'vi':'ja')+'">'+clean(q.stimulus)+'</div>')+
  '<p class="v36-audio-status" role="status" aria-live="polite" hidden></p><div class="v33-answer-grid">'+q.choices.map(opt=>'<button class="v33-answer '+(s.choice&&opt.id===q.correct?'correct':'')+' '+(s.choice===opt.id&&s.choice!==q.correct?'wrong':'')+'" data-f33="answer" data-value="'+clean(opt.id)+'" '+(s.choice?'disabled':'')+'>'+clean(opt.label)+'</button>').join('')+'</div>'+
  (s.choice?'<div class="v33-feedback '+(s.choice===q.correct?'positive':'negative')+'" role="status"><strong>'+(s.choice===q.correct?(s.grade?.slow?'Đúng nhưng cần luyện phản xạ.':'Chính xác.'):'Chưa đúng. Đáp án: '+clean(q.choices.find(x=>x.id===q.correct)?.label))+'</strong>'+(cfg.mode==='mix'?'<small class="v37-answer-speed">'+timeLabel(s.lastMs)+' · '+(s.grade?.outcome==='incorrect'?'Đã lưu câu sai vào sổ ôn':s.grade?.slow?'Đã lưu vào sổ ôn vì chậm':'Đúng trong ngưỡng luyện')+'</small>':'<small class="v39-casual-feedback">'+(s.choice===q.correct?'Đã ghi nhận câu đúng':'Đã thêm chữ cần ôn')+' · Không tính thời gian</small>')+'<p>'+clean(q.note)+'</p><button class="v36-feedback-audio" data-f33="feedback-audio" type="button">▶ Nghe đáp án</button></div><div class="v33-pane-actions"><button class="v33-primary" data-f33="next">'+(s.index+1===s.questions.length?'Xem kết quả':'Câu tiếp theo')+' →</button></div>':'<p class="v33-subline">Chọn một đáp án. Kết quả và giải thích hiện ngay, không cần bấm “Kiểm tra” thêm lần nữa.</p>')+
