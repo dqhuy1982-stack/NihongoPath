@@ -7,7 +7,7 @@ const clean=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':
 const routePrefix='learn/foundation',base='#'+routePrefix;
 const modes=[
  ['learn','Học','book-open'],['flash','Flashcard','layers'],['quiz','Chữ → âm','target'],
- ['reverse','Âm → chữ','arrow-left-right'],['match','Ghép cặp','grid-2x2'],
+ ['reverse','Âm → chữ','arrow-left-right'],['match','Ghép cặp','grid-2x2'],['build','Xếp chữ','puzzle'],
  ['vocab-ja-vi','Nhật → Việt','languages'],['vocab-vi-ja','Việt → Nhật','languages'],['mix','Kiểm tra tổng hợp','check-circle-2']
 ];
 const modeNames=Object.fromEntries(modes.map(([id,title])=>[id,title]));
@@ -56,7 +56,7 @@ function contextual(config){
  return a.length>=3?a:DATA.words.filter(w=>config.script==='both'||w.script===config.script);
 }
 function activityPool(config,mode){
- return mode.startsWith('vocab')?contextual(config):tokens(config);
+ return mode.startsWith('vocab')||mode==='build'?contextual(config):tokens(config);
 }
 const isWord=item=>typeof item.vi==='string';
 function readable(item){return isWord(item)?item.vi:item.read}
@@ -91,7 +91,10 @@ const sessionKey=config=>learnerId()+':'+config.id+':'+config.group+':'+config.m
 function ensurePlay(config){
  const key=sessionKey(config);if(play?.key===key)return play;
  const list=choosePool(config,config.mode),kind=config.mode;
- if(kind==='match'){
+ if(kind==='build'){
+  const cards=pick(contextual(config),5);
+  play={key,kind,cards,index:0,selected:[],tileOrder:cards.length?shuffle(Array.from(cards[0].glyph).map((glyph,i)=>({glyph,i}))):[],answer:null,correct:0,finished:cards.length===0};
+ }else if(kind==='match'){
   const cards=pick(list,Math.min(6,list.length));
   play={key,kind,cards,left:shuffle(cards),right:shuffle(cards),leftId:null,rightId:null,matched:[],mistakes:0,answered:0,feedback:'',finished:cards.length===0};
  }else if(kind==='flash'){
@@ -173,6 +176,17 @@ function summaryView(cfg,s){
  const total=s.questions?.length||0;
  return '<section class="v33-pane v33-summary"><p class="v33-eyebrow">KẾT QUẢ LƯỢT LUYỆN</p><h3>Hoàn thành bài kiểm tra</h3><div class="v33-summary-score">'+s.correct+' <span>/ '+total+' câu đúng</span></div><p>Kết quả này phản ánh một lượt luyện, chưa có nghĩa đã ghi nhớ lâu dài. Các câu sai được đề xuất ôn lại.</p><div class="v33-pane-actions"><button data-f33="restart" class="v33-primary">Luyện lại (đảo thứ tự câu)</button><a href="#'+path(cfg.id,cfg.group,'flash',cfg.script)+'" class="v33-secondary">Ôn Flashcard</a></div></section>';
 }
+function buildView(cfg,s){
+ if(!s.cards.length)return noData('Chưa đủ từ ngữ cảnh để ghép chữ.');
+ if(s.finished||s.index>=s.cards.length)return '<section class="v33-pane v33-summary"><p class="v33-eyebrow">XẾP CHỮ · TỔNG KẾT</p><h3>Đã hoàn thành lượt ghép chữ</h3><div class="v33-summary-score">'+s.correct+' <span>/ '+s.cards.length+' từ đúng</span></div><p>Luyện lại những từ sai sau khi xem mặt chữ và cách đọc.</p><div class="v33-pane-actions"><button data-f33="restart" class="v33-primary">Ghép lại từ đầu</button></div></section>';
+ const word=s.cards[s.index],selected=s.selected.map(i=>s.tileOrder[i].glyph).join('');
+ return '<section class="v33-pane"><div class="v33-pane-head"><div><p class="v33-eyebrow">GHÉP CHỮ THÀNH TỪ</p><h3>Xếp Kana theo đúng thứ tự</h3><p>Nhìn nghĩa tiếng Việt, chạm các mảnh chữ để ghép thành từ Nhật. Không cần kéo thả.</p></div>'+tag('Từ '+(s.index+1)+' / '+s.cards.length)+'</div>'+
+ '<div class="v33-build-clue"><span>NGHĨA TIẾNG VIỆT</span><strong>'+clean(word.vi)+'</strong></div>'+
+ '<div class="v33-build-answer" aria-label="Các chữ đã xếp" aria-live="polite">'+(selected?Array.from(selected).map(ch=>'<span lang="ja">'+clean(ch)+'</span>').join(''):'<small>Chọn ký tự bên dưới để ghép từ</small>')+'</div>'+
+ '<div class="v33-build-tiles">'+s.tileOrder.map((x,i)=>'<button data-f33="tile" data-value="'+i+'" class="v33-build-tile" '+(s.selected.includes(i)||s.answer?'disabled':'')+' lang="ja">'+clean(x.glyph)+'</button>').join('')+'</div>'+
+ (s.answer?'<div class="v33-feedback '+(s.answer.correct?'positive':'negative')+'" role="status"><strong>'+(s.answer.correct?'Đúng!':'Chưa đúng: '+clean(word.glyph))+'</strong><p>'+clean(word.glyph)+' → '+clean(word.read)+' · '+clean(word.vi)+'. '+clean(word.note||'')+'</p></div>':'<p class="v33-subline">Câu trả lời được chấm ngay khi bạn ghép đủ số ký tự.</p>')+
+ '<div class="v33-pane-actions">'+(!s.answer?'<button class="v33-secondary" data-f33="undo">Bỏ chữ cuối</button>':'<button class="v33-primary" data-f33="build-next">'+(s.index+1===s.cards.length?'Xem kết quả':'Từ tiếp theo')+' →</button>')+'</div></section>';
+}
 function matchingView(cfg,s){
  if(!s.cards.length)return noData('Nhóm này chưa có đủ cặp duy nhất. Hãy chọn bảng hoặc nhóm khác.');
  const complete=s.matched.length===s.cards.length;
@@ -186,7 +200,7 @@ function matchingView(cfg,s){
 function modulePage(cfg){
  const header=navigationFor(cfg);
  const s=cfg.mode==='learn'?null:ensurePlay(cfg);
- const body=cfg.mode==='learn'?learnView(cfg):cfg.mode==='flash'?flashView(cfg,s):cfg.mode==='match'?matchingView(cfg,s):quizView(cfg,s);
+ const body=cfg.mode==='learn'?learnView(cfg):cfg.mode==='flash'?flashView(cfg,s):cfg.mode==='match'?matchingView(cfg,s):cfg.mode==='build'?buildView(cfg,s):quizView(cfg,s);
  const vals=countStats(tokens(cfg));
  const panel='<aside class="v33-side"><h3>Học thế nào cho hiệu quả?</h3><ol><li>Học một nhóm chữ nhỏ.</li><li>Nhìn chữ, tự nhớ âm trước khi lật Flashcard.</li><li>Làm bài hai chiều, ghép cặp và luyện trộn.</li><li>Ôn chữ làm sai vào lần sau.</li></ol><div class="v33-side-divider"></div><strong>Tiến độ luyện trên thiết bị</strong><p>'+vals.reviewed+' / '+vals.total+' mẫu từng được kiểm tra · '+vals.due+' mẫu đến hạn gợi ý ôn.</p><a href="#kana">Writing Studio →</a><small>Không cộng lượt lật Flashcard vào điểm kiểm tra. Âm ghép và chữ nhỏ được học trong ngữ cảnh phù hợp.</small></aside>';
  return wrap(header+'<div class="v33-workspace">'+body+panel+'</div>',cfg.mod.title);
@@ -201,6 +215,22 @@ function perform(el){
  if(op==='audio'&&cfg.mode==='learn'&&/^(?:a|i|u|e|o|ka|ki|ku|ke|ko|sa|shi|su|se|so|ta|chi|tsu|te|to|na|ni|nu|ne|no|ha|hi|fu|he|ho|ma|mi|mu|me|mo|ya|yu|yo|ra|ri|ru|re|ro|wa|wo|n)$/.test(value||'')){try{const audio=new Audio('assets/kana-audio/'+value+'.mp3');audio.play().catch(()=>{});}catch(e){}return;}
  if(cfg.mode==='learn')return;
  const s=ensurePlay(cfg);
+ if(op==='tile'&&s.kind==='build'&&!s.answer){
+  const i=Number(value);if(!Number.isInteger(i)||i<0||i>=s.tileOrder.length||s.selected.includes(i))return;
+  s.selected.push(i);
+  const word=s.cards[s.index],built=s.selected.map(n=>s.tileOrder[n].glyph).join('');
+  if(s.selected.length===Array.from(word.glyph).length){
+   const correct=built===word.glyph;s.answer={correct,built};if(correct)s.correct++;
+   record(word,correct,'build');
+  }
+  refresh();return;
+ }
+ if(op==='undo'&&s.kind==='build'&&!s.answer){s.selected.pop();refresh();return}
+ if(op==='build-next'&&s.kind==='build'&&s.answer){
+  s.index++;s.finished=s.index>=s.cards.length;s.selected=[];s.answer=null;
+  if(!s.finished)s.tileOrder=shuffle(Array.from(s.cards[s.index].glyph).map((glyph,i)=>({glyph,i})));
+  refresh();return;
+ }
  if(op==='flip'){s.flipped=!s.flipped;refresh();return}
  if(op==='rate'&&s.kind==='flash'&&s.flipped){
   const card=s.cards[s.index];store().flash[card.id]=value;persist();
