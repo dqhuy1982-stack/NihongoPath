@@ -19,6 +19,13 @@ const steps=[
  {selector:'.v133-main-area .v132-exam a',title:'04 · Kiểm tra tổng hợp',
   desc:'Bài kiểm tra trộn câu hỏi, có phản hồi và tổng kết để bạn đánh giá mức độ ghi nhớ.'}
 ];
+const inlineSteps=[
+ steps[0],steps[1],
+ {selector:'.v134-inline-training .v34-workspace-shell',title:'03 · Bài luyện bên phải',
+  desc:'Bạn đang ở trong một bài luyện. Đáp án, âm báo và nút tiếp tục đều hoạt động ngay trong trang này.'},
+ {selector:'.v134-inline-clear',title:'04 · Quay về phần tổng quan',
+  desc:'Khi muốn bắt đầu lại từ gợi ý hoặc kiểm tra tổng hợp, chọn Về trang luyện tập. Menu dạng bài luôn ở bên trái.'}
+];
 let tour=null,timer=null;
 const seenSession=new Set();
 function pref(){try{return localStorage.getItem(key())||'first'}catch(e){return 'seen'}}
@@ -41,7 +48,7 @@ function updateControls(){
 }
 function layOut(){
  if(!tour)return;
- const step=steps[tour.step],small=(window.innerWidth||1024)<=620;
+ const steps=tour.steps,step=steps[tour.step],small=(window.innerWidth||1024)<=620;
  const target=document.querySelector(small&&step.mobile?step.mobile:step.selector);
  if(!target){end();return}
  const rect=target.getBoundingClientRect();
@@ -106,7 +113,8 @@ function start(manual=false){
   '<label class="v134-guide-preference"><input type="checkbox" data-v134-repeat> Tự mở hướng dẫn lần sau</label>'+
   '<div class="v134-guide-buttons"><button type="button" data-v134-action="exit">Thoát hướng dẫn</button>'+
   '<button type="button" class="v134-guide-next" data-v134-action="continue">Tiếp tục hướng dẫn</button></div></section>';
- tour={host,step:0,confirm:false,repeat:pref()==='repeat'};
+ tour={host,step:0,confirm:false,repeat:pref()==='repeat',
+  steps:document.querySelector('.v134-inline-training')?inlineSteps:steps};
  document.body.appendChild(host);
  host.addEventListener('change',event=>{
   if(!event.target.matches?.('[data-v134-repeat]')||!tour)return;
@@ -119,7 +127,8 @@ function start(manual=false){
   if(!tour)return;
   const action=button.dataset.v134Action;
   if(action==='ask-exit'){confirmExit();return}
-  if(action==='continue'){tour.confirm=false;layOut();return}
+  if(action==='continue'){tour.confirm=false;layOut();
+   host.querySelector('[data-v134-action="next"]')?.focus?.({preventScroll:true});return}
   if(action==='exit'){end();return}
   if(tour.confirm)return;
   if(action==='prev'){tour.step=Math.max(0,tour.step-1);layOut();return}
