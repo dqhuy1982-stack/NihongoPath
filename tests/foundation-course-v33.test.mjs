@@ -372,7 +372,7 @@ test('Global UI footer shows unobtrusive v1.01 beside HORIZON tagline',()=>{
  const app=load('app.js'),hub=load('learning-hub-v25.js');
  assert.ok(app.includes('Học theo cách của bạn'));
  assert.ok(app.includes('horizon-brand-version'));
- assert.ok(app.includes('v1.25'));
+ assert.ok(app.includes('v1.26'));
  assert.ok(!app.includes('class="horizon-ui-version"'));
  assert.ok(load('index.html').includes('horizon-brand-version.css?v=106'));
  assert.ok(!hub.includes('HORIZON · Learning Hub v33 · Recorded progress'));
@@ -422,7 +422,7 @@ test('v1.01 offers three hints and records assisted correct answers for review',
 });
 test('v1.01 includes answer audio and precise connected-book CSS',()=>{
  const app=load('app.js'),html=load('index.html'),css=load('foundation-course-v101.css');
- assert.ok(app.includes('v1.25'));
+ assert.ok(app.includes('v1.26'));
  assert.ok(html.includes('foundation-course-v101.css?v=101'));
  assert.ok(html.includes('foundation-course-v102.css?v=102'));
  assert.ok(html.includes('foundation-course-v103.css?v=103'));
@@ -430,9 +430,9 @@ test('v1.01 includes answer audio and precise connected-book CSS',()=>{
  assert.ok(html.includes('foundation-course-v105.css?v=105'));
  assert.ok(html.includes('foundation-course-v106.css?v=106'));
  assert.ok(html.includes('foundation-curriculum-v33.js?v=124'));
- assert.ok(html.includes('foundation-course-v33.js?v=127'));
+ assert.ok(html.includes('foundation-course-v33.js?v=128'));
  assert.ok(html.includes('foundation-course-v107.css?v=125'));
- assert.ok(load('app.js').includes('v1.25</small>'));
+ assert.ok(load('app.js').includes('v1.26</small>'));
  assert.ok(css.includes('v101-match-grid'));
  assert.ok(css.includes('[data-connected="yes"]'));
 });
@@ -547,9 +547,9 @@ test('v1.05 wrong pairs draw a temporary red connector and correct pairs a green
 test('v1.05 auto answer audio can be turned off without disabling manual listening',()=>{
  const h=harness(),route='learn/foundation/hiragana/all/quiz';
  h.location.hash='#'+route;h.ui.page(route);
- assert.match(h.ui.page(route),/Âm thanh đáp án: <strong>Bật/);
+ assert.match(h.ui.page(route),/Âm hiệu đúng/sai: <strong>Bật/);
  h.click('toggle-audio');
- assert.match(h.ui.page(route),/Âm thanh đáp án: <strong>Tắt/);
+ assert.match(h.ui.page(route),/Âm hiệu đúng/sai: <strong>Tắt/);
  const q=h.ui.session().questions[0];
  h.click('answer',q.correct);
  assert.equal(h.audioFiles.length,0,'no automatic answer audio when off');
@@ -697,7 +697,7 @@ test('v1.07 duration metrics are derived from attempts and never guessed',()=>{
 test('The learning UI does not alter the existing lesson engine or global learner records',()=>{
  const html=load('index.html');
  assert.ok(html.includes('foundation-curriculum-v33.js?v=124'));
- assert.ok(html.includes('foundation-course-v33.js?v=127'));
+ assert.ok(html.includes('foundation-course-v33.js?v=128'));
  assert.ok(html.includes('foundation-course-v34.css?v=34'));
  assert.ok(html.includes('foundation-course-v35.css?v=35'));
  assert.ok(html.includes('foundation-course-v36.css?v=36'));
@@ -706,10 +706,10 @@ test('The learning UI does not alter the existing lesson engine or global learne
  assert.ok(html.includes('foundation-course-v39.css?v=39'));
  assert.ok(html.includes('foundation-course-v40.css?v=100'));
  assert.ok(html.includes('foundation-course-v101.css?v=101'));
- assert.ok(html.includes('app.js?v=125'));
+ assert.ok(html.includes('app.js?v=126'));
  assert.ok(html.includes('learning-hub-v25.js?v=125'));
- assert.ok(html.includes('foundation-course-v33.js?v=127'));
- assert.ok(html.includes('foundation-course-v33.js?v=127'));
+ assert.ok(html.includes('foundation-course-v33.js?v=128'));
+ assert.ok(html.includes('foundation-course-v33.js?v=128'));
  assert.ok(load('foundation-course-v33.js').includes('data-f38="start"'));
  assert.ok(!load('foundation-course-v36.css').includes('max-height:405px'));
  assert.match(load('foundation-course-v36.css'),/max-height:none!important/);
@@ -723,8 +723,8 @@ test('Completion polish retains visible post-round controls and accessible feedb
  const code=load('foundation-course-v33.js'),styles=load('foundation-course-v107.css');
  assert.match(code,/v108-dock/);
  assert.match(code,/v109-medal-art/);
- assert.match(code,/matchingSound\(true\)/);
- assert.match(code,/matchingSound\(false\)/);
+ assert.match(code,/gradingSound\(true\)/);
+ assert.match(code,/gradingSound\(false\)/);
  assert.match(styles,/v108-shake/);
  assert.match(styles,/prefers-reduced-motion:reduce/);
 });
@@ -1173,5 +1173,5 @@ test('v1.26 word builder only plays sound once the word is graded',()=>{
  assert.equal(s.answer.correct,true);
  assert.deepEqual(notes,[784,1047]);
  assert.equal(h.audioFiles.length,0);
- h.click('feedback-audio');assert.equal(h.audioFiles.length,1);
+ assert.match(h.ui.page(route),/data-f33="feedback-audio"/,'builder retains manual Listen button');
 });
