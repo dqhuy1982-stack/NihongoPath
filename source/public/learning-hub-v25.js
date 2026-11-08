@@ -363,7 +363,7 @@ function detail(id){
 }
 
 const originalLearn=learnPage,originalCourse=coursePage,originalTitle=titleOf;
-learnPage=function(){const r=route();if((r==='learn/foundation'||r.startsWith('learn/foundation/'))&&window.NPFoundationCourse)return window.NPFoundationCourse.page(r);if(r==='learn'||r==='learn/overview')return overview();if(r.startsWith('learn/'))return otherTab(r.split('/')[1]);return originalLearn()};
+learnPage=function(){const r=route();if((r==='learn/foundation'||r.startsWith('learn/foundation/'))&&window.NPFoundationCourse)return window.NPFoundationCourse.page(r);if((r==='learn/modules'||r==='learn/lessons')&&window.NPFoundationCourse)return window.NPFoundationCourse.page('course/foundation');if(r==='learn'||r==='learn/overview')return overview();if(r.startsWith('learn/'))return otherTab(r.split('/')[1]);return originalLearn()};
 coursePage=function(id){if(id==='foundation'&&window.NPFoundationCourse)return window.NPFoundationCourse.page('course/foundation');return detail(id)};
 titleOf=function(r){return r==='learn'||r==='learn/overview'?'Không gian học tập':originalTitle(r)};
 window.NPHorizonV25={version:'v33',model,activities:()=>activities.map(a=>({...a})),foundationCatalogue:foundationModuleCatalogue,shell:(selected='catalog')=>'<div class="v28-header-shell"><header class="v25-header"><div class="v25-hero-copy"><h1>Không gian học tập</h1><p>Học tiếng Nhật theo từng bước, dễ tìm bài và ôn lại.</p></div></header>'+navigation(selected)+'</div>'};
