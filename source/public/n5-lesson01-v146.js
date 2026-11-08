@@ -248,7 +248,7 @@ function scenePage(){
  return '<section class="n5c-root" aria-label="Học N5 Bài 01 qua tình huống">'+
   '<div class="n5c-heading"><div><span class="n5c-eyebrow">LEARN IN CONTEXT · BÀI 01</span>'+
   '<h2>Hiểu và dùng tiếng Nhật trong tình huống.</h2>'+
-  '<p>Học qua hội thoại ngắn, tìm hiểu mẫu câu và thử nói theo vai. Các câu tự viết không bị chấm máy móc.</p></div>'+
+  '<p>Quan sát tranh → nghe trước khi xem nghĩa → bấm cụm quan trọng → thử phản hồi → tự tạo câu. Mỗi tình huống liên kết với từ vựng và ngữ pháp vừa dùng.</p></div>'+
   '<div class="n5c-progress">'+sceneCount()+'/'+LINKED.scenes.length+'<small>tình huống đã thử</small></div></div>'+
   '<div class="n5c-workspace"><nav class="n5c-scene-nav" aria-label="Chọn tình huống">'+
   LINKED.scenes.map((item,i)=>'<button type="button" class="'+(i===sceneIndex?'is-current ':'')+
@@ -258,18 +258,21 @@ function scenePage(){
    (saved[item.id]?.attempts?'<span class="n5c-tried" title="Đã thử trả lời tình huống">✓</span>':'')+'</button>').join('')+'</nav>'+
   '<article class="n5c-scene"><span class="n5c-situation-label">TÌNH HUỐNG '+String(sceneIndex+1).padStart(2,'0')+'</span>'+
   '<h3>'+esc(scene.title)+'</h3>'+
-  '<p class="n5c-situation">'+esc(scene.situation)+'</p>'+
-  '<p class="n5c-goal"><strong>Mục tiêu:</strong> '+esc(scene.goal)+'</p>'+
+  (WORLD?WORLD.hero(scene):'<p class="n5c-situation">'+esc(scene.situation)+'</p>')+
+  '<p class="n5c-goal"><strong>Mục tiêu giao tiếp:</strong> '+esc(scene.goal)+'</p>'+
   '<div class="n5c-dialog-head"><strong>Hội thoại</strong><div>'+
   '<button type="button" data-n5l-play="'+esc(scene.id)+'" class="n5c-audio"'+(audioSupported()?'':' disabled')+
   '>▶ Nghe thoại</button>'+
   '<button type="button" data-n5l-scene-translation="'+esc(scene.id)+'" class="n5c-text-action" aria-expanded="'+showTranslation+'">'+
   (showTranslation?'Ẩn nghĩa':'Hiện nghĩa')+'</button></div></div>'+
   '<div class="n5c-dialog" lang="ja">'+scene.dialogue.map((line,i)=>
-   '<div class="n5c-line"><span class="n5c-speaker">'+esc(line.who)+'</span><div>'+
-   '<p>'+esc(line.jp)+'</p>'+
+   '<div class="n5c-line"><span class="n5c-speaker">'+(WORLD?WORLD.characterChip(line.who,'is-dialogue'):esc(line.who))+'</span><div>'+
+   '<p>'+(WORLD?WORLD.annotate(line.jp,activeNote):esc(line.jp))+'</p>'+
    (showTranslation?'<small lang="vi">'+esc(line.vi)+'</small>':'')+
    '</div></div>').join('')+'</div>'+
+  (activeNote&&WORLD?WORLD.noteCard(activeNote):'')+
+  '<div class="n5w-under-dialogue"><strong>Đọc lại bối cảnh</strong><span>'+esc(scene.relationship||scene.situation)+
+  ' · '+esc(scene.purpose||scene.goal)+'</span></div>'+
   '<p class="n5c-audio-note">'+(audioSupported()?
    'Giọng Nhật tổng hợp của trình duyệt; không chấm phát âm hay thay thế audio người bản ngữ.':
    'Thiết bị chưa hỗ trợ phát giọng Nhật. Bạn vẫn có thể luyện bằng văn bản.')+'</p>'+
@@ -296,6 +299,7 @@ function scenePage(){
   (showModel?'Ẩn câu gợi ý':'Xem câu gợi ý để đối chiếu')+'</button>'+
   '<small>Không tự chấm · Không lưu câu cá nhân</small></div>'+
   (showModel?'<p class="n5c-model" lang="ja">'+esc(scene.compose.sample)+'</p>':'')+'</div>'+
+  supplementalPractice(scene)+
   '<div class="n5c-scene-bottom">'+(sceneIndex<LINKED.scenes.length-1?
    '<button type="button" class="n5l-primary" data-n5l-scene="'+esc(LINKED.scenes[sceneIndex+1].id)+'">Tình huống tiếp theo →</button>':
    '<button type="button" class="n5l-primary" data-n5l-section="vocab">Ôn lại từ vựng và mẫu câu →</button>')+
@@ -440,13 +444,14 @@ function reviewPage(){
 }
 function page(){
  if(!D)return '<section class="v25-wrap"><p>Chưa tải được nội dung Bài 01.</p><a href="#course/N5">Trở lại khóa N5</a></section>';
- return '<div class="v25-wrap n5l-root" data-n5-lesson="01" data-n5-version="147">'+
+ return '<div class="v25-wrap n5l-root" data-n5-lesson="01" data-n5-version="148">'+
   header()+progressTop()+nav()+
   (alertText?'<p class="n5l-notice" role="status">'+esc(alertText)+'</p>':'')+
   (saveError?'<p class="n5l-save-error" role="alert">'+esc(saveError)+'</p>':'')+
   '<div class="n5l-body" id="n5l-body">'+(active==='learn'?learnPage():
    active==='review'&&(!run||run.kind!=='review'||run.learner!==learnerId())?reviewPage():practicePage(active))+'</div>'+
-  '<p class="n5l-footnote">Nội dung được HORIZON biên soạn theo mục tiêu ngữ pháp Bài 01; không sao chép nguyên văn sách hoặc audio Minna no Nihongo. Từ vựng có thể khác giữa phiên bản giáo trình.</p></div>';
+  '<p class="n5l-footnote">Nội dung và nhân vật minh họa do HORIZON xây dựng. Ngữ pháp tham chiếu Bài 01; không sao chép giáo trình hay audio. Bản 2 và bản 3 có thể khác từ vựng hoặc bối cảnh.</p>'+
+  (activeCharacter&&WORLD?WORLD.profile(activeCharacter):'')+'</div>';
 }
 function draw(){if(document.querySelector?.('.n5l-root')&&typeof render==='function')render(false)}
 const original=coursePage;
