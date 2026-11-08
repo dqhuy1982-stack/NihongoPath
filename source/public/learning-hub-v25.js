@@ -271,22 +271,22 @@ function foundationModuleCatalogue(){
    .find(({cards})=>cards.some(card=>!(progress[card.id]?.attempts>0)));
  const nextPath=firstPending?engine.path(firstPending.m.id,firstPending.g.id,'learn'):engine.path(modules[0].id,modules[0].groups[0].id,'learn');
  return '<section class="v121-foundation-catalog" aria-labelledby="v121-heading">'+
-  '<div class="v121-catalog-heading"><div><p class="v121-eyebrow">FOUNDATION · MỤC LỤC HỌC TẬP</p>'+
-  '<h3 id="v121-heading">Nền tảng — học theo từng nhóm nhỏ</h3>'+
-  '<p>Chọn nhóm chữ để học, luyện hoặc kiểm tra. Không cần cuộn qua toàn bộ chương trình.</p></div>'+
-  '<span class="v121-catalog-count">'+modules.length+' chặng · '+allCount+' nhóm bài</span></div>'+
+  '<div class="v121-catalog-heading v123-catalog-heading"><div><p class="v121-eyebrow">FOUNDATION · '+modules.length+' CHẶNG · '+allCount+' NHÓM BÀI</p>'+
+  '<h3 id="v121-heading">Chọn bài để học</h3></div></div>'+
   '<div class="v121-toolbar"><label class="v121-search-label"><span class="v121-search-icon" aria-hidden="true">⌕</span>'+
   '<input type="search" data-v121-filter placeholder="Tìm Kana, Romaji hoặc tên bài…" aria-label="Tìm bài học Nền tảng" autocomplete="off"></label>'+
   '<a class="v121-continue" href="#'+nextPath+'">Tiếp tục học →</a></div>'+
   '<p class="v121-search-status" data-v121-status role="status" aria-live="polite" hidden></p>'+
-  '<div class="v121-chapter-list">'+records.map(({m,index,groups})=>{
-    return '<details class="v121-chapter" data-v121-chapter '+(index===0?'open':'')+'>'+
-     '<summary><span class="v121-chapter-index">'+String(index+1).padStart(2,'0')+'</span>'+
-     '<span class="v121-chapter-name"><strong>'+safe(m.title.replace(/^\d+\s*[·.:-]\s*/,''))+'</strong><small>'+safe(m.subtitle)+'</small></span>'+
-     '<span class="v121-chapter-count">'+groups.length+' bài</span><span class="v121-chapter-toggle" aria-hidden="true">⌄</span></summary>'+
-     '<div class="v121-chapter-body">'+groups.join('')+
-     '<div class="v121-chapter-end"><a href="#'+engine.path(m.id,'all','learn')+'">Xem toàn bộ chặng →</a></div></div></details>';
-  }).join('')+'</div>'+
+  '<div class="v123-catalog-layout"><nav class="v123-chapter-tabs" aria-label="Chọn chặng Nền tảng">'+records.map(({m,index,groups})=>
+    '<button type="button" class="v123-chapter-tab'+(index===0?' is-active':'')+'" data-v123-select="'+safe(m.id)+'" aria-controls="v123-panel-'+safe(m.id)+'" aria-current="'+(index===0?'true':'false')+'">'+
+    '<span class="v123-chapter-number">'+String(index+1).padStart(2,'0')+'</span>'+
+    '<span class="v123-chapter-label">'+safe(m.title.replace(/^\\d+\\s*[·.:-]\\s*/,''))+'</span>'+
+    '<small>'+groups.length+' bài</small></button>').join('')+'</nav>'+
+   '<div class="v123-topic-panes">'+records.map(({m,index,groups})=>
+    '<section class="v123-topic-pane" id="v123-panel-'+safe(m.id)+'" data-v123-pane="'+safe(m.id)+'" '+(index===0?'':'hidden')+'>'+
+    '<div class="v123-pane-heading"><div><strong>'+safe(m.title.replace(/^\\d+\\s*[·.:-]\\s*/,''))+'</strong><p>'+safe(m.subtitle)+'</p></div>'+
+    '<a href="#'+engine.path(m.id,'all','learn')+'">Học cả chặng ↗</a></div>'+
+    '<div class="v123-topic-list">'+groups.join('')+'</div></section>').join('')+'</div></div>'+
   '<p class="v121-catalog-note">Tiến độ “đã luyện” chỉ tính mẫu có câu trả lời đã ghi nhận trong hồ sơ hiện tại; không đồng nghĩa đã nhớ lâu. Bài kiểm tra tổng hợp dùng cùng nguồn dữ liệu, không phải chứng chỉ JLPT.</p>'+
   '</section>';
 }
@@ -303,22 +303,43 @@ function modulesTab(m){
   '</section></section>';
 }
 /* Scoped search only changes the visible catalogue, never writes learning data. */
+/* Search spans all 40 groups. Only the selected chapter is visible normally,
+   and search results temporarily reveal matching chapters within the same pane. */
+document.addEventListener('click',event=>{
+ const button=event.target?.closest?.('[data-v123-select]');
+ if(!button)return;
+ const area=button.closest('.v121-foundation-catalog');if(!area)return;
+ const selected=button.getAttribute('data-v123-select');
+ const filter=area.querySelector('[data-v121-filter]');
+ if(filter?.value){filter.value='';filter.dispatchEvent(new Event('input',{bubbles:true}));}
+ area.querySelectorAll('[data-v123-select]').forEach(tab=>{
+  const active=tab.getAttribute('data-v123-select')===selected;
+  tab.classList.toggle('is-active',active);
+  tab.setAttribute('aria-current',String(active));
+ });
+ area.querySelectorAll('[data-v123-pane]').forEach(pane=>{
+  pane.hidden=pane.getAttribute('data-v123-pane')!==selected;
+ });
+});
 document.addEventListener('input',event=>{
  if(!event.target?.matches?.('[data-v121-filter]'))return;
  const area=event.target.closest('.v121-foundation-catalog');if(!area)return;
  const query=String(event.target.value||'').toLocaleLowerCase('vi').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();
  let visible=0;
- area.querySelectorAll('[data-v121-chapter]').forEach(chapter=>{
-  let count=0;
-  chapter.querySelectorAll('[data-v121-topic]').forEach(topic=>{
+ const current=area.querySelector('[data-v123-select].is-active')?.getAttribute('data-v123-select');
+ area.querySelectorAll('[data-v123-pane]').forEach(pane=>{
+  const id=pane.getAttribute('data-v123-pane');
+  let matches=0;
+  pane.querySelectorAll('[data-v121-topic]').forEach(topic=>{
    const haystack=(topic.getAttribute('data-v121-search')||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-   const match=!query||haystack.includes(query);
-   topic.hidden=!match;if(match)count++;
+   const found=!query||haystack.includes(query);
+   topic.hidden=!found;
+   if(found)matches++;
   });
-  chapter.hidden=count===0;
-  if(query&&count)chapter.open=true;
-  visible+=count;
+  pane.hidden=query?matches===0:id!==current;
+  visible+=query?matches:0;
  });
+ area.classList.toggle('v123-searching',!!query);
  const status=area.querySelector('[data-v121-status]');
  if(status){status.hidden=!query;status.textContent=query?visible+' nhóm bài phù hợp'+(visible?'':' · Hãy thử Kana, Romaji hoặc tên khác.'):'';}
 });
