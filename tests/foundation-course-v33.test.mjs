@@ -547,9 +547,9 @@ test('v1.05 wrong pairs draw a temporary red connector and correct pairs a green
 test('v1.05 auto answer audio can be turned off without disabling manual listening',()=>{
  const h=harness(),route='learn/foundation/hiragana/all/quiz';
  h.location.hash='#'+route;h.ui.page(route);
- assert.match(h.ui.page(route),/Âm hiệu đúng/sai: <strong>Bật/);
+ assert.match(h.ui.page(route),/Âm hiệu đúng\/sai: <strong>Bật/);
  h.click('toggle-audio');
- assert.match(h.ui.page(route),/Âm hiệu đúng/sai: <strong>Tắt/);
+ assert.match(h.ui.page(route),/Âm hiệu đúng\/sai: <strong>Tắt/);
  const q=h.ui.session().questions[0];
  h.click('answer',q.correct);
  assert.equal(h.audioFiles.length,0,'no automatic answer audio when off');
