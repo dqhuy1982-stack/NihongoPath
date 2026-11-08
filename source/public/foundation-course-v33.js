@@ -303,7 +303,8 @@ function roundSummaryView(s,cfg){
  '<p class="v109-small-note">Thời gian chỉ dùng tham khảo, không chấm điểm nhanh/chậm.</p></section>'+
  '<section class="v109-next"><div class="v109-section-top"><span class="v109-step">02</span><h4>Bước tiếp theo</h4></div><div class="v110-next-card"><strong>'+nextTitle+'</strong><p>'+nextText+'</p></div>'+
  (review.length?'<div class="v109-review-list" aria-label="Chữ cần ôn">'+review.map(p=>'<span lang="ja">'+clean(p.glyph)+' <small>'+clean(p.romaji)+'</small></span>').join('')+'</div>':'')+
- '<details class="v109-details"><summary>Xem chi tiết từng cặp <span>'+report.pairResults.length+'</span></summary><div class="v109-details-list">'+detailRows+'</div></details></section></div>'+
+ '<details class="v109-details"><summary>Xem chi tiết từng cặp <span>'+report.pairResults.length+'</span></summary><div class="v109-details-list">'+detailRows+'</div></details>'+
+ scopeAfterResult(cfg,report.firstTryPairs,report.totalPairs,true)+'</section></div>'+
  '<footer class="v109-actions"><span class="v109-footer-note">Mỗi lượt luyện là một bước tiến nhỏ.</span>'+
  (review.length?'<button type="button" class="v33-primary" data-f33="summary-review">Ôn lại cặp cần nhớ</button><button type="button" class="v33-secondary" data-f33="summary-new">Lượt luyện mới</button>':
  '<button type="button" class="v33-primary" data-f33="summary-new">Lượt luyện mới</button><button type="button" class="v33-secondary" data-f33="summary-next">'+(nextMode==='listen-match'?'Sang Nghe & ghép':'Kiểm tra tổng hợp')+'</button>')+
@@ -696,12 +697,13 @@ function summaryView(cfg,s){
  return '<section class="v33-pane v33-summary"><p class="v33-eyebrow">KẾT QUẢ LƯỢT LUYỆN</p><h3>Hoàn thành bài kiểm tra</h3><div class="v33-summary-score">'+s.correct+' <span>/ '+total+' câu đúng</span></div>'+
  (cfg.mode==='mix'?'<div class="v37-summary-stats"><span>Đúng chậm: <strong>'+s.slow+'</strong></span><span>Sai: <strong>'+s.errors+'</strong></span><span>TB phản hồi: <strong>'+avg+'</strong></span></div>':'')+
  '<p>'+(cfg.mode==='mix'?'Chữ đúng chậm và chữ sai được đề xuất ôn. Ngưỡng phản xạ mang tính thử nghiệm.':'Luyện tập không tính thời gian; các chữ sai được đưa vào Sổ ôn.')+'</p>'+
- '<div class="v33-pane-actions"><button data-f33="restart" class="v33-primary">Luyện lại ngẫu nhiên</button><button data-f34="mode" data-value="review" class="v33-secondary">Ôn chữ cần luyện</button></div></section>';
+ '<div class="v33-pane-actions"><button data-f33="restart" class="v33-primary">Luyện lại ngẫu nhiên</button><button data-f34="mode" data-value="review" class="v33-secondary">Ôn chữ cần luyện</button></div>'+
+ scopeAfterResult(cfg,s.correct,total)+'</section>';
 }
 
 function buildView(cfg,s){
  if(!s.cards.length)return noData('Chưa đủ từ ngữ cảnh để ghép chữ.');
- if(s.finished||s.index>=s.cards.length)return '<section class="v33-pane v33-summary"><p class="v33-eyebrow">XẾP CHỮ · TỔNG KẾT</p><h3>Đã hoàn thành lượt ghép chữ</h3><div class="v33-summary-score">'+s.correct+' <span>/ '+s.cards.length+' từ đúng</span></div><p>Luyện lại những từ sai sau khi xem mặt chữ và cách đọc.</p><div class="v33-pane-actions"><button data-f33="restart" class="v33-primary">Ghép lại từ đầu</button></div></section>';
+ if(s.finished||s.index>=s.cards.length)return '<section class="v33-pane v33-summary"><p class="v33-eyebrow">XẾP CHỮ · TỔNG KẾT</p><h3>Đã hoàn thành lượt ghép chữ</h3><div class="v33-summary-score">'+s.correct+' <span>/ '+s.cards.length+' từ đúng</span></div><p>Luyện lại những từ sai sau khi xem mặt chữ và cách đọc.</p><div class="v33-pane-actions"><button data-f33="restart" class="v33-primary">Ghép lại từ đầu</button></div>'+scopeAfterResult(cfg,s.correct,s.cards.length)+'</section>';
  const word=s.cards[s.index],selected=s.selected.map(i=>s.tileOrder[i].glyph).join('');
  return '<section class="v33-pane"><div class="v33-pane-head"><div><p class="v33-eyebrow">GHÉP CHỮ THÀNH TỪ</p><h3>Xếp Kana theo đúng thứ tự</h3><p>Nhìn nghĩa tiếng Việt, chạm các mảnh chữ để ghép thành từ Nhật. Không cần kéo thả.</p></div><div class="v37-head-meta">'+tag('Từ '+(s.index+1)+' / '+s.cards.length)+(cfg.mode==='mix'?clock(s,!!s.answer):'')+'</div></div>'+
  '<div class="v33-build-clue"><span>NGHĨA TIẾNG VIỆT</span><strong>'+clean(word.vi)+'</strong></div>'+
@@ -915,6 +917,22 @@ function page(route){
 function perform(el){
  const cfg=current(),op=el.dataset.f33,value=el.dataset.value,side=el.dataset.side;
  if(!cfg.mod)return;
+ if(op==='expand-scope'){
+  if(play?.round?.summaryOpen){
+   play.round.summaryOpen=false;
+   removeSummaryHost();refresh();
+  }
+  const panel=document.querySelector?.('.v132-scope');
+  if(panel){
+   panel.open=true;
+   panel.scrollIntoView?.({behavior:'smooth',block:'center'});
+   panel.querySelector?.('summary')?.focus?.({preventScroll:true});
+  }else{
+   try{localStorage.setItem('Horizon.Training.scopeExpanded.v1.'+learnerId(),'on')}catch(e){}
+   location.hash='#learn/training/foundation/'+cfg.id+'/'+cfg.group+'/'+cfg.script;
+  }
+  return;
+ }
  if(op==='guide-ok'){dismissCoach();return;}
  if(op==='toggle-audio'){toggleAudioPref();refresh();return;}
  if(op==='summary-close'&&play?.round){closeRoundSummary();return;}
