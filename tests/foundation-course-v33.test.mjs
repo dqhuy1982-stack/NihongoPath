@@ -373,7 +373,7 @@ test('Global UI footer shows unobtrusive v1.01 beside HORIZON tagline',()=>{
  const app=load('app.js'),hub=load('learning-hub-v25.js');
  assert.ok(app.includes('Học theo cách của bạn'));
  assert.ok(app.includes('horizon-brand-version'));
- assert.ok(app.includes('v1.30'));
+ assert.ok(app.includes('v1.31'));
  assert.ok(!app.includes('class="horizon-ui-version"'));
  assert.ok(load('index.html').includes('horizon-brand-version.css?v=106'));
  assert.ok(!hub.includes('HORIZON · Learning Hub v33 · Recorded progress'));
@@ -423,7 +423,7 @@ test('v1.01 offers three hints and records assisted correct answers for review',
 });
 test('v1.01 includes answer audio and precise connected-book CSS',()=>{
  const app=load('app.js'),html=load('index.html'),css=load('foundation-course-v101.css');
- assert.ok(app.includes('v1.30'));
+ assert.ok(app.includes('v1.31'));
  assert.ok(html.includes('foundation-course-v101.css?v=101'));
  assert.ok(html.includes('foundation-course-v102.css?v=102'));
  assert.ok(html.includes('foundation-course-v103.css?v=103'));
@@ -431,9 +431,9 @@ test('v1.01 includes answer audio and precise connected-book CSS',()=>{
  assert.ok(html.includes('foundation-course-v105.css?v=105'));
  assert.ok(html.includes('foundation-course-v106.css?v=106'));
  assert.ok(html.includes('foundation-curriculum-v33.js?v=124'));
- assert.ok(html.includes('foundation-course-v33.js?v=132'));
- assert.ok(html.includes('foundation-course-v107.css?v=130'));
- assert.ok(load('app.js').includes('v1.30</small>'));
+ assert.ok(html.includes('foundation-course-v33.js?v=133'));
+ assert.ok(html.includes('foundation-course-v107.css?v=131'));
+ assert.ok(load('app.js').includes('v1.31</small>'));
  assert.ok(css.includes('v101-match-grid'));
  assert.ok(css.includes('[data-connected="yes"]'));
 });
@@ -557,15 +557,16 @@ test('v1.05 auto answer audio can be turned off without disabling manual listeni
  h.click('feedback-audio');
  assert.ok(h.audioFiles.length>0,'manual answer playback is still available');
 });
-test('v1.30 skills live on practice hub instead of every exercise',()=>{
- const h=harness(),base='learn/foundation/hiragana/all';
- h.location.hash='#'+base+'/practice';const hub=h.ui.page(base+'/practice');
- assert.match(hub,/v130-entry-nav/);
- assert.match(hub,/Tự chọn dạng bài/);
- assert.match(hub,/Kiểm tra tổng hợp/);
- for(const label of ['NHÌN & NHẬN DIỆN','LUYỆN NGHE','GHÉP & GHI NHỚ','TỪ VỰNG'])assert.ok(hub.includes(label));
- assert.match(hub,/id="v130-panel-choose" data-v130-panel="choose" hidden/);
- h.location.hash='#'+base+'/quiz';const exercise=h.ui.page(base+'/quiz');
+test('v1.31 central Practice replaces deeply nested exercise picker',()=>{
+ const h=harness(),base='learn/foundation/hiragana/unit-1';
+ h.location.hash='#'+base+'/practice';
+ const course=h.ui.page(base+'/practice');
+ assert.match(course,/Luyện ngay/);
+ assert.match(course,/Kiểm tra bài này/);
+ assert.match(course,/href="#learn\/training\/foundation\/hiragana\/unit-1\/hira"/);
+ assert.doesNotMatch(course,/data-f130="tab"|v129-advanced|v126-exercise-picker/);
+ h.location.hash='#'+base+'/quiz';
+ const exercise=h.ui.page(base+'/quiz');
  assert.match(exercise,/v129-task-header/);
  assert.doesNotMatch(exercise,/Đổi dạng bài|v129-advanced|v126-exercise-picker/);
 });
@@ -689,7 +690,7 @@ test('v1.07 duration metrics are derived from attempts and never guessed',()=>{
 test('The learning UI does not alter the existing lesson engine or global learner records',()=>{
  const html=load('index.html');
  assert.ok(html.includes('foundation-curriculum-v33.js?v=124'));
- assert.ok(html.includes('foundation-course-v33.js?v=132'));
+ assert.ok(html.includes('foundation-course-v33.js?v=133'));
  assert.ok(html.includes('foundation-course-v34.css?v=34'));
  assert.ok(html.includes('foundation-course-v35.css?v=35'));
  assert.ok(html.includes('foundation-course-v36.css?v=36'));
@@ -698,10 +699,10 @@ test('The learning UI does not alter the existing lesson engine or global learne
  assert.ok(html.includes('foundation-course-v39.css?v=39'));
  assert.ok(html.includes('foundation-course-v40.css?v=100'));
  assert.ok(html.includes('foundation-course-v101.css?v=101'));
- assert.ok(html.includes('app.js?v=130'));
- assert.ok(html.includes('learning-hub-v25.js?v=125'));
- assert.ok(html.includes('foundation-course-v33.js?v=132'));
- assert.ok(html.includes('foundation-course-v33.js?v=132'));
+ assert.ok(html.includes('app.js?v=131'));
+ assert.ok(html.includes('learning-hub-v25.js?v=131'));
+ assert.ok(html.includes('foundation-course-v33.js?v=133'));
+ assert.ok(html.includes('foundation-course-v33.js?v=133'));
  assert.ok(load('foundation-course-v33.js').includes('data-f38="start"'));
  assert.ok(!load('foundation-course-v36.css').includes('max-height:405px'));
  assert.match(load('foundation-course-v36.css'),/max-height:none!important/);
@@ -1040,13 +1041,14 @@ test('v1.25 learning navigation exposes exactly three destinations and keeps leg
   P:()=>({id:'demo-a',goal:'Nền tảng'}),
   render:()=>{},learnPage:()=>'',coursePage:()=>'',titleOf:()=>'',icon:()=>'',Locale:{t:x=>x}});
  const html=window.__tabs('catalog');
- assert.equal((html.match(/class="v25-tab /g)||[]).length,3);
- for(const label of ['Tổng quan','Khóa học','Ôn tập'])assert.ok(html.includes(label));
+ assert.equal((html.match(/class="v25-tab /g)||[]).length,4);
+ for(const label of ['Tổng quan','Khóa học','Luyện tập','Ôn tập'])assert.ok(html.includes(label));
  assert.ok(!html.includes('>Module<'));
  assert.ok(!html.includes('>Bài học<'));
  assert.ok(html.includes('href="#learn/overview"'));
  assert.ok(html.includes('href="#learn/catalog"'));
  assert.ok(html.includes('href="#learn/practice"'));
+ assert.ok(html.includes('href="#learn/training"'));
  location.hash='#learn/modules';
  assert.match(window.__legacy(),/Nền tảng/);
  location.hash='#learn/lessons';
@@ -1083,10 +1085,11 @@ test('v1.25 Foundation presents learning and practice as two contextual destinat
  h.location.hash='#'+base+'/practice';
  const practice=h.ui.page(base+'/practice');
  assert.match(practice,/v126-practice-hub/);
- assert.equal((practice.match(/data-f130="tab"/g)||[]).length,3);
- for(const mode of ['flash','quiz','mix'])assert.ok(practice.includes('href="#'+base+'/'+mode+'"'));
+ assert.doesNotMatch(practice,/data-f130="tab"/);
+ for(const mode of ['quiz','mix'])assert.ok(practice.includes('href="#'+base+'/'+mode+'"'));
+ assert.ok(practice.includes('href="#learn/training/foundation/hiragana/unit-1/hira"'));
  assert.equal((practice.match(/class="v34-stage-tab /g)||[]).length,2);
- assert.ok(practice.includes('Flashcard')&&practice.includes('Kiểm tra tổng hợp'));
+ assert.ok(practice.includes('Luyện ngay')&&practice.includes('Kiểm tra bài này'));
  assert.doesNotMatch(practice,/v39-book-nav/);
  h.location.hash='#'+base+'/flash';
  const flash=h.ui.page(base+'/flash');
@@ -1124,8 +1127,8 @@ test('v1.25 catalogue uses single stable Kana glyphs and legible primary button'
 });
 
 
-// v1.30: louder, peak-normalized feedback WAV; original audio behavior from v1.27. on a direct graded click, never Japanese reading.
-test('v1.30 correct/wrong have audible media feedback and independent manual pronunciation',()=>{
+// v1.31: louder, peak-normalized feedback WAV; original audio behavior from v1.27. on a direct graded click, never Japanese reading.
+test('v1.31 correct/wrong have audible media feedback and independent manual pronunciation',()=>{
  const h=harness(),route='learn/foundation/hiragana/a/quiz';
  h.setLegacyAudioPref(false); // v1.26 incorrectly read this old key.
  h.location.hash='#'+route;h.ui.page(route);h.start();
@@ -1148,7 +1151,7 @@ test('v1.30 correct/wrong have audible media feedback and independent manual pro
  h.click('feedback-audio');
  assert.equal(h.audioFiles.filter(x=>x.includes('kana-audio')).length,2);
 });
-test('v1.30 word-builder plays once on grading, not while selecting Kana',()=>{
+test('v1.31 word-builder plays once on grading, not while selecting Kana',()=>{
  const h=harness(),route='learn/foundation/small/pause/build';
  h.location.hash='#'+route;h.ui.page(route);h.start();
  const s=h.ui.session(),word=s.cards[0],glyphs=Array.from(word.glyph);
@@ -1161,7 +1164,7 @@ test('v1.30 word-builder plays once on grading, not while selecting Kana',()=>{
  assert.deepEqual(h.audioFiles,['assets/feedback/correct.wav?v=2']);
  assert.match(h.ui.page(route),/data-f33="feedback-audio"/);
 });
-test('v1.30 feedback assets are standard little-endian mono PCM WAV files',()=>{
+test('v1.31 feedback assets are standard little-endian mono PCM WAV files',()=>{
  for(const name of ['correct','incorrect']){
   const src=readFileSync(new URL('assets/feedback/'+name+'.wav',root));
   assert.equal(src.toString('ascii',0,4),'RIFF');
@@ -1181,47 +1184,49 @@ test('v1.30 feedback assets are standard little-endian mono PCM WAV files',()=>{
  }
 });
 
-test('v1.30 recommends review after an error and removes nested exercise menus',()=>{
+test('v1.31 lesson action paths retain exact filtered scope without nested menus',()=>{
  const h=harness(),base='learn/foundation/hiragana/unit-1';
- h.location.hash='#'+base+'/practice';let hub=h.ui.page(base+'/practice');
- assert.match(hub,/Luyện nhận mặt chữ/);
- assert.equal((hub.match(/data-f130="tab"/g)||[]).length,3);
- assert.match(hub,/\/unit-1\/quiz"/);
- h.location.hash='#'+base+'/quiz';h.ui.page(base+'/quiz');
- const q=h.ui.session().questions[0],wrong=q.choices.find(x=>x.id!==q.correct);
- h.click('answer',wrong.id);
- h.location.hash='#'+base+'/practice';hub=h.ui.page(base+'/practice');
- assert.match(hub,/Ôn chữ cần nhớ/);
- assert.match(hub,/\/unit-1\/review"/);
+ h.location.hash='#'+base+'/practice';
+ const page=h.ui.page(base+'/practice');
+ for(const dest of [base+'/quiz',base+'/mix'])assert.ok(page.includes('href="#'+dest+'"'));
+ assert.ok(page.includes('href="#learn/training/foundation/hiragana/unit-1/hira"'));
+ assert.doesNotMatch(page,/v130-entry-nav|v129-advanced|v126-exercise-picker/);
  for(const mode of ['flash','quiz','reverse','match','mix']){
-  const route=base+'/'+mode;h.location.hash='#'+route;const page=h.ui.page(route);
-  assert.doesNotMatch(page,/Đổi dạng bài|v126-exercise-picker/);
-  assert.match(page,/data-value="practice">‹ Thực hành/);
+  const route=base+'/'+mode;h.location.hash='#'+route;const output=h.ui.page(route);
+  assert.doesNotMatch(output,/Đổi dạng bài|v126-exercise-picker/);
+  assert.match(output,/data-value="practice">‹ Thực hành/);
  }
 });
-
-test('v1.30 offers three learner-controlled Practice paths and persists preference separately',()=>{
- const h=harness(),base='learn/foundation/hiragana/unit-1';
- const hub=()=>{h.location.hash='#'+base+'/practice';return h.ui.page(base+'/practice')};
- let page=hub();
- assert.equal((page.match(/data-f130="tab"/g)||[]).length,3);
- for(const label of ['Luyện theo gợi ý','Tự chọn dạng bài','Kiểm tra tổng hợp'])assert.ok(page.includes(label));
- assert.match(page,/id="v130-panel-guided" data-v130-panel="guided"/);
- assert.match(page,/id="v130-panel-choose" data-v130-panel="choose" hidden/);
- assert.match(page,/id="v130-panel-test" data-v130-panel="test" hidden/);
- h.click('practice-tab','choose');
- page=hub();
- assert.match(page,/data-value="choose" aria-pressed="true"/);
- assert.doesNotMatch(page,/id="v130-panel-choose" data-v130-panel="choose" hidden/);
- for(const mode of ['quiz','reverse','truefalse','listen','match'])assert.ok(page.includes('href="#'+base+'/'+mode+'"'));
- h.location.hash='#'+base+'/reverse';h.ui.page(base+'/reverse');
- page=hub();
- assert.match(page,/Vừa mở: Âm → chữ/);
- h.setProfile('demo-b');page=hub();
- assert.match(page,/data-value="guided" aria-pressed="true"/);
- assert.doesNotMatch(page,/Vừa mở: Âm → chữ/);
- h.setProfile('demo-a');h.click('practice-tab','test');page=hub();
- assert.match(page,/data-value="test" aria-pressed="true"/);
- assert.ok(page.includes('href="#'+base+'/mix"'));
- assert.match(page,/không phải đề JLPT chính thức/);
+test('v1.31 global Practice filters Foundation chapters, units, script and N5 truthfully',()=>{
+ const h=harness(),window={NPFoundationCurriculum:h.data,NPFoundationCourse:h.ui};
+ const hooks={},map=new Map(),localStorage={getItem:key=>map.get(key)||null,setItem:(key,val)=>map.set(key,val)};
+ const location={hash:'#learn/training/foundation/hiragana/unit-1/hira'};
+ const source=load('learning-hub-v25.js').replace(/\}\)\(\);\s*$/,'window.__training={page:trainingTab,scope:trainingScope,route:trainingRoute};})();');
+ runInNewContext(source,{window,document:{addEventListener:(kind,fn)=>{hooks[kind]=fn},querySelector:()=>({})},location,localStorage,
+  route:()=>location.hash.replace(/^#/,''),P:()=>({id:'demo-a',goal:'Nền tảng',name:'Learner A'}),
+  render:()=>{},learnPage:()=>'',coursePage:()=>'',titleOf:()=>'',icon:()=>'',Locale:{t:x=>x}});
+ let html=window.__training.page(null);
+ assert.match(html,/Luyện theo cách của bạn/);
+ assert.match(html,/Cấp độ/);
+ assert.match(html,/Nội dung/);
+ assert.match(html,/Bài học/);
+ assert.match(html,/Hệ chữ/);
+ assert.match(html,/Tự chọn dạng bài/);
+ assert.match(html,/Kiểm tra tổng hợp/);
+ assert.ok(html.includes('href="#learn/foundation/hiragana/unit-1/quiz/hira"'));
+ assert.ok(html.includes('href="#learn/foundation/hiragana/unit-1/mix/hira"'));
+ assert.doesNotMatch(html,/Chưa đủ dữ liệu/);
+ const sc=window.__training.scope();
+ assert.equal(window.__training.route('unit','unit-2',sc),'learn/training/foundation/hiragana/unit-2/hira');
+ assert.equal(window.__training.route('module','katakana',sc),'learn/training/foundation/katakana/all/kata');
+ assert.equal(window.__training.route('level','N5',sc),'learn/training/N5/all');
+ assert.equal(window.__training.route('level','N4',sc),'learn/training/foundation/hiragana/all/hira');
+ location.hash='#learn/training/N5/all';html=window.__training.page(null);
+ assert.match(html,/N5 · Luyện theo bài đã có/);
+ assert.match(html,/quiz\/n5-greetings/);
+ assert.doesNotMatch(html,/learn\/foundation\/hiragana\/unit-1\/mix/);
+ assert.match(html,/N4–N1 chưa phát hành/);
+ const first=window.__training.scope();
+ assert.equal(first.level,'N5');
+ assert.equal(window.__training.route('lesson','n5-demonstratives',first),'learn/training/N5/n5-demonstratives');
 });
