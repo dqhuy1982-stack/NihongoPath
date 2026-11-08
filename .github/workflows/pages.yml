@@ -158,13 +158,13 @@ jobs:
                 const contextResponse=await fetch(base+'n5-lesson01-context-v147.js?v=148',{headers:{'Cache-Control':'no-cache'}});
                 if(!contextResponse.ok)throw Error('Published scenario module HTTP '+contextResponse.status);
                 const contextScript=await contextResponse.text();
-                for(const id of ['meeting','colleague','correcting','classmates']){
+                for(const id of ['meeting','colleague','correcting','classmates','namecheck','identity']){
                   assert.ok(contextScript.includes('"id": "'+id+'"'),'Published scenario '+id+' missing');
                 }
                 assert.ok(lessonSource.includes('function scenePage()'),'Published controller has no scene renderer');
                 assert.ok(lessonSource.includes('chooseSceneAnswer'),'Published controller has no in-context practice action');
                 console.log('LIVE_N5_CONTEXT_VERIFIED',JSON.stringify({version:'v1.48',
-                 scenarios:4,commit:process.env.SOURCE_COMMIT}));
+                 scenarios:6,commit:process.env.SOURCE_COMMIT}));
                 console.log('LIVE_N5_LESSON01_VERIFIED',JSON.stringify({version:'v1.48',
                   assets:['n5-lesson01-v146.js','n5-lesson01-data-v146.js'],commit:process.env.SOURCE_COMMIT}));
                 assert.match(html,/n5-character-world-v148\.css\?v=148/,'Character world styles missing from published HTML');
