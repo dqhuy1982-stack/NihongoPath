@@ -1,4 +1,4 @@
-/* HORIZON v1.34 · Non-invasive guided tour for the Training workspace.
+/* HORIZON v1.36 · Non-invasive guided tour for the Training workspace.
    An illustrated pointer is used; the real mouse is never moved or clicked.
    Preferences are browser-local per learner and separate from learning scores. */
 (function(){
@@ -26,7 +26,7 @@ const inlineSteps=[
  {selector:'.v134-inline-clear',title:'04 · Quay về phần tổng quan',
   desc:'Khi muốn bắt đầu lại từ gợi ý hoặc kiểm tra tổng hợp, chọn Về trang luyện tập. Menu dạng bài luôn ở bên trái.'}
 ];
-let tour=null,timer=null,clockTick=null;
+let tour=null,timer=null,clockTick=null,scopeHint=null;
 const STEP_MS=8000;
 const seenSession=new Set();
 function pref(){try{return localStorage.getItem(key())||'first'}catch(e){return 'seen'}}
@@ -66,7 +66,7 @@ function scheduleCountdown(){
   // Briefly show 00, then move; avoids abrupt countdown reset.
   timer=setTimeout(()=>{
    timer=null;if(tour!==t||t.confirm||t.paused)return;
-   if(t.step>=t.steps.length-1){end();return}
+   if(t.step>=t.steps.length-1){end('complete');return}
    t.step++;t.remainingMs=STEP_MS;layOut();
   },260);
  },100);
@@ -76,13 +76,50 @@ function pauseCountdown(){
  if(clockTick!==null)tour.remainingMs=Math.max(0,tour.deadline-Date.now());
  clearTimer();tour.paused=true;updateCountdown();
 }
-function end(savePreference=true){
+/* After successful completion, point to the next useful decision without
+   hijacking focus or reopening the course filters. */
+function clearScopeHint(){
+ if(!scopeHint)return;
+ const h=scopeHint;scopeHint=null;
+ clearTimeout(h.timer);
+ h.panel.classList.remove('v136-post-tour-active');
+ h.chip.classList.remove('v136-scope-attention');
+ h.bubble.remove();
+ document.removeEventListener('pointerdown',h.cancel,true);
+ window.removeEventListener('hashchange',clearScopeHint);
+}
+function spotlightScope(){
+ clearScopeHint();
+ const panel=document.querySelector('.v132-scope');
+ const chip=panel?.querySelector('.v132-scope-change');
+ if(!panel||!chip)return;
+ const summary=panel.querySelector('summary');
+ const bounds=summary?.getBoundingClientRect();
+ const height=window.innerHeight||768;
+ if(bounds&&(bounds.bottom<60||bounds.top>height-85)){
+  summary.scrollIntoView?.({block:'center',behavior:'smooth'});
+ }
+ const bubble=document.createElement('span');
+ bubble.className='v136-post-tour-bubble';
+ bubble.setAttribute('role','status');
+ bubble.textContent='Chọn phạm vi bạn muốn luyện hoặc kiểm tra tại đây';
+ chip.appendChild(bubble);
+ panel.classList.add('v136-post-tour-active');
+ chip.classList.add('v136-scope-attention');
+ const cancel=()=>clearScopeHint();
+ scopeHint={panel,chip,bubble,cancel,timer:null};
+ document.addEventListener('pointerdown',cancel,true);
+ window.addEventListener('hashchange',clearScopeHint);
+ scopeHint.timer=setTimeout(clearScopeHint,7600);
+}
+function end(reason='exit',savePreference=true){
  clearTimer();
  if(!tour)return;
- if(savePreference)save(tour.repeat);
- tour.host.remove();
- tour=null;
+ const host=tour.host,repeat=tour.repeat;
+ tour=null;host.remove();
+ if(savePreference)save(repeat);
  updateControls();
+ if(reason==='complete')spotlightScope();
 }
 function updateControls(){
  const enabled=pref()==='repeat';
@@ -96,7 +133,7 @@ function layOut(){
  if(clockTick!==null&&!tour.paused&&!tour.confirm)tour.remainingMs=Math.max(0,tour.deadline-Date.now());
  const steps=tour.steps,step=steps[tour.step],small=(window.innerWidth||1024)<=620;
  const target=document.querySelector(small&&step.mobile?step.mobile:step.selector);
- if(!target){end();return}
+ if(!target){end('unavailable');return}
  const rect=target.getBoundingClientRect();
  const w=window.innerWidth||1024,h=window.innerHeight||768;
  const highlight=tour.host.querySelector('.v134-guide-spot');
@@ -105,15 +142,23 @@ function layOut(){
  highlight.style.width=Math.max(28,rect.width+12)+'px';
  highlight.style.height=Math.max(32,rect.height+12)+'px';
  const cursor=tour.host.querySelector('.v134-guide-cursor');
- cursor.style.transform='translate3d('+Math.min(w-34,rect.left+Math.min(rect.width*.7,150))+'px,'+
-  Math.min(h-36,rect.top+Math.min(rect.height*.55,35))+'px,0)';
+ // This is an illustrated pointer, not the learner's actual cursor.
+ const pointerX=Math.max(8,Math.min(w-34,rect.left+Math.min(rect.width*.62,130)));
+ const pointerY=Math.max(8,Math.min(h-36,rect.top+Math.min(rect.height*.5,27)));
+ cursor.style.transform='translate3d('+pointerX+'px,'+pointerY+'px,0)';
  const card=tour.host.querySelector('.v134-guide-card');
  const width=Math.min(360,w-24);
- const left=Math.max(12,Math.min(w-width-12,rect.left));
- const below=rect.bottom+16;
- const height=Math.max(275,card.getBoundingClientRect().height||305);
- const top=below+height+12<h?below:Math.max(12,Math.min(h-height-12,rect.top-height-16));
- card.style.width=width+'px';card.style.left=left+'px';card.style.top=top+'px';
+ const left=Math.max(12,Math.min(w-width-12,rect.left+rect.width*.5-width*.42));
+ card.style.width=width+'px';
+ const height=Math.min(h-24,Math.max(275,card.getBoundingClientRect().height||305));
+ const below=rect.bottom+16,above=rect.top-height-16;
+ const side=below+height+12<=h?'below':above>=12?'above':'floating';
+ const top=side==='below'?below:side==='above'?above:Math.max(12,(h-height)*.5);
+ // Point the dialogue tail at the highlighted control, even near screen edges.
+ const arrowX=Math.max(22,Math.min(width-22,rect.left+rect.width*.5-left));
+ card.style.setProperty('--v136-arrow-x',arrowX+'px');
+ card.style.left=left+'px';card.style.top=top+'px';
+ tour.host.dataset.bubbleSide=side;
  tour.host.querySelector('.v134-guide-title').textContent=step.title;
  tour.host.querySelector('.v134-guide-body').textContent=step.desc;
  tour.host.querySelector('.v134-guide-progress').textContent=(tour.step+1)+' / '+steps.length;
@@ -184,7 +229,7 @@ function start(manual=false){
   if(action==='ask-exit'){confirmExit();return}
   if(action==='continue'){tour.confirm=false;layOut();
    host.querySelector('[data-v134-action="next"]')?.focus?.({preventScroll:true});return}
-  if(action==='exit'){end();return}
+  if(action==='exit'){end('exit');return}
   if(tour.confirm)return;
   if(action==='pause'){
    if(tour.paused){tour.paused=false;layOut()}
@@ -192,7 +237,7 @@ function start(manual=false){
    return;
   }
   if(action==='prev'){clearTimer();tour.step=Math.max(0,tour.step-1);tour.remainingMs=STEP_MS;layOut();return}
-  if(action==='next'){if(tour.step===tour.steps.length-1)end();else{clearTimer();tour.step++;tour.remainingMs=STEP_MS;layOut()}}
+  if(action==='next'){if(tour.step===tour.steps.length-1)end('complete');else{clearTimer();tour.step++;tour.remainingMs=STEP_MS;layOut()}}
  });
  layOut();
  host.querySelector('[data-v134-action="next"]')?.focus?.({preventScroll:true});
@@ -215,6 +260,6 @@ window.addEventListener('resize',()=>{if(tour)layOut()});
 document.addEventListener('visibilitychange',()=>{
  if(tour&&document.hidden&&!tour.paused){pauseCountdown()}
 });
-window.addEventListener('hashchange',()=>{if(tour)end(false)});
+window.addEventListener('hashchange',()=>{if(tour)end('navigation',false);else clearScopeHint()});
 window.NPTrainingGuide={maybeStart,start,isActive:()=>!!tour};
 })();
