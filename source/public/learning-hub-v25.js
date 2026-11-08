@@ -495,9 +495,16 @@ function trainingTab(m){
  const disclosure='<details class="v132-scope"'+(disclosureOpen()?' open':'')+'><summary><span><small>PHẠM VI ĐANG LUYỆN</small><strong>'+safe(title)+'</strong></span>'+
   '<span class="v132-scope-change">Đổi phạm vi <span aria-hidden="true">⌄</span></span></summary>'+
   '<div class="v131-filters" role="group" aria-label="Lọc phạm vi luyện tập">'+filters+'</div></details>';
- return '<section class="v25-panel v131-training v132-training" aria-labelledby="v131-title"><header class="v131-heading"><span>KHÔNG GIAN LUYỆN TẬP</span>'+
- '<h2 id="v131-title">Luyện tập</h2><p>Chọn dạng bài bên trái và thực hành ngay bên phải, không rời trang.</p></header>'+
- disclosure+body+'</section>';
+ if(typeof queueMicrotask==='function'&&!s.mode)queueMicrotask(()=>window.NPTrainingGuide?.maybeStart?.());
+ const guidePref=(()=>{try{return localStorage.getItem('Horizon.Training.guide.v134.'+
+  String(P()?.id||'guest').replace(/[^a-z0-9_-]/gi,'_'))==='repeat'}catch(e){return false}})();
+ const help='<div class="v134-guide-tools">'+
+  '<button type="button" data-v134-guide="start" title="Xem hướng dẫn cách dùng Luyện tập">? Hướng dẫn</button>'+
+  '<button type="button" data-v134-guide="toggle" aria-pressed="'+guidePref+'" title="Bật hoặc tắt hướng dẫn tự động ở lần mở sau">Tự mở: '+(guidePref?'Bật':'Tắt')+'</button></div>';
+ return '<section class="v25-panel v131-training v132-training" aria-labelledby="v131-title">'+
+  '<header class="v131-heading v134-heading"><div><span>KHÔNG GIAN LUYỆN TẬP</span>'+
+  '<h2 id="v131-title">Luyện tập</h2><p>Chọn dạng bài bên trái và thực hành ngay bên phải, không rời trang.</p></div>'+
+  help+'</header>'+disclosure+body+'</section>';
 }
 
 function otherTab(tab){
