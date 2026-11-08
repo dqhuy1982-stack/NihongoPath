@@ -945,9 +945,51 @@ test('v1.23 both portal dialogs preserve opaque theme on body',()=>{
  assert.match(result,/class="v107-dialog v109-dialog"/);
 });
 
-test('v1.23 Foundation atlas has six selectable chapters and forty connected topics',()=>{
+test('v1.24 Foundation uses 17 learner-facing lessons without losing 40 original row groups',()=>{
  const {data,ui}=harness();
- const window={NPFoundationCurriculum:data,NPFoundationCourse:ui},hooks={};
+ assert.equal(data.modules.length,6);
+ const lessons=data.modules.flatMap(m=>data.getLessonUnits(m.id));
+ assert.equal(lessons.length,17);
+ assert.deepEqual(Array.from(lessons.map(x=>x.groups.length).sort((a,b)=>a-b)),[1,1,1,1,1,2,2,2,2,2,2,3,3,3,3,4,4].sort((a,b)=>a-b));
+ for(const m of data.modules){
+  const units=data.getLessonUnits(m.id);
+  const groups=units.flatMap(x=>x.groups);
+  assert.deepEqual(Array.from(groups),Array.from(m.groups.map(x=>x.id)),m.id+' preserved groups');
+ }
+ assert.equal(data.take('hiragana','unit-1').length,10);
+ assert.equal(data.take('hiragana','unit-2').length,15);
+ assert.equal(data.take('hiragana','unit-3').length,13);
+ assert.equal(data.take('hiragana','unit-4').length,8);
+ assert.equal(data.take('katakana','unit-3').length,13);
+ assert.equal(data.take('dakuten','unit-1').length,20);
+ assert.equal(data.take('dakuten','unit-2').length,30);
+ assert.equal(data.take('yoon','unit-1').length,24);
+ assert.equal(data.take('yoon','unit-2').length,18);
+ assert.equal(data.take('yoon','unit-3').length,24);
+ assert.equal(data.take('hiragana','a').length,5);
+ assert.equal(data.take('katakana','k').length,5);
+ assert.equal(data.counts.hiragana,46);
+ const sample='learn/foundation/hiragana/unit-1/learn';
+ const old='learn/foundation/hiragana/a/learn';
+ const h=harness();
+ h.location.hash='#'+sample;
+ let html=h.ui.page(sample);
+ assert.equal((html.match(/class="v33-glyph-card/g)||[]).length,10);
+ assert.match(html,/Nguyên âm & hàng K/);
+ assert.match(html,/v36-kana-row/);
+ h.location.hash='#'+old;
+ html=h.ui.page(old);
+ assert.equal((html.match(/class="v33-glyph-card/g)||[]).length,5);
+ for(const route of ['learn/foundation/hiragana/unit-2/flash','learn/foundation/katakana/unit-3/quiz','learn/foundation/yoon/unit-2/match']){
+  h.location.hash='#'+route;
+  const body=h.ui.page(route);
+  assert.match(body,/v34-stagebar/,route);
+  assert.ok(!body.includes('Chưa đủ dữ liệu'),route);
+ }
+ assert.ok(ui.path('hiragana','unit-1','quiz').includes('unit-1/quiz'));
+});
+test('v1.24 catalogue shows six chapters and seventeen meaningful lessons',()=>{
+ const {data,ui}=harness(),window={NPFoundationCurriculum:data,NPFoundationCourse:ui},hooks={};
  const document={addEventListener:(kind,fn)=>{hooks[kind]=fn}};
  const script=load('learning-hub-v25.js').replace(/\}\)\(\);\s*$/,'window.__foundationCatalog=foundationModuleCatalogue;})();');
  runInNewContext(script,{
@@ -957,40 +999,39 @@ test('v1.23 Foundation atlas has six selectable chapters and forty connected top
  const html=window.__foundationCatalog();
  assert.equal((html.match(/data-v123-select=/g)||[]).length,6);
  assert.equal((html.match(/data-v123-pane=/g)||[]).length,6);
- assert.equal((html.match(/data-v121-topic(?:\s|>)/g)||[]).length,40);
- assert.equal((html.match(/class="v121-topic-main"/g)||[]).length,40);
- for(const mode of ['quiz','flash','mix']){
-  assert.equal((html.match(new RegExp('href="#learn/foundation/[^"]+/'+mode+'"','g'))||[]).length,40);
- }
- assert.equal((html.match(/Bài hướng dẫn chi tiết/g)||[]).length,4);
+ assert.equal((html.match(/data-v121-topic(?:\s|>)/g)||[]).length,17);
+ assert.equal((html.match(/class="v121-topic-main"/g)||[]).length,17);
+ assert.equal((html.match(/class="v125-lesson-parts"/g)||[]).length,13);
+ assert.ok(html.includes('17 BÀI HỌC'));
  assert.ok(html.includes('data-v121-filter'));
  assert.ok(html.includes('Tiếp tục học →'));
- for(const route of [
-  'hiragana/a/learn','katakana/w/quiz','dakuten/g/flash','yoon/ky/mix','small/pause/learn','mixed/mixed/mix'
- ])assert.ok(html.includes('href="#learn/foundation/'+route+'"'),route);
+ assert.ok(html.includes('href="#learn/foundation/hiragana/unit-1/learn"'));
+ assert.ok(html.includes('href="#learn/foundation/katakana/unit-4/learn"'));
+ assert.ok(html.includes('href="#learn/foundation/dakuten/unit-2/learn"'));
+ assert.ok(html.includes('href="#learn/foundation/yoon/unit-3/learn"'));
+ assert.ok(html.includes('href="#learn/foundation/small/pause/learn"'));
+ assert.ok(html.includes('href="#learn/foundation/mixed/mixed/learn"'));
+ // Row-level routes stay available on demand, not as forty top-level lessons.
+ assert.ok(html.includes('href="#learn/foundation/hiragana/a/learn"'));
+ assert.ok(html.includes('href="#learn/foundation/hiragana/k/learn"'));
+ assert.equal((html.match(/data-v125-select/g)||[]).length,0);
  assert.ok(!html.includes('href="#learn/foundation/undefined'));
  assert.ok(html.includes('v123-panel-hiragana'));
  assert.ok(html.includes('data-v123-pane="katakana" hidden'));
- assert.ok(html.includes('data-v123-select="hiragana"'));
- assert.ok(!html.includes('data-v121-chapter'));
  const css=load('learning-hub-v25.css');
- assert.ok(css.includes('.v33-foundation .v123-catalog-layout'));
- assert.ok(css.includes('.v33-foundation .v123-topic-panes'));
- assert.ok(css.includes('@media(max-width:760px)'));
+ assert.ok(css.includes('.v33-foundation .v125-catalog .v123-topic-panes'));
+ assert.ok(css.includes('max-height:none!important'));
  assert.equal(typeof hooks.input,'function');
  assert.equal(typeof hooks.click,'function');
- // Search reveals only matching topics and chapters without changing learner data.
  const a={hidden:false,getAttribute:()=> 'kya'};
  const b={hidden:false,getAttribute:()=> 'hàng k'};
  const first={hidden:false,getAttribute:()=> 'hiragana',querySelectorAll:()=>[a]};
  const second={hidden:true,getAttribute:()=> 'katakana',querySelectorAll:()=>[b]};
  const status={hidden:true,textContent:''};
  const selection={getAttribute:()=> 'hiragana'};
- const area={
-  classList:{toggle:()=>{},remove:()=>{}},
+ const area={classList:{toggle:()=>{},remove:()=>{}},
   querySelectorAll:q=>q==='[data-v123-pane]'?[first,second]:q==='[data-v121-topic]'?[a,b]:[],
-  querySelector:q=>q==='[data-v121-status]'?status:q==='[data-v123-select].is-active'?selection:null
- };
+  querySelector:q=>q==='[data-v121-status]'?status:q==='[data-v123-select].is-active'?selection:null};
  hooks.input({target:{matches:()=>true,value:'kya',closest:()=>area}});
  assert.equal(a.hidden,false);
  assert.equal(b.hidden,true);
@@ -1019,7 +1060,7 @@ test('v1.23 learning navigation exposes exactly three destinations and keeps leg
  location.hash='#learn/lessons';
  assert.match(window.__legacy(),/Nền tảng/);
  const nested=window.NPHorizonV25.foundationCatalogue();
- assert.equal((nested.match(/data-v121-topic(?:\s|>)/g)||[]).length,40);
+ assert.equal((nested.match(/data-v121-topic(?:\s|>)/g)||[]).length,17);
 });
 test('v1.23 Foundation course contains searchable topics without another menu level',()=>{
  const {data,ui}=harness();
