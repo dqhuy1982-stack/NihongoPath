@@ -250,10 +250,12 @@ function foundationModuleCatalogue(){
    const attempts=record.history||[];
    const totalAttempts=record.totalAttempts||attempts.length;
    const stage=record.complete?'complete':record.testPassed?'test-passed':
-    record.practiceDone?'practiced':record.testDone?'attempted':'new';
-   const stateText=record.complete?'✓ Hoàn thành':record.testPassed?'✓ Kiểm tra đạt':
-    record.practiceDone?'✓ Đã luyện':record.testDone?'◷ Cần kiểm tra lại':'Chưa bắt đầu';
-   const grade=record.testDone?engine.resultGrade?.(record.bestTest):null;
+    record.practicePassed?'practice-passed':record.practiceDone?'practiced':record.testDone?'attempted':'new';
+   const stateText=record.complete?'✓ Hoàn thành':record.testPassed?'✓ Kiểm tra đạt · còn luyện':
+    record.practicePassed?'✓ Luyện đạt · còn kiểm tra':record.practiceDone?'◷ Đã luyện':
+    record.testDone?'◷ Cần kiểm tra lại':'Chưa bắt đầu';
+   const grade=record.testDone?engine.resultGrade?.(record.bestTest):
+    record.practiceDone?engine.resultGrade?.(record.bestPractice):null;
    const gradeClass=grade?.tone||'neutral';
    const log=attempts.length?'<details class="v140-catalog-history"><summary>Lịch sử · '+attempts.length+' lượt <span aria-hidden="true">⌄</span></summary>'+
     '<div class="v140-catalog-history-rows">'+attempts.slice(-5).reverse().map((x,j)=>
@@ -275,15 +277,24 @@ function foundationModuleCatalogue(){
     '<span class="v121-topic-copy"><strong>'+safe(unit.title)+'</strong><small>'+safe(unit.summary)+'</small></span>'+
     '<span class="v121-topic-progress">'+practiced+' / '+unique.length+' mẫu đã luyện</span>'+
     '<span class="v140-topic-badge is-'+stage+' is-grade-'+gradeClass+'"><span class="v141-status-emblem" aria-hidden="true">'+(grade?.icon||'○')+'</span><span class="v141-status-copy"><strong>'+stateText+'</strong>'+
-     (grade?'<b>'+grade.label+' · '+grade.score+'%</b>':'')+'</span></span>'+
+     (grade?'<b>'+grade.label+' · '+grade.score+'%'+(record.testDone?' kiểm tra':' luyện')+'</b>':'')+'</span></span>'+
     '<span class="v125-lesson-open">Mở bài <span aria-hidden="true">›</span></span></a>'+
     '<div class="v140-catalog-progress"><div class="v140-catalog-milestones">'+
-     '<span class="'+(record.practiceDone?'is-done':'')+'">'+(record.practiceDone?'✓ ':'○ ')+'Luyện '+(record.practiceCount||0)+' lượt</span>'+
+     '<span class="'+(record.practicePassed?'is-done':'')+'">'+(record.practicePassed?'✓ Luyện đạt':record.practiceDone?'◷ Đã luyện':'○ Chưa luyện')+' · '+(record.practiceCount||0)+' lượt</span>'+
      '<span class="'+(record.testPassed?'is-done':record.testDone?'is-retry':'')+'">'+
       (record.testPassed?'✓ Kiểm tra đạt':record.testDone?'◷ Kiểm tra '+record.testCount+' lượt':'○ Chưa kiểm tra')+
      '</span></div><div class="v140-catalog-actions">'+
-     '<a href="#learn/training/foundation/'+m.id+'/'+unit.id+'/'+script+'/quiz">Luyện ngay <span aria-hidden="true">↗</span></a>'+
-     '<a href="#learn/training/foundation/'+m.id+'/'+unit.id+'/'+script+'/mix">Kiểm tra bài này <span aria-hidden="true">↗</span></a></div></div>'+
+     (record.complete&&engine.nextLearningStep?.({id:m.id,group:unit.id,script,mod:m})?
+       '<a class="v143-catalog-next" href="'+safe(engine.nextLearningStep({id:m.id,group:unit.id,script,mod:m}).href)+'">'+safe(engine.nextLearningStep({id:m.id,group:unit.id,script,mod:m}).label)+' <span aria-hidden="true">→</span></a>'+
+       '<a href="#learn/training/foundation/'+m.id+'/'+unit.id+'/'+script+'/quiz">Ôn lại ↻</a>':
+       record.practicePassed&&!record.testPassed?
+       '<a class="v143-catalog-next" href="#learn/training/foundation/'+m.id+'/'+unit.id+'/'+script+'/mix">Kiểm tra để hoàn thành →</a>'+
+       '<a href="#learn/training/foundation/'+m.id+'/'+unit.id+'/'+script+'/quiz">Luyện lại ↻</a>':
+       record.testPassed&&!record.practicePassed?
+       '<a class="v143-catalog-next" href="#learn/training/foundation/'+m.id+'/'+unit.id+'/'+script+'/quiz">Luyện để hoàn thành →</a>'+
+       '<a href="#learn/training/foundation/'+m.id+'/'+unit.id+'/'+script+'/mix">Kiểm tra lại ↻</a>':
+       '<a href="#learn/training/foundation/'+m.id+'/'+unit.id+'/'+script+'/quiz">Luyện ngay ↗</a>'+
+       '<a href="#learn/training/foundation/'+m.id+'/'+unit.id+'/'+script+'/mix">Kiểm tra bài này ↗</a>')+'</div></div>'+
     log+partDetails+'</article>';
   });
   const complete=lessons.filter(u=>engine.attemptStatus?.(m.id,u.id,m.script==='hira'?'hira':m.script==='kata'?'kata':'both')?.complete).length;
@@ -313,7 +324,7 @@ function foundationModuleCatalogue(){
    '<div class="v123-pane-heading"><div><strong>'+safe(m.title.replace(/^\d+\s*[·.:-]\s*/,''))+'</strong><p>'+safe(m.subtitle)+'</p></div>'+
    '<a href="#'+engine.path(m.id,'all','learn')+'">Xem toàn chặng ↗</a></div>'+
    '<div class="v123-topic-list">'+entries.join('')+'</div></section>').join('')+'</div></div>'+
-  '<p class="v121-catalog-note">Dấu ✓ hoàn thành khi đã làm ít nhất một lượt luyện và kiểm tra tổng hợp đạt từ 80%. Có thể làm lại nhiều lần; lịch sử được lưu theo hồ sơ. Tốt: từ 90%; Đạt: 80–89%; Chưa đạt: dưới 80%. Dấu ✓ hoàn thành chỉ có khi đã luyện và kiểm tra đạt. Đây là tiêu chí của HORIZON, không phải chuẩn JLPT. Lịch sử các lượt và thống kê từng chữ vẫn được giữ riêng.</p>'+
+  '<p class="v121-catalog-note">Dấu ✓ khi bài học đã có một lượt luyện đạt từ 80% và kiểm tra tổng hợp đạt từ 80%. Kết quả cũ vẫn được giữ; có thể luyện, kiểm tra lại bất kỳ lúc nào. Tốt: từ 90%; Đạt: 80–89%; Chưa đạt: dưới 80%. Đây là tiêu chí HORIZON, không phải chuẩn JLPT.</p>'+
   '</section>';
 }
 
@@ -486,9 +497,13 @@ function trainingTab(m){
   const allModes=grouped.flatMap(x=>x[2]),recent=recentTrainingMode(allModes);
   const selected=allModes.find(x=>x[0]===s.mode)||(s.mode==='mix'?['mix','Kiểm tra tổng hợp','✓']:null);
   const status=window.NPFoundationCourse?.attemptStatus?.(s.mod.id,s.unit,s.script)||{};
-   const startDone=status.practiceDone?'✓ Đã luyện · '+status.practiceCount+' lượt':'Chưa hoàn tất lượt luyện';
+   const startDone=status.complete?'✓ Bài học đã hoàn thành':
+    status.practicePassed?'✓ Luyện đạt · '+status.practiceCount+' lượt':
+    status.practiceDone?'◷ Đã luyện · cần đạt 80%':'Chưa hoàn tất lượt luyện';
    const grade=status.testDone?window.NPFoundationCourse?.resultGrade?.(status.bestTest):null;
-   const examDone=status.testPassed?'✓ Kiểm tra đạt · '+status.bestTest+'%':status.testDone?'◷ Kiểm tra chưa đạt · '+status.bestTest+'%':'Chưa kiểm tra';
+   const examDone=status.complete?'✓ Đã hoàn thành · '+status.bestTest+'%':
+    status.testPassed?'✓ Kiểm tra đạt · '+status.bestTest+'%':
+    status.testDone?'◷ Kiểm tra chưa đạt · '+status.bestTest+'%':'Chưa kiểm tra';
    const chosen=recent?.[0]||'quiz',heading=recent?'Luyện lại: '+recent[1]:'Luyện nhận diện chữ';
   const description=recent?'Dạng bài bạn đã luyện gần đây.':'Nhận diện Kana và chọn cách đọc; không cần thiết lập thêm.';
   body='<div class="v132-start"><div class="v132-start-copy"><span class="v131-entry-tag">'+(recent?'BÀI LUYỆN GẦN NHẤT':'BẮT ĐẦU NHANH')+'</span>'+
