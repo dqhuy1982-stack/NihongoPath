@@ -812,7 +812,7 @@ function rememberPracticeMode(id){
 /* v1.29: All exercise choices belong to Practice. Keep the question screen quiet. */
 function activityBook(cfg){
  return '<nav class="v39-book-nav v126-book-nav v129-task-header" aria-label="Bài đang luyện">'+
- '<div class="v126-context"><button type="button" class="v126-back" data-f34="tab" data-value="practice">‹ Thực hành</button></div>'+
+ '<div class="v126-context"><a class="v126-back v133-return-menu" href="#learn/training/foundation/'+cfg.id+'/'+cfg.group+'/'+(cfg.mod.script==='hira'?'hira':cfg.mod.script==='kata'?'kata':cfg.script)+'">‹ Dạng bài</a></div>'+
  '<div class="v126-active-type"><small>ĐANG LUYỆN</small><strong>'+clean(modeNames[cfg.mode]||'Luyện tập')+'</strong></div>'+
  '<button type="button" class="v129-audio" data-f33="toggle-audio" aria-pressed="'+audioPref()+'" aria-label="Âm báo đúng sai: '+(audioPref()?'Bật':'Tắt')+'" title="Chỉ điều chỉnh âm báo đúng/sai. Nút nghe tiếng Nhật hoạt động riêng."><span aria-hidden="true">♫</span> Âm báo <strong>'+(audioPref()?'Bật':'Tắt')+'</strong></button></nav>';
 }
