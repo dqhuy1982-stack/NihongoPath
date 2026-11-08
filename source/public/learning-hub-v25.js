@@ -298,7 +298,8 @@ function foundationModuleCatalogue(){
     log+partDetails+'</article>';
   });
   const complete=lessons.filter(u=>engine.attemptStatus?.(m.id,u.id,m.script==='hira'?'hira':m.script==='kata'?'kata':'both')?.complete).length;
-  return {m,index,lessons,entries,complete};
+  const overall=engine.attemptStatus?.(m.id,'all',m.script==='hira'?'hira':m.script==='kata'?'kata':'both')||{};
+  return {m,index,lessons,entries,complete,overall};
  });
  const total=records.reduce((sum,r)=>sum+r.lessons.length,0);
  const completedTotal=records.reduce((sum,r)=>sum+r.complete,0);
@@ -314,11 +315,11 @@ function foundationModuleCatalogue(){
   '<input type="search" data-v121-filter placeholder="Tìm chữ, âm hoặc bài học…" aria-label="Tìm bài học Nền tảng" autocomplete="off"></label>'+
   '<a class="v121-continue" href="#'+nextPath+'">Tiếp tục học →</a></div>'+
   '<p class="v121-search-status" data-v121-status role="status" aria-live="polite" hidden></p>'+
-  '<div class="v123-catalog-layout"><nav class="v123-chapter-tabs" aria-label="Chọn chặng Nền tảng">'+records.map(({m,index,lessons,complete})=>
+  '<div class="v123-catalog-layout"><nav class="v123-chapter-tabs" aria-label="Chọn chặng Nền tảng">'+records.map(({m,index,lessons,complete,overall})=>
    '<button type="button" class="v123-chapter-tab'+(m.id===initialModule?' is-active':'')+'" data-v123-select="'+safe(m.id)+'" aria-controls="v123-panel-'+safe(m.id)+'" aria-current="'+(m.id===initialModule?'true':'false')+'">'+
    '<span class="v123-chapter-number">'+String(index+1).padStart(2,'0')+'</span>'+
    '<span class="v123-chapter-label">'+safe(m.title.replace(/^\d+\s*[·.:-]\s*/,''))+'</span>'+
-   '<small>'+(complete===lessons.length?'✓ Hoàn thành':complete+' / '+lessons.length+' hoàn thành')+'</small></button>').join('')+'</nav>'+
+   '<small>'+(complete===lessons.length?'✓ Hoàn thành':overall.complete?'✓ Tổng hợp đã đạt · '+complete+'/'+lessons.length+' bài':complete+' / '+lessons.length+' hoàn thành')+'</small></button>').join('')+'</nav>'+
   '<div class="v123-topic-panes">'+records.map(({m,entries})=>
    '<section class="v123-topic-pane" id="v123-panel-'+safe(m.id)+'" data-v123-pane="'+safe(m.id)+'" '+(m.id===initialModule?'':'hidden')+'>'+
    '<div class="v123-pane-heading"><div><strong>'+safe(m.title.replace(/^\d+\s*[·.:-]\s*/,''))+'</strong><p>'+safe(m.subtitle)+'</p></div>'+
@@ -497,7 +498,7 @@ function trainingTab(m){
   const allModes=grouped.flatMap(x=>x[2]),recent=recentTrainingMode(allModes);
   const selected=allModes.find(x=>x[0]===s.mode)||(s.mode==='mix'?['mix','Kiểm tra tổng hợp','✓']:null);
   const status=window.NPFoundationCourse?.attemptStatus?.(s.mod.id,s.unit,s.script)||{};
-   const startDone=status.complete?'✓ Bài học đã hoàn thành':
+   const startDone=status.complete?(s.unit==='all'?'✓ Đã đạt phạm vi tổng hợp':'✓ Bài học đã hoàn thành'):
     status.practicePassed?'✓ Luyện đạt · '+status.practiceCount+' lượt':
     status.practiceDone?'◷ Đã luyện · cần đạt 80%':'Chưa hoàn tất lượt luyện';
    const grade=status.testDone?window.NPFoundationCourse?.resultGrade?.(status.bestTest):null;
