@@ -289,7 +289,7 @@ function completeRound(s,cfg){
    slowestPairMs:durations.length===list.length?Math.max(...durations):null,
    audioReplays:list.reduce((n,p)=>n+p.audioReplays,0),attempts:r.attempts.slice(),
    pairResults:list,reviewIds:review.map(p=>p.itemId)};
- r.summary=report;r.summaryOpen=true;
+ r.summary=report;r.summaryOpen=true;s.finished=true;saveAttempt(cfg,s);
  const d=store();d.matchReview=d.matchReview||{};
  for(const p of list){if(p.wrongAttempts)d.matchReview[p.itemId]={at:report.endedAt,reason:'match-attempt'};else delete d.matchReview[p.itemId];}
  persist();saveRound(report);
@@ -419,8 +419,8 @@ function ensurePlay(config){
  const source=choosePool(config,kind);
  const list=kind==='review'?reviewPool(source):kind==='missing'?contextual(config):source;
  if(kind==='build'||kind==='game-build'){
-  const cards=chooseTargets(contextual(config),5);
-  play={key,kind,cards,index:0,selected:[],tileOrder:cards.length?shuffle(Array.from(cards[0].glyph).map((glyph,i)=>({glyph,i}))):[],answer:null,correct:0,finished:cards.length===0,startedAt:null,ready:true};
+  const cards=repeatCandidates(contextual(config),countPrefs().value);
+  play={key,kind,cards,index:0,selected:[],tileOrder:cards.length?shuffle(Array.from(cards[0].glyph).map((glyph,i)=>({glyph,i}))):[],answer:null,correct:0,finished:cards.length===0,startedAt:null,ready:true,poolSize:contextual(config).length,createdAt:new Date().toISOString()};
  }else if(['match','listen-match','game','game-listen'].includes(kind)){
   const permitted=['listen-match','game-listen'].includes(kind)?list.filter(x=>x.stage!=='small'&&Array.from(x.glyph).length<=3):list;
   const distinct=permitted.filter((x,i)=>permitted.findIndex(y=>y.read===x.read&&y.script===x.script)===i);
@@ -432,14 +432,15 @@ function ensurePlay(config){
    const used=new Set([...hira,...kata].map(x=>x.id));
    cards=shuffle([...hira,...kata,...chooseTargets(distinct.filter(x=>!used.has(x.id)),size-hira.length-kata.length)]);
   }else cards=chooseTargets(distinct,size);
-  play={key,kind,cards,left:shuffle(cards),right:shuffle(cards),leftId:null,rightId:null,matched:[],mistakes:0,answered:0,feedback:'',finished:cards.length===0,startedAt:null,ready:true};
+  play={key,kind,cards,left:shuffle(cards),right:shuffle(cards),leftId:null,rightId:null,matched:[],mistakes:0,answered:0,feedback:'',finished:cards.length===0,startedAt:null,ready:true,createdAt:new Date().toISOString()};
   startRound(play,config);
  }else if(kind==='flash'){
   play={key,kind,cards:shuffle(list),index:0,flipped:false,remembered:0,needsReview:0};
  }else{
-  const targets=chooseTargets(kind==='listen'?list.filter(x=>x.stage!=='small'&&Array.from(x.glyph).length<=3):list,Math.min(10,list.length));
+  const permitted=kind==='listen'?list.filter(x=>x.stage!=='small'&&Array.from(x.glyph).length<=3):list;
   const allPool=kind.startsWith('vocab')||kind==='missing'||config.id==='small'?contextual(config):DATA.take(config.id,'all',config.script);
-  const valid=targets.filter(x=>allPool.filter(p=>p.id!==x.id&&isWord(p)===isWord(x)).length>=2);
+  const eligible=permitted.filter(x=>allPool.filter(p=>p.id!==x.id&&isWord(p)===isWord(x)).length>=2);
+  const valid=repeatCandidates(eligible,countPrefs().value);
   const formats=shuffle(['quiz','truefalse','reverse','listen']);
   const questions=valid.map((x,i)=>{
    if(kind!=='mix'&&kind!=='review')return questionFor(x,kind,allPool);
@@ -449,7 +450,7 @@ function ensurePlay(config){
    if(mode==='listen'&&x.stage==='small')mode='truefalse';
    return questionFor(x,mode,allPool);
   });
-  play={key,kind,questions,index:0,correct:0,answered:0,choice:null,finished:valid.length===0,startedAt:null,ready:kind!=='mix',roundMs:[],slow:0,errors:0,hintsUsed:0,audioReplays:0};
+  play={key,kind,questions,index:0,correct:0,answered:0,choice:null,finished:valid.length===0,startedAt:null,ready:kind!=='mix',roundMs:[],slow:0,errors:0,hintsUsed:0,audioReplays:0,poolSize:eligible.length,createdAt:new Date().toISOString()};
  }
  return play;
 }
@@ -1049,7 +1050,7 @@ function perform(el){
  }
  if(op==='undo'&&['build','game-build'].includes(s.kind)&&!s.answer){s.selected.pop();refresh();return}
  if(op==='build-next'&&['build','game-build'].includes(s.kind)&&s.answer){
-  s.index++;s.finished=s.index>=s.cards.length;s.selected=[];s.answer=null;
+  s.index++;s.finished=s.index>=s.cards.length;s.selected=[];s.answer=null;if(s.finished)saveAttempt(cfg,s);
   if(!s.finished){s.tileOrder=shuffle(Array.from(s.cards[s.index].glyph).map((glyph,i)=>({glyph,i})));if(s.startedAt)resetClock(s);}
   refresh();return;
  }
@@ -1066,7 +1067,7 @@ function perform(el){
   refresh();pulseGradedFeedback(ok);
   return;
  }
- if(op==='next'&&s.choice){s.index++;s.choice=null;s.grade=null;s.hintsUsed=0;s.audioReplays=0;if(s.startedAt)resetClock(s);s.finished=s.index>=s.questions.length;refresh();return}
+ if(op==='next'&&s.choice){s.index++;s.choice=null;s.grade=null;s.hintsUsed=0;s.audioReplays=0;if(s.startedAt)resetClock(s);s.finished=s.index>=s.questions.length;if(s.finished)saveAttempt(cfg,s);refresh();return}
  if(op==='match'&&['match','listen-match','game','game-listen'].includes(s.kind)&&!s.matched.includes(value)&&s.cards.some(x=>x.id===value)){
   let gradedMatch=null;
   if(side==='left'){s.leftId=value;roundSelect(s,value);if(['listen-match','game-listen'].includes(s.kind)){const sample=s.cards.find(x=>x.id===value);if(sample){listenRound(s,value);pronounce(sample.glyph,sample.read,true);}}}
@@ -1220,5 +1221,5 @@ document.addEventListener('click',event=>{
  if(!document.querySelector('.v33-foundation'))return;
  event.preventDefault();perform(b);
 });
-window.NPFoundationCourse={version:'v39',page,embeddedPractice,store,stats:countStats,path,questionFor,choosePool,nextPracticeScope,session:()=>play};
+window.NPFoundationCourse={version:'v39',page,embeddedPractice,store,stats:countStats,path,questionFor,choosePool,nextPracticeScope,attemptStatus,runHistory,countPrefs,session:()=>play};
 })();
