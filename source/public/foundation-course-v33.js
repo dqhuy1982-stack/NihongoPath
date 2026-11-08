@@ -11,12 +11,12 @@ const modes=[
  ['vocab-ja-vi','Nhật → Việt','languages'],['vocab-vi-ja','Việt → Nhật','languages'],['missing','Điền Kana còn thiếu','puzzle'],['listen-match','Nghe & ghép','headphones'],['review','Ôn chữ yếu','refresh-cw'],['game','Ghép cặp vui','gamepad-2'],['game-build','Ghép từ','puzzle'],['game-listen','Nghe & nối','headphones'],['mix','Kiểm tra tổng hợp','check-circle-2']
 ];
 const modeNames=Object.fromEntries(modes.map(([id,title])=>[id,title]));
-const initialGroup=m=>m.id==='small'?'pause':'all';
+const initialGroup=m=>DATA.getLessonUnits(m?.id)?.[0]?.id||(m?.id==='small'?'pause':'all');
 const path=(id,group,mode,script)=>routePrefix+'/'+id+'/'+(group||initialGroup(DATA.byId[id]))+'/'+(mode||'learn')+(script&&script!=='both'?'/'+script:'');
 function current(){
  const bits=decodeURIComponent(location.hash.replace(/^#\/?/,'')).split('/');
  const id=bits[2],mod=DATA.byId[id],group=bits[3]|| (mod?initialGroup(mod):''),legacyMode=bits[4]||'learn',mode=({game:'match','game-listen':'listen-match','game-build':'build'})[legacyMode]||legacyMode,script=bits[5]||'both';
- return {id,mod,group:mod&&(group==='all'||mod.groups.some(x=>x.id===group))?group:mod?initialGroup(mod):'',mode:modeNames[mode]?mode:'learn',script:['hira','kata','both'].includes(script)?script:'both'};
+ return {id,mod,group:mod&&(group==='all'||mod.groups.some(x=>x.id===group)||!!DATA.findLessonUnit(id,group))?group:mod?initialGroup(mod):'',mode:modeNames[mode]?mode:'learn',script:['hira','kata','both'].includes(script)?script:'both'};
 }
 function learnerId(){try{return String(P()?.id||'guest').replace(/[^a-z0-9_-]/gi,'_')}catch{return 'guest'}}
 const localKey=()=>'Horizon.FoundationPractice.v1.'+learnerId();
@@ -95,7 +95,9 @@ function tokens(config){
 function contextual(config){
  const a=DATA.contextual(config.id,config.script);
  if(config.id==='hiragana'||config.id==='katakana'){
-  const rowIndex=config.group==='all'?DATA.rows.length-1:DATA.rows.findIndex(x=>x[0]===config.group);
+  const selectedUnit=DATA.findLessonUnit(config.id,config.group);
+  const finalRow=selectedUnit?.groups?.at(-1)||config.group;
+  const rowIndex=config.group==='all'?DATA.rows.length-1:DATA.rows.findIndex(x=>x[0]===finalRow);
   const known=new Set(DATA.rows.slice(0,Math.max(0,rowIndex)+1).flatMap(row=>Array.from(config.id==='hiragana'?row[2]:row[3])));
   return a.filter(w=>w.stage==='basic'&&Array.from(w.glyph).every(ch=>known.has(ch)));
  }
@@ -471,12 +473,14 @@ function navigationFor(cfg){
  const sequence=Math.max(0,DATA.modules.findIndex(x=>x.id===cfg.id))+1;
  const moduleNumber=String(sequence).padStart(2,'0');
  const previous=DATA.modules[sequence-2]||null,next=DATA.modules[sequence]||null;
+ const lesson=DATA.findLessonUnit(cfg.id,cfg.group);
+ const lessonOrdinal=DATA.getLessonUnits(cfg.id).findIndex(x=>x.id===cfg.group);
  return '<div class="v114-orientation v115-chapter-rail" aria-label="Chặng đang học">'+
  '<div class="v114-chapter-switch" role="group" aria-label="Chuyển chặng">'+
  '<button type="button" class="v114-arrow" data-f34="module" data-value="'+(previous?clean(previous.id):'')+'" aria-label="'+(previous?'Chặng trước: '+clean(previous.title):'Đang ở chặng đầu tiên')+'" '+(previous?'':'disabled')+'>‹</button>'+
  '<div class="v114-current-chapter"><small>CHẶNG '+moduleNumber+' / '+String(DATA.modules.length).padStart(2,'0')+'</small><strong>'+clean(m.title.replace(/^\\d+\\s*[·.:-]\\s*/,''))+'</strong></div>'+
  '<button type="button" class="v114-arrow" data-f34="module" data-value="'+(next?clean(next.id):'')+'" aria-label="'+(next?'Chặng tiếp: '+clean(next.title):'Đang ở chặng cuối cùng')+'" '+(next?'':'disabled')+'>›</button></div>'+
- '<span class="v114-progress">'+stats.reviewed+' / '+stats.total+' mẫu đã luyện</span></div>'+
+ '<span class="v114-progress">'+(lesson&&lessonOrdinal>=0?'Bài '+String(lessonOrdinal+1).padStart(2,'0')+'/'+String(DATA.getLessonUnits(cfg.id).length).padStart(2,'0')+' · '+clean(lesson.title):stats.reviewed+' / '+stats.total+' mẫu đã luyện')+'</span></div>'+
 
  '<div class="v34-stagebar v113-stagebar" role="navigation" aria-label="Chuyển hoạt động trong '+clean(m.title)+'">'+tabs+'</div>'+
  '<div class="v34-options v113-options">'+(m.script==='both'?'<label>Bảng chữ <select data-f34="script" aria-label="Chọn bảng chữ">'+[['both','Cả hai'],['hira','Hiragana'],['kata','Katakana']].map(([id,t])=>'<option value="'+id+'" '+(cfg.script===id?'selected':'')+'>'+t+'</option>').join('')+'</select></label>':'')+
@@ -542,8 +546,9 @@ function learnView(cfg){
  const s=countStats(deck),examples=cfg.id==='small'?(cfg.group==='all'?{marks:DATA.smallSamples.map(x=>x.marks).join(' · '),examples:DATA.smallSamples.flatMap(x=>x.examples)}:DATA.smallSamples.find(x=>x.id===cfg.group)):null;
  let guideFocusUsed=false;
  const tiles=arr=>arr.map((x,i)=>{const focus=!guideFocusUsed&&!coachSeen();if(focus)guideFocusUsed=true;return '<button type="button" class="v33-glyph-card v35-kana-button '+(focus?'v35-first-kana':'')+'" data-f33="pronounce" data-value="'+clean(x.glyph)+'" data-reading="'+clean(x.read)+'" data-kind="'+clean(x.stage)+'" aria-label="Nghe '+clean(x.glyph)+(x.read?' · '+clean(x.read):'')+'"><span lang="ja">'+clean(x.glyph)+'</span><strong>'+clean(x.read)+'</strong>'+(isWord(x)?'<small>'+clean(x.vi)+'</small>':'')+'</button>';}).join('');
- const grouped=cfg.group==='all'&&cfg.id!=='small'&&cfg.id!=='mixed'&&cfg.mod.groups.length>1;
- const grid=grouped?cfg.mod.groups.map(g=>{
+ const lesson=DATA.findLessonUnit(cfg.id,cfg.group);
+ const grouped=(cfg.group==='all'||(lesson?.groups?.length>1))&&cfg.id!=='small'&&cfg.id!=='mixed'&&cfg.mod.groups.length>1;
+ const grid=grouped?cfg.mod.groups.filter(g=>!lesson||lesson.groups.includes(g.id)).map(g=>{
   const groupCards=deck.filter(x=>x.group===g.id).sort((a,b)=>a.script===b.script?0:a.script==='hira'?-1:1);
   if(!groupCards.length)return '';
   return '<section class="v36-kana-row"><div class="v36-row-label"><strong>'+clean(g.title)+'</strong><span>'+groupCards.length+' mẫu</span></div><div class="v33-glyph-grid">'+tiles(groupCards)+'</div></section>';
@@ -552,7 +557,7 @@ function learnView(cfg){
  const exampleMarkup=examples?'<div class="v33-examples">'+examples.examples.map(([glyph,read,meaning])=>'<button type="button" class="v36-example-button" data-f33="pronounce" data-value="'+clean(glyph)+'" data-reading="'+clean(read)+'" data-kind="small" aria-label="Nghe ví dụ '+clean(glyph)+'"><b lang="ja">'+clean(glyph)+'</b><span>'+clean(read)+'</span><small>'+clean(meaning)+'</small></button>').join('')+'</div>':'';
  const note=cfg.id==='small'?'Chữ nhỏ, っ/ッ và dấu ー không được đọc như âm riêng. Chạm vào từ ví dụ để nghe trong ngữ cảnh. Giọng đọc tự động có thể khác file ghi âm chuẩn.':selected?.note;
  const marks=cfg.id==='small'&&examples?.marks?'<div class="v33-small-marks" lang="ja">'+clean(examples.marks)+'</div>':'';
- return '<section class="v33-pane"><div class="v33-pane-head"><div><p class="v33-eyebrow">01 / HỌC & NHẬN DIỆN</p><h3>'+(cfg.group==='all'?cfg.mod.title:cfg.mod.groups.find(g=>g.id===cfg.group)?.title||cfg.mod.title)+'</h3><p>Quan sát nhóm chữ · Nhấn vào ô chữ để nghe phát âm.</p></div>'+tag(deck.length+' mẫu')+'</div>'+
+ return '<section class="v33-pane"><div class="v33-pane-head"><div><p class="v33-eyebrow">01 / HỌC & NHẬN DIỆN</p><h3>'+(lesson?.title||(cfg.group==='all'?cfg.mod.title:cfg.mod.groups.find(g=>g.id===cfg.group)?.title||cfg.mod.title))+'</h3><p>Quan sát nhóm chữ · Nhấn vào ô chữ để nghe phát âm.</p></div>'+tag(deck.length+' mẫu')+'</div>'+
  (deck.length>0&&!coachSeen()?'<div class="v35-kana-guide" role="note"><span>Âm cơ bản sử dụng file ghi âm; các âm đặc biệt có thể dùng giọng Nhật trên thiết bị.</span><button type="button" data-f33="guide-ok" aria-label="Đóng hướng dẫn">Đã hiểu</button></div>':'')+marks+'<div class="v36-kana-board v36-board-'+clean(cfg.id)+'" aria-label="Bảng Kana đầy đủ">'+grid+'</div>'+'<p class="v36-audio-status" role="status" aria-live="polite" hidden></p>'+exampleMarkup+
  (note?'<div class="v33-teacher-note"><strong>Ghi chú của giáo viên</strong><p>'+clean(typeof note==='string'?note:'')+'</p></div>':'')+
  '<div class="v33-pane-actions v36-next-actions"><button type="button" data-f34="tab" data-value="flash" class="v33-primary">Tiếp theo: Flashcard <span aria-hidden="true">→</span></button><button type="button" data-f34="tab" data-value="practice" class="v33-secondary">Luyện tập <span aria-hidden="true">↗</span></button><a href="#kana" class="v33-secondary">Luyện viết Kana <span aria-hidden="true">✎</span></a></div></section>';
