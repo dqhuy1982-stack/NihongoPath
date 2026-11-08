@@ -1557,6 +1557,8 @@ test('v1.43 result panel prioritizes test before next lesson and keeps review co
  h.location.hash='#'+base+'/quiz';h.ui.embeddedPractice();
  const session=h.ui.session(),total=session.questions.length;
  session.index=total;session.finished=true;session.correct=total;
+ h.ui.store().attemptRuns=[{id:'practice-1',moduleId:'hiragana',unitId:'unit-1',script:'hira',
+  kind:'practice',mode:'quiz',correct:total,total,percent:100,completedAt:'2026-11-08T00:00:00.000Z'}];
  let html=h.ui.embeddedPractice();
  assert.match(html,/v142-result is-good/);
  assert.match(html,/CẦN LÀM TIẾP/);
