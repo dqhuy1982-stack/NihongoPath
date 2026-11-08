@@ -1552,23 +1552,22 @@ test('v1.41 completion proposes the correct next Foundation unit without claimin
  assert.equal(all.href,'#learn/training/foundation/katakana/unit-1/kata/quiz');
  assert.equal(h.ui.nextPracticeScope(cfg('mixed','all','quiz','both')),null);
 });
-test('v1.41 completion panel offers expanding or choosing scope while preserving retry and review',()=>{
+test('v1.43 result panel prioritizes test before next lesson and keeps review contextual',()=>{
  const h=harness(),base='learn/training/foundation/hiragana/unit-1/hira';
- h.location.hash='#'+base+'/quiz';
- h.ui.embeddedPractice();
+ h.location.hash='#'+base+'/quiz';h.ui.embeddedPractice();
  const session=h.ui.session(),total=session.questions.length;
  session.index=total;session.finished=true;session.correct=total;
- const html=h.ui.embeddedPractice();
- assert.match(html,/GỢI Ý LUYỆN TIẾP/);
- assert.match(html,/Bài tiếp theo · Hàng S · T · N/);
- assert.ok(html.includes('href="#learn/training/foundation/hiragana/unit-2/hira/quiz"'));
+ let html=h.ui.embeddedPractice();
+ assert.match(html,/v142-result is-good/);
+ assert.match(html,/CẦN LÀM TIẾP/);
+ assert.match(html,/Kiểm tra tổng hợp để hoàn thành bài/);
  assert.match(html,/data-f33="expand-scope"/);
- assert.match(html,/Luyện lại ngẫu nhiên/);
+ assert.match(html,/Luyện lại/);
+ assert.doesNotMatch(html,/Ôn chữ sai/);
+ session.correct=0;html=h.ui.embeddedPractice();
+ assert.match(html,/Củng cố phần vừa học/);
  assert.match(html,/Ôn chữ cần luyện/);
- session.correct=0;
- assert.match(h.ui.embeddedPractice(),/Bạn có thể luyện lại phần này trước khi thử nội dung mới/);
- h.location.hash='#'+base+'/build';
- h.ui.embeddedPractice();
+ h.location.hash='#'+base+'/build';h.ui.embeddedPractice();
  const build=h.ui.session();
  assert.ok(build.cards.length,'word build has sample content in unit 1');
  build.finished=true;build.index=build.cards.length;
@@ -1685,7 +1684,7 @@ test('v1.41 catalogue exposes separate learned/tested states and exact attempt h
  assert.match(html,/13\/15 · 87%/);
  assert.match(html,/1 \/ 4 hoàn thành/);
  assert.match(html,/href="#learn\/training\/foundation\/hiragana\/unit-1\/hira\/quiz"/);
- assert.match(html,/href="#learn\/training\/foundation\/hiragana\/unit-1\/hira\/mix"/);
+ assert.match(html,/href="#learn\/foundation\/hiragana\/unit-2\/learn\/hira"/);
  const css=load('learning-hub-v30.css');
  assert.match(css,/v140-topic-badge/);
  assert.match(css,/v140-catalog-history/);
@@ -1709,8 +1708,8 @@ test('v1.41 result tiers keep positive, passing and retry states distinct and le
  let html=h.ui.embeddedPractice();
  assert.match(html,/v141-grade-badge is-good/);
  assert.match(html,/Tốt/);
- assert.match(html,/Hoàn thành lượt luyện/);
- assert.match(html,/Tự đổi phạm vi/);
+ assert.match(html,/Lượt luyện rất tốt/);
+ assert.match(html,/Đổi phạm vi/);
  session.correct=Math.floor(session.questions.length*.8);
  html=h.ui.embeddedPractice();
  assert.match(html,/v141-grade-badge is-pass/);
