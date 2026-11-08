@@ -6,7 +6,7 @@ const DATA=window.NPFoundationCurriculum;if(!DATA)return;
 const clean=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const routePrefix='learn/foundation',base='#'+routePrefix;
 const modes=[
- ['learn','Học','book-open'],['flash','Flashcard','layers'],['listen','Nghe → chữ','volume-2'],['truefalse','Đúng / Sai','check-circle'],['quiz','Chữ → âm','target'],
+ ['learn','Học','book-open'],['practice','Thực hành','target'],['flash','Flashcard','layers'],['listen','Nghe → chữ','volume-2'],['truefalse','Đúng / Sai','check-circle'],['quiz','Chữ → âm','target'],
  ['reverse','Âm → chữ','arrow-left-right'],['match','Ghép cặp','grid-2x2'],['build','Xếp chữ','puzzle'],
  ['vocab-ja-vi','Nhật → Việt','languages'],['vocab-vi-ja','Việt → Nhật','languages'],['missing','Điền Kana còn thiếu','puzzle'],['listen-match','Nghe & ghép','headphones'],['review','Ôn chữ yếu','refresh-cw'],['game','Ghép cặp vui','gamepad-2'],['game-build','Ghép từ','puzzle'],['game-listen','Nghe & nối','headphones'],['mix','Kiểm tra tổng hợp','check-circle-2']
 ];
@@ -457,9 +457,8 @@ function indexPage(){
 function navigationFor(cfg){
  const m=cfg.mod,s=moduleStats(m);
 
- const practices=[['review','Ôn chữ còn yếu'],['quiz','Chữ → âm'],['reverse','Âm → chữ'],...(cfg.id!=='small'&&cfg.id!=='mixed'?[['listen','Nghe → chữ'],['listen-match','Nghe & ghép cặp']]:[]),['truefalse','Đúng / Sai'],['match','Ghép cặp'],['build','Xếp chữ'],['vocab-ja-vi','Nhật → Việt'],['vocab-vi-ja','Việt → Nhật']];
- const group=cfg.mode==='learn'?'learn':cfg.mode==='flash'?'flash':cfg.mode==='mix'?'mix':'practice';
- const actions=[['learn','Học'],['flash','Flashcard'],['practice','Luyện tập'],['mix','Kiểm tra tổng hợp']];
+ const group=cfg.mode==='learn'?'learn':'practice';
+ const actions=[['learn','Học bài'],['practice','Thực hành']];
  const stepIcons={
  learn:'<path d="M12 7v14m0-14C9.5 5.6 6.5 5 3 6v14c3.5-1 6.5-.5 9 1m0-14c2.5-1.4 5.5-2 9-1v14c-3.5-1-6.5-.5-9 1"/>',
  flash:'<rect x="3" y="5" width="13" height="16" rx="2"/><path d="M7 2h12a2 2 0 0 1 2 2v12M7 10h5M7 14h5"/>',
@@ -560,7 +559,7 @@ function learnView(cfg){
  return '<section class="v33-pane"><div class="v33-pane-head"><div><p class="v33-eyebrow">01 / HỌC & NHẬN DIỆN</p><h3>'+(lesson?.title||(cfg.group==='all'?cfg.mod.title:cfg.mod.groups.find(g=>g.id===cfg.group)?.title||cfg.mod.title))+'</h3><p>Quan sát nhóm chữ · Nhấn vào ô chữ để nghe phát âm.</p></div>'+tag(deck.length+' mẫu')+'</div>'+
  (deck.length>0&&!coachSeen()?'<div class="v35-kana-guide" role="note"><span>Âm cơ bản sử dụng file ghi âm; các âm đặc biệt có thể dùng giọng Nhật trên thiết bị.</span><button type="button" data-f33="guide-ok" aria-label="Đóng hướng dẫn">Đã hiểu</button></div>':'')+marks+'<div class="v36-kana-board v36-board-'+clean(cfg.id)+'" aria-label="Bảng Kana đầy đủ">'+grid+'</div>'+'<p class="v36-audio-status" role="status" aria-live="polite" hidden></p>'+exampleMarkup+
  (note?'<div class="v33-teacher-note"><strong>Ghi chú của giáo viên</strong><p>'+clean(typeof note==='string'?note:'')+'</p></div>':'')+
- '<div class="v33-pane-actions v36-next-actions"><button type="button" data-f34="tab" data-value="flash" class="v33-primary">Tiếp theo: Flashcard <span aria-hidden="true">→</span></button><button type="button" data-f34="tab" data-value="practice" class="v33-secondary">Luyện tập <span aria-hidden="true">↗</span></button><a href="#kana" class="v33-secondary">Luyện viết Kana <span aria-hidden="true">✎</span></a></div></section>';
+ '<div class="v33-pane-actions v36-next-actions v126-learn-next"><button type="button" data-f34="tab" data-value="practice" class="v33-primary">Tiếp theo: Thực hành <span aria-hidden="true">→</span></button><a href="#kana" class="v126-writing-link">Luyện viết Kana ↗</a></div></section>';
 }
 function flashView(cfg,s){
  const item=s.cards[s.index];
@@ -750,6 +749,9 @@ function toggleAudioPref(){
  try{localStorage.setItem('horizon.foundation.autoAnswerAudio',enabled?'on':'off')}catch(e){}
  return enabled;
 }
+
+/* The exercise picker is deliberately secondary: only the active task appears
+   by default. Existing exercise route IDs and scoring behavior are preserved. */
 function activityBook(cfg){
  const items=PRACTICE_MODES.filter(([id])=>!['listen','listen-match'].includes(id)||(cfg.id!=='small'&&cfg.id!=='mixed'));
  const groups=[
@@ -758,25 +760,46 @@ function activityBook(cfg){
   ['NGHĨA & ỨNG DỤNG',items.filter(x=>['vocab-ja-vi','vocab-vi-ja'].includes(x[0]))],
   ['ÔN TẬP',items.filter(x=>x[0]==='review')]
  ];
+ const currentLabel=items.find(([id])=>id===cfg.mode)?.[1]||'Luyện phản xạ';
  const entry=([id,label,symbol])=>'<button type="button" data-f34="mode" data-value="'+id+'" class="v39-book-tab '+(id===cfg.mode?'active':'')+'" '+(id===cfg.mode?'aria-current="page"':'')+'><span class="v39-book-symbol" aria-hidden="true">'+symbol+'</span><span>'+label+'</span><span aria-hidden="true" class="v39-book-chevron">›</span></button>';
- return '<nav class="v39-book-nav" aria-label="Sổ bài tập">'+
- 
- '<button type="button" class="v105-audio-toggle" data-f33="toggle-audio" aria-pressed="'+audioPref()+'"><span aria-hidden="true">'+(audioPref()?'◖))':'◖×')+'</span> Âm thanh đáp án: <strong>'+(audioPref()?'Bật':'Tắt')+'</strong></button>'+
- groups.filter(([,entries])=>entries.length).map(([label,entries])=>'<div class="v106-menu-group"><div class="v106-group-heading">'+label+'</div><div class="v105-menu-entries">'+entries.map(entry).join('')+'</div></div>').join('')+
- '</nav>';
+ return '<nav class="v39-book-nav v126-book-nav" aria-label="Chọn bài luyện">'+
+  '<div class="v126-book-top"><button type="button" data-f34="tab" data-value="practice" class="v126-back">‹ Các hoạt động</button>'+
+  '<div class="v126-active-type"><small>ĐANG LUYỆN</small><strong>'+clean(currentLabel)+'</strong></div></div>'+
+  '<details class="v126-exercise-picker"><summary>Đổi dạng bài <span aria-hidden="true">⌄</span></summary>'+
+  '<div class="v126-exercise-menu">'+
+  groups.filter(([,entries])=>entries.length).map(([label,entries])=>'<div class="v106-menu-group"><div class="v106-group-heading">'+label+'</div><div class="v105-menu-entries">'+entries.map(entry).join('')+'</div></div>').join('')+
+  '<button type="button" class="v105-audio-toggle" data-f33="toggle-audio" aria-pressed="'+audioPref()+'">Âm thanh đáp án: <strong>'+(audioPref()?'Bật':'Tắt')+'</strong></button></div></details></nav>';
+}
+function practiceLanding(cfg){
+ const lesson=DATA.findLessonUnit(cfg.id,cfg.group);
+ const title=lesson?.title||cfg.mod.groups.find(g=>g.id===cfg.group)?.title||cfg.mod.title;
+ const choices=[
+  ['flash','layers','Flashcard','Thử nhớ cách đọc trước khi lật thẻ.'],
+  ['quiz','target','Luyện phản xạ','Chọn chữ đúng, luyện nghe và ghép âm.'],
+  ['mix','check-circle','Kiểm tra tổng hợp','Trộn dạng câu hỏi và xem kết quả lượt luyện.']
+ ];
+ return '<section class="v126-practice-hub" aria-labelledby="v126-practice-title">'+
+  '<div class="v126-practice-intro"><p>THỰC HÀNH · '+clean(cfg.mod.title.replace(/^\d+\s*[·.:-]\s*/,''))+'</p>'+
+  '<h2 id="v126-practice-title">'+clean(title)+'</h2><span>Chọn một cách luyện phù hợp. Có thể quay lại Học bài bất cứ lúc nào.</span></div>'+
+  '<div class="v126-practice-choices">'+choices.map(([mode,ic,label,desc],i)=>
+   '<a class="v126-practice-choice" href="#'+path(cfg.id,cfg.group,mode,cfg.script)+'"><span class="v126-choice-number">0'+(i+1)+'</span><span class="v126-choice-copy"><strong>'+label+'</strong><small>'+desc+'</small></span><span class="v126-choice-arrow" aria-hidden="true">↗</span></a>'
+  ).join('')+'</div>'+
+  '<p class="v126-hub-footnote">Bài luyện lưu kết quả theo từng chữ. Flashcard là tự đánh giá, không được tính là điểm kiểm tra.</p></section>';
 }
 
 function workspace(cfg){
- const s=cfg.mode==='learn'?null:ensurePlay(cfg);
+ const isHub=cfg.mode==='practice';
+ const isLesson=cfg.mode==='learn';
+ const s=isHub||isLesson?null:ensurePlay(cfg);
  const intro=cfg.mode==='mix'&&s&&!s.ready&&!s.finished?introPopup(cfg,s):'';
- const body=cfg.mode==='learn'?learnView(cfg):cfg.mode==='flash'?flashView(cfg,s):['match','listen-match','game','game-listen'].includes(cfg.mode)?matchingView(cfg,s):['build','game-build'].includes(cfg.mode)?buildView(cfg,s):quizView(cfg,s);
- const gameOrPractice=cfg.mode!=='learn'&&cfg.mode!=='flash'&&cfg.mode!=='mix';
- const weak=weakList(cfg);
- const panel='<aside class="v33-side"><h3>Sổ ôn · Gợi ý theo kết quả</h3>'+
- (weak.length?'<div class="v37-weak-list">'+weak.map(x=>'<span lang="ja">'+clean(x.glyph)+' <small>'+clean(store().matchReview?.[x.id]?'Cần ôn ghép':store().items[x.id]?.latestOutcome==='incorrect'?'Sai':'Đến hạn ôn')+'</small></span>').join('')+'</div><button type="button" class="v37-review-link" data-f34="mode" data-value="review">Ôn những chữ này →</button>':'<p>Chưa có chữ cần ôn. Hãy thử một lượt kiểm tra.</p>')+
- '<div class="v33-side-divider"></div><p>Trả lời sai được lưu ôn; các bài luyện không đánh giá nhanh/chậm.</p></aside>';
- return navigationFor(cfg)+'<div class="v38-task-area"><div class="'+(gameOrPractice?'v39-book-layout':'v33-workspace')+'"'+(intro?' inert':'')+'>'+(gameOrPractice?activityBook(cfg)+body:body+panel)+'</div>'+intro+(s&&MATCH_KINDS.includes(s.kind)?roundSummaryView(s,cfg):'')+'</div>';
+ const body=isHub?practiceLanding(cfg):isLesson?learnView(cfg):cfg.mode==='flash'?flashView(cfg,s):['match','listen-match','game','game-listen'].includes(cfg.mode)?matchingView(cfg,s):['build','game-build'].includes(cfg.mode)?buildView(cfg,s):quizView(cfg,s);
+ const exercise=!isHub&&!isLesson&&cfg.mode!=='flash'&&cfg.mode!=='mix';
+ const backLink=!exercise&&!isHub&&!isLesson?'<div class="v126-context"><button type="button" data-f34="tab" data-value="practice">‹ Các hoạt động</button></div>':'';
+ return navigationFor(cfg)+'<div class="v38-task-area v126-task-area"><div class="'+(exercise?'v39-book-layout v126-workbook':'v33-workspace v126-focused-work')+'"'+(intro?' inert':'')+'>'+
+  (exercise?activityBook(cfg):backLink)+body+'</div>'+intro+
+  (s&&MATCH_KINDS.includes(s.kind)?roundSummaryView(s,cfg):'')+'</div>';
 }
+
 function modulePage(cfg){
  scheduleFoundationOverlay();scheduleMatchLines();scheduleFinishDock();scheduleSummaryHost();tickClock();if(typeof queueMicrotask==='function')queueMicrotask(()=>restoreBookViewport());return wrap('<div class="v34-workspace-shell">'+workspace(cfg)+'</div>',cfg.mod.title)
   .replace('class="v25-wrap v33-foundation v112-foundation v115-foundation"',
@@ -890,7 +913,7 @@ function localSwitch(kind,value){
   target.mode=value;
  }else if(kind==='tab'){
   if(!['learn','flash','practice','mix'].includes(value))return;
-  target.mode=value==='practice'?'quiz':value;
+  target.mode=value;
  }else return;
  play=null;
  const next=path(target.id,target.group,target.mode,target.script);
