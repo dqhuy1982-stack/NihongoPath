@@ -21,7 +21,7 @@ function harness(){
    hooks.click({target:{closest:selector},preventDefault(){}});
  };
  const start=()=>click('start');
- return {data:window.NPFoundationCurriculum,ui:window.NPFoundationCourse,location,click,start,audioFiles,setProfile:v=>profile=v,getRenders:()=>renders};
+ return {data:window.NPFoundationCurriculum,ui:window.NPFoundationCourse,window,location,click,start,audioFiles,setAudioPref:on=>map.set('horizon.foundation.autoAnswerAudio',on?'on':'off'),setProfile:v=>profile=v,getRenders:()=>renders};
 }
 test('Foundational syllabus has complete canonical counts and meaningful distinct modules',()=>{
  const {data}=harness();
@@ -1130,4 +1130,48 @@ test('v1.25 catalogue uses single stable Kana glyphs and legible primary button'
  assert.ok(css.includes('-webkit-text-fill-color:#fff!important'));
  assert.ok(css.includes('white-space:nowrap!important'));
  assert.ok(css.includes('writing-mode:horizontal-tb!important'));
+});
+
+
+// v1.26: audio on grading is a UI cue only; Japanese speech requires a Listen click.
+test('v1.26 correct and wrong answers use distinct quiet sounds, never auto-pronunciation',()=>{
+ const h=harness(),notes=[];
+ h.window.AudioContext=class{
+  constructor(){this.state='running';this.currentTime=0;this.destination={};}
+  createOscillator(){return {frequency:{setValueAtTime:hz=>notes.push(hz),exponentialRampToValueAtTime(){}},connect(){},start(){},stop(){}};}
+  createGain(){return {gain:{setValueAtTime(){},exponentialRampToValueAtTime(){}},connect(){}};}
+ };
+ const route='learn/foundation/hiragana/a/quiz';h.location.hash='#'+route;
+ h.ui.page(route);h.start();const s=h.ui.session();
+ h.click('answer',s.questions[0].correct);
+ assert.deepEqual(notes,[784,1047],'correct cue: two soft rising notes');
+ assert.equal(h.audioFiles.length,0,'grading must not pronounce Japanese');
+ assert.match(h.ui.page(route),/data-f33="feedback-audio"/);
+ h.click('feedback-audio');assert.equal(h.audioFiles.length,1,'Listen answer is manual');
+ h.click('next');const q=s.questions[1];
+ h.click('answer',q.choices.find(x=>x.id!==q.correct).id);
+ assert.deepEqual(notes,[784,1047,240],'wrong cue: one descending note');
+ assert.equal(h.audioFiles.length,1,'incorrect answer must not pronounce Japanese');
+ h.setAudioPref(false);h.click('next');h.click('answer',s.questions[2].correct);
+ assert.deepEqual(notes,[784,1047,240],'sound preference mutes feedback');
+ h.click('feedback-audio');assert.equal(h.audioFiles.length,2,'mute never disables manual Listen');
+});
+test('v1.26 word builder only plays sound once the word is graded',()=>{
+ const h=harness(),notes=[];
+ h.window.AudioContext=class{
+  constructor(){this.state='running';this.currentTime=0;this.destination={};}
+  createOscillator(){return {frequency:{setValueAtTime:hz=>notes.push(hz),exponentialRampToValueAtTime(){}},connect(){},start(){},stop(){}};}
+  createGain(){return {gain:{setValueAtTime(){},exponentialRampToValueAtTime(){}},connect(){}};}
+ };
+ const route='learn/foundation/small/pause/build';h.location.hash='#'+route;h.ui.page(route);h.start();
+ const s=h.ui.session(),word=s.cards[0],glyphs=Array.from(word.glyph);
+ glyphs.forEach((ch,pos)=>{
+  const index=s.tileOrder.findIndex((tile,i)=>tile.glyph===ch&&!s.selected.includes(i));
+  assert.ok(index>=0);h.click('tile',String(index));
+  if(pos<glyphs.length-1)assert.deepEqual(notes,[]);
+ });
+ assert.equal(s.answer.correct,true);
+ assert.deepEqual(notes,[784,1047]);
+ assert.equal(h.audioFiles.length,0);
+ h.click('feedback-audio');assert.equal(h.audioFiles.length,1);
 });

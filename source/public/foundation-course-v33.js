@@ -218,23 +218,37 @@ function completeRound(s,cfg){
  for(const p of list){if(p.wrongAttempts)d.matchReview[p.itemId]={at:report.endedAt,reason:'match-attempt'};else delete d.matchReview[p.itemId];}
  persist();saveRound(report);
 }
+/* Short feedback cues are separate from manually requested Japanese pronunciation.
+   Used for graded choices, word building and matching; no scoring side effects. */
 let feedbackAudioContext;
-function matchingSound(correct){
+function gradingSound(correct){
  if(!audioPref())return;
  const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
  try{
   const ctx=feedbackAudioContext||(feedbackAudioContext=new AC());
-  if(ctx.state==='suspended')ctx.resume().catch(()=>{});
+  if(ctx.state==='suspended'){
+   const resume=ctx.resume();if(resume&&typeof resume.catch==='function')resume.catch(()=>{});
+  }
   const now=ctx.currentTime;
-  const tone=(hz,at,ms,type)=>{
-   const oscillator=ctx.createOscillator(),gain=ctx.createGain(),start=now+at;
-   oscillator.type=type;oscillator.frequency.value=hz;
-   gain.gain.setValueAtTime(.0001,start);gain.gain.exponentialRampToValueAtTime(.055,start+.012);gain.gain.exponentialRampToValueAtTime(.0001,start+ms);
-   oscillator.connect(gain);gain.connect(ctx.destination);oscillator.start(start);oscillator.stop(start+ms+.02);
+  const note=(hz,offset,duration,volume,type,glide)=>{
+   const osc=ctx.createOscillator(),gain=ctx.createGain(),start=now+offset;
+   osc.type=type;osc.frequency.setValueAtTime(hz,start);
+   if(glide)osc.frequency.exponentialRampToValueAtTime(glide,start+duration*.82);
+   gain.gain.setValueAtTime(.0001,start);
+   gain.gain.exponentialRampToValueAtTime(volume,start+.014);
+   gain.gain.exponentialRampToValueAtTime(.0001,start+duration);
+   osc.connect(gain);gain.connect(ctx.destination);
+   osc.start(start);osc.stop(start+duration+.02);
   };
-  if(correct){tone(660,0,.10,'sine');tone(880,.09,.16,'sine');}
-  else{tone(210,0,.12,'triangle');tone(165,.09,.15,'triangle');}
- }catch(e){}
+  if(correct){
+   // A gentle rising double bell: ting · ting.
+   note(784,0,.12,.026,'sine');
+   note(1047,.12,.20,.022,'sine');
+  }else{
+   // One soft descending "eh" cue, never a harsh buzzer.
+   note(240,0,.27,.028,'triangle',168);
+  }
+ }catch(e){/* Failure to play a sound never blocks grading. */}
 }
 function formatDuration(ms){return Number.isFinite(ms)?(ms/1000).toLocaleString('vi-VN',{maximumFractionDigits:1})+' giây':'Chưa ghi nhận'}
 function roundSummaryView(s,cfg){
@@ -495,11 +509,14 @@ function audioStatus(msg){
  const status=document.querySelector?.('.v36-audio-status');
  if(status){status.textContent=msg||'';status.hidden=!msg}
 }
+function stopPronunciation(){
+ if(currentAudio){try{currentAudio.pause();currentAudio.currentTime=0}catch(e){}currentAudio=null}
+ if(typeof speechSynthesis!=='undefined')try{speechSynthesis.cancel()}catch(e){}
+}
 function pronounce(glyph,reading='',preferRecorded=true){
  const safeGlyph=String(glyph||'');
  if(!safeGlyph||safeGlyph.length>40)return false;
- if(currentAudio){try{currentAudio.pause();currentAudio.currentTime=0}catch(e){}currentAudio=null}
- if(typeof speechSynthesis!=='undefined')try{speechSynthesis.cancel()}catch(e){}
+ stopPronunciation();
  // The same isolated Kana syllable recording can be used for Hiragana or Katakana.
  if(preferRecorded&&Array.from(safeGlyph).length===1&&BASIC_AUDIO.test(reading)){
   try{
@@ -768,7 +785,7 @@ function activityBook(cfg){
   '<details class="v126-exercise-picker"><summary>Đổi dạng bài <span aria-hidden="true">⌄</span></summary>'+
   '<div class="v126-exercise-menu">'+
   groups.filter(([,entries])=>entries.length).map(([label,entries])=>'<div class="v106-menu-group"><div class="v106-group-heading">'+label+'</div><div class="v105-menu-entries">'+entries.map(entry).join('')+'</div></div>').join('')+
-  '<button type="button" class="v105-audio-toggle" data-f33="toggle-audio" aria-pressed="'+audioPref()+'">Âm thanh đáp án: <strong>'+(audioPref()?'Bật':'Tắt')+'</strong></button></div></details></nav>';
+  '<button type="button" class="v105-audio-toggle" data-f33="toggle-audio" aria-pressed="'+audioPref()+'" title="Chỉ bật/tắt âm hiệu đúng/sai. Nút Nghe đáp án vẫn hoạt động.">Âm hiệu đúng/sai: <strong>'+(audioPref()?'Bật':'Tắt')+'</strong></button></div></details></nav>';
 }
 function practiceLanding(cfg){
  const lesson=DATA.findLessonUnit(cfg.id,cfg.group);
@@ -834,7 +851,7 @@ function perform(el){
   const word=s.cards[s.index],built=s.selected.map(n=>s.tileOrder[n].glyph).join('');
   if(s.selected.length===Array.from(word.glyph).length){
    const correct=built===word.glyph;s.answer={correct,built};if(correct)s.correct++;
-   s.lastMs=null;s.grade=record(word,correct,s.kind,null);if(audioPref())pronounce(word.glyph,word.read,true);
+   s.lastMs=null;s.grade=record(word,correct,s.kind,null);stopPronunciation();gradingSound(correct);
   }
   refresh();
   if(s.answer)pulseGradedFeedback(s.answer.correct);
@@ -862,7 +879,7 @@ function perform(el){
  if(op==='answer'&&s.kind!=='match'&&s.kind!=='flash'&&!s.choice&&!s.finished){
   const q=s.questions[s.index];if(!q.choices.some(x=>x.id===value))return;
   const took=cfg.mode==='mix'?elapsed(s):null;s.lastMs=took;s.choice=value;s.answered++;const ok=value===q.correct;if(ok)s.correct++;
-  s.grade=record(q.item,ok,q.mode||cfg.mode,took,s.hintsUsed||0,s.audioReplays||0);if(audioPref())pronounce(q.item.glyph,q.item.read,true);if(took!==null)s.roundMs.push(took);if(s.grade.slow)s.slow++;if(!ok)s.errors++;
+  s.grade=record(q.item,ok,q.mode||cfg.mode,took,s.hintsUsed||0,s.audioReplays||0);stopPronunciation();gradingSound(ok);if(took!==null)s.roundMs.push(took);if(s.grade.slow)s.slow++;if(!ok)s.errors++;
   refresh();pulseGradedFeedback(ok);
   return;
  }
@@ -875,9 +892,9 @@ function perform(el){
    const left=s.leftId,right=s.rightId;
    const ok=left===right;gradedMatch=ok;const item=s.cards.find(x=>x.id===left);
    roundAttempt(s,left,right,ok);
-   record(item,ok,s.kind,null);
-   if(ok){s.lastMatched=item.id;s.matched.push(item.id);s.feedback='Đúng! Hãy ghép cặp tiếp theo.';matchingSound(true);}
-   else{s.mistakes++;s.feedback='Chưa đúng. Đường đỏ chỉ cặp vừa chọn, thử lại nhé.';s.wrongPair={left,right};s.lastMatched=null;matchingSound(false);}
+   stopPronunciation();record(item,ok,s.kind,null);
+   if(ok){s.lastMatched=item.id;s.matched.push(item.id);s.feedback='Đúng! Hãy ghép cặp tiếp theo.';gradingSound(true);}
+   else{s.mistakes++;s.feedback='Chưa đúng. Đường đỏ chỉ cặp vừa chọn, thử lại nhé.';s.wrongPair={left,right};s.lastMatched=null;gradingSound(false);}
    s.leftId=null;s.rightId=null;
    if(ok&&s.matched.length===s.cards.length)completeRound(s,cfg);
   }
