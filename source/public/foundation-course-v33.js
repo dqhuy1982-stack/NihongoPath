@@ -27,7 +27,7 @@ function learnerId(){try{return String(P()?.id||'guest').replace(/[^a-z0-9_-]/gi
 const localKey=()=>'Horizon.FoundationPractice.v1.'+learnerId();
 function load(){
  try{const d=JSON.parse(localStorage.getItem(localKey())||'null');if(d?.schema===1&&d.items&&d.flash)return d;}catch(e){}
- return {schema:1,items:{},flash:{},history:[]};
+ return {schema:1,items:{},flash:{},history:[],attemptRuns:[]};
 }
 let cache=null,cacheKey=null;
 function store(){const k=localKey();if(cacheKey!==k){cacheKey=k;cache=load();}return cache}
@@ -58,6 +58,77 @@ function record(item,correct,mode,elapsedMs=null,hintsUsed=0,audioReplays=0){
  if(d.history.length>450)d.history=d.history.slice(-450);
  persist();return measure;
 }
+
+/* v1.40: Per-profile session length and result history, without migrating
+   existing per-character records or marking lessons complete prematurely. */
+const MAX_QUESTIONS=100,PASS_PERCENT=80;
+const countKey=()=>'Horizon.Foundation.questionCount.v1.'+learnerId();
+function countPrefs(){
+ try{const d=JSON.parse(localStorage.getItem(countKey())||'null');
+  if(Number.isInteger(d?.value)&&d.value>=1&&d.value<=MAX_QUESTIONS)
+   return {value:d.value,preset:d.preset==='custom'?'custom':[10,15,20].includes(d.value)?String(d.value):'custom'};
+ }catch(e){}
+ return {value:10,preset:'10'};
+}
+function setCountPrefs(preset,value){
+ const n=Math.min(MAX_QUESTIONS,Math.max(1,Math.round(Number(value)||10)));
+ const data={value:n,preset:preset==='custom'?'custom':String(n)};
+ try{localStorage.setItem(countKey(),JSON.stringify(data))}catch(e){}
+ return data;
+}
+function repeatCandidates(items,count){
+ if(!items.length||count<=0)return [];
+ const result=[];
+ while(result.length<count){
+  const batch=chooseTargets(items,Math.min(items.length,count-result.length));
+  if(result.length&&batch.length>1&&batch[0].id===result[result.length-1].id)
+   [batch[0],batch[1]]=[batch[1],batch[0]];
+  result.push(...batch);
+ }
+ return result;
+}
+function runHistory(){return Array.isArray(store().attemptRuns)?store().attemptRuns:[]}
+function attemptStatus(id,unit,script='both'){
+ const entries=runHistory().filter(x=>x.moduleId===id&&x.unitId===unit&&x.script===script);
+ const practice=entries.filter(x=>x.kind==='practice'),tests=entries.filter(x=>x.kind==='test');
+ const testPassed=tests.some(x=>x.percent>=PASS_PERCENT);
+ return {practiceCount:practice.length,testCount:tests.length,practiceDone:practice.length>0,
+  testDone:tests.length>0,testPassed,complete:practice.length>0&&testPassed,
+  bestTest:tests.length?Math.max(...tests.map(x=>x.percent)):null,
+  lastPractice:practice.at(-1)||null,lastTest:tests.at(-1)||null,history:entries.slice(-30)};
+}
+function saveAttempt(cfg,s){
+ if(s.attemptRecorded||!s.finished)return;
+ const total=s.questions?.length||s.cards?.length||0;if(!total)return;
+ s.attemptRecorded=true;
+ const match=['match','listen-match','game','game-listen'].includes(s.kind);
+ const correct=match?s.round?.summary?.firstTryPairs??Math.max(0,total-s.mistakes):s.correct||0;
+ const percent=Math.round(100*correct/total),kind=s.kind==='mix'?'test':'practice';
+ const completedAt=new Date().toISOString(),db=store();
+ const runs=Array.isArray(db.attemptRuns)?db.attemptRuns:[];
+ runs.push({id:completedAt+'-'+Math.random().toString(36).slice(2,9),moduleId:cfg.id,unitId:cfg.group,
+  script:cfg.script,mode:s.kind,kind,total,correct,percent,passed:kind==='test'&&percent>=PASS_PERCENT,
+  startedAt:s.createdAt||s.round?.startedAt||completedAt,completedAt});
+ db.attemptRuns=runs.slice(-500);persist();
+}
+function countControls(s){
+ if(!s?.questions&&!['build','game-build'].includes(s?.kind))return '';
+ const p=countPrefs(),current=s.questions?.length||s.cards?.length||0;
+ const option=(v,name)=>'<option value="'+v+'"'+(p.preset===v?' selected':'')+'>'+name+'</option>';
+ return '<div class="v140-count-picker" role="group" aria-label="Chọn số câu của bài luyện">'+
+  '<label><span>Số câu</span><select data-f140-count aria-label="Số câu">'+
+  option('10','10 câu')+option('15','15 câu')+option('20','20 câu')+option('custom','Tùy chọn…')+'</select></label>'+
+  (p.preset==='custom'?'<label><span>Tùy chọn</span><input data-f140-custom type="number" min="1" max="100" step="1" value="'+p.value+'" aria-label="Số câu tùy chọn, từ 1 đến 100"></label>':'')+
+  '<small>'+current+' câu'+(current>(s.poolSize||current)?' · Lặp chữ nếu cần':'')+'</small></div>';
+}
+function recordRibbon(cfg){
+ const v=attemptStatus(cfg.id,cfg.group,cfg.script);
+ return '<div class="v140-record-ribbon" aria-label="Lượt luyện và kiểm tra đã hoàn thành">'+
+  '<span class="'+(v.practiceDone?'is-done':'')+'">'+(v.practiceDone?'✓':'○')+' Luyện ngay · '+v.practiceCount+' lượt</span>'+
+  '<span class="'+(v.testPassed?'is-done':'')+'">'+(v.testPassed?'✓':v.testDone?'◷':'○')+' Kiểm tra · '+v.testCount+' lượt</span>'+
+  (v.testDone?'<small>Điểm tốt nhất '+v.bestTest+'% · Mốc đạt '+PASS_PERCENT+'%</small>':'')+'</div>';
+}
+
 function priority(item){
  const stat=store().items[item.id];
  if(!stat)return 1;
