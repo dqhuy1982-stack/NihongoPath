@@ -75,8 +75,8 @@ function model(){
 }
 function label(text,cl=''){return '<span class="v25-badge '+cl+'">'+text+'</span>'}
 function navigation(selected){
- return '<nav class="v25-tabs" aria-label="Điều hướng trong mục Học">'+[
- ['overview','Tổng quan','home'],['catalog','Khóa học','book-open'],['practice','Ôn tập','target']
+ return '<nav class="v25-tabs v131-four-tabs" aria-label="Điều hướng trong mục Học">'+[
+ ['overview','Tổng quan','home'],['catalog','Khóa học','book-open'],['training','Luyện tập','target'],['practice','Ôn tập','repeat']
  ].map(([id,title,ic])=>href('learn/'+id,I(ic)+'<span>'+title+'</span>','v25-tab '+(id===selected?'active':'')+'' )).join('')+'</nav>';
 }
 function header(){
@@ -176,7 +176,7 @@ function overview(){
 function tabTop(selected,m){
  return '<div class="v28-header-shell"><header class="v25-header"><div class="v25-hero-copy"><h1>Không gian học tập</h1><p>Khóa học, nội dung và hoạt động đều có vị trí rõ ràng.</p></div></header>'+
  navigation(selected)+'</div>'+
- '<nav class="v25-breadcrumb" aria-label="Vị trí học tập">'+href('learn','Học')+'<span aria-hidden="true">›</span><span aria-current="page">'+({catalog:'Khóa học',practice:'Ôn tập'}[selected]||'Tổng quan')+'</span></nav>'+
+ '<nav class="v25-breadcrumb" aria-label="Vị trí học tập">'+href('learn','Học')+'<span aria-hidden="true">›</span><span aria-current="page">'+({catalog:'Khóa học',training:'Luyện tập',practice:'Ôn tập'}[selected]||'Tổng quan')+'</span></nav>'+
  (m.sample?'<div class="v25-fixture-notice">'+I('info')+' Kịch bản '+safe(m.learner.name)+' · Trạng thái mô phỏng, chưa ghi vào hồ sơ học thật.</div>':'');
 }
 function catalogueTab(m){
@@ -364,9 +364,85 @@ function practiceTab(m){
  '<div class="v25-module-cards">'+modules.map(([ic,name,description,route],i)=>href(route,
  '<span class="v25-module-symbol">'+I(ic)+'</span><span><small>'+(['LỊCH ÔN','PHÂN TÍCH LỖI','KANA','JLPT'][i])+'</small><strong>'+name+'</strong><em>'+description+'</em></span><span class="v25-module-go">'+I('arrow')+'</span>','v25-module-card')).join('')+'</div></section>';
 }
+
+/* v1.31: Shared Practice hub. Foundation links reuse real question engines;
+   N5 exposes released per-lesson tests only. No simulated N4–N1 tests. */
+const practiceScopeKey=()=> 'Horizon.Training.scope.v1.'+String(P()?.id||'guest').replace(/[^a-z0-9_-]/gi,'_');
+function trainingScope(){
+ let parts=route().split('/');
+ if(parts.length<3)try{const saved=localStorage.getItem(practiceScopeKey());if(saved?.startsWith('learn/training/'))parts=saved.split('/')}catch(e){}
+ const D=window.NPFoundationCurriculum;
+ if(parts[2]==='N5'){
+  const list=lessons.filter(x=>x.course==='N5'&&x.contentId);
+  return {level:'N5',list,lesson:list.some(x=>x.contentId===parts[3])?parts[3]:'all'};
+ }
+ const mod=D?.modules.find(x=>x.id===parts[3])||D?.modules[0]||null;
+ const groups=mod?D.getLessonUnits(mod.id):[];
+ const unit=parts[4]==='all'||groups.some(x=>x.id===parts[4])?parts[4]:'all';
+ const script=mod?.script==='hira'?'hira':mod?.script==='kata'?'kata':['both','hira','kata'].includes(parts[5])?parts[5]:'both';
+ return {level:'foundation',mod,groups,unit,script};
+}
+function trainingRoute(key,value,s){
+ if(key==='level')return value==='N5'?'learn/training/N5/all':'learn/training/foundation/hiragana/all/hira';
+ if(s.level==='N5')return key==='lesson'?'learn/training/N5/'+(s.list.some(x=>x.contentId===value)?value:'all'):null;
+ const D=window.NPFoundationCurriculum;
+ if(!s.mod)return null;
+ if(key==='module'){
+  const m=D.modules.find(x=>x.id===value);
+  return m?'learn/training/foundation/'+m.id+'/all/'+(m.script==='hira'?'hira':m.script==='kata'?'kata':'both'):null;
+ }
+ if(key==='unit')return value==='all'||s.groups.some(x=>x.id===value)?'learn/training/foundation/'+s.mod.id+'/'+value+'/'+s.script:null;
+ if(key==='script')return s.mod.script==='both'&&['both','hira','kata'].includes(value)?'learn/training/foundation/'+s.mod.id+'/'+s.unit+'/'+value:null;
+ return null;
+}
+function trainingTab(m){
+ const s=trainingScope(),D=window.NPFoundationCurriculum;
+ const field=(name,key,options,value)=>'<label class="v131-filter"><span>'+name+'</span><select data-v131-filter="'+key+'" aria-label="'+name+'">'+options.map(x=>'<option value="'+safe(x[0])+'"'+(x[0]===value?' selected':'')+(x[2]?' disabled':'')+'>'+safe(x[1])+'</option>').join('')+'</select></label>';
+ const level=field('Cấp độ','level',[['foundation','Nền tảng'],['N5','N5'],['N4','N4 · chưa phát hành',true],['N3','N3 · chưa phát hành',true],['N2','N2 · chưa phát hành',true],['N1','N1 · chưa phát hành',true]],s.level);
+ let filters,body;
+ if(s.level==='foundation'&&s.mod){
+  const chooseModule=field('Nội dung','module',D.modules.map(x=>[x.id,x.title.replace(/^\d+\s*[·.:-]\s*/,'')]),s.mod.id);
+  const chooseUnit=field('Bài học','unit',[['all','Toàn bộ nội dung'],...s.groups.map(x=>[x.id,x.title])],s.unit);
+  const chooseScript=s.mod.script==='both'?field('Hệ chữ','script',[['both','Cả hai'],['hira','Hiragana'],['kata','Katakana']],s.script):
+   '<div class="v131-filter v131-fixed"><span>Hệ chữ</span><strong>'+(s.mod.script==='hira'?'Hiragana':s.mod.script==='kata'?'Katakana':'Theo nội dung')+'</strong></div>';
+  filters=level+chooseModule+chooseUnit+chooseScript;
+  const fl=id=>'#learn/foundation/'+s.mod.id+'/'+s.unit+'/'+id+'/'+s.script;
+  const scope=s.unit==='all'?'Toàn bộ nội dung':D.findLessonUnit(s.mod.id,s.unit)?.title||s.unit;
+  const canListen=!['small','mixed'].includes(s.mod.id);
+  const canWords=D.contextual(s.mod.id,s.script).length>=2;
+  const grouped=[
+   ['NHẬN DIỆN','Nhớ mặt chữ và cách đọc.',[['quiz','Chữ → âm','あ'],['reverse','Âm → chữ','a'],['truefalse','Đúng / Sai','✓']]],
+   ['LUYỆN NGHE','Nghe âm và chọn chữ.',canListen?[['listen','Nghe → chữ','♫'],['listen-match','Nghe & ghép','◖']]:[]],
+   ['GHÉP & GHI NHỚ','Ghép cặp, hoàn thành từ.',[['match','Ghép chữ & âm','⇄'],...(canWords?[['build','Xếp chữ thành từ','文'],['missing','Điền chữ còn thiếu','□']]:[])]],
+   ['TỪ VỰNG','Nhớ từ và nghĩa.',canWords?[['vocab-ja-vi','Nhật → Việt','日'],['vocab-vi-ja','Việt → Nhật','VI']]:[]]
+  ].filter(x=>x[2].length);
+  body='<div class="v131-scope-line"><strong>'+safe(scope)+'</strong><span>'+safe(s.mod.title.replace(/^\d+\s*[·.:-]\s*/,''))+' · Phạm vi áp dụng cho các dạng bài bên dưới</span></div>'+
+   '<div class="v131-entry-grid">'+
+    '<a href="'+fl('quiz')+'" class="v131-entry"><span class="v131-entry-tag">BẮT ĐẦU NHANH</span><strong>Luyện theo gợi ý</strong><small>Nhận diện chữ · không cần chọn thêm</small><b aria-hidden="true">→</b></a>'+
+    '<button type="button" class="v131-entry v131-entry-select" data-v131-scroll="activities"><span class="v131-entry-tag">THEO CÁCH CỦA BẠN</span><strong>Tự chọn dạng bài</strong><small>Tất cả kỹ năng ngay bên dưới</small><b aria-hidden="true">↓</b></button>'+
+    '<a href="'+fl('mix')+'" class="v131-entry"><span class="v131-entry-tag">TỰ ĐÁNH GIÁ</span><strong>Kiểm tra tổng hợp</strong><small>Câu hỏi trộn · xem kết quả</small><b aria-hidden="true">→</b></a>'+
+   '</div>'+
+   '<div id="v131-activities" class="v131-activities" tabindex="-1"><div class="v131-activities-head"><div><h2>Tự chọn dạng bài</h2><p>Chọn trực tiếp một kỹ năng, không cần tìm menu bên trong từng bài học.</p></div>'+
+   href('learn/foundation/'+s.mod.id+'/'+s.unit+'/learn/'+s.script,'Quay về bài học '+I('arrow'),'v25-text-cta')+'</div>'+
+   '<div class="v131-skills">'+grouped.map(([name,desc,items])=>'<section class="v131-skill"><h3>'+name+'</h3><p>'+desc+'</p><div class="v131-modes">'+items.map(([id,title,symbol])=>
+   '<a class="v131-mode" href="'+fl(id)+'"><span class="v131-mode-icon" aria-hidden="true">'+symbol+'</span><strong>'+title+'</strong><span class="v131-mode-go" aria-hidden="true">›</span></a>').join('')+'</div></section>').join('')+'</div></div>'+
+   '<p class="v131-disclaimer">Kết quả luyện được lưu riêng theo hồ sơ. Kiểm tra tổng hợp là bài luyện trong phạm vi đã chọn, không phải đề JLPT chính thức.</p>';
+ }else if(s.level==='N5'){
+  filters=level+field('Bài học N5','lesson',[['all','Tất cả bài hiện có'],...s.list.map(a=>[a.contentId,a.title.replace(/^\d+\s*[·.:-]\s*/,'')])],s.lesson);
+  const list=s.list.filter(a=>s.lesson==='all'||a.contentId===s.lesson);
+  body='<div class="v131-scope-line"><strong>N5 · Luyện theo bài đã có</strong><span>Chọn bài N5 để luyện và kiểm tra riêng.</span></div>'+
+   '<div class="v131-n5-grid">'+list.map(a=>'<article class="v131-n5-card"><span class="v131-entry-tag">N5 · BÀI LUYỆN</span><h3>'+safe(a.title)+'</h3><p>'+safe(a.desc)+'</p><div class="v131-n5-actions">'+href(a.route,'Học lại','v131-n5-link')+
+   href('quiz/'+a.contentId,'Kiểm tra bài →','v131-n5-link v131-n5-primary')+'</div></article>').join('')+'</div>'+
+   '<p class="v131-disclaimer">N5 đang có các bài kiểm tra theo từng bài đã triển khai. Chưa có bộ luyện tổng hợp toàn cấp N5; N4–N1 chưa phát hành.</p>';
+ }else{filters=level;body='<p>Chưa có nội dung luyện tập phù hợp.</p>'}
+ return '<section class="v25-panel v131-training" aria-labelledby="v131-title"><header class="v131-heading"><span>KHÔNG GIAN LUYỆN TẬP</span>'+
+ '<h2 id="v131-title">Luyện theo cách của bạn</h2><p>Chọn phạm vi học, sau đó tự luyện hoặc kiểm tra kết quả.</p></header>'+
+ '<div class="v131-filters" role="group" aria-label="Lọc phạm vi luyện tập">'+filters+'</div>'+body+'</section>';
+}
+
 function otherTab(tab){
  const m=model();const canonical=tab==='modules'?'catalog':tab==='lessons'?'catalog':tab;
- const content=canonical==='catalog'?catalogueTab(m):canonical==='practice'?practiceTab(m):overview();
+ const content=canonical==='catalog'?catalogueTab(m):canonical==='training'?trainingTab(m):canonical==='practice'?practiceTab(m):overview();
 
  return '<div class="v25-wrap" data-learning-hub="v33">'+tabTop(canonical,m)+content+
  '<div class="v25-version">Tiến độ học · '+(m.sample?'Dữ liệu minh họa':'Tiến độ đã ghi nhận')+'</div></div>';
@@ -387,6 +463,23 @@ function detail(id){
  '<div class="v25-version">Không gian học tập</div></div>';
 }
 
+document.addEventListener('change',event=>{
+ const node=event.target.closest?.('[data-v131-filter]');
+ if(!node||!document.querySelector?.('.v131-training'))return;
+ const next=trainingRoute(node.dataset.v131Filter,node.value,trainingScope());
+ if(!next)return;
+ try{localStorage.setItem(practiceScopeKey(),next)}catch(e){}
+ location.hash='#'+next;
+});
+document.addEventListener('click',event=>{
+ const trigger=event.target.closest?.('[data-v131-scroll]');
+ if(!trigger)return;
+ const target=document.getElementById?.('v131-activities');
+ if(!target)return;
+ event.preventDefault();
+ target.scrollIntoView?.({behavior:'smooth',block:'start'});
+ target.focus?.({preventScroll:true});
+});
 const originalLearn=learnPage,originalCourse=coursePage,originalTitle=titleOf;
 learnPage=function(){const r=route();if((r==='learn/foundation'||r.startsWith('learn/foundation/'))&&window.NPFoundationCourse)return window.NPFoundationCourse.page(r);if((r==='learn/modules'||r==='learn/lessons')&&window.NPFoundationCourse)return window.NPFoundationCourse.page('course/foundation');if(r==='learn'||r==='learn/overview')return overview();if(r.startsWith('learn/'))return otherTab(r.split('/')[1]);return originalLearn()};
 coursePage=function(id){if(id==='foundation'&&window.NPFoundationCourse)return window.NPFoundationCourse.page('course/foundation');return detail(id)};
