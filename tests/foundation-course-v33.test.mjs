@@ -1768,3 +1768,42 @@ test('v1.41 catalogue grades include readable labels and quiet semantic colors',
  assert.match(css,/is-grade-pass/);
  assert.match(css,/is-grade-retry/);
 });
+
+test('v1.43 historical Hira both-script runs still complete the same lesson',()=>{
+ const h=harness(),db=h.ui.store();
+ db.attemptRuns=[
+  {id:'legacy-p',moduleId:'hiragana',unitId:'unit-1',script:'both',kind:'practice',mode:'quiz',percent:90,total:20,correct:18,completedAt:'2026-11-07T01:00:00.000Z'},
+  {id:'native-t',moduleId:'hiragana',unitId:'unit-1',script:'hira',kind:'test',mode:'mix',percent:87,total:15,correct:13,completedAt:'2026-11-08T01:00:00.000Z'}
+ ];
+ const unit=h.ui.attemptStatus('hiragana','unit-1','hira');
+ assert.equal(unit.practicePassed,true);
+ assert.equal(unit.testPassed,true);
+ assert.equal(unit.complete,true);
+ assert.equal(unit.totalAttempts,2);
+ assert.equal(h.ui.attemptStatus('hiragana','unit-1','both').complete,true);
+ const next=h.ui.nextLearningStep({id:'hiragana',group:'unit-1',script:'hira',mod:h.data.byId.hiragana});
+ assert.equal(next.href,'#learn/foundation/hiragana/unit-2/learn/hira');
+ h.setProfile('demo-b');
+ assert.equal(h.ui.attemptStatus('hiragana','unit-1','hira').complete,false);
+});
+
+test('v1.43 only fully covered subgroups can complete a larger lesson',()=>{
+ const h=harness(),db=h.ui.store();
+ const mk=(unit,kind,percent)=>({id:unit+kind,moduleId:'hiragana',unitId:unit,script:'hira',kind,
+  mode:kind==='test'?'mix':'quiz',total:10,correct:percent/10,percent,completedAt:'2026-11-08T04:00:00.000Z'});
+ db.attemptRuns=[mk('a','practice',90),mk('a','test',90)];
+ assert.equal(h.ui.attemptStatus('hiragana','unit-1','hira').complete,false,
+  'Passing only vowel subgroup cannot complete vowels+K lesson');
+ db.attemptRuns.push(mk('k','practice',90),mk('k','test',90));
+ assert.equal(h.ui.attemptStatus('hiragana','unit-1','hira').complete,true);
+ assert.equal(h.ui.attemptStatus('hiragana','unit-2','hira').complete,false);
+});
+
+test('v1.43 static entry includes updated design and avoids old cached scripts',()=>{
+ const html=load('index.html'),brand=load('app.js');
+ assert.match(html,/result-v142\.css\?v=142/);
+ assert.match(html,/progress-v143\.css\?v=143/);
+ assert.match(html,/foundation-course-v33\.js\?v=143/);
+ assert.match(html,/learning-hub-v25\.js\?v=143/);
+ assert.match(brand,/v1\.43/);
+});
