@@ -5,6 +5,7 @@
 (function(){
 'use strict';
 const D=window.NPN5Lesson01Data,LINKED=window.NPN5Lesson01Scenes||{scenes:[],practiceSceneById:{}};
+const WORLD=window.NPN5CharacterWorld||null;
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const route='#course/N5/lesson/01',threshold=D?.threshold||80;
 const sections=[['vocab','Từ vựng'],['grammar','Ngữ pháp'],['reading','Đọc hiểu'],['listening','Nghe hiểu']];
@@ -12,6 +13,8 @@ const typeNames={vocab:'Từ vựng',grammar:'Ngữ pháp',reading:'Đọc hiể
 let active='learn',chapter=LINKED.scenes.length?'scenes':'vocab',run=null,showTexts=new Set(),saveError='',alertText='';
 let sceneIndex=0,focusedGrammar='wa',focusedVocab=null;
 const sceneFeedback=new Map(),sceneDrafts=new Map(),sceneModels=new Set(),sceneTranslations=new Set();
+const substituteFeedback=new Map(),orderSteps=new Map(),sceneTutorOpen=new Set();
+let activeCharacter=null,activeNote=null;
 const learnerId=()=>{try{return String(P()?.id||'guest').replace(/[^a-z0-9_-]/gi,'_')}catch{return'guest'}};
 const storageKey=()=> 'Horizon.N5.Lesson01.v1.'+learnerId();
 function empty(){return{schema:1,viewed:[],attempts:[],createdAt:new Date().toISOString()}}
@@ -147,6 +150,75 @@ function listeningPage(){
 }
 /* v1.47 — contextual application is a learning activity, not an exam. */
 const sceneKey=id=>learnerId()+':'+id;
+
+function recordMiniActivity(sceneId,activity,correct){
+ if(!LINKED.scenes.some(x=>x.id===sceneId))return false;
+ return write(state=>{
+  state.scenePractice ||= {};
+  const old=state.scenePractice[sceneId]||{attempts:0,correct:0};
+  const checks=old.micro||{};
+  const previous=checks[activity]||{attempts:0,correct:0};
+  old.micro={...checks,[activity]:{attempts:previous.attempts+1,
+   correct:previous.correct+(correct?1:0),lastCorrect:!!correct,
+   updatedAt:new Date().toISOString()}};
+  state.scenePractice[sceneId]=old;
+ });
+}
+function substitution(sceneId,choice){
+ const scene=LINKED.scenes.find(x=>x.id===sceneId);
+ if(!scene?.replace||!Number.isInteger(choice)||choice<0||choice>=scene.replace.options.length)return false;
+ const correct=choice===scene.replace.answer;
+ substituteFeedback.set(sceneKey(sceneId),{choice,correct});
+ recordMiniActivity(sceneId,'substitution',correct);
+ draw();return true;
+}
+function orderSentence(sceneId,position){
+ const scene=LINKED.scenes.find(x=>x.id===sceneId);
+ const items=scene?.dialogue?.slice(0,3)||[];
+ if(items.length!==3||!Number.isInteger(position)||position<0||position>2)return false;
+ const key=sceneKey(sceneId);
+ let state=orderSteps.get(key)||{selection:[],wrong:false,done:false};
+ if(state.done||state.selection.includes(position))return false;
+ if(position!==state.selection.length){state={...state,wrong:true};orderSteps.set(key,state);draw();return false}
+ const selection=state.selection.concat(position);
+ state={selection,wrong:false,done:selection.length===3};
+ orderSteps.set(key,state);
+ if(state.done)recordMiniActivity(sceneId,'reorder',true);
+ draw();return true;
+}
+function supplementalPractice(scene){
+ if(!scene?.replace)return '';
+ const key=sceneKey(scene.id),sub=substituteFeedback.get(key),ordering=orderSteps.get(key)||{selection:[],wrong:false,done:false};
+ const chosen=scene.replace;
+ const order=[2,0,1];
+ return '<details class="n5w-more-practice"><summary><span><strong>Luyện vận dụng thêm</strong>'+
+  '<small>Đổi từ trong câu · sắp xếp hội thoại · thử đổi vai</small></span><span aria-hidden="true">⌄</span></summary>'+
+  '<div class="n5w-more-inner"><section class="n5w-mini-task"><span class="n5w-task-id">01 · THAY TỪ VÀO MẪU</span>'+
+  '<h4>'+esc(chosen.prompt)+'</h4><p class="n5w-stem" lang="ja">'+esc(chosen.stem)+'</p>'+
+  '<div class="n5w-suboptions">'+chosen.options.map((v,i)=>
+   '<button type="button" data-n5l-sub-answer="'+i+'" data-n5l-sub-scene="'+esc(scene.id)+'"'+(sub?' disabled':'')+
+   ' class="'+(sub?.choice===i?'is-selected':'')+'">'+esc(v)+'</button>').join('')+'</div>'+
+  (sub?'<div class="n5w-inline-feedback"><strong>'+(sub.correct?'✓ Đúng':'Thử suy nghĩ lại')+'</strong> · '+esc(chosen.why)+
+   '<button type="button" data-n5l-sub-retry="'+esc(scene.id)+'">Thử lại ↻</button></div>':'')+
+  '</section><section class="n5w-mini-task"><span class="n5w-task-id">02 · SẮP XẾP HỘI THOẠI</span>'+
+  '<h4>Chọn lần lượt ba câu theo đúng trình tự câu chuyện.</h4>'+
+  '<div class="n5w-order-progress">Đã chọn '+ordering.selection.length+'/3 câu'+
+  (ordering.done?' · ✓ Đúng thứ tự':ordering.wrong?' · Chưa đúng, chọn câu tiếp theo theo ngữ cảnh':'')+'</div>'+
+  '<div class="n5w-order-choices">'+order.map(i=>
+   '<button type="button" data-n5l-order-answer="'+i+'" data-n5l-order-scene="'+esc(scene.id)+'"'+
+   (ordering.selection.includes(i)||ordering.done?' disabled':'')+'>'+
+   '<span>'+(ordering.selection.includes(i)?'✓':'↗')+'</span><span lang="ja">'+
+   esc(scene.dialogue[i]?.jp||'')+'</span></button>').join('')+'</div>'+
+  (ordering.done?'<p class="n5w-inline-feedback">✓ Bạn đã nối hội thoại hợp lý.</p>':'')+
+  '<button type="button" class="n5w-reset" data-n5l-order-reset="'+esc(scene.id)+'">Bắt đầu lại ↻</button></section>'+
+  '<section class="n5w-mini-task"><span class="n5w-task-id">03 · ĐỔI VAI · TỰ NÓI</span>'+
+  '<h4>'+esc(scene.variation?.label||'Thử một biến thể')+'</h4>'+
+  '<p>'+esc(scene.variation?.prompt||'')+'</p><p class="n5w-micro-tip">'+
+   esc(scene.variation?.tip||'Nói lại bằng thông tin của bạn, không cần đọc thuộc văn mẫu.')+'</p>'+
+  '<small>Đây là hoạt động thực hành mở, chưa chấm phát âm tự động.</small></section>'+
+  '</div></details>';
+}
+
 function sceneCount(){
  const records=read().scenePractice||{};
  return LINKED.scenes.filter(scene=>Number(records[scene.id]?.attempts)>0).length;
