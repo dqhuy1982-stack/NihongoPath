@@ -380,7 +380,7 @@ function trainingScope(){
  const groups=mod?D.getLessonUnits(mod.id):[];
  const unit=parts[4]==='all'||groups.some(x=>x.id===parts[4])?parts[4]:'all';
  const script=mod?.script==='hira'?'hira':mod?.script==='kata'?'kata':['both','hira','kata'].includes(parts[5])?parts[5]:'both';
- return {level:'foundation',mod,groups,unit,script};
+ return {level:'foundation',mod,groups,unit,script,mode:parts[6]||''};
 }
 function trainingRoute(key,value,s){
  if(key==='level')return value==='N5'?'learn/training/N5/all':'learn/training/foundation/hiragana/all/hira';
@@ -407,11 +407,11 @@ function recentTrainingMode(options){
 }
 
 /* HORIZON v1.33: Direct left-side exercise navigation on desktop; compact on mobile. */
-function trainingMenu(groups,href,recent){
+function trainingMenu(groups,href,recent,active){
  const items=groups.map(([name,desc,list])=>
   '<section class="v133-nav-group"><h3>'+safe(name)+'</h3>'+
   '<div class="v133-nav-items">'+list.map(([id,title,glyph])=>
-  '<a class="v133-nav-item'+(id===recent?' is-recent':'')+'" href="'+href(id)+'">'+
+  '<a class="v133-nav-item'+(id===active?' is-active':id===recent?' is-recent':'')+'" href="'+href(id)+'"'+(id===active?' aria-current="page"':'')+'>'+
   '<span class="v133-nav-icon" aria-hidden="true">'+glyph+'</span><span class="v133-nav-text">'+safe(title)+'</span>'+
   '<span class="v133-nav-arrow" aria-hidden="true">'+(id===recent?'•':'›')+'</span></a>').join('')+
   '</div></section>').join('');
@@ -437,7 +437,7 @@ function trainingTab(m){
   const chooseScript=s.mod.script==='both'?field('Hệ chữ','script',[['both','Cả hai'],['hira','Hiragana'],['kata','Katakana']],s.script):
    '<div class="v131-filter v131-fixed"><span>Hệ chữ</span><strong>'+(s.mod.script==='hira'?'Hiragana':s.mod.script==='kata'?'Katakana':'Theo nội dung')+'</strong></div>';
   filters=level+chooseModule+chooseUnit+chooseScript;
-  const fl=id=>'#learn/foundation/'+s.mod.id+'/'+s.unit+'/'+id+'/'+s.script;
+  const fl=id=>'#learn/training/foundation/'+s.mod.id+'/'+s.unit+'/'+s.script+'/'+id;
   const scope=s.unit==='all'?'Toàn bộ nội dung':D.findLessonUnit(s.mod.id,s.unit)?.title||s.unit;
   const canListen=!['small','mixed'].includes(s.mod.id);
   // Only expose word activities if this selected lesson actually has usable words.
@@ -451,9 +451,11 @@ function trainingTab(m){
    ['NHẬN DIỆN','Nhớ mặt chữ và cách đọc.',[['quiz','Chữ → âm','あ'],['reverse','Âm → chữ','a'],['truefalse','Đúng / Sai','✓']]],
    ['LUYỆN NGHE','Nghe âm và chọn chữ.',canListen?[['listen','Nghe → chữ','♫'],['listen-match','Nghe & ghép','◖']]:[]],
    ['GHÉP & GHI NHỚ','Ghép cặp, hoàn thành từ.',[['match','Ghép chữ & âm','⇄'],...(canWords?[['build','Xếp chữ thành từ','文'],['missing','Điền chữ còn thiếu','□']]:[])]],
-   ['TỪ VỰNG','Nhớ từ và nghĩa.',canWords?[['vocab-ja-vi','Nhật → Việt','日'],['vocab-vi-ja','Việt → Nhật','VI']]:[]]
+   ['TỪ VỰNG','Nhớ từ và nghĩa.',canWords?[['vocab-ja-vi','Nhật → Việt','日'],['vocab-vi-ja','Việt → Nhật','VI']]:[]],
+   ['ÔN TẬP','Tự ôn lại chữ đã học.',[['flash','Flashcard','▤']]]
   ].filter(x=>x[2].length);
   const allModes=grouped.flatMap(x=>x[2]),recent=recentTrainingMode(allModes);
+  const selected=allModes.find(x=>x[0]===s.mode)||(s.mode==='mix'?['mix','Kiểm tra tổng hợp','✓']:null);
   const chosen=recent?.[0]||'quiz',heading=recent?'Luyện lại: '+recent[1]:'Luyện nhận diện chữ';
   const description=recent?'Dạng bài bạn đã luyện gần đây.':'Nhận diện Kana và chọn cách đọc; không cần thiết lập thêm.';
   body='<div class="v132-start"><div class="v132-start-copy"><span class="v131-entry-tag">'+(recent?'BÀI LUYỆN GẦN NHẤT':'BẮT ĐẦU NHANH')+'</span>'+
@@ -464,7 +466,13 @@ function trainingTab(m){
    '<p class="v133-note">Chọn kỹ năng ở menu bên trái để mở bài luyện trực tiếp.</p>'+
    '<p class="v131-disclaimer">Kết quả được lưu riêng theo hồ sơ. Kiểm tra tổng hợp là bài luyện tập, không phải đề JLPT chính thức.</p>';
 
-  body='<div class="v133-two-column">'+trainingMenu(grouped,fl,recent?.[0])+
+  if(selected&&window.NPFoundationCourse?.embeddedPractice){
+   body='<section class="v134-inline-training v33-foundation v34-studying">'+
+    '<header class="v134-inline-heading"><div><span>ĐANG LUYỆN</span><h3>'+safe(selected[1])+'</h3><p>Phạm vi: '+safe(scope==='Toàn bộ nội dung'?s.mod.title:scope)+'</p></div>'+
+    '<a class="v134-inline-clear" href="#learn/training/foundation/'+s.mod.id+'/'+s.unit+'/'+s.script+'">Về trang luyện tập <span aria-hidden="true">×</span></a></header>'+
+    window.NPFoundationCourse.embeddedPractice()+'</section>';
+  }
+  body='<div class="v133-two-column">'+trainingMenu(grouped,fl,recent?.[0],s.mode)+
    '<div class="v133-main-area">'+body+'</div></div>';
  }else if(s.level==='N5'){
   filters=level+field('Bài học N5','lesson',[['all','Tất cả bài hiện có'],...s.list.map(a=>[a.contentId,a.title.replace(/^\d+\s*[·.:-]\s*/,'')])],s.lesson);
@@ -488,7 +496,7 @@ function trainingTab(m){
   '<span class="v132-scope-change">Đổi phạm vi <span aria-hidden="true">⌄</span></span></summary>'+
   '<div class="v131-filters" role="group" aria-label="Lọc phạm vi luyện tập">'+filters+'</div></details>';
  return '<section class="v25-panel v131-training v132-training" aria-labelledby="v131-title"><header class="v131-heading"><span>KHÔNG GIAN LUYỆN TẬP</span>'+
- '<h2 id="v131-title">Luyện tập</h2><p>Chọn một dạng bài ở menu trái hoặc bắt đầu luyện ngay.</p></header>'+
+ '<h2 id="v131-title">Luyện tập</h2><p>Chọn dạng bài bên trái và thực hành ngay bên phải, không rời trang.</p></header>'+
  disclosure+body+'</section>';
 }
 
@@ -530,6 +538,17 @@ document.addEventListener('change',event=>{
  location.hash='#'+next;
 });
 document.addEventListener('click',event=>{
+ const choice=event.target.closest?.('.v133-nav-item,.v132-primary,.v132-exam>a,.v134-inline-clear');
+ const destination=choice?.getAttribute?.('href')?.replace(/^#\/?/,'');
+ if(document.querySelector?.('.v131-training')&&destination?.startsWith('learn/training/foundation/')){
+  event.preventDefault();
+  if(location.hash!=='#'+destination){
+   if(typeof history!=='undefined'&&history.replaceState)history.replaceState(null,'','#'+destination);
+   else location.hash='#'+destination;
+  }
+  render(false);
+  return;
+ }
  const trigger=event.target.closest?.('[data-v131-scroll]');
  if(!trigger)return;
  const target=document.getElementById?.('v131-activities');
