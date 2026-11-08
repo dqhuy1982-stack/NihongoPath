@@ -1138,7 +1138,7 @@ test('v1.27 correct/wrong have audible media feedback and independent manual pro
  const h=harness(),route='learn/foundation/hiragana/a/quiz';
  h.setLegacyAudioPref(false); // v1.26 incorrectly read this old key.
  h.location.hash='#'+route;h.ui.page(route);h.start();
- assert.match(h.ui.page(route),/Âm hiệu đúng\\/sai: <strong>Bật/);
+ assert.match(h.ui.page(route),/Âm hiệu đúng\/sai: <strong>Bật/);
  const s=h.ui.session();
  h.click('answer',s.questions[0].correct);
  assert.equal(h.audioFiles[0],'assets/feedback/correct.wav','correct cue plays even with legacy auto pronunciation OFF');
