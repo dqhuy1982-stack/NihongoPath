@@ -128,50 +128,64 @@ function updateControls(){
   btn.textContent='Tự mở: '+(enabled?'Bật':'Tắt');
  }
 }
+/* Place the dialogue by its REAL rendered height, not an assumed 305 px.
+   On shorter viewports keep the actions available in the card, instead of
+   letting the dialog hang below the screen. */
 function layOut(){
- if(!tour)return;
- if(clockTick!==null&&!tour.paused&&!tour.confirm)tour.remainingMs=Math.max(0,tour.deadline-Date.now());
- const steps=tour.steps,step=steps[tour.step],small=(window.innerWidth||1024)<=620;
+ const t=tour;if(!t)return;
+ if(clockTick!==null&&!t.paused&&!t.confirm)t.remainingMs=Math.max(0,t.deadline-Date.now());
+ const steps=t.steps,step=steps[t.step],small=(window.innerWidth||1024)<=620;
  const target=document.querySelector(small&&step.mobile?step.mobile:step.selector);
  if(!target){end('unavailable');return}
- const rect=target.getBoundingClientRect();
- const w=window.innerWidth||1024,h=window.innerHeight||768;
- const highlight=tour.host.querySelector('.v134-guide-spot');
- const x=Math.max(0,rect.left-6),y=Math.max(0,rect.top-6);
- highlight.style.left=x+'px';highlight.style.top=y+'px';
+ const vw=window.visualViewport;
+ const w=vw?.width||window.innerWidth||1024,h=vw?.height||window.innerHeight||768;
+ const edge=12,gap=14;
+ let rect=target.getBoundingClientRect();
+ // The next target may be below the fold. Bring it into view once per step.
+ if(!t.confirm&&t.scrolledStep!==t.step&&(rect.bottom<72||rect.top>h-72)){
+  t.scrolledStep=t.step;
+  target.scrollIntoView?.({behavior:'smooth',block:'center'});
+  setTimeout(()=>{if(tour===t)layOut()},400);
+ }
+ const highlight=t.host.querySelector('.v134-guide-spot');
+ highlight.style.left=Math.max(0,rect.left-6)+'px';
+ highlight.style.top=Math.max(0,rect.top-6)+'px';
  highlight.style.width=Math.max(28,rect.width+12)+'px';
  highlight.style.height=Math.max(32,rect.height+12)+'px';
- const cursor=tour.host.querySelector('.v134-guide-cursor');
- // This is an illustrated pointer, not the learner's actual cursor.
+ const cursor=t.host.querySelector('.v134-guide-cursor');
  const pointerX=Math.max(8,Math.min(w-34,rect.left+Math.min(rect.width*.62,130)));
  const pointerY=Math.max(8,Math.min(h-36,rect.top+Math.min(rect.height*.5,27)));
  cursor.style.transform='translate3d('+pointerX+'px,'+pointerY+'px,0)';
- const card=tour.host.querySelector('.v134-guide-card');
- const width=Math.min(360,w-24);
- const left=Math.max(12,Math.min(w-width-12,rect.left+rect.width*.5-width*.42));
+ const card=t.host.querySelector('.v134-guide-card');
+ card.hidden=false; // measure even when returning from the exit-confirmation dialog
+ const width=Math.max(180,Math.min(360,w-edge*2));
  card.style.width=width+'px';
- const height=Math.min(h-24,Math.max(275,card.getBoundingClientRect().height||305));
- const below=rect.bottom+16,above=rect.top-height-16;
- const side=below+height+12<=h?'below':above>=12?'above':'floating';
- const top=side==='below'?below:side==='above'?above:Math.max(12,(h-height)*.5);
- // Point the dialogue tail at the highlighted control, even near screen edges.
+ card.style.maxHeight=Math.max(130,h-edge*2)+'px';
+ t.host.querySelector('.v134-guide-title').textContent=step.title;
+ t.host.querySelector('.v134-guide-body').textContent=step.desc;
+ t.host.querySelector('.v134-guide-progress').textContent=(t.step+1)+' / '+steps.length;
+ t.host.querySelector('[data-v134-action="prev"]').disabled=t.step===0;
+ t.host.querySelector('[data-v134-action="next"]').textContent=t.step===steps.length-1?'Hoàn tất':'Tiếp theo →';
+ for(const box of t.host.querySelectorAll('[data-v134-repeat]'))box.checked=t.repeat;
+ for(const [i,bar] of [...t.host.querySelectorAll('.v135-guide-steps span')].entries()){
+  bar.classList.toggle('is-complete',i<=t.step);
+ }
+ const rendered=card.getBoundingClientRect().height||card.offsetHeight||305;
+ const height=Math.min(Math.max(0,rendered),Math.max(130,h-edge*2));
+ const left=Math.max(edge,Math.min(w-width-edge,rect.left+rect.width*.5-width*.42));
+ const below=rect.bottom+gap,above=rect.top-height-gap;
+ const side=below+height+edge<=h?'below':above>=edge?'above':'floating';
+ const top=side==='below'?below:side==='above'?above:
+  Math.max(edge,Math.min(h-height-edge,(h-height)/2));
  const arrowX=Math.max(22,Math.min(width-22,rect.left+rect.width*.5-left));
  card.style.setProperty('--v136-arrow-x',arrowX+'px');
- card.style.left=left+'px';card.style.top=top+'px';
+ card.style.left=left+'px';
+ card.style.top=Math.max(edge,Math.min(h-height-edge,top))+'px';
  tour.host.dataset.bubbleSide=side;
- tour.host.querySelector('.v134-guide-title').textContent=step.title;
- tour.host.querySelector('.v134-guide-body').textContent=step.desc;
- tour.host.querySelector('.v134-guide-progress').textContent=(tour.step+1)+' / '+steps.length;
- tour.host.querySelector('[data-v134-action="prev"]').disabled=tour.step===0;
- tour.host.querySelector('[data-v134-action="next"]').textContent=tour.step===steps.length-1?'Hoàn tất':'Tiếp theo →';
- tour.host.querySelector('.v134-guide-card').hidden=!!tour.confirm;
- tour.host.querySelector('.v134-guide-confirm').hidden=!tour.confirm;
- for(const box of tour.host.querySelectorAll('[data-v134-repeat]'))box.checked=tour.repeat;
- for(const [i,bar] of [...tour.host.querySelectorAll('.v135-guide-steps span')].entries()){
-  bar.classList.toggle('is-complete',i<=tour.step);
- }
+ card.hidden=!!t.confirm;
+ t.host.querySelector('.v134-guide-confirm').hidden=!t.confirm;
  clearTimer();
- if(!tour.confirm&&!tour.paused)scheduleCountdown();
+ if(!t.confirm&&!t.paused)scheduleCountdown();
  else updateCountdown();
 }
 function confirmExit(){
