@@ -246,13 +246,16 @@ function foundationModuleCatalogue(){
    const cards=foundationTopics(m,unit,data),unique=[...new Set(cards.map(x=>x.id))];
    const practiced=unique.filter(id=>progress[id]?.attempts>0).length;
    const sample=cards[0]||{},parts=unit.groups.map(id=>m.groups.find(g=>g.id===id)).filter(Boolean);
+   // Use one representative symbol for a lesson, not the first multi-kana sample word.
+   const glyphs={small:{pause:'っ',length:'ー',vowels:'ァ'},mixed:{mixed:'あ'}};
+   const displayGlyph=glyphs[m.id]?.[unit.id]||sample.glyph||'あ';
    const search=[m.title,m.subtitle,unit.title,unit.summary,...parts.map(g=>g.title+' '+g.id),...cards.map(x=>x.glyph+' '+x.read)].join(' ').toLocaleLowerCase('vi');
    const partDetails=parts.length>1?'<details class="v125-lesson-parts"><summary>Luyện riêng từng hàng <span aria-hidden="true">⌄</span></summary>'+
      '<div class="v125-parts-list">'+parts.map(g=>'<a href="#'+engine.path(m.id,g.id,'learn')+'">'+safe(g.title)+' <span aria-hidden="true">↗</span></a>').join('')+'</div></details>':'';
    return '<article class="v121-topic v125-lesson" data-v121-topic data-v121-search="'+safe(search)+'">'+
     '<a class="v121-topic-main" href="#'+engine.path(m.id,unit.id,'learn')+'" aria-label="Học '+safe(unit.title)+'">'+
     '<span class="v121-topic-number">'+String(ordinal+1).padStart(2,'0')+'</span>'+
-    '<span class="v121-topic-glyph" lang="ja">'+safe(sample.glyph||'あ')+'</span>'+
+    '<span class="v121-topic-glyph" lang="ja">'+safe(displayGlyph)+'</span>'+
     '<span class="v121-topic-copy"><strong>'+safe(unit.title)+'</strong><small>'+safe(unit.summary)+'</small></span>'+
     '<span class="v121-topic-progress">'+practiced+' / '+unique.length+' mẫu đã luyện</span>'+
     '<span class="v125-lesson-open">Mở bài <span aria-hidden="true">›</span></span></a>'+partDetails+'</article>';
