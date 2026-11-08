@@ -716,3 +716,42 @@ body[data-season="winter"] .v25-wrap{
  .v134-guide-layer.v136-guide-ready .v134-guide-card,
  .v134-guide-layer .v134-guide-cursor{transition:none!important}
 }
+
+
+/* v1.38 · Viewport-safe guided dialogue: controls never vanish below the fold. */
+.v134-guide-layer .v134-guide-card{
+ box-sizing:border-box;
+ max-height:calc(100dvh - 24px);
+ overflow-y:auto;
+ overflow-x:hidden;
+ overscroll-behavior:contain;
+ scrollbar-width:thin;
+ scrollbar-color:color-mix(in srgb,var(--v25-ink,#754b5c) 24%,transparent) transparent;
+}
+.v134-guide-layer .v134-guide-card .v134-guide-buttons{
+ position:sticky;bottom:0;z-index:2;
+ background:var(--v25-bg,#fffbfa);
+ padding:10px 0 2px;
+ margin-bottom:-2px;
+ border-top:1px solid color-mix(in srgb,var(--v25-ink,#754b5c) 10%,transparent)
+}
+.v134-guide-layer .v134-guide-confirm{
+ max-height:calc(100dvh - 24px);
+ overflow-y:auto;
+ overscroll-behavior:contain
+}
+@media(max-height:650px){
+ .v134-guide-layer .v134-guide-card{padding:13px 16px}
+ .v134-guide-layer .v134-guide-card .v134-guide-title{margin:8px 0 6px;font-size:16px}
+ .v134-guide-layer .v135-guide-steps{margin:7px 0 4px}
+ .v134-guide-layer .v135-guide-clock-row{margin:8px 0}
+ .v134-guide-layer .v135-guide-clock{flex-basis:45px;width:45px;height:45px}
+ .v134-guide-layer .v134-guide-preference{margin-top:9px}
+ .v134-guide-layer .v134-guide-buttons{margin-top:12px;gap:5px}
+ .v134-guide-layer .v134-guide-buttons button{padding:8px 9px;min-height:34px}
+}
+@media(max-height:460px){
+ .v134-guide-layer .v134-guide-card{padding:9px 12px}
+ .v134-guide-layer .v135-guide-clock-row{margin:5px 0}
+ .v134-guide-layer .v134-guide-card .v134-guide-title{font-size:14px}
+}
