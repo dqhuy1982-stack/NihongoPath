@@ -478,12 +478,17 @@ function trainingTab(m){
   ].filter(x=>x[2].length);
   const allModes=grouped.flatMap(x=>x[2]),recent=recentTrainingMode(allModes);
   const selected=allModes.find(x=>x[0]===s.mode)||(s.mode==='mix'?['mix','Kiểm tra tổng hợp','✓']:null);
-  const chosen=recent?.[0]||'quiz',heading=recent?'Luyện lại: '+recent[1]:'Luyện nhận diện chữ';
+  const status=window.NPFoundationCourse?.attemptStatus?.(s.mod.id,s.unit,s.script)||{};
+   const startDone=status.practiceDone?'✓ Đã luyện · '+status.practiceCount+' lượt':'Chưa hoàn tất lượt luyện';
+   const examDone=status.testPassed?'✓ Kiểm tra đạt · '+status.bestTest+'%':status.testDone?'◷ Đã kiểm tra · cần luyện thêm':'Chưa kiểm tra';
+   const chosen=recent?.[0]||'quiz',heading=recent?'Luyện lại: '+recent[1]:'Luyện nhận diện chữ';
   const description=recent?'Dạng bài bạn đã luyện gần đây.':'Nhận diện Kana và chọn cách đọc; không cần thiết lập thêm.';
   body='<div class="v132-start"><div class="v132-start-copy"><span class="v131-entry-tag">'+(recent?'BÀI LUYỆN GẦN NHẤT':'BẮT ĐẦU NHANH')+'</span>'+
-   '<h3>'+safe(heading)+'</h3><p>'+safe(description)+'</p></div>'+
+   '<h3>'+safe(heading)+'</h3><p>'+safe(description)+'</p>'+
+    '<div class="v140-training-status"><span class="'+(status.practiceDone?'is-done':'')+'">'+startDone+'</span></div></div>'+
    '<a class="v132-primary" href="'+fl(chosen)+'">Bắt đầu luyện <span aria-hidden="true">→</span></a></div>'+
-   '<div class="v132-exam"><div><strong>Kiểm tra tổng hợp</strong><small>Câu hỏi trộn · xem điểm và thời gian</small></div>'+
+   '<div class="v132-exam"><div><strong>Kiểm tra tổng hợp</strong><small>Câu hỏi trộn · xem điểm và thời gian</small>'+
+   '<div class="v140-training-status"><span class="'+(status.testPassed?'is-done':'')+'">'+examDone+'</span></div></div>'+
    '<a href="'+fl('mix')+'">Làm bài kiểm tra <span aria-hidden="true">→</span></a></div>'+
    '<p class="v133-note">Chọn kỹ năng ở menu bên trái để mở bài luyện trực tiếp.</p>'+
    '<p class="v131-disclaimer">Kết quả được lưu riêng theo hồ sơ. Kiểm tra tổng hợp là bài luyện tập, không phải đề JLPT chính thức.</p>';
