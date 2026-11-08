@@ -311,7 +311,13 @@ document.addEventListener('click',event=>{
  const area=button.closest('.v121-foundation-catalog');if(!area)return;
  const selected=button.getAttribute('data-v123-select');
  const filter=area.querySelector('[data-v121-filter]');
- if(filter?.value){filter.value='';filter.dispatchEvent(new Event('input',{bubbles:true}));}
+ if(filter?.value){
+  filter.value='';
+  area.classList.remove('v123-searching');
+  area.querySelectorAll('[data-v121-topic]').forEach(topic=>{topic.hidden=false;});
+  const status=area.querySelector('[data-v121-status]');
+  if(status){status.hidden=true;status.textContent='';}
+ }
  area.querySelectorAll('[data-v123-select]').forEach(tab=>{
   const active=tab.getAttribute('data-v123-select')===selected;
   tab.classList.toggle('is-active',active);
