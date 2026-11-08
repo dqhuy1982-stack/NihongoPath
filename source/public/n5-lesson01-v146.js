@@ -145,13 +145,105 @@ function listeningPage(){
   '</article>').join('')+'</div>'+
   '<div class="n5l-study-tip">Khi kiểm tra, lời thoại sẽ được ẩn. Chỉ đánh dấu phần nghe hợp lệ sau khi thiết bị đã bắt đầu phát giọng Nhật cho từng câu liên quan.</div></section>';
 }
+/* v1.47 — contextual application is a learning activity, not an exam. */
+const sceneKey=id=>learnerId()+':'+id;
+function sceneCount(){
+ const records=read().scenePractice||{};
+ return LINKED.scenes.filter(scene=>Number(records[scene.id]?.attempts)>0).length;
+}
+function chooseSceneAnswer(sceneId,choice){
+ const scene=LINKED.scenes.find(x=>x.id===sceneId);
+ if(!scene||!Number.isInteger(choice)||choice<0||choice>=scene.challenge.options.length)return false;
+ const correct=choice===scene.challenge.correct;
+ const key=sceneKey(sceneId);
+ sceneFeedback.set(key,{choice,correct});
+ write(state=>{
+  if(!state.scenePractice)state.scenePractice={};
+  const previous=state.scenePractice[sceneId]||{attempts:0,correct:0};
+  state.scenePractice[sceneId]={attempts:previous.attempts+1,
+   correct:previous.correct+(correct?1:0),lastCorrect:correct,
+   updatedAt:new Date().toISOString()};
+ });
+ draw();return true;
+}
+function scenePage(){
+ if(!LINKED.scenes.length)return vocabPage();
+ const scene=LINKED.scenes[sceneIndex]||LINKED.scenes[0],saved=read().scenePractice||{};
+ const key=sceneKey(scene.id),feedback=sceneFeedback.get(key),showModel=sceneModels.has(key);
+ const showTranslation=sceneTranslations.has(key),draft=sceneDrafts.get(key)||'';
+ const vocabs=scene.vocab.map(id=>D.vocab.find(x=>x.id===id)).filter(Boolean);
+ const grammars=scene.grammar.map(id=>D.grammar.find(x=>x.id===id)).filter(Boolean);
+ return '<section class="n5c-root" aria-label="Học N5 Bài 01 qua tình huống">'+
+  '<div class="n5c-heading"><div><span class="n5c-eyebrow">LEARN IN CONTEXT · BÀI 01</span>'+
+  '<h2>Hiểu và dùng tiếng Nhật trong tình huống.</h2>'+
+  '<p>Học qua hội thoại ngắn, tìm hiểu mẫu câu và thử nói theo vai. Các câu tự viết không bị chấm máy móc.</p></div>'+
+  '<div class="n5c-progress">'+sceneCount()+'/'+LINKED.scenes.length+'<small>tình huống đã thử</small></div></div>'+
+  '<div class="n5c-workspace"><nav class="n5c-scene-nav" aria-label="Chọn tình huống">'+
+  LINKED.scenes.map((item,i)=>'<button type="button" class="'+(i===sceneIndex?'is-current ':'')+
+   (saved[item.id]?.attempts?'has-practiced':'')+'" data-n5l-scene="'+esc(item.id)+'" aria-current="'+(i===sceneIndex?'step':'false')+'">'+
+   '<span class="n5c-scene-num">'+String(i+1).padStart(2,'0')+'</span>'+
+   '<span class="n5c-scene-name"><strong>'+esc(item.title)+'</strong><small lang="ja">'+esc(item.jpTitle)+'</small></span>'+
+   (saved[item.id]?.attempts?'<span class="n5c-tried" title="Đã thử trả lời tình huống">✓</span>':'')+'</button>').join('')+'</nav>'+
+  '<article class="n5c-scene"><span class="n5c-situation-label">TÌNH HUỐNG '+String(sceneIndex+1).padStart(2,'0')+'</span>'+
+  '<h3>'+esc(scene.title)+'</h3>'+
+  '<p class="n5c-situation">'+esc(scene.situation)+'</p>'+
+  '<p class="n5c-goal"><strong>Mục tiêu:</strong> '+esc(scene.goal)+'</p>'+
+  '<div class="n5c-dialog-head"><strong>Hội thoại</strong><div>'+
+  '<button type="button" data-n5l-play="'+esc(scene.id)+'" class="n5c-audio"'+(audioSupported()?'':' disabled')+
+  '>▶ Nghe thoại</button>'+
+  '<button type="button" data-n5l-scene-translation="'+esc(scene.id)+'" class="n5c-text-action" aria-expanded="'+showTranslation+'">'+
+  (showTranslation?'Ẩn nghĩa':'Hiện nghĩa')+'</button></div></div>'+
+  '<div class="n5c-dialog" lang="ja">'+scene.dialogue.map((line,i)=>
+   '<div class="n5c-line"><span class="n5c-speaker">'+esc(line.who)+'</span><div>'+
+   '<p>'+esc(line.jp)+'</p>'+
+   (showTranslation?'<small lang="vi">'+esc(line.vi)+'</small>':'')+
+   '</div></div>').join('')+'</div>'+
+  '<p class="n5c-audio-note">'+(audioSupported()?
+   'Giọng Nhật tổng hợp của trình duyệt; không chấm phát âm hay thay thế audio người bản ngữ.':
+   'Thiết bị chưa hỗ trợ phát giọng Nhật. Bạn vẫn có thể luyện bằng văn bản.')+'</p>'+
+  '<div class="n5c-links"><div><span>TỪ LIÊN QUAN</span>'+
+  '<div class="n5c-tags">'+vocabs.map(x=>'<button type="button" data-n5l-vocabulary="'+esc(x.id)+'" title="'+esc(x.vi)+'">'+esc(x.jp)+' <span aria-hidden="true">↗</span></button>').join('')+'</div></div>'+
+  '<div><span>NGỮ PHÁP ÁP DỤNG</span><div class="n5c-tags">'+grammars.map(x=>
+   '<button type="button" data-n5l-grammar="'+esc(x.id)+'">'+esc(x.title)+' <span aria-hidden="true">↗</span></button>').join('')+'</div></div></div>'+
+  '<p class="n5c-tip"><strong>Điểm cần nhớ:</strong> '+esc(scene.tip)+'</p>'+
+  '<div class="n5c-task"><span class="n5c-task-label">THỰC HÀNH 01 · CHỌN PHẢN HỒI PHÙ HỢP</span>'+
+  '<h4>'+esc(scene.challenge.title)+'</h4>'+
+  '<div class="n5c-options">'+scene.challenge.options.map((answer,i)=>
+   '<button type="button" data-n5l-scene-answer="'+i+'" data-n5l-scene-id="'+esc(scene.id)+'"'+
+   (feedback?' disabled':'')+' class="'+(feedback?.choice===i?'is-chosen ':'')+
+   (feedback&&i===scene.challenge.correct?'is-right':'')+'">'+
+   '<span>'+String.fromCharCode(65+i)+'</span><span lang="ja">'+esc(answer)+'</span></button>').join('')+'</div>'+
+  (feedback?'<div class="n5c-feedback"><strong>'+(feedback.correct?'✓ Đúng ngữ cảnh':'Chưa phù hợp với tình huống')+'</strong>'+
+   '<p>'+esc(scene.challenge.why)+'</p>'+
+   '<button type="button" data-n5l-scene-retry="'+esc(scene.id)+'">Thử trả lời lại ↻</button></div>':'')+
+  '</div>'+
+  '<div class="n5c-task is-writing"><span class="n5c-task-label">THỰC HÀNH 02 · VIẾT CÂU CỦA BẠN</span>'+
+  '<h4>'+esc(scene.compose.prompt)+'</h4><p>'+esc(scene.compose.hint)+'</p>'+
+  '<textarea data-n5l-compose="'+esc(scene.id)+'" rows="2" placeholder="Tự viết câu tiếng Nhật...">'+esc(draft)+'</textarea>'+
+  '<div class="n5c-writing-tools"><button type="button" data-n5l-scene-model="'+esc(scene.id)+'" aria-expanded="'+showModel+'">'+
+  (showModel?'Ẩn câu gợi ý':'Xem câu gợi ý để đối chiếu')+'</button>'+
+  '<small>Không tự chấm · Không lưu câu cá nhân</small></div>'+
+  (showModel?'<p class="n5c-model" lang="ja">'+esc(scene.compose.sample)+'</p>':'')+'</div>'+
+  '<div class="n5c-scene-bottom">'+(sceneIndex<LINKED.scenes.length-1?
+   '<button type="button" class="n5l-primary" data-n5l-scene="'+esc(LINKED.scenes[sceneIndex+1].id)+'">Tình huống tiếp theo →</button>':
+   '<button type="button" class="n5l-primary" data-n5l-section="vocab">Ôn lại từ vựng và mẫu câu →</button>')+
+  (run&&!run.finished?'<button type="button" class="n5l-secondary" data-n5l-panel="'+(run.kind==='check'?'check':'practice')+'">Quay lại lượt đang làm</button>':'')+
+  '</div></article></div></section>';
+}
 function learnPage(){
- return '<div class="n5l-section-tabs" role="navigation" aria-label="Nội dung Bài 01">'+
+ const lookupOpen=chapter!=='scenes';
+ return (chapter==='scenes'?scenePage():'')+
+  '<details class="n5c-reference"'+(lookupOpen?' open':'')+'>'+
+  '<summary><span><strong>Kiến thức & tra cứu Bài 01</strong><small>30 từ · 6 mẫu câu · bài đọc · 3 bài nghe</small></span><span aria-hidden="true">⌄</span></summary>'+
+  '<div class="n5c-reference-inner"><div class="n5l-section-tabs" role="navigation" aria-label="Tra cứu Bài 01">'+
   sections.map(([id,name])=>'<button type="button" data-n5l-section="'+id+'" aria-pressed="'+(chapter===id)+'" class="'+(chapter===id?'is-active':'')+'">'+
    (read().viewed.includes(id)?'✓ ':'')+name+'</button>').join('')+'</div>'+
-  ({vocab:vocabPage,grammar:grammarPage,reading:readingPage,listening:listeningPage}[chapter]||vocabPage)()+
-  '<div class="n5l-step-footer">'+(chapter==='listening'?
-   '<button type="button" class="n5l-primary" data-n5l-panel="practice">Đã học xong nội dung · Bắt đầu luyện →</button>':
+  (chapter!=='scenes'?({vocab:vocabPage,grammar:grammarPage,reading:readingPage,listening:listeningPage}[chapter]||vocabPage)():'')+
+  '</div></details>'+
+  '<div class="n5l-step-footer">'+(chapter==='scenes'?
+   '<button type="button" class="n5l-primary" data-n5l-section="vocab">Xem kiến thức liên quan →</button>':
+   chapter==='listening'?
+   '<button type="button" class="n5l-primary" data-n5l-panel="practice">Bắt đầu luyện toàn bài →</button>':
    '<button type="button" class="n5l-primary" data-n5l-section="'+sections[Math.min(sections.findIndex(x=>x[0]===chapter)+1,3)][0]+'">Nội dung tiếp theo →</button>')+
   '</div>';
 }
