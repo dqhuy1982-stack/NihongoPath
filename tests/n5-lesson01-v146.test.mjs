@@ -150,11 +150,11 @@ test('Lesson 01 actual assets and entry script load in correct order',()=>{
  assert.match(css,/prefers-reduced-motion/);
 });
 
-test('v1.47 situation-first learning includes four original dialogues with linked micro tasks',()=>{
+test('v1.47 situation-first learning includes six original dialogues with linked micro tasks',()=>{
  const h=harness(),path=h.ui.page(),scenes=h.ui.scenes();
  assert.equal(h.ui.version,'v148');
- assert.equal(scenes.length,4);
- assert.equal(new Set(scenes.map(x=>x.id)).size,4);
+ assert.equal(scenes.length,6);
+ assert.equal(new Set(scenes.map(x=>x.id)).size,6);
  assert.match(path,/Gặp nhau lần đầu/);
  assert.match(path,/data-n5l-scene="colleague"/);
  assert.match(path,/data-n5l-scene="correcting"/);
