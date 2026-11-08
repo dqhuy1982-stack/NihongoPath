@@ -20,7 +20,7 @@ function current(){
  const group=(inline?bits[4]:bits[3])||(mod?initialGroup(mod):'');
  const legacyMode=(inline?bits[6]:bits[4])||'learn';
  const mode=({game:'match','game-listen':'listen-match','game-build':'build'})[legacyMode]||legacyMode;
- const script=bits[5]||'both';
+ const script=bits[5]||(mod?.script==='hira'?'hira':mod?.script==='kata'?'kata':'both');
  return {id,mod,group:mod&&(group==='all'||mod.groups.some(x=>x.id===group)||!!DATA.findLessonUnit(id,group))?group:mod?initialGroup(mod):'',mode:modeNames[mode]?mode:'learn',script:['hira','kata','both'].includes(script)?script:'both'};
 }
 function learnerId(){try{return String(P()?.id||'guest').replace(/[^a-z0-9_-]/gi,'_')}catch{return 'guest'}}
@@ -88,13 +88,27 @@ function repeatCandidates(items,count){
  return result;
 }
 function runHistory(){return Array.isArray(store().attemptRuns)?store().attemptRuns:[]}
+/* v1.43: One learner's attempts can have native script or historical
+   'both' aliases for single-script modules. Unit completion also accepts
+   full coverage of its legacy subgroups, not a single partial group. */
 function attemptStatus(id,unit,script='both'){
- const entries=runHistory().filter(x=>x.moduleId===id&&x.unitId===unit&&x.script===script);
+ const native=DATA.byId[id]?.script;
+ const compatible=(native==='hira'||native==='kata')&&[native,'both'].includes(script)?[native,'both']:[script];
+ const all=runHistory().filter(x=>x.moduleId===id&&compatible.includes(x.script));
+ const direct=all.filter(x=>x.unitId===unit);
+ const groups=DATA.findLessonUnit?.(id,unit)?.groups||[];
+ const children=groups.length?all.filter(x=>groups.includes(x.unitId)):[];
+ const entries=direct.concat(children).sort((a,b)=>String(a.completedAt||'').localeCompare(String(b.completedAt||'')));
  const practice=entries.filter(x=>x.kind==='practice'),tests=entries.filter(x=>x.kind==='test');
- const testPassed=tests.some(x=>x.percent>=PASS_PERCENT);
- return {practiceCount:practice.length,testCount:tests.length,practiceDone:practice.length>0,
-  testDone:tests.length>0,testPassed,complete:practice.length>0&&testPassed,totalAttempts:entries.length,
-  bestTest:tests.length?Math.max(...tests.map(x=>x.percent)):null,
+ const passed=(arr,kind)=>arr.some(x=>x.kind===kind&&Number(x.percent)>=PASS_PERCENT);
+ const covered=(kind)=>groups.length>0&&groups.every(group=>passed(children.filter(x=>x.unitId===group),kind));
+ const practicePassed=passed(direct,'practice')||covered('practice');
+ const testPassed=passed(direct,'test')||covered('test');
+ return {practiceCount:practice.length,testCount:tests.length,
+  practiceDone:practice.length>0,practicePassed,
+  testDone:tests.length>0,testPassed,complete:practicePassed&&testPassed,
+  totalAttempts:entries.length,bestPractice:practice.length?Math.max(...practice.map(x=>Number(x.percent)||0)):null,
+  bestTest:tests.length?Math.max(...tests.map(x=>Number(x.percent)||0)):null,
   lastPractice:practice.at(-1)||null,lastTest:tests.at(-1)||null,history:entries.slice(-30)};
 }
 /* v1.41 · Semantic scores are per attempt, never permanent mastery.
