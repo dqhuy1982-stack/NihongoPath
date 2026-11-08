@@ -203,7 +203,7 @@ function finish(){
   correct:run.answers.filter(x=>x.correct).length,
   percent:Math.round(100*run.answers.filter(x=>x.correct).length/run.questions.length),
   elapsedMs:Math.max(0,Date.now()-run.startedAt),
-  listeningVerified:run.questions.filter(q=>q.type==='listening').every((q,i)=>run.answers[i]?.heard===true),
+  listeningVerified:run.questions.every((q,i)=>q.type!=='listening'||run.answers[i]?.heard===true),
   byType:{},wrongIds:[],completedAt:new Date().toISOString()};
  for(let i=0;i<run.questions.length;i++){
   const q=run.questions[i],a=run.answers[i];
