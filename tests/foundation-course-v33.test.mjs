@@ -986,3 +986,43 @@ test('v1.21 Foundation catalogue has all 40 real groups and direct learning path
  assert.equal(section.open,true);
  assert.match(status.textContent,/1 nhóm bài phù hợp/);
 });
+
+test('v1.22 learning navigation exposes exactly three destinations and keeps legacy access',()=>{
+ const {data,ui}=harness(),window={NPFoundationCurriculum:data,NPFoundationCourse:ui};
+ const hooks={},document={addEventListener:(name,fn)=>{hooks[name]=fn}};
+ const script=load('learning-hub-v25.js').replace(/\}\)\(\);\s*$/,'window.__tabs=navigation;window.__legacy=learnPage;})();');
+ const location={hash:'#learn/catalog'};
+ runInNewContext(script,{window,document,location,P:()=>({id:'demo-a',goal:'Nền tảng'}),
+  render:()=>{},learnPage:()=>'',coursePage:()=>'',titleOf:()=>'',icon:()=>'',Locale:{t:x=>x}});
+ const html=window.__tabs('catalog');
+ assert.equal((html.match(/class="v25-tab /g)||[]).length,3);
+ for(const label of ['Tổng quan','Khóa học','Ôn tập'])assert.ok(html.includes(label));
+ assert.ok(!html.includes('>Module<'));
+ assert.ok(!html.includes('>Bài học<'));
+ assert.ok(html.includes('href="#learn/overview"'));
+ assert.ok(html.includes('href="#learn/catalog"'));
+ assert.ok(html.includes('href="#learn/practice"'));
+ location.hash='#learn/modules';
+ assert.match(window.__legacy(),/Nền tảng/);
+ location.hash='#learn/lessons';
+ assert.match(window.__legacy(),/Nền tảng/);
+ const nested=window.NPHorizonV25.foundationCatalogue();
+ assert.equal((nested.match(/data-v121-topic(?:\s|>)/g)||[]).length,40);
+});
+test('v1.22 Foundation course contains searchable topics without another menu level',()=>{
+ const {data,ui}=harness();
+ const window={NPFoundationCurriculum:data,NPFoundationCourse:ui},document={addEventListener:()=>{}};
+ const hubScript=load('learning-hub-v25.js');
+ runInNewContext(hubScript,{
+  window,document,location:{hash:'#today'},P:()=>({id:'demo-a'}),
+  render:()=>{},learnPage:()=>'',coursePage:()=>'',titleOf:()=>'',icon:()=>'',Locale:{t:x=>x}
+ });
+ // The real course engine receives the catalogue once learning hub is loaded.
+ const original=ui.page('course/foundation');
+ assert.match(original,/Nhận mặt chữ, nhớ âm, rồi dùng được/);
+ assert.ok(load('foundation-course-v33.js').includes('window.NPHorizonV25?.foundationCatalogue?.()'));
+ assert.ok(load('learning-hub-v25.js').includes("r==='learn/modules'||r==='learn/lessons'"));
+ assert.ok(load('learning-hub-v25.js').includes('foundationCatalogue:foundationModuleCatalogue'));
+ assert.ok(!load('learning-hub-v25.js').includes("['modules','Module','layers']"));
+ assert.ok(!load('learning-hub-v25.js').includes("['lessons','Bài học','play-circle']"));
+});
