@@ -218,37 +218,57 @@ function completeRound(s,cfg){
  for(const p of list){if(p.wrongAttempts)d.matchReview[p.itemId]={at:report.endedAt,reason:'match-attempt'};else delete d.matchReview[p.itemId];}
  persist();saveRound(report);
 }
-/* Short feedback cues are separate from manually requested Japanese pronunciation.
-   Used for graded choices, word building and matching; no scoring side effects. */
-let feedbackAudioContext;
+/* v1.27: Correct/wrong feedback is independent from Kana pronunciation and the
+   legacy autoAnswerAudio preference. Play a small local WAV on the grading click
+   (same user gesture as Kana recordings); Web Audio is a fallback, not the default. */
+const FEEDBACK_PREF_KEY='horizon.foundation.feedbackSounds.v1';
+let feedbackMedia=null,feedbackAudioContext=null;
 function gradingSound(correct){
  if(!audioPref())return;
- const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
- try{
-  const ctx=feedbackAudioContext||(feedbackAudioContext=new AC());
-  if(ctx.state==='suspended'){
-   const resume=ctx.resume();if(resume&&typeof resume.catch==='function')resume.catch(()=>{});
-  }
-  const now=ctx.currentTime;
-  const note=(hz,offset,duration,volume,type,glide)=>{
-   const osc=ctx.createOscillator(),gain=ctx.createGain(),start=now+offset;
-   osc.type=type;osc.frequency.setValueAtTime(hz,start);
-   if(glide)osc.frequency.exponentialRampToValueAtTime(glide,start+duration*.82);
-   gain.gain.setValueAtTime(.0001,start);
-   gain.gain.exponentialRampToValueAtTime(volume,start+.014);
-   gain.gain.exponentialRampToValueAtTime(.0001,start+duration);
-   osc.connect(gain);gain.connect(ctx.destination);
-   osc.start(start);osc.stop(start+duration+.02);
-  };
-  if(correct){
-   // A gentle rising double bell: ting · ting.
-   note(784,0,.12,.026,'sine');
-   note(1047,.12,.20,.022,'sine');
-  }else{
-   // One soft descending "eh" cue, never a harsh buzzer.
-   note(240,0,.27,.028,'triangle',168);
-  }
- }catch(e){/* Failure to play a sound never blocks grading. */}
+ // Replaying quickly must not accumulate overlapping sounds.
+ if(feedbackMedia){
+  try{feedbackMedia.pause();feedbackMedia.currentTime=0;}catch(e){}
+  feedbackMedia=null;
+ }
+ const fallback=()=>{
+  const AC=window.AudioContext||window.webkitAudioContext;
+  if(!AC)return false;
+  try{
+   const ctx=feedbackAudioContext||(feedbackAudioContext=new AC());
+   if(ctx.state==='suspended'){
+    const resumed=ctx.resume();
+    if(resumed&&typeof resumed.catch==='function')resumed.catch(()=>{});
+   }
+   const now=ctx.currentTime;
+   const tone=(hz,at,ms,volume,type,finish)=>{
+    const oscillator=ctx.createOscillator(),gain=ctx.createGain(),start=now+at;
+    oscillator.type=type;
+    oscillator.frequency.setValueAtTime(hz,start);
+    if(finish)oscillator.frequency.exponentialRampToValueAtTime(finish,start+ms*.82);
+    gain.gain.setValueAtTime(.0001,start);
+    gain.gain.exponentialRampToValueAtTime(volume,start+.012);
+    gain.gain.exponentialRampToValueAtTime(.0001,start+ms);
+    oscillator.connect(gain);gain.connect(ctx.destination);
+    oscillator.start(start);oscillator.stop(start+ms+.02);
+   };
+   if(correct){tone(784,0,.14,.075,'sine');tone(1047,.13,.21,.065,'sine');}
+   else tone(360,0,.29,.075,'triangle',230);
+   return true;
+  }catch(e){return false}
+ };
+ if(typeof Audio==='function'){
+  try{
+   const media=new Audio('assets/feedback/'+(correct?'correct':'incorrect')+'.wav');
+   media.preload='auto';media.volume=.95;
+   feedbackMedia=media;
+   const result=media.play(); // Always synchronous inside the answer click.
+   if(result&&typeof result.catch==='function')result.catch(()=>{
+    if(feedbackMedia===media)fallback();
+   });
+   return;
+  }catch(e){/* Browsers without HTMLMediaElement use Web Audio below. */}
+ }
+ fallback();
 }
 function formatDuration(ms){return Number.isFinite(ms)?(ms/1000).toLocaleString('vi-VN',{maximumFractionDigits:1})+' giây':'Chưa ghi nhận'}
 function roundSummaryView(s,cfg){
@@ -759,11 +779,13 @@ function introPopup(cfg,s){
 const PRACTICE_MODES=[['quiz','Chữ → âm','あ'],['reverse','Âm → chữ','a'],['listen','Nghe → chữ','♫'],['truefalse','Đúng / Sai','✓'],['match','Ghép chữ & âm','⇄'],['listen-match','Nghe & ghép','◖'],['build','Xếp chữ thành từ','文'],['missing','Điền chữ còn thiếu','□'],['vocab-ja-vi','Nhật → Việt','日'],['vocab-vi-ja','Việt → Nhật','VI'],['review','Sổ ôn chữ yếu','↻']];
 /* Game-style duplicates are consolidated into the Practice workbook. */
 function audioPref(){
- try{return localStorage.getItem('horizon.foundation.autoAnswerAudio')!=='off'}catch(e){return true}
+ // New feedback-only preference defaults to ON, even when the old
+ // auto-pronunciation preference was disabled in an earlier release.
+ try{return localStorage.getItem(FEEDBACK_PREF_KEY)!=='off'}catch(e){return true}
 }
 function toggleAudioPref(){
  const enabled=!audioPref();
- try{localStorage.setItem('horizon.foundation.autoAnswerAudio',enabled?'on':'off')}catch(e){}
+ try{localStorage.setItem(FEEDBACK_PREF_KEY,enabled?'on':'off')}catch(e){}
  return enabled;
 }
 
@@ -785,7 +807,7 @@ function activityBook(cfg){
   '<details class="v126-exercise-picker"><summary>Đổi dạng bài <span aria-hidden="true">⌄</span></summary>'+
   '<div class="v126-exercise-menu">'+
   groups.filter(([,entries])=>entries.length).map(([label,entries])=>'<div class="v106-menu-group"><div class="v106-group-heading">'+label+'</div><div class="v105-menu-entries">'+entries.map(entry).join('')+'</div></div>').join('')+
-  '<button type="button" class="v105-audio-toggle" data-f33="toggle-audio" aria-pressed="'+audioPref()+'" title="Chỉ bật/tắt âm hiệu đúng/sai. Nút Nghe đáp án vẫn hoạt động.">Âm hiệu đúng/sai: <strong>'+(audioPref()?'Bật':'Tắt')+'</strong></button></div></details></nav>';
+  '<button type="button" class="v105-audio-toggle" data-f33="toggle-audio" aria-pressed="'+audioPref()+'" title="Âm báo khi chấm đúng/sai. Không ảnh hưởng nút Nghe tiếng Nhật.">Âm hiệu đúng/sai: <strong>'+(audioPref()?'Bật':'Tắt')+'</strong></button></div></details></nav>';
 }
 function practiceLanding(cfg){
  const lesson=DATA.findLessonUnit(cfg.id,cfg.group);

@@ -21,7 +21,7 @@ function harness(){
    hooks.click({target:{closest:selector},preventDefault(){}});
  };
  const start=()=>click('start');
- return {data:window.NPFoundationCurriculum,ui:window.NPFoundationCourse,window,location,click,start,audioFiles,setAudioPref:on=>map.set('horizon.foundation.autoAnswerAudio',on?'on':'off'),setProfile:v=>profile=v,getRenders:()=>renders};
+ return {data:window.NPFoundationCurriculum,ui:window.NPFoundationCourse,window,location,click,start,audioFiles,setAudioPref:on=>map.set('horizon.foundation.feedbackSounds.v1',on?'on':'off'),setLegacyAudioPref:on=>map.set('horizon.foundation.autoAnswerAudio',on?'on':'off'),setProfile:v=>profile=v,getRenders:()=>renders};
 }
 test('Foundational syllabus has complete canonical counts and meaningful distinct modules',()=>{
  const {data}=harness();
@@ -372,7 +372,7 @@ test('Global UI footer shows unobtrusive v1.01 beside HORIZON tagline',()=>{
  const app=load('app.js'),hub=load('learning-hub-v25.js');
  assert.ok(app.includes('Học theo cách của bạn'));
  assert.ok(app.includes('horizon-brand-version'));
- assert.ok(app.includes('v1.26'));
+ assert.ok(app.includes('v1.27'));
  assert.ok(!app.includes('class="horizon-ui-version"'));
  assert.ok(load('index.html').includes('horizon-brand-version.css?v=106'));
  assert.ok(!hub.includes('HORIZON · Learning Hub v33 · Recorded progress'));
@@ -422,7 +422,7 @@ test('v1.01 offers three hints and records assisted correct answers for review',
 });
 test('v1.01 includes answer audio and precise connected-book CSS',()=>{
  const app=load('app.js'),html=load('index.html'),css=load('foundation-course-v101.css');
- assert.ok(app.includes('v1.26'));
+ assert.ok(app.includes('v1.27'));
  assert.ok(html.includes('foundation-course-v101.css?v=101'));
  assert.ok(html.includes('foundation-course-v102.css?v=102'));
  assert.ok(html.includes('foundation-course-v103.css?v=103'));
@@ -430,9 +430,9 @@ test('v1.01 includes answer audio and precise connected-book CSS',()=>{
  assert.ok(html.includes('foundation-course-v105.css?v=105'));
  assert.ok(html.includes('foundation-course-v106.css?v=106'));
  assert.ok(html.includes('foundation-curriculum-v33.js?v=124'));
- assert.ok(html.includes('foundation-course-v33.js?v=128'));
+ assert.ok(html.includes('foundation-course-v33.js?v=129'));
  assert.ok(html.includes('foundation-course-v107.css?v=125'));
- assert.ok(load('app.js').includes('v1.26</small>'));
+ assert.ok(load('app.js').includes('v1.27</small>'));
  assert.ok(css.includes('v101-match-grid'));
  assert.ok(css.includes('[data-connected="yes"]'));
 });
@@ -552,7 +552,7 @@ test('v1.05 auto answer audio can be turned off without disabling manual listeni
  assert.match(h.ui.page(route),/Âm hiệu đúng\/sai: <strong>Tắt/);
  const q=h.ui.session().questions[0];
  h.click('answer',q.correct);
- assert.equal(h.audioFiles.length,0,'no automatic answer audio when off');
+ assert.equal(h.audioFiles.length,0,'no grading sound when disabled');
  h.click('feedback-audio');
  assert.ok(h.audioFiles.length>0,'manual answer playback is still available');
 });
@@ -697,7 +697,7 @@ test('v1.07 duration metrics are derived from attempts and never guessed',()=>{
 test('The learning UI does not alter the existing lesson engine or global learner records',()=>{
  const html=load('index.html');
  assert.ok(html.includes('foundation-curriculum-v33.js?v=124'));
- assert.ok(html.includes('foundation-course-v33.js?v=128'));
+ assert.ok(html.includes('foundation-course-v33.js?v=129'));
  assert.ok(html.includes('foundation-course-v34.css?v=34'));
  assert.ok(html.includes('foundation-course-v35.css?v=35'));
  assert.ok(html.includes('foundation-course-v36.css?v=36'));
@@ -706,10 +706,10 @@ test('The learning UI does not alter the existing lesson engine or global learne
  assert.ok(html.includes('foundation-course-v39.css?v=39'));
  assert.ok(html.includes('foundation-course-v40.css?v=100'));
  assert.ok(html.includes('foundation-course-v101.css?v=101'));
- assert.ok(html.includes('app.js?v=126'));
+ assert.ok(html.includes('app.js?v=127'));
  assert.ok(html.includes('learning-hub-v25.js?v=125'));
- assert.ok(html.includes('foundation-course-v33.js?v=128'));
- assert.ok(html.includes('foundation-course-v33.js?v=128'));
+ assert.ok(html.includes('foundation-course-v33.js?v=129'));
+ assert.ok(html.includes('foundation-course-v33.js?v=129'));
  assert.ok(load('foundation-course-v33.js').includes('data-f38="start"'));
  assert.ok(!load('foundation-course-v36.css').includes('max-height:405px'));
  assert.match(load('foundation-course-v36.css'),/max-height:none!important/);
@@ -1133,45 +1133,51 @@ test('v1.25 catalogue uses single stable Kana glyphs and legible primary button'
 });
 
 
-// v1.26: audio on grading is a UI cue only; Japanese speech requires a Listen click.
-test('v1.26 correct and wrong answers use distinct quiet sounds, never auto-pronunciation',()=>{
- const h=harness(),notes=[];
- h.window.AudioContext=class{
-  constructor(){this.state='running';this.currentTime=0;this.destination={};}
-  createOscillator(){return {frequency:{setValueAtTime:hz=>notes.push(hz),exponentialRampToValueAtTime(){}},connect(){},start(){},stop(){}};}
-  createGain(){return {gain:{setValueAtTime(){},exponentialRampToValueAtTime(){}},connect(){}};}
- };
- const route='learn/foundation/hiragana/a/quiz';h.location.hash='#'+route;
- h.ui.page(route);h.start();const s=h.ui.session();
+// v1.27: play a locally hosted WAV on a direct graded click, never Japanese reading.
+test('v1.27 correct/wrong have audible media feedback and independent manual pronunciation',()=>{
+ const h=harness(),route='learn/foundation/hiragana/a/quiz';
+ h.setLegacyAudioPref(false); // v1.26 incorrectly read this old key.
+ h.location.hash='#'+route;h.ui.page(route);h.start();
+ assert.match(h.ui.page(route),/Âm hiệu đúng\\/sai: <strong>Bật/);
+ const s=h.ui.session();
  h.click('answer',s.questions[0].correct);
- assert.deepEqual(notes,[784,1047],'correct cue: two soft rising notes');
- assert.equal(h.audioFiles.length,0,'grading must not pronounce Japanese');
- assert.match(h.ui.page(route),/data-f33="feedback-audio"/);
- h.click('feedback-audio');assert.equal(h.audioFiles.length,1,'Listen answer is manual');
- h.click('next');const q=s.questions[1];
- h.click('answer',q.choices.find(x=>x.id!==q.correct).id);
- assert.deepEqual(notes,[784,1047,240],'wrong cue: one descending note');
- assert.equal(h.audioFiles.length,1,'incorrect answer must not pronounce Japanese');
- h.setAudioPref(false);h.click('next');h.click('answer',s.questions[2].correct);
- assert.deepEqual(notes,[784,1047,240],'sound preference mutes feedback');
- h.click('feedback-audio');assert.equal(h.audioFiles.length,2,'mute never disables manual Listen');
+ assert.equal(h.audioFiles[0],'assets/feedback/correct.wav','correct cue plays even with legacy auto pronunciation OFF');
+ assert.equal(h.audioFiles.filter(x=>x.includes('kana-audio')).length,0,'graded answer must never pronounce Japanese');
+ h.click('feedback-audio');
+ assert.equal(h.audioFiles.filter(x=>x.includes('kana-audio')).length,1,'manual pronunciation remains available');
+ h.click('next');
+ const wrong=s.questions[1].choices.find(x=>x.id!==s.questions[1].correct);
+ h.click('answer',wrong.id);
+ assert.equal(h.audioFiles.at(-1),'assets/feedback/incorrect.wav');
+ assert.equal(h.audioFiles.filter(x=>x.includes('kana-audio')).length,1);
+ h.setAudioPref(false);
+ h.click('next');const before=h.audioFiles.length;
+ h.click('answer',s.questions[2].correct);
+ assert.equal(h.audioFiles.length,before,'sound preference silences only feedback sounds');
+ h.click('feedback-audio');
+ assert.equal(h.audioFiles.filter(x=>x.includes('kana-audio')).length,2);
 });
-test('v1.26 word builder only plays sound once the word is graded',()=>{
- const h=harness(),notes=[];
- h.window.AudioContext=class{
-  constructor(){this.state='running';this.currentTime=0;this.destination={};}
-  createOscillator(){return {frequency:{setValueAtTime:hz=>notes.push(hz),exponentialRampToValueAtTime(){}},connect(){},start(){},stop(){}};}
-  createGain(){return {gain:{setValueAtTime(){},exponentialRampToValueAtTime(){}},connect(){}};}
- };
- const route='learn/foundation/small/pause/build';h.location.hash='#'+route;h.ui.page(route);h.start();
+test('v1.27 word-builder plays once on grading, not while selecting Kana',()=>{
+ const h=harness(),route='learn/foundation/small/pause/build';
+ h.location.hash='#'+route;h.ui.page(route);h.start();
  const s=h.ui.session(),word=s.cards[0],glyphs=Array.from(word.glyph);
  glyphs.forEach((ch,pos)=>{
-  const index=s.tileOrder.findIndex((tile,i)=>tile.glyph===ch&&!s.selected.includes(i));
-  assert.ok(index>=0);h.click('tile',String(index));
-  if(pos<glyphs.length-1)assert.deepEqual(notes,[]);
+  const i=s.tileOrder.findIndex((tile,n)=>tile.glyph===ch&&!s.selected.includes(n));
+  assert.ok(i>=0);h.click('tile',String(i));
+  if(pos<glyphs.length-1)assert.equal(h.audioFiles.length,0);
  });
  assert.equal(s.answer.correct,true);
- assert.deepEqual(notes,[784,1047]);
- assert.equal(h.audioFiles.length,0);
- assert.match(h.ui.page(route),/data-f33="feedback-audio"/,'builder retains manual Listen button');
+ assert.deepEqual(h.audioFiles,['assets/feedback/correct.wav']);
+ assert.match(h.ui.page(route),/data-f33="feedback-audio"/);
+});
+test('v1.27 feedback assets are standard little-endian mono PCM WAV files',()=>{
+ for(const name of ['correct','incorrect']){
+  const src=readFileSync(new URL('assets/feedback/'+name+'.wav',root));
+  assert.equal(src.toString('ascii',0,4),'RIFF');
+  assert.equal(src.toString('ascii',8,12),'WAVE');
+  assert.equal(src.readUInt16LE(20),1); // LPCM
+  assert.equal(src.readUInt16LE(22),1); // mono
+  assert.equal(src.readUInt32LE(24),22050);
+  assert.ok(src.length>4096&&src.length<40000);
+ }
 });
