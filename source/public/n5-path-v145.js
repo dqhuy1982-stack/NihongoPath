@@ -35,13 +35,13 @@ const syll=stages.flatMap((stage,i)=>stage.lessons.map(([title,contentId],j)=>({
  number:i*5+j+1,title,contentId:contentId||null,stage:stage.id,
  published:!!contentId
 })));
-const routeOf=contentId=>'#lesson/'+contentId;
+const routeOf=contentId=>contentId==='n5-introduction'?'#course/N5/lesson/01':'#lesson/'+contentId;
 function lessonCard(item){
  const num=String(item.number).padStart(2,'0');
- const label=item.published?'<span class="n5p-state is-pilot">Bài mẫu đang thử nghiệm</span>':
+ const label=item.published?'<span class="n5p-state is-pilot">'+(item.number===1?'Bài học đầy đủ · bản thử nghiệm':'Bài mẫu đang thử nghiệm')+'</span>':
   '<span class="n5p-state is-planned">Đang biên soạn</span>';
  const action=item.published?'<a class="n5p-lesson-link" href="'+esc(routeOf(item.contentId))+
-  '" aria-label="Mở bài mẫu '+esc(num)+'">Mở bài mẫu <span aria-hidden="true">↗</span></a>':
+  '" aria-label="Vào bài '+esc(num)+'">'+(item.number===1?'Vào bài học':'Mở bài mẫu')+' <span aria-hidden="true">↗</span></a>':
   '<span class="n5p-unavailable" aria-label="Chưa có nội dung bài này">Chưa mở</span>';
  return '<li class="n5p-lesson'+(item.published?' has-pilot':'')+'">'+
   '<span class="n5p-num">'+num+'</span>'+
@@ -77,10 +77,10 @@ function page(){
   '<span class="n5p-kicker">HORIZON · JAPANESE N5</span>'+
   '<h1>Học N5, từng bài một.</h1>'+
   '<p>Lộ trình 25 bài tham chiếu Minna no Nihongo Sơ cấp I. Học theo thứ tự, luyện tập theo nhu cầu và kiểm tra khi nội dung đã sẵn sàng.</p>'+
-  '<div class="n5p-hero-actions"><a class="n5p-primary" href="#lesson/n5-introduction">Bắt đầu với bài mẫu <span aria-hidden="true">→</span></a>'+
+  '<div class="n5p-hero-actions"><a class="n5p-primary" href="#course/N5/lesson/01">Học Bài 01 <span aria-hidden="true">→</span></a>'+
   '<button type="button" class="n5p-quiet" data-n5p-scroll="n5p-roadmap">Xem 25 bài học <span aria-hidden="true">↓</span></button></div>'+
   '</div><div class="n5p-hero-stat" aria-label="Tình trạng phát triển khóa học">'+
-  '<strong>25</strong><span>bài trong lộ trình</span><small>2 bài có nội dung mẫu liên quan</small></div></header>'+
+  '<strong>25</strong><span>bài trong lộ trình</span><small>Bài 01 đầy đủ · Bài 02 còn mẫu</small></div></header>'+
   '<div class="n5p-notice"><span aria-hidden="true">ⓘ</span>'+
   '<p>Đây là khung học N5 đang phát triển, <strong>chưa phải 25 bài đã phát hành</strong>. Các bài mẫu không tự động được tính là hoàn thành bài Minna no Nihongo. Nội dung và từ vựng sẽ được đối chiếu với phiên bản giáo trình được chọn.</p></div>'+
   '<div class="n5p-jump" role="navigation" aria-label="Các khu vực N5">'+
