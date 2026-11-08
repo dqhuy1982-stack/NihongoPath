@@ -218,7 +218,7 @@ function completeRound(s,cfg){
  for(const p of list){if(p.wrongAttempts)d.matchReview[p.itemId]={at:report.endedAt,reason:'match-attempt'};else delete d.matchReview[p.itemId];}
  persist();saveRound(report);
 }
-/* v1.27: Correct/wrong feedback is independent from Kana pronunciation and the
+/* v1.28: Correct/wrong feedback is independent from Kana pronunciation and the
    legacy autoAnswerAudio preference. Play a small local WAV on the grading click
    (same user gesture as Kana recordings); Web Audio is a fallback, not the default. */
 const FEEDBACK_PREF_KEY='horizon.foundation.feedbackSounds.v1';
@@ -258,8 +258,8 @@ function gradingSound(correct){
  };
  if(typeof Audio==='function'){
   try{
-   const media=new Audio('assets/feedback/'+(correct?'correct':'incorrect')+'.wav');
-   media.preload='auto';media.volume=.95;
+   const media=new Audio('assets/feedback/'+(correct?'correct':'incorrect')+'.wav?v=2');
+   media.preload='auto';media.volume=1; // WAV mastered to -2.4 dBFS peak.
    feedbackMedia=media;
    const result=media.play(); // Always synchronous inside the answer click.
    if(result&&typeof result.catch==='function')result.catch(()=>{
