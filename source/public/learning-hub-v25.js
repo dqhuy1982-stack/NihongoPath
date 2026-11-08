@@ -493,7 +493,10 @@ function trainingTab(m){
  const title=s.level==='N5'?'N5'+(s.lesson==='all'?' · Các bài đã có':' · '+(s.list.find(x=>x.contentId===s.lesson)?.title||'Bài học')):
   'Nền tảng · '+s.mod.title.replace(/^\d+\s*[·.:-]\s*/,'')+(s.unit==='all'?'':' · '+(D.findLessonUnit(s.mod.id,s.unit)?.title||s.unit));
  const disclosure='<details class="v132-scope"'+(disclosureOpen()?' open':'')+'><summary><span><small>PHẠM VI ĐANG LUYỆN</small><strong>'+safe(title)+'</strong></span>'+
-  '<span class="v132-scope-change">Đổi phạm vi <span aria-hidden="true">⌄</span></span></summary>'+
+  '<span class="v132-scope-change">'+
+  '<span class="v135-scope-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M3 6h6m4 0h8M3 12h11m4 0h3M3 18h3m4 0h11"/><circle cx="11" cy="6" r="2"/><circle cx="16" cy="12" r="2"/><circle cx="8" cy="18" r="2"/></svg></span>'+
+  '<span class="v135-scope-label"><strong>Đổi phạm vi</strong><small>Cấp độ · Nội dung · Bài học</small></span>'+
+  '<span class="v135-scope-chevron" aria-hidden="true">⌄</span></span></summary>'+
   '<div class="v131-filters" role="group" aria-label="Lọc phạm vi luyện tập">'+filters+'</div></details>';
  if(typeof queueMicrotask==='function'&&!s.mode)queueMicrotask(()=>window.NPTrainingGuide?.maybeStart?.());
  const guidePref=(()=>{try{return localStorage.getItem('Horizon.Training.guide.v134.'+
