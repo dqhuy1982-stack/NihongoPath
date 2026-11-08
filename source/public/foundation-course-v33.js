@@ -15,7 +15,12 @@ const initialGroup=m=>DATA.getLessonUnits(m?.id)?.[0]?.id||(m?.id==='small'?'pau
 const path=(id,group,mode,script)=>routePrefix+'/'+id+'/'+(group||initialGroup(DATA.byId[id]))+'/'+(mode||'learn')+(script&&script!=='both'?'/'+script:'');
 function current(){
  const bits=decodeURIComponent(location.hash.replace(/^#\/?/,'')).split('/');
- const id=bits[2],mod=DATA.byId[id],group=bits[3]|| (mod?initialGroup(mod):''),legacyMode=bits[4]||'learn',mode=({game:'match','game-listen':'listen-match','game-build':'build'})[legacyMode]||legacyMode,script=bits[5]||'both';
+ const inline=bits[0]==='learn'&&bits[1]==='training'&&bits[2]==='foundation';
+ const id=inline?bits[3]:bits[2],mod=DATA.byId[id];
+ const group=(inline?bits[4]:bits[3])||(mod?initialGroup(mod):'');
+ const legacyMode=(inline?bits[6]:bits[4])||'learn';
+ const mode=({game:'match','game-listen':'listen-match','game-build':'build'})[legacyMode]||legacyMode;
+ const script=bits[5]||'both';
  return {id,mod,group:mod&&(group==='all'||mod.groups.some(x=>x.id===group)||!!DATA.findLessonUnit(id,group))?group:mod?initialGroup(mod):'',mode:modeNames[mode]?mode:'learn',script:['hira','kata','both'].includes(script)?script:'both'};
 }
 function learnerId(){try{return String(P()?.id||'guest').replace(/[^a-z0-9_-]/gi,'_')}catch{return 'guest'}}
@@ -453,7 +458,7 @@ function refresh(){
  const stage=document.querySelector('.v34-workspace-shell');
  if(stage){
   const rail=stage.querySelector?.('.v39-book-nav'),saved=rail?rail.scrollTop:null;
-  stage.innerHTML=workspace(current());
+  stage.innerHTML=workspace(current(),!!stage.closest?.('.v134-inline-training'));
   restoreBookViewport(saved);tickClock();scheduleMatchLines();scheduleFinishDock();scheduleSummaryHost();
   return;
  }
@@ -830,7 +835,7 @@ function practiceLanding(cfg){
  '<a class="v131-lesson-custom" href="'+scope+'">Tự chọn dạng bài trong Luyện tập <span aria-hidden="true">↗</span></a>'+
  '<p class="v126-hub-footnote">Dạng bài chuyên biệt được tập trung ở Luyện tập, không lặp menu trong từng bài.</p></section>';
 }
-function workspace(cfg){
+function workspace(cfg,embedded=false){
  const isHub=cfg.mode==='practice';
  const isLesson=cfg.mode==='learn';
  const s=isHub||isLesson?null:ensurePlay(cfg);
@@ -838,8 +843,8 @@ function workspace(cfg){
  const body=isHub?practiceLanding(cfg):isLesson?learnView(cfg):cfg.mode==='flash'?flashView(cfg,s):['match','listen-match','game','game-listen'].includes(cfg.mode)?matchingView(cfg,s):['build','game-build'].includes(cfg.mode)?buildView(cfg,s):quizView(cfg,s);
  const task=!isHub&&!isLesson;
  const exercise=task&&cfg.mode!=='flash'&&cfg.mode!=='mix';
- return navigationFor(cfg)+'<div class="v38-task-area v126-task-area"><div class="'+(exercise?'v39-book-layout v126-workbook':'v33-workspace v126-focused-work')+'"'+(intro?' inert':'')+'>'+
-  (task?activityBook(cfg):'')+body+'</div>'+intro+
+ return (embedded?'':navigationFor(cfg))+'<div class="v38-task-area v126-task-area'+(embedded?' v134-inline-stage':'')+'"><div class="'+(exercise?'v39-book-layout v126-workbook':'v33-workspace v126-focused-work')+'"'+(intro?' inert':'')+'>'+
+  (task&&!embedded?activityBook(cfg):'')+body+'</div>'+intro+
   (s&&MATCH_KINDS.includes(s.kind)?roundSummaryView(s,cfg):'')+'</div>';
 }
 
@@ -847,6 +852,13 @@ function modulePage(cfg){
  scheduleFoundationOverlay();scheduleMatchLines();scheduleFinishDock();scheduleSummaryHost();tickClock();if(typeof queueMicrotask==='function')queueMicrotask(()=>restoreBookViewport());return wrap('<div class="v34-workspace-shell">'+workspace(cfg)+'</div>',cfg.mod.title)
   .replace('class="v25-wrap v33-foundation v112-foundation v115-foundation"',
            'class="v25-wrap v33-foundation v112-foundation v115-foundation v34-studying"');
+}
+function embeddedPractice(){
+ const cfg=current();
+ if(!cfg.mod||!PRACTICE_MODES.some(([mode])=>mode===cfg.mode))return '';
+ rememberPracticeMode(cfg.mode);
+ scheduleFoundationOverlay();scheduleMatchLines();scheduleFinishDock();scheduleSummaryHost();tickClock();
+ return '<div class="v34-workspace-shell">'+workspace(cfg,true)+'</div>';
 }
 function page(route){
  if(!route||route==='course/foundation'||route===routePrefix)return indexPage();
@@ -962,9 +974,12 @@ function localSwitch(kind,value){
  }else return;
  if(PRACTICE_MODES.some(([mode])=>mode===target.mode))rememberPracticeMode(target.mode);
  play=null;
- const next=path(target.id,target.group,target.mode,target.script);
+ const inline=!!document.querySelector('.v134-inline-training .v34-workspace-shell');
+ const next=inline?'learn/training/foundation/'+target.id+'/'+target.group+'/'+target.script+'/'+target.mode:
+  path(target.id,target.group,target.mode,target.script);
  if(typeof history!=='undefined'&&history.replaceState)history.replaceState(null,'','#'+next);
  else location.hash='#'+next;
+ if(inline){render(false);return;}
  const stage=document.querySelector('.v34-workspace-shell');
  if(stage){const rail=stage.querySelector?.('.v39-book-nav'),saved=rail?rail.scrollTop:null;stage.innerHTML=workspace(target);restoreBookViewport(saved);mountFoundationOverlay();tickClock();scheduleMatchLines();scheduleFinishDock();scheduleSummaryHost();const crumb=document.querySelector('.v115-breadcrumb [aria-current="page"]');
   if(crumb)crumb.textContent=target.mod.title.replace(/^\d+\s*[·.:-]\s*/,'');}
@@ -1049,5 +1064,5 @@ document.addEventListener('click',event=>{
  if(!document.querySelector('.v33-foundation'))return;
  event.preventDefault();perform(b);
 });
-window.NPFoundationCourse={version:'v39',page,store,stats:countStats,path,questionFor,choosePool,session:()=>play};
+window.NPFoundationCourse={version:'v39',page,embeddedPractice,store,stats:countStats,path,questionFor,choosePool,session:()=>play};
 })();
