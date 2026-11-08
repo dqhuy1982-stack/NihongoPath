@@ -1568,3 +1568,58 @@ body > .v120-preflight-host .v38-dialog-spec>div{
   outline-offset:2px
  }
 }
+
+
+/* v1.41 · Three quiet performance tiers: good green, passing amber,
+   retry coral. Always communicate via words and symbols, not color alone. */
+.v34-studying .v141-grade-row{
+ display:flex;align-items:center;justify-content:center;gap:10px;
+ flex-wrap:wrap;margin:10px auto 12px
+}
+.v34-studying .v141-grade-row>small{
+ font-size:10px;color:var(--v112-muted,#72656a);line-height:1.5;
+}
+.v34-studying .v141-grade-badge{
+ --result-ink:#8b4b52;--result-bg:#fbebea;--result-border:#eec7c6;
+ display:inline-flex;align-items:center;gap:9px;padding:8px 13px 8px 8px;
+ border:1px solid var(--result-border);border-radius:99px;
+ background:var(--result-bg);color:var(--result-ink);
+ box-shadow:0 3px 10px rgba(43,22,29,.035)
+}
+.v34-studying .v141-grade-badge.is-good{
+ --result-ink:#256e4c;--result-bg:#e8f5ec;--result-border:#c6e4d1
+}
+.v34-studying .v141-grade-badge.is-pass{
+ --result-ink:#8a5d14;--result-bg:#fff4df;--result-border:#e9d3a7
+}
+.v34-studying .v141-grade-badge.is-retry{
+ --result-ink:#a4474d;--result-bg:#fbeceb;--result-border:#eec8c5
+}
+.v34-studying .v141-grade-icon{
+ display:grid;place-items:center;width:33px;height:33px;border-radius:50%;
+ font-size:20px;line-height:1;background:color-mix(in srgb,var(--result-ink) 10%,#fff);
+ flex-shrink:0
+}
+.v34-studying .v141-grade-badge strong{
+ font-size:clamp(14px,1.5vw,18px);line-height:1.25;
+ font-weight:820;letter-spacing:-.01em
+}
+.v34-studying .v141-grade-score{
+ font-size:clamp(13px,1.4vw,16px);font-weight:790;
+ font-variant-numeric:tabular-nums;
+ border-left:1px solid color-mix(in srgb,var(--result-ink) 25%,transparent);
+ padding-left:8px
+}
+.v34-studying .v141-graded-summary .v33-summary-score{
+ font-variant-numeric:tabular-nums;letter-spacing:-.035em
+}
+.v34-studying .v141-grade-badge.is-good{
+ animation:v141-grade-arrive .68s cubic-bezier(.2,.75,.25,1) both
+}
+@keyframes v141-grade-arrive{
+ 0%{opacity:.4;transform:translateY(5px) scale(.97)}
+ 100%{opacity:1;transform:translateY(0) scale(1)}
+}
+@media(prefers-reduced-motion:reduce){
+ .v34-studying .v141-grade-badge.is-good{animation:none!important}
+}
