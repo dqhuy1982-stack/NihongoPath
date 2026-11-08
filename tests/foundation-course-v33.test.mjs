@@ -448,7 +448,7 @@ test('v1.03 workbook avoids nested scroll containers and renders both matching c
  assert.match(css,/grid-template-columns:minmax\(0,1fr\) minmax\(0,1fr\)!important/);
  assert.match(load('foundation-course-v105.css'),/\.v105-match-row/);
  assert.match(css,/overflow:visible!important/);
- assert.match(html,/v106-menu-group/);
+ assert.doesNotMatch(html,/v106-menu-group|v126-exercise-picker/);
 });
 test('v1.03 shows contextual explanation after answer, not before',()=>{
  const h=harness(),route='learn/foundation/hiragana/all/quiz';
@@ -1092,7 +1092,7 @@ test('v1.25 Foundation presents learning and practice as two contextual destinat
  h.location.hash='#'+base+'/match';
  const matched=h.ui.page(base+'/match');
  assert.match(matched,/class="v39-book-layout v126-workbook"/);
- assert.match(matched,/class="v39-book-nav v126-book-nav"/);
+ assert.match(matched,/class="v39-book-nav v126-book-nav v129-task-header"/);
  assert.match(matched,/v129-task-header/);
  assert.doesNotMatch(matched,/Đổi dạng bài|v126-exercise-picker/);
  assert.doesNotMatch(matched,/data-value="game"/);
