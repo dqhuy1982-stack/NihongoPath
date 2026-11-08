@@ -22,6 +22,7 @@ function harness({hasAudio=true,hash='#course/N5/lesson/01'}={}){
  const context={window,location,document,localStorage,P:()=>({id:current}),render:v=>renders.push(v),
   queueMicrotask:fn=>fn()};
  runInNewContext(load('n5-lesson01-data-v146.js'),context);
+ runInNewContext(load('n5-lesson01-context-v147.js'),context);
  const firstCourse=id=>'ORIGINAL COURSE '+id;
  context.coursePage=firstCourse;
  runInNewContext(load('n5-lesson01-v146.js'),context);
@@ -64,7 +65,8 @@ test('Bài 01 has balanced original vocabulary, grammar, reading, listening and 
 test('Lesson 01 deep-link intercepts N5 course route only and preserves legacy course views',()=>{
  const h=harness(),page=h.context.coursePage('N5');
  assert.match(page,/data-n5-lesson="01"/);
- assert.match(page,/30 từ trọng tâm/);
+ assert.match(page,/Hiểu và dùng tiếng Nhật trong tình huống/);
+ assert.match(page,/30 từ · 6 mẫu câu/);
  assert.match(page,/Tiêu chí đạt: 80%/);
  assert.equal(h.context.coursePage('N4'),'ORIGINAL COURSE N4');
  h.location.hash='#course/N5';
@@ -137,10 +139,64 @@ test('Lesson 01 actual assets and entry script load in correct order',()=>{
  const html=load('index.html');
  const p1=html.indexOf('src="n5-path-v145.js?v=146"');
  const p2=html.indexOf('src="n5-lesson01-data-v146.js?v=146"');
- const p3=html.indexOf('src="n5-lesson01-v146.js?v=146"');
- assert.ok(p1>0&&p2>p1&&p3>p2,'Course route, content then lesson controller');
+ const p3=html.indexOf('src="n5-lesson01-context-v147.js?v=147"');
+ const p4=html.indexOf('src="n5-lesson01-v146.js?v=147"');
+ assert.ok(p1>0&&p2>p1&&p3>p2&&p4>p3,'Course route, content, scenarios then lesson controller');
  assert.ok(html.includes('n5-lesson01-v146.css?v=146'));
+ assert.ok(html.includes('n5-lesson01-context-v147.css?v=147'));
  const css=load('n5-lesson01-v146.css');
  assert.match(css,/@media\(max-width:420px\)/);
  assert.match(css,/prefers-reduced-motion/);
+});
+
+test('v1.47 situation-first learning includes four original dialogues with linked micro tasks',()=>{
+ const h=harness(),path=h.ui.page(),scenes=h.ui.scenes();
+ assert.equal(h.ui.version,'v147');
+ assert.equal(scenes.length,4);
+ assert.equal(new Set(scenes.map(x=>x.id)).size,4);
+ assert.match(path,/Gặp nhau lần đầu/);
+ assert.match(path,/data-n5l-scene="colleague"/);
+ assert.match(path,/data-n5l-scene="correcting"/);
+ assert.match(path,/data-n5l-scene="classmates"/);
+ assert.match(path,/data-n5l-scene-answer="0"/);
+ assert.match(path,/data-n5l-compose="meeting"/);
+ assert.match(path,/data-n5l-vocabulary="watashi"/);
+ assert.match(path,/data-n5l-grammar="wa"/);
+ assert.match(path,/Kiến thức &amp; tra cứu Bài 01|Kiến thức & tra cứu Bài 01/);
+ assert.match(path,/Không lưu câu cá nhân/);
+ assert.equal(h.ui.sceneCount(),0);
+ assert.equal(h.ui.status().complete,false);
+});
+
+test('v1.47 situation practice does not fabricate lesson completion and isolates four learners',()=>{
+ const h=harness();
+ assert.equal(h.ui.chooseSceneAnswer('meeting',0),true);
+ assert.equal(h.ui.sceneCount(),1);
+ assert.equal(h.ui.read().scenePractice.meeting.attempts,1);
+ assert.equal(h.ui.read().scenePractice.meeting.correct,1);
+ assert.equal(h.ui.status().complete,false);
+ assert.equal(h.ui.chooseSceneAnswer('correcting',0),true);
+ assert.equal(h.ui.read().scenePractice.correcting.correct,0);
+ h.setProfile('demo-b');
+ assert.equal(h.ui.sceneCount(),0);
+ assert.equal(h.ui.read().scenePractice,undefined);
+ assert.equal(h.ui.chooseSceneAnswer('classmates',2),true);
+ assert.equal(h.ui.sceneCount(),1);
+ h.setProfile('demo-a');
+ assert.equal(h.ui.sceneCount(),2);
+ assert.equal(h.ui.read().attempts.length,0);
+});
+
+test('v1.47 contextual links lead back to corresponding situations from practice',()=>{
+ const h=harness();
+ h.ui.start('practice');
+ h.ui.answer(0);
+ assert.match(h.ui.page(),/Xem tình huống liên quan/);
+ assert.match(h.ui.page(),/data-n5l-scene-reference="classmates"/);
+ h.ui.openScene('classmates');
+ const page=h.ui.page();
+ assert.match(page,/Có chung đặc điểm/);
+ assert.match(page,/Quay lại lượt đang làm/);
+ assert.match(page,/data-n5l-scene-answer="2"/);
+ assert.match(page,/data-n5l-grammar="mo"/);
 });
