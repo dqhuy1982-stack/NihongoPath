@@ -47,7 +47,7 @@ jobs:
           test -f dist/site/lesson-mockup.css
           test -f dist/site/assets/lesson-sakura-branch.svg
           test -f dist/site/assets/lesson-enso-sakura.svg
-      - name: Verify HORIZON v1.43 artifact and stamp release
+      - name: Verify HORIZON v1.44 artifact and stamp release
         env:
           SOURCE_COMMIT: ${{ github.sha }}
         run: |
@@ -56,13 +56,13 @@ jobs:
           import assert from 'node:assert/strict';
           const html=readFileSync('dist/site/index.html','utf8');
           const js=readFileSync('dist/site/app.js','utf8');
-          assert.match(js,/>v1\.43<\/small>/,'UI logo version must be v1.43');
+          assert.match(js,/>v1\.44<\/small>/,'UI logo version must be v1.44');
           for(const name of ['result-v142.css','progress-v143.css','foundation-course-v33.js','learning-hub-v25.js']){
             assert.ok(existsSync('dist/site/'+name),'Missing asset: '+name);
             assert.ok(html.includes(name+'?v='),'Unversioned asset in published HTML: '+name);
           }
           assert.ok(!html.includes('window.NP_FAMILY_SYNC=true;'),'GitHub Pages must stay static demo');
-          const manifest={version:'v1.43',commit:process.env.SOURCE_COMMIT,branch:'develop',
+          const manifest={version:'v1.44',commit:process.env.SOURCE_COMMIT,branch:'develop',
             platform:'github-pages',site:'NihongoPath'};
           writeFileSync('dist/site/release.json',JSON.stringify(manifest,null,2)+'\n');
           console.log('PAGES_RELEASE',JSON.stringify(manifest));
@@ -100,23 +100,23 @@ jobs:
               const response=await fetch(url,{headers:{'Cache-Control':'no-cache'}});
               if(!response.ok)throw Error('HTTP '+response.status);
               const release=await response.json();
-              if(release.commit===process.env.SOURCE_COMMIT&&release.version==='v1.43'){
+              if(release.commit===process.env.SOURCE_COMMIT&&release.version==='v1.44'){
                 const base='https://dqhuy1982-stack.github.io/NihongoPath/';
                 const pageResponse=await fetch(base+'?verify='+process.env.SOURCE_COMMIT,{headers:{'Cache-Control':'no-cache'}});
                 if(!pageResponse.ok)throw Error('Published HTML HTTP '+pageResponse.status);
                 const html=await pageResponse.text();
-                assert.match(html,/src="app\.js\?v=143"/,'Published HTML still references old app.js');
+                assert.match(html,/src="app\.js\?v=144"/,'Published HTML still references old app.js');
                 assert.match(html,/progress-v143\.css\?v=143/,'Published HTML lacks progress styles');
-                const scriptResponse=await fetch(base+'app.js?v=143',{headers:{'Cache-Control':'no-cache'}});
+                const scriptResponse=await fetch(base+'app.js?v=144',{headers:{'Cache-Control':'no-cache'}});
                 if(!scriptResponse.ok)throw Error('Published app.js HTTP '+scriptResponse.status);
                 const app=await scriptResponse.text();
-                assert.ok(app.includes('>v1.43</small>'),'Published app.js still shows old logo version');
+                assert.ok(app.includes('>v1.44</small>'),'Published app.js still shows old logo version');
                 console.log('PUBLISHED_AND_VERIFIED',JSON.stringify(release));
-                console.log('LIVE_HTML_AND_APP_VERIFIED',JSON.stringify({version:'v1.43',
-                  appScript:'app.js?v=143',site:base,commit:process.env.SOURCE_COMMIT}));
+                console.log('LIVE_HTML_AND_APP_VERIFIED',JSON.stringify({version:'v1.44',
+                  appScript:'app.js?v=144',site:base,commit:process.env.SOURCE_COMMIT}));
                 process.exit(0);
               }
-              last='Expected '+process.env.SOURCE_COMMIT+' v1.43, got '+JSON.stringify(release);
+              last='Expected '+process.env.SOURCE_COMMIT+' v1.44, got '+JSON.stringify(release);
             }catch(error){last=String(error)}
             await new Promise(r=>setTimeout(r,5000));
           }
