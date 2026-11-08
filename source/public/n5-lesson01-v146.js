@@ -4,12 +4,14 @@
  */
 (function(){
 'use strict';
-const D=window.NPN5Lesson01Data;
+const D=window.NPN5Lesson01Data,LINKED=window.NPN5Lesson01Scenes||{scenes:[],practiceSceneById:{}};
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const route='#course/N5/lesson/01',threshold=D?.threshold||80;
 const sections=[['vocab','Từ vựng'],['grammar','Ngữ pháp'],['reading','Đọc hiểu'],['listening','Nghe hiểu']];
 const typeNames={vocab:'Từ vựng',grammar:'Ngữ pháp',reading:'Đọc hiểu',listening:'Nghe hiểu'};
-let active='learn',chapter='vocab',run=null,showTexts=new Set(),saveError='',alertText='';
+let active='learn',chapter=LINKED.scenes.length?'scenes':'vocab',run=null,showTexts=new Set(),saveError='',alertText='';
+let sceneIndex=0,focusedGrammar='wa',focusedVocab=null;
+const sceneFeedback=new Map(),sceneDrafts=new Map(),sceneModels=new Set(),sceneTranslations=new Set();
 const learnerId=()=>{try{return String(P()?.id||'guest').replace(/[^a-z0-9_-]/gi,'_')}catch{return'guest'}};
 const storageKey=()=> 'Horizon.N5.Lesson01.v1.'+learnerId();
 function empty(){return{schema:1,viewed:[],attempts:[],createdAt:new Date().toISOString()}}
@@ -44,7 +46,8 @@ function audioSupported(){
  return !!(window.speechSynthesis&&Utterance);
 }
 function speak(id){
- const track=D.listening.find(x=>x.id===id);
+ const scene=LINKED.scenes.find(x=>x.id===id);
+ const track=D.listening.find(x=>x.id===id)||(scene?{jp:scene.dialogue.map(x=>x.jp).join('　')}:null);
  if(!track)return false;
  if(!audioSupported()){alertText='Trình duyệt không hỗ trợ giọng đọc Nhật. Có thể xem lời thoại, nhưng không tính đã hoàn thành kỹ năng nghe.';draw();return false;}
  try{
@@ -73,7 +76,7 @@ function progressTop(){
   p.practice?'<span>✓ Luyện đạt · còn kiểm tra</span>':
   p.check?'<span>✓ Kiểm tra đạt · còn luyện</span>':'<span>Đang học · chưa hoàn thành</span>';
  return '<div class="n5l-progress"><div>'+state+
-  '<small>Đã mở '+viewed+'/4 nội dung học · Tiêu chí đạt: '+threshold+'% luyện và '+threshold+'% kiểm tra có phần nghe</small></div>'+
+  '<small>Đã mở '+viewed+'/4 nhóm tài liệu · Tiêu chí đạt: '+threshold+'% luyện và '+threshold+'% kiểm tra có phần nghe</small></div>'+
   '<div class="n5l-stats"><span>Luyện <strong>'+(p.practiceCount?p.practiceBest+'%':'—')+'</strong></span>'+
   '<span>Kiểm tra <strong>'+(p.checkCount?p.checkBest+'%':'—')+'</strong></span></div></div>';
 }
@@ -96,6 +99,7 @@ function vocabPage(){
  return '<section class="n5l-content" aria-label="Từ vựng Bài 01">'+
   '<div class="n5l-section-header"><div><h2>30 từ trọng tâm</h2><p>Đọc chữ Nhật, nghĩa và mẫu câu ngắn. Đây là nhóm từ do HORIZON biên soạn, không phải bản chép danh sách từ trong sách.</p></div>'+
   '<span class="n5l-count">30 mục</span></div>'+
+  (focusedVocab?'<div class="n5c-focus-word"><strong>Đang tra từ:</strong> '+esc(D.vocab.find(x=>x.id===focusedVocab)?.jp||'')+' · '+esc(D.vocab.find(x=>x.id===focusedVocab)?.vi||'')+'</div>':'')+
   groups.map(group=>'<section class="n5l-vocab-group"><h3>'+esc(group)+'</h3><div class="n5l-vocab-grid">'+
    D.vocab.filter(x=>x.group===group).map(item=>'<article class="n5l-vocab-card">'+
      '<div class="n5l-word"><strong lang="ja">'+esc(item.jp)+'</strong><span>'+esc(item.vi)+'</span></div>'+
@@ -107,7 +111,7 @@ function grammarPage(){
  return '<section class="n5l-content"><div class="n5l-section-header"><div><h2>6 điểm ngữ pháp cốt lõi</h2>'+
   '<p>Học cấu trúc, hiểu cách dùng rồi thử thay tên, nghề nghiệp và quốc tịch bằng thông tin của bạn.</p></div></div>'+
   '<div class="n5l-grammar-list">'+D.grammar.map((g,i)=>
-   '<details class="n5l-grammar"'+(i===0?' open':'')+'><summary><span class="n5l-grammar-no">'+String(i+1).padStart(2,'0')+'</span>'+
+   '<details class="n5l-grammar"'+(g.id===focusedGrammar?' open':'')+'><summary><span class="n5l-grammar-no">'+String(i+1).padStart(2,'0')+'</span>'+
    '<span><strong lang="ja">'+esc(g.title)+'</strong><small>'+esc(g.meaning)+'</small></span>'+
    '<span class="n5l-chevron" aria-hidden="true">⌄</span></summary>'+
    '<div class="n5l-grammar-body"><p>'+esc(g.explain)+'</p>'+
