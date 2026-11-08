@@ -1227,7 +1227,7 @@ test('v1.32 global Practice filters Foundation chapters, units, script and N5 tr
  assert.equal(window.__training.route('level','N5',sc),'learn/training/N5/all');
  assert.equal(window.__training.route('level','N4',sc),'learn/training/foundation/hiragana/all/hira');
  location.hash='#learn/training/N5/all';html=window.__training.page(null);
- assert.match(html,/N5 · Luyện theo bài đã có/);
+ assert.match(html,/N5 · Các bài đã có/);
  assert.match(html,/quiz\/n5-greetings/);
  assert.doesNotMatch(html,/learn\/foundation\/hiragana\/unit-1\/mix/);
  assert.match(html,/N4–N1 chưa phát hành/);
@@ -1253,7 +1253,7 @@ test('v1.32 remembers compact filter expansion and last chosen skill by profile'
  assert.match(html,/class="v132-scope" open/);
  storage.set('Horizon.Foundation.recentExercise.v1.demo-a','listen-match');
  html=window.__trainingTab(null);
- assert.match(html,/Luyện lại: Nghe & ghép/);
+ assert.match(html,/Luyện lại: Nghe &amp; ghép/);
  assert.match(html,/href="#learn\/foundation\/hiragana\/unit-1\/listen-match\/hira"/);
  person='demo-b';html=window.__trainingTab(null);
  assert.doesNotMatch(html,/class="v132-scope" open/);
