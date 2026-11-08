@@ -1,200 +1,34 @@
 /* HORIZON v1.48 — shared original illustrated character world. */
 (function(){'use strict';
-const cast=[
-  {
-    "id": "Aoi",
-    "jp": "あおい",
-    "reading": "あおい",
-    "vi": "Aoi",
-    "nationality": "Nhật Bản",
-    "job": "Nhân viên tiếp đón",
-    "organization": "Trung tâm tiếng Nhật Haruka",
-    "relationship": "Đón học viên mới, hướng dẫn ban đầu",
-    "voice": "Lịch sự, thân thiện",
-    "note": "Dùng cách chào và hỏi tên nhẹ nhàng; người học quan sát cúi chào khi gặp lần đầu.",
-    "phrases": [
-      "はじめまして。",
-      "しつれいですが、おなまえは？"
-    ],
-    "face": "#f4ceb6",
-    "hair": "#3b3035",
-    "shirt": "#d9c6ab",
-    "accent": "#967b6a",
-    "gender": "f",
-    "hairStyle": "bob"
-  },
-  {
-    "id": "Linh",
-    "jp": "リン",
-    "reading": "りん",
-    "vi": "Linh",
-    "nationality": "Việt Nam",
-    "job": "Học viên",
-    "organization": "Trung tâm Haruka · sinh viên Đại học Minato",
-    "relationship": "Học viên mới, quen Aoi và Mina",
-    "voice": "Lịch sự, rõ ràng",
-    "note": "Trong lần đầu gặp, Linh tự giới thiệu tên mà không thêm さん vào tên mình.",
-    "phrases": [
-      "わたしは リンです。",
-      "ベトナムじんです。"
-    ],
-    "face": "#f4c6aa",
-    "hair": "#372c31",
-    "shirt": "#a4b8d2",
-    "accent": "#4b688a",
-    "gender": "f",
-    "hairStyle": "long"
-  },
-  {
-    "id": "Mai",
-    "jp": "マイ",
-    "reading": "まい",
-    "vi": "Mai",
-    "nationality": "Việt Nam",
-    "job": "Nhân viên hành chính",
-    "organization": "Khách sạn Sakura",
-    "relationship": "Đồng nghiệp, giới thiệu Hoa cho Yuki",
-    "voice": "Lịch sự, chuyên nghiệp",
-    "note": "Dùng こちらは ～さんです để giới thiệu người khác trước khi nói nghề nghiệp.",
-    "phrases": [
-      "こちらは ホアさんです。"
-    ],
-    "face": "#edc4ae",
-    "hair": "#483337",
-    "shirt": "#9d829d",
-    "accent": "#7b5370",
-    "gender": "f",
-    "hairStyle": "short"
-  },
-  {
-    "id": "Hoa",
-    "jp": "ホア",
-    "reading": "ほあ",
-    "vi": "Hoa",
-    "nationality": "Việt Nam",
-    "job": "Kỹ sư",
-    "organization": "Khách sạn Sakura",
-    "relationship": "Nhân viên mới được Mai giới thiệu",
-    "voice": "Nhẹ nhàng, lịch sự",
-    "note": "Khi người khác giới thiệu mình, đáp lại lời chào lịch sự.",
-    "phrases": [
-      "どうぞ よろしくおねがいします。"
-    ],
-    "face": "#f1c6aa",
-    "hair": "#352b32",
-    "shirt": "#adc8d7",
-    "accent": "#507b93",
-    "gender": "f",
-    "hairStyle": "long"
-  },
-  {
-    "id": "Yuki",
-    "jp": "ユキ",
-    "reading": "ゆき",
-    "vi": "Yuki",
-    "nationality": "Nhật Bản",
-    "job": "Nhân viên công ty",
-    "organization": "Khách sạn Sakura",
-    "relationship": "Đồng nghiệp của Mai, gặp Hoa và Linh",
-    "voice": "Lịch sự, tò mò",
-    "note": "Hỏi nghề nghiệp hoặc quốc tịch bằng cách thêm ですか ở cuối câu.",
-    "phrases": [
-      "ホアさんは エンジニアですか。"
-    ],
-    "face": "#f2cbb6",
-    "hair": "#37313a",
-    "shirt": "#b9c3d2",
-    "accent": "#486a8c",
-    "gender": "f",
-    "hairStyle": "bob"
-  },
-  {
-    "id": "Ken",
-    "jp": "ケン",
-    "reading": "けん",
-    "vi": "Ken",
-    "nationality": "Nhật Bản",
-    "job": "Học viên",
-    "organization": "Trung tâm tiếng Nhật Haruka",
-    "relationship": "Bạn học của Hana",
-    "voice": "Thân thiện, hỏi thẳng nhưng lịch sự",
-    "note": "Hỏi để xác nhận, không ngại sửa lại nếu nhận thông tin chưa đúng.",
-    "phrases": [
-      "たなかさんは いしゃですか。"
-    ],
-    "face": "#edc3aa",
-    "hair": "#654532",
-    "shirt": "#9bb9ce",
-    "accent": "#3e728b",
-    "gender": "m",
-    "hairStyle": "short"
-  },
-  {
-    "id": "Hana",
-    "jp": "ハナ",
-    "reading": "はな",
-    "vi": "Hana",
-    "nationality": "Nhật Bản",
-    "job": "Học viên",
-    "organization": "Trung tâm tiếng Nhật Haruka",
-    "relationship": "Bạn học của Ken",
-    "voice": "Rõ ràng, nhẹ nhàng",
-    "note": "Khi phủ định, thêm nghề đúng sau câu じゃありません giúp người nghe hiểu.",
-    "phrases": [
-      "いいえ、いしゃじゃありません。"
-    ],
-    "face": "#f2c9b4",
-    "hair": "#49333d",
-    "shirt": "#d2b4bd",
-    "accent": "#925b6c",
-    "gender": "f",
-    "hairStyle": "long"
-  },
-  {
-    "id": "Tanaka",
-    "jp": "たなか",
-    "reading": "たなか",
-    "vi": "Tanaka",
-    "nationality": "Nhật Bản",
-    "job": "Nhà nghiên cứu",
-    "organization": "Viện nghiên cứu địa phương",
-    "relationship": "Người được Ken và Hana nhắc đến",
-    "voice": "Lịch sự, điềm đạm",
-    "note": "Nhân vật này không trực tiếp phát biểu trong cuộc đối thoại về nghề nghiệp.",
-    "phrases": [
-      "けんきゅうしゃです。"
-    ],
-    "face": "#f1c6ab",
-    "hair": "#342a2c",
-    "shirt": "#b1bbc7",
-    "accent": "#4d596b",
-    "gender": "m",
-    "hairStyle": "short",
-    "glasses": true
-  },
-  {
-    "id": "Mina",
-    "jp": "ミナ",
-    "reading": "みな",
-    "vi": "Mina",
-    "nationality": "Việt Nam",
-    "job": "Sinh viên",
-    "organization": "Đại học Minato",
-    "relationship": "Bạn học của Linh, gặp Aoi",
-    "voice": "Lễ phép, tự tin",
-    "note": "Người khác gọi ミナさん; Mina tự nói tên mình là ミナです.",
-    "phrases": [
-      "ミナです。",
-      "はい、そうです。"
-    ],
-    "face": "#eec3a6",
-    "hair": "#5b3b30",
-    "shirt": "#c2aec9",
-    "accent": "#79597f",
-    "gender": "f",
-    "hairStyle": "bob"
-  }
-];
+/* NP_WORLD is the authoritative character and organization catalog. */
+const canonical=(typeof NP_WORLD!=='undefined'?NP_WORLD:null);
+const orgById=Object.fromEntries((canonical?.organizations||[]).map(o=>[o.id,o]));
+const styleById={
+ aoi:['#f1c7ac','#3b3035','#dec4a5','#936d66','f','bob'],
+ mai:['#efc3a6','#43323c','#c1acc4','#8a637c','f','long'],
+ misaki:['#f4cead','#3e3038','#aabbd4','#597a9a','f','bob'],
+ kenta:['#edc3a8','#4b372d','#a1b5c4','#556e84','m','short'],
+ linh:['#f1c4aa','#3c2b35','#a4b6d3','#4d6885','f','long'],
+ yuki:['#f0c9af','#3e3034','#a1bbaf','#587c69','f','bob'],
+ minh:['#eac0a3','#48342a','#9ab7c9','#637e90','m','short'],
+ riko:['#f4c8b8','#422f39','#c3a8c7','#806285','f','long'],
+ sophie:['#f2cbad','#86553a','#b7b9d4','#626e9c','f','short'],
+ jiwoo:['#f2c8ad','#352b33','#b5c1d4','#627995','f','bob']
+};
+function paletteFor(id){
+ if(styleById[id])return styleById[id];
+ const choices=['#a6bfd4','#c9b1c8','#a5c5b7','#dbbea8','#bbc0dd'];
+ const hash=Array.from(id).reduce((a,c)=>a+c.charCodeAt(0),0);
+ return ['#eec5ae','#403239',choices[hash%choices.length],'#6e788d','f','bob'];
+}
+const cast=(canonical?.characters||[]).map(source=>{
+ const style=paletteFor(source.id);
+ return {...source,jp:source.name,vi:source.short,
+  organization:orgById[source.org]?.name||source.org,
+  relationship:source.bio||'',note:source.motivation||source.bio||'',
+  phrases:[],face:style[0],hair:style[1],shirt:style[2],accent:style[3],
+  gender:style[4],hairStyle:style[5]};
+});
 const notes=[
   {
     "id": "first",
@@ -262,15 +96,15 @@ const notes=[
   },
   {
     "id": "also",
-    "term": "ミナさんも",
+    "term": "ジウさんも",
     "title": "～も",
-    "meaning": "Mina cũng…",
+    "meaning": "Jiwoo cũng…",
     "usage": "も đánh dấu rằng người/vật cùng có tính chất đã nêu.",
     "caution": "Không dùng はも với một chủ đề."
   },
   {
     "id": "org",
-    "term": "さくらホテルの",
+    "term": "ホテルなぎの",
     "title": "～の",
     "meaning": "Thuộc về / liên quan đến…",
     "usage": "の nối tổ chức và nghề nghiệp: さくらホテルの エンジニア。",
@@ -286,14 +120,15 @@ const notes=[
   },
   {
     "id": "selfname",
-    "term": "ミナさんですね",
+    "term": "ソフィーさんですね",
     "title": "～さんですね",
-    "meaning": "Vậy là chị Mina đúng không ạ?",
+    "meaning": "Vậy là chị Sophie đúng không ạ?",
     "usage": "Nhắc lại tên cùng ですね để xác nhận, lịch sự và tự nhiên.",
     "caution": "さん dùng khi nói về người khác, không dùng cho tên mình."
   }
 ];
 const byId=Object.fromEntries(cast.map(c=>[c.id,c]));
+const spokenPhrases=id=>[...new Set((window.NPN5Lesson01Scenes?.scenes||[]).flatMap(scene=>scene.dialogue||[]).filter(x=>x.who===id).map(x=>x.jp))].slice(0,3);
 const escapeHtml=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 /* SVG art intentionally authored as native shapes: works offline, no third-party image license. */
 function svgHead(c,x,y,scale=1){
@@ -364,17 +199,17 @@ function picture(scene,cast){
 }
 
 function portrait(id){
- const c=byId[id];if(!c)return '';
+ const c=character(id);if(!c)return '';
  const svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140">'+
   '<rect width="140" height="140" rx="21" fill="#e9e7e5"/>'+
   '<path d="M-2 128 Q13 88 70 83 Q126 86 144 131 V145 H0 Z" fill="'+c.shirt+'"/>'+
   svgHead(c,70,66,.86)+'</svg>';
  return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
 }
-function character(id){return byId[id]||null}
+function character(id){return byId[String(id||'').toLowerCase()]||null}
 function uniqSceneCast(scene){
  const names=(scene.dialogue||[]).map(x=>x.who);
- return [...new Set(names)].map(id=>byId[id]).filter(Boolean);
+ return [...new Set(names)].map(character).filter(Boolean);
 }
 function altText(scene){
  const who=uniqSceneCast(scene).map(c=>c.vi).join(', ');
@@ -439,11 +274,11 @@ function profile(id){
   [['Quốc tịch',c.nationality],['Nghề nghiệp',c.job],['Nơi học / làm việc',c.organization],['Vai trò',c.relationship],['Cách nói',c.voice]].map(pair=>
    '<div><dt>'+escapeHtml(pair[0])+'</dt><dd>'+escapeHtml(pair[1])+'</dd></div>').join('')+'</dl>'+
   '<p class="n5w-profile-note">'+escapeHtml(c.note)+'</p>'+
-  '<h3>Câu tiêu biểu</h3><ul>'+c.phrases.map(p=>'<li lang="ja">'+escapeHtml(p)+'</li>').join('')+'</ul>'+
+  '<h3>Câu tiêu biểu</h3><ul>'+spokenPhrases(c.id).map(p=>'<li lang="ja">'+escapeHtml(p)+'</li>').join('')+'</ul>'+
   '<h3>Xuất hiện trong</h3><div class="n5w-profile-scenes">'+sceneIds.map(scene=>
    '<button type="button" data-n5l-scene="'+escapeHtml(scene.id)+'">'+escapeHtml(scene.title)+' →</button>').join('')+'</div>'+
   '</section></div>';
 }
-window.NPN5CharacterWorld=Object.freeze({version:'v148',characters:()=>cast.map(c=>({...c})),character,portrait,hero,castPanel,characterChip,
+window.NPN5CharacterWorld=Object.freeze({version:'v148-canonical',characters:()=>cast.map(c=>({...c})),character,portrait,hero,castPanel,characterChip,
  annotate,note:id=>termById[id]||null,noteCard,profile,altText,sceneCast:uniqSceneCast,notes:()=>notes.map(x=>({...x}))});
 })();
