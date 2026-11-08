@@ -395,6 +395,17 @@ function trainingRoute(key,value,s){
  if(key==='script')return s.mod.script==='both'&&['both','hira','kata'].includes(value)?'learn/training/foundation/'+s.mod.id+'/'+s.unit+'/'+value:null;
  return null;
 }
+/* v1.32: Keep changes to study scope optional and remember UI preferences by learner. */
+const disclosureKey=()=> 'Horizon.Training.scopeExpanded.v1.'+String(P()?.id||'guest').replace(/[^a-z0-9_-]/gi,'_');
+const disclosureOpen=()=>{try{return localStorage.getItem(disclosureKey())==='on'}catch(e){return false}};
+function recentTrainingMode(options){
+ try{
+  const key='Horizon.Foundation.recentExercise.v1.'+String(P()?.id||'guest').replace(/[^a-z0-9_-]/gi,'_');
+  const mode=localStorage.getItem(key);
+  return options.find(x=>x[0]===mode)||null;
+ }catch(e){return null}
+}
+
 function trainingTab(m){
  const s=trainingScope(),D=window.NPFoundationCurriculum;
  const field=(name,key,options,value)=>'<label class="v131-filter"><span>'+name+'</span><select data-v131-filter="'+key+'" aria-label="'+name+'">'+options.map(x=>'<option value="'+safe(x[0])+'"'+(x[0]===value?' selected':'')+(x[2]?' disabled':'')+'>'+safe(x[1])+'</option>').join('')+'</select></label>';
@@ -416,28 +427,41 @@ function trainingTab(m){
    ['GHÉP & GHI NHỚ','Ghép cặp, hoàn thành từ.',[['match','Ghép chữ & âm','⇄'],...(canWords?[['build','Xếp chữ thành từ','文'],['missing','Điền chữ còn thiếu','□']]:[])]],
    ['TỪ VỰNG','Nhớ từ và nghĩa.',canWords?[['vocab-ja-vi','Nhật → Việt','日'],['vocab-vi-ja','Việt → Nhật','VI']]:[]]
   ].filter(x=>x[2].length);
-  body='<div class="v131-scope-line"><strong>'+safe(scope)+'</strong><span>'+safe(s.mod.title.replace(/^\d+\s*[·.:-]\s*/,''))+' · Phạm vi áp dụng cho các dạng bài bên dưới</span></div>'+
-   '<div class="v131-entry-grid">'+
-    '<a href="'+fl('quiz')+'" class="v131-entry"><span class="v131-entry-tag">BẮT ĐẦU NHANH</span><strong>Luyện theo gợi ý</strong><small>Nhận diện chữ · không cần chọn thêm</small><b aria-hidden="true">→</b></a>'+
-    '<button type="button" class="v131-entry v131-entry-select" data-v131-scroll="activities"><span class="v131-entry-tag">THEO CÁCH CỦA BẠN</span><strong>Tự chọn dạng bài</strong><small>Tất cả kỹ năng ngay bên dưới</small><b aria-hidden="true">↓</b></button>'+
-    '<a href="'+fl('mix')+'" class="v131-entry"><span class="v131-entry-tag">TỰ ĐÁNH GIÁ</span><strong>Kiểm tra tổng hợp</strong><small>Câu hỏi trộn · xem kết quả</small><b aria-hidden="true">→</b></a>'+
-   '</div>'+
-   '<div id="v131-activities" class="v131-activities" tabindex="-1"><div class="v131-activities-head"><div><h2>Tự chọn dạng bài</h2><p>Chọn trực tiếp một kỹ năng, không cần tìm menu bên trong từng bài học.</p></div>'+
-   href('learn/foundation/'+s.mod.id+'/'+s.unit+'/learn/'+s.script,'Quay về bài học '+I('arrow'),'v25-text-cta')+'</div>'+
+  const allModes=grouped.flatMap(x=>x[2]),recent=recentTrainingMode(allModes);
+  const chosen=recent?.[0]||'quiz',heading=recent?'Luyện lại: '+recent[1]:'Luyện nhận diện chữ';
+  const description=recent?'Dạng bài bạn đã luyện gần đây.':'Nhận diện Kana và chọn cách đọc; không cần thiết lập thêm.';
+  body='<div class="v132-start"><div class="v132-start-copy"><span class="v131-entry-tag">'+(recent?'BÀI LUYỆN GẦN NHẤT':'BẮT ĐẦU NHANH')+'</span>'+
+   '<h3>'+safe(heading)+'</h3><p>'+safe(description)+'</p></div>'+
+   '<a class="v132-primary" href="'+fl(chosen)+'">Bắt đầu luyện <span aria-hidden="true">→</span></a></div>'+
+   '<div class="v132-exam"><div><strong>Kiểm tra tổng hợp</strong><small>Câu hỏi trộn · xem điểm và thời gian</small></div>'+
+   '<a href="'+fl('mix')+'">Làm bài kiểm tra <span aria-hidden="true">→</span></a></div>'+
+   '<details class="v132-custom"><summary><span><strong>Tự chọn dạng bài</strong><small>Nhận diện · Nghe · Ghép · Từ vựng</small></span><i aria-hidden="true">⌄</i></summary>'+
    '<div class="v131-skills">'+grouped.map(([name,desc,items])=>'<section class="v131-skill"><h3>'+name+'</h3><p>'+desc+'</p><div class="v131-modes">'+items.map(([id,title,symbol])=>
-   '<a class="v131-mode" href="'+fl(id)+'"><span class="v131-mode-icon" aria-hidden="true">'+symbol+'</span><strong>'+title+'</strong><span class="v131-mode-go" aria-hidden="true">›</span></a>').join('')+'</div></section>').join('')+'</div></div>'+
-   '<p class="v131-disclaimer">Kết quả luyện được lưu riêng theo hồ sơ. Kiểm tra tổng hợp là bài luyện trong phạm vi đã chọn, không phải đề JLPT chính thức.</p>';
+   '<a class="v131-mode" href="'+fl(id)+'"><span class="v131-mode-icon" aria-hidden="true">'+symbol+'</span><strong>'+title+'</strong><span class="v131-mode-go" aria-hidden="true">›</span></a>').join('')+'</div></section>').join('')+'</div>'+
+   '<div class="v132-back">'+href('learn/foundation/'+s.mod.id+'/'+s.unit+'/learn/'+s.script,'Quay lại bài học '+I('arrow'),'v25-text-cta')+'</div></details>'+
+   '<p class="v131-disclaimer">Kết quả được lưu riêng theo hồ sơ. Kiểm tra tổng hợp là bài luyện tập, không phải đề JLPT chính thức.</p>';
+
  }else if(s.level==='N5'){
   filters=level+field('Bài học N5','lesson',[['all','Tất cả bài hiện có'],...s.list.map(a=>[a.contentId,a.title.replace(/^\d+\s*[·.:-]\s*/,'')])],s.lesson);
   const list=s.list.filter(a=>s.lesson==='all'||a.contentId===s.lesson);
-  body='<div class="v131-scope-line"><strong>N5 · Luyện theo bài đã có</strong><span>Chọn bài N5 để luyện và kiểm tra riêng.</span></div>'+
-   '<div class="v131-n5-grid">'+list.map(a=>'<article class="v131-n5-card"><span class="v131-entry-tag">N5 · BÀI LUYỆN</span><h3>'+safe(a.title)+'</h3><p>'+safe(a.desc)+'</p><div class="v131-n5-actions">'+href(a.route,'Học lại','v131-n5-link')+
-   href('quiz/'+a.contentId,'Kiểm tra bài →','v131-n5-link v131-n5-primary')+'</div></article>').join('')+'</div>'+
-   '<p class="v131-disclaimer">N5 đang có các bài kiểm tra theo từng bài đã triển khai. Chưa có bộ luyện tổng hợp toàn cấp N5; N4–N1 chưa phát hành.</p>';
+  const first=list[0];
+  body=(first?'<div class="v132-start"><div class="v132-start-copy"><span class="v131-entry-tag">N5 · BÀI ĐÃ CÓ</span><h3>'+safe(first.title)+'</h3><p>'+safe(first.desc)+'</p></div>'+
+   '<a class="v132-primary" href="#quiz/'+safe(first.contentId)+'">Bắt đầu luyện <span aria-hidden="true">→</span></a></div>':
+   '<p>Chưa có bài luyện trong phạm vi này.</p>')+
+   '<details class="v132-custom"><summary><span><strong>Chọn bài N5 khác</strong><small>Các bài hiện có</small></span><i aria-hidden="true">⌄</i></summary>'+
+   '<div class="v131-n5-grid">'+list.map(a=>'<article class="v131-n5-card"><h3>'+safe(a.title)+'</h3><p>'+safe(a.desc)+'</p><div class="v131-n5-actions">'+href(a.route,'Học lại','v131-n5-link')+
+   href('quiz/'+a.contentId,'Luyện bài này →','v131-n5-link v131-n5-primary')+'</div></article>').join('')+'</div></details>'+
+   '<p class="v131-disclaimer">N5 hiện luyện theo từng bài đã có; chưa có kiểm tra tổng hợp toàn cấp. N4–N1 chưa phát hành.</p>';
+
  }else{filters=level;body='<p>Chưa có nội dung luyện tập phù hợp.</p>'}
- return '<section class="v25-panel v131-training" aria-labelledby="v131-title"><header class="v131-heading"><span>KHÔNG GIAN LUYỆN TẬP</span>'+
- '<h2 id="v131-title">Luyện theo cách của bạn</h2><p>Chọn phạm vi học, sau đó tự luyện hoặc kiểm tra kết quả.</p></header>'+
- '<div class="v131-filters" role="group" aria-label="Lọc phạm vi luyện tập">'+filters+'</div>'+body+'</section>';
+ const title=s.level==='N5'?'N5'+(s.lesson==='all'?' · Các bài đã có':' · '+(s.list.find(x=>x.contentId===s.lesson)?.title||'Bài học')):
+  'Nền tảng · '+s.mod.title.replace(/^\d+\s*[·.:-]\s*/,'')+(s.unit==='all'?'':' · '+(D.findLessonUnit(s.mod.id,s.unit)?.title||s.unit));
+ const disclosure='<details class="v132-scope"'+(disclosureOpen()?' open':'')+'><summary><span><small>PHẠM VI ĐANG LUYỆN</small><strong>'+safe(title)+'</strong></span>'+
+  '<span class="v132-scope-change">Đổi phạm vi <span aria-hidden="true">⌄</span></span></summary>'+
+  '<div class="v131-filters" role="group" aria-label="Lọc phạm vi luyện tập">'+filters+'</div></details>';
+ return '<section class="v25-panel v131-training v132-training" aria-labelledby="v131-title"><header class="v131-heading"><span>KHÔNG GIAN LUYỆN TẬP</span>'+
+ '<h2 id="v131-title">Luyện tập</h2><p>Bắt đầu ngay, hoặc tự chọn cách luyện theo sở thích.</p></header>'+
+ disclosure+body+'</section>';
 }
 
 function otherTab(tab){
@@ -463,12 +487,18 @@ function detail(id){
  '<div class="v25-version">Không gian học tập</div></div>';
 }
 
+document.addEventListener('toggle',event=>{
+ const node=event.target;
+ if(!node?.classList?.contains?.('v132-scope'))return;
+ try{localStorage.setItem(disclosureKey(),node.open?'on':'off')}catch(e){}
+},true);
 document.addEventListener('change',event=>{
  const node=event.target.closest?.('[data-v131-filter]');
  if(!node||!document.querySelector?.('.v131-training'))return;
  const next=trainingRoute(node.dataset.v131Filter,node.value,trainingScope());
  if(!next)return;
  try{localStorage.setItem(practiceScopeKey(),next)}catch(e){}
+ if(location.hash==='#'+next){render(false);return}
  location.hash='#'+next;
 });
 document.addEventListener('click',event=>{
