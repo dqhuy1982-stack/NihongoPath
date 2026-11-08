@@ -313,7 +313,7 @@ function foundationModuleCatalogue(){
    '<div class="v123-pane-heading"><div><strong>'+safe(m.title.replace(/^\d+\s*[·.:-]\s*/,''))+'</strong><p>'+safe(m.subtitle)+'</p></div>'+
    '<a href="#'+engine.path(m.id,'all','learn')+'">Xem toàn chặng ↗</a></div>'+
    '<div class="v123-topic-list">'+entries.join('')+'</div></section>').join('')+'</div></div>'+
-  '<p class="v121-catalog-note">Dấu ✓ hoàn thành khi đã làm ít nhất một lượt luyện và kiểm tra tổng hợp đạt từ 80%. Có thể làm lại nhiều lần; lịch sử được lưu theo hồ sơ. Đây là tiêu chí luyện tập của HORIZON, không phải chuẩn JLPT. Thống kê từng chữ vẫn được giữ riêng.</p>'+
+  '<p class="v121-catalog-note">Dấu ✓ hoàn thành khi đã làm ít nhất một lượt luyện và kiểm tra tổng hợp đạt từ 80%. Có thể làm lại nhiều lần; lịch sử được lưu theo hồ sơ. Tốt: từ 90%; Đạt: 80–89%; Chưa đạt: dưới 80%. Dấu ✓ hoàn thành chỉ có khi đã luyện và kiểm tra đạt. Đây là tiêu chí của HORIZON, không phải chuẩn JLPT. Lịch sử các lượt và thống kê từng chữ vẫn được giữ riêng.</p>'+
   '</section>';
 }
 
