@@ -248,13 +248,14 @@ function foundationModuleCatalogue(){
    const script=m.script==='hira'?'hira':m.script==='kata'?'kata':'both';
    const record=engine.attemptStatus?.(m.id,unit.id,script)||{};
    const attempts=record.history||[];
+   const totalAttempts=record.totalAttempts||attempts.length;
    const stage=record.complete?'complete':record.testPassed?'test-passed':
     record.practiceDone?'practiced':record.testDone?'attempted':'new';
    const stateText=record.complete?'✓ Hoàn thành':record.testPassed?'✓ Kiểm tra đạt':
     record.practiceDone?'✓ Đã luyện':record.testDone?'◷ Cần kiểm tra lại':'Chưa bắt đầu';
    const log=attempts.length?'<details class="v140-catalog-history"><summary>Lịch sử · '+attempts.length+' lượt <span aria-hidden="true">⌄</span></summary>'+
     '<div class="v140-catalog-history-rows">'+attempts.slice(-5).reverse().map((x,j)=>
-     '<div><span>Lượt '+(attempts.length-j)+' · '+(x.kind==='test'?'Kiểm tra':'Luyện')+'</span>'+
+     '<div><span>Lượt '+(totalAttempts-j)+' · '+(x.kind==='test'?'Kiểm tra':'Luyện')+'</span>'+
      '<strong>'+x.correct+'/'+x.total+' · '+x.percent+'%</strong>'+
      '<small>'+safe(new Date(x.completedAt).toLocaleDateString('vi-VN'))+'</small></div>').join('')+'</div></details>':'';
    const sample=cards[0]||{},parts=unit.groups.map(id=>m.groups.find(g=>g.id===id)).filter(Boolean);
@@ -285,13 +286,15 @@ function foundationModuleCatalogue(){
   return {m,index,lessons,entries,complete};
  });
  const total=records.reduce((sum,r)=>sum+r.lessons.length,0);
+ const completedTotal=records.reduce((sum,r)=>sum+r.complete,0);
  const firstPending=modules.flatMap(m=>data.getLessonUnits(m.id).map(unit=>({m,unit,cards:foundationTopics(m,unit,data)})))
    .find(({m,unit})=>!engine.attemptStatus?.(m.id,unit.id,m.script==='hira'?'hira':m.script==='kata'?'kata':'both')?.complete);
  const start=firstPending||{m:modules[0],unit:data.getLessonUnits(modules[0].id)[0]};
  const initialModule=start.m.id, nextPath=engine.path(start.m.id,start.unit.id,'learn');
  return '<section class="v121-foundation-catalog v125-catalog" aria-labelledby="v121-heading">'+
   '<div class="v121-catalog-heading v123-catalog-heading"><div><p class="v121-eyebrow">FOUNDATION · '+modules.length+' CHẶNG · '+total+' BÀI HỌC</p>'+
-  '<h3 id="v121-heading">Chọn bài để học</h3><p class="v140-course-total">'+records.reduce((n,r)=>n+r.complete,0)+' / '+total+' bài hoàn thành</p></div></div>'+
+  '<h3 id="v121-heading">Chọn bài để học</h3><p class="v140-course-total">'+completedTotal+' / '+total+' bài hoàn thành'+(completedTotal===total?' · Có thể tiếp tục lên N5':'')+'</p></div>'+
+ (completedTotal===total?'<a class="v140-next-course" href="#course/N5">Khám phá N5 <span aria-hidden="true">→</span></a>':'')+'</div>'+
   '<div class="v121-toolbar"><label class="v121-search-label"><span class="v121-search-icon" aria-hidden="true">⌕</span>'+
   '<input type="search" data-v121-filter placeholder="Tìm chữ, âm hoặc bài học…" aria-label="Tìm bài học Nền tảng" autocomplete="off"></label>'+
   '<a class="v121-continue" href="#'+nextPath+'">Tiếp tục học →</a></div>'+
