@@ -1656,7 +1656,7 @@ test('v1.40 fully completed runs record each attempt; course tick requires pract
  assert.equal(h.ui.attemptStatus('hiragana','unit-1','hira').complete,false);
  h.setProfile('demo-a');
  assert.equal(h.ui.attemptStatus('hiragana','unit-1','hira').testCount,2);
- assert.equal(h.ui.store().items,statusBefore,'attempt tracking leaves original per-character stats intact');
+ assert.deepEqual(JSON.parse(JSON.stringify(h.ui.store().items)),JSON.parse(JSON.stringify(statusBefore)),'attempt tracking keeps original per-character stats when changing profiles');
 });
 test('v1.40 catalogue exposes separate learned/tested states and exact attempt history',()=>{
  const h=harness(),window={NPFoundationCurriculum:h.data,NPFoundationCourse:h.ui};
