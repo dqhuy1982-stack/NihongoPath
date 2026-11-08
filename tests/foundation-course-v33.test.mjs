@@ -1438,7 +1438,8 @@ test('v1.37 cold reload restores Training instead of legacy learning interface',
   const window={NPFoundationCurriculum:h.data,NPFoundationCourse:h.ui};
   const listeners={},calls=[];
   const document={readyState:'loading',addEventListener:(name,handler)=>{(listeners[name]??=[]).push(handler)}};
-  const location={hash:'#'+target};
+  // Foundation's embedded engine and hub must read the *same* browser URL.
+  const location=h.location;location.hash='#'+target;
   const ctx={window,document,location,localStorage:{getItem:()=>null,setItem:()=>{}},
    route:()=>location.hash.slice(1),P:()=>({id:'demo-a',goal:'Nền tảng',name:'Learner'}),
    learnPage:()=>'<p>OLD LEARNING SCREEN</p>',coursePage:()=>'',titleOf:r=>r,
