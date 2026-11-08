@@ -119,7 +119,7 @@ test('Compact course presents 46 Hiragana together, with audio and four action t
  assert.ok(html.includes('v35-kana-guide'));
  assert.ok(!html.includes('v33-audio'));
  assert.ok(html.includes('aria-label="Nghe '));
- assert.equal((html.match(/class="v34-stage-tab /g)||[]).length,4);
+ assert.equal((html.match(/class="v34-stage-tab /g)||[]).length,2);
  assert.ok(!html.includes('v33-row-chip'));
  assert.ok(html.includes('data-f34="module"'));
 });
@@ -340,7 +340,7 @@ test('Four learning destinations keep each matching activity only in Practice',(
   assert.ok(!html.includes('data-value="game"'));
   assert.ok(!html.includes('data-value="game-build"'));
   assert.ok(!html.includes('data-value="game-listen"'));
-  assert.equal((html.match(/class="v34-stage-tab /g)||[]).length,4);
+  assert.equal((html.match(/class="v34-stage-tab /g)||[]).length,2);
  }
  for(const [legacy,target] of [['game','Ghép Kana với Romaji'],['game-build','Xếp Kana'],['game-listen','Nghe và ghép đúng chữ']]){
   const route='learn/foundation/hiragana/all/'+legacy;h.location.hash='#'+route;
@@ -821,7 +821,7 @@ test('v1.24 learners navigate adjacent chapters without a dropdown menu',()=>{
  assert.doesNotMatch(html,/v113-module-select/);
  assert.doesNotMatch(html,/Không gian học tập/);
  assert.doesNotMatch(html,/v25-breadcrumb/);
- assert.equal((html.match(/class="v34-stage-tab /g)||[]).length,4);
+ assert.equal((html.match(/class="v34-stage-tab /g)||[]).length,2);
  assert.match(html,/aria-label="Đang ở chặng đầu tiên" disabled/);
  assert.ok(load('foundation-course-v33.js').includes('[data-f34="module"]'));
  const index=h.ui.page('course/foundation');
@@ -841,7 +841,7 @@ test('v1.24 breadcrumbs show actual route ancestry and link to parent destinatio
  assert.match(html,/<a href="#course\/foundation">Nền tảng<\/a>/);
  assert.match(html,/<span aria-current="page">Hiragana<\/span>/);
  assert.equal((html.match(/class="v115-breadcrumb"/g)||[]).length,1);
- assert.equal((html.match(/class="v34-stage-tab /g)||[]).length,4);
+ assert.equal((html.match(/class="v34-stage-tab /g)||[]).length,2);
  assert.doesNotMatch(html,/v28-header-shell/);
  const index=h.ui.page('course/foundation');
  assert.match(index,/<span aria-current="page">Nền tảng<\/span>/);
@@ -1078,4 +1078,56 @@ test('v1.24 Foundation course contains searchable topics without another menu le
  assert.ok(load('learning-hub-v25.js').includes('foundationCatalogue:foundationModuleCatalogue'));
  assert.ok(!load('learning-hub-v25.js').includes("['modules','Module','layers']"));
  assert.ok(!load('learning-hub-v25.js').includes("['lessons','Bài học','play-circle']"));
+});
+
+test('v1.25 Foundation presents learning and practice as two contextual destinations',()=>{
+ const h=harness(),base='learn/foundation/hiragana/unit-1';
+ h.location.hash='#'+base+'/learn';
+ const learning=h.ui.page(base+'/learn');
+ assert.equal((learning.match(/class="v34-stage-tab /g)||[]).length,2);
+ assert.match(learning,/data-value="practice" class="v33-primary">Tiếp theo: Thực hành/);
+ assert.doesNotMatch(learning,/data-value="flash" class="v34-stage-tab/);
+ assert.doesNotMatch(learning,/class="v33-side"/);
+ h.location.hash='#'+base+'/practice';
+ const practice=h.ui.page(base+'/practice');
+ assert.match(practice,/v126-practice-hub/);
+ assert.equal((practice.match(/class="v126-practice-choice"/g)||[]).length,3);
+ for(const mode of ['flash','quiz','mix'])assert.ok(practice.includes('href="#'+base+'/'+mode+'"'));
+ assert.equal((practice.match(/class="v34-stage-tab /g)||[]).length,2);
+ assert.ok(practice.includes('Flashcard')&&practice.includes('Kiểm tra tổng hợp'));
+ assert.doesNotMatch(practice,/v39-book-nav/);
+ h.location.hash='#'+base+'/flash';
+ const flash=h.ui.page(base+'/flash');
+ assert.match(flash,/v126-context/);
+ assert.match(flash,/v33-flash/);
+ h.location.hash='#'+base+'/match';
+ const matched=h.ui.page(base+'/match');
+ assert.match(matched,/class="v39-book-layout v126-workbook"/);
+ assert.match(matched,/class="v39-book-nav v126-book-nav"/);
+ assert.match(matched,/<details class="v126-exercise-picker">/);
+ assert.doesNotMatch(matched,/<details class="v126-exercise-picker" open/);
+ assert.match(matched,/Đổi dạng bài/);
+ assert.doesNotMatch(matched,/data-value="game"/);
+ const css=load('foundation-course-v107.css');
+ assert.ok(css.includes('grid-template-columns:repeat(2,minmax(0,1fr))!important'));
+ assert.ok(css.includes('.v126-practice-choice'));
+ assert.ok(css.includes('.v126-exercise-picker'));
+});
+test('v1.25 catalogue uses single stable Kana glyphs and legible primary button',()=>{
+ const {data,ui}=harness();
+ const window={NPFoundationCurriculum:data,NPFoundationCourse:ui},document={addEventListener:()=>{}};
+ const source=load('learning-hub-v25.js').replace(/\}\)\(\);\s*$/,'window.__catalogue=foundationModuleCatalogue;})();');
+ runInNewContext(source,{window,document,location:{hash:'#today'},
+  P:()=>({id:'demo-a'}),render:()=>{},learnPage:()=>'',coursePage:()=>'',titleOf:()=>'',icon:()=>'',Locale:{t:x=>x}});
+ const html=window.__catalogue();
+ assert.match(html,/<span class="v121-topic-glyph" lang="ja">っ<\/span>/);
+ assert.match(html,/<span class="v121-topic-glyph" lang="ja">ー<\/span>/);
+ assert.match(html,/<span class="v121-topic-glyph" lang="ja">ァ<\/span>/);
+ assert.match(html,/<span class="v121-topic-glyph" lang="ja">あ<\/span>/);
+ assert.equal((html.match(/data-v121-topic(?:\s|>)/g)||[]).length,17);
+ const css=load('learning-hub-v25.css');
+ assert.ok(css.includes('.v125-catalog .v121-continue:visited'));
+ assert.ok(css.includes('-webkit-text-fill-color:#fff!important'));
+ assert.ok(css.includes('white-space:nowrap!important'));
+ assert.ok(css.includes('writing-mode:horizontal-tb!important'));
 });
