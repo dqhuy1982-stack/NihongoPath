@@ -946,7 +946,7 @@ function practiceLanding(cfg){
  return '<section class="v126-practice-hub v131-lesson-practice" aria-labelledby="v126-practice-title">'+
  '<div class="v126-practice-intro"><p>THỰC HÀNH · '+clean(cfg.mod.title.replace(/^\d+\s*[·.:-]\s*/,''))+'</p>'+
  '<h2 id="v126-practice-title">'+clean(title)+'</h2><span>Luyện nhanh theo nội dung vừa học hoặc chuyển sang Luyện tập để chọn kỹ năng.</span></div>'+
- '<div class="v131-lesson-actions">'+
+ recordRibbon(cfg)+'<div class="v131-lesson-actions">'+
  '<a href="#'+path(cfg.id,cfg.group,'quiz',cfg.script)+'" class="v131-lesson-action is-primary"><strong>Luyện ngay</strong><small>Nhận diện chữ vừa học</small><span aria-hidden="true">→</span></a>'+
  '<a href="#'+path(cfg.id,cfg.group,'mix',cfg.script)+'" class="v131-lesson-action"><strong>Kiểm tra bài này</strong><small>Trộn câu hỏi theo phạm vi bài</small><span aria-hidden="true">→</span></a></div>'+
  '<a class="v131-lesson-custom" href="'+scope+'">Tự chọn dạng bài trong Luyện tập <span aria-hidden="true">↗</span></a>'+
@@ -964,7 +964,7 @@ function workspace(cfg,embedded=false){
  const task=!isHub&&!isLesson;
  const exercise=task&&cfg.mode!=='flash'&&cfg.mode!=='mix';
  return (embedded?'':navigationFor(cfg))+'<div class="v38-task-area v126-task-area'+(embedded?' v134-inline-stage':'')+'"><div class="'+(exercise?'v39-book-layout v126-workbook':'v33-workspace v126-focused-work')+'"'+''+'>'+
-  (task&&!embedded?activityBook(cfg):'')+quickStart+body+'</div>'+intro+
+  (task&&!embedded?activityBook(cfg):'')+(task&&!s?.finished?countControls(s):'')+quickStart+body+'</div>'+intro+
   (s&&MATCH_KINDS.includes(s.kind)?roundSummaryView(s,cfg):'')+'</div>';
 }
 
@@ -1161,6 +1161,20 @@ document.addEventListener('drop',event=>{
 });
 document.addEventListener('dragend',()=>{dragging=null});
 document.addEventListener('change',event=>{
+ const picker=event.target.closest?.('[data-f140-count],[data-f140-custom]');
+ if(picker&&document.querySelector?.('.v34-workspace-shell')){
+  const selected=picker.dataset.f140Count;
+  if(selected){
+   const previous=countPrefs();
+   setCountPrefs(selected,selected==='custom'?(previous.preset==='custom'?previous.value:25):Number(selected));
+  }else if(picker.dataset.f140Custom!==undefined){
+   const n=Number(picker.value);
+   if(!Number.isInteger(n)||n<1||n>MAX_QUESTIONS)return;
+   setCountPrefs('custom',n);
+  }
+  play=null;removeFoundationOverlay();removeSummaryHost();refresh();
+  return;
+ }
  const node=event.target.closest?.('[data-f34]');if(!node||!document.querySelector('.v34-workspace-shell'))return;
  localSwitch(node.dataset.f34,node.value);
 });
