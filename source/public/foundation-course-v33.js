@@ -93,7 +93,7 @@ function attemptStatus(id,unit,script='both'){
  const practice=entries.filter(x=>x.kind==='practice'),tests=entries.filter(x=>x.kind==='test');
  const testPassed=tests.some(x=>x.percent>=PASS_PERCENT);
  return {practiceCount:practice.length,testCount:tests.length,practiceDone:practice.length>0,
-  testDone:tests.length>0,testPassed,complete:practice.length>0&&testPassed,
+  testDone:tests.length>0,testPassed,complete:practice.length>0&&testPassed,totalAttempts:entries.length,
   bestTest:tests.length?Math.max(...tests.map(x=>x.percent)):null,
   lastPractice:practice.at(-1)||null,lastTest:tests.at(-1)||null,history:entries.slice(-30)};
 }
@@ -768,6 +768,9 @@ function summaryView(cfg,s){
  const avg=s.roundMs?.length?timeLabel(s.roundMs.reduce((a,b)=>a+b,0)/s.roundMs.length):'—';
  return '<section class="v33-pane v33-summary"><p class="v33-eyebrow">KẾT QUẢ LƯỢT LUYỆN</p><h3>Hoàn thành bài kiểm tra</h3><div class="v33-summary-score">'+s.correct+' <span>/ '+total+' câu đúng</span></div>'+
  (cfg.mode==='mix'?'<div class="v37-summary-stats"><span>Đúng chậm: <strong>'+s.slow+'</strong></span><span>Sai: <strong>'+s.errors+'</strong></span><span>TB phản hồi: <strong>'+avg+'</strong></span></div>':'')+
+ '<p class="v140-finish-meta">'+(cfg.mode==='mix'?(total&&s.correct/total>=.8?'✓ Kiểm tra đạt':'◷ Cần kiểm tra lại'):'✓ Đã hoàn tất lượt luyện')+
+ ' · Lượt '+attemptStatus(cfg.id,cfg.group,cfg.script).totalAttempts+' đã lưu · '+(total?Math.round(s.correct/total*100):0)+'%'+
+ (cfg.mode==='mix'?' · Mốc đạt HORIZON: 80%':'')+'</p>'+
  '<p>'+(cfg.mode==='mix'?'Chữ đúng chậm và chữ sai được đề xuất ôn. Ngưỡng phản xạ mang tính thử nghiệm.':'Luyện tập không tính thời gian; các chữ sai được đưa vào Sổ ôn.')+'</p>'+
  '<div class="v33-pane-actions"><button data-f33="restart" class="v33-primary">Luyện lại ngẫu nhiên</button><button data-f34="mode" data-value="review" class="v33-secondary">Ôn chữ cần luyện</button></div>'+
  scopeAfterResult(cfg,s.correct,total)+'</section>';
@@ -775,7 +778,7 @@ function summaryView(cfg,s){
 
 function buildView(cfg,s){
  if(!s.cards.length)return noData('Chưa đủ từ ngữ cảnh để ghép chữ.');
- if(s.finished||s.index>=s.cards.length)return '<section class="v33-pane v33-summary"><p class="v33-eyebrow">XẾP CHỮ · TỔNG KẾT</p><h3>Đã hoàn thành lượt ghép chữ</h3><div class="v33-summary-score">'+s.correct+' <span>/ '+s.cards.length+' từ đúng</span></div><p>Luyện lại những từ sai sau khi xem mặt chữ và cách đọc.</p><div class="v33-pane-actions"><button data-f33="restart" class="v33-primary">Ghép lại từ đầu</button></div>'+scopeAfterResult(cfg,s.correct,s.cards.length)+'</section>';
+ if(s.finished||s.index>=s.cards.length)return '<section class="v33-pane v33-summary"><p class="v33-eyebrow">XẾP CHỮ · TỔNG KẾT</p><h3>Đã hoàn thành lượt ghép chữ</h3><div class="v33-summary-score">'+s.correct+' <span>/ '+s.cards.length+' từ đúng</span></div><p>Luyện lại những từ sai sau khi xem mặt chữ và cách đọc.</p><div class="v33-pane-actions"><button data-f33="restart" class="v33-primary">Ghép lại từ đầu</button></div><p class="v140-finish-meta">✓ Đã lưu lượt ghép thứ '+attemptStatus(cfg.id,cfg.group,cfg.script).totalAttempts+'</p>'+scopeAfterResult(cfg,s.correct,s.cards.length)+'</section>';
  const word=s.cards[s.index],selected=s.selected.map(i=>s.tileOrder[i].glyph).join('');
  return '<section class="v33-pane"><div class="v33-pane-head"><div><p class="v33-eyebrow">GHÉP CHỮ THÀNH TỪ</p><h3>Xếp Kana theo đúng thứ tự</h3><p>Nhìn nghĩa tiếng Việt, chạm các mảnh chữ để ghép thành từ Nhật. Không cần kéo thả.</p></div><div class="v37-head-meta">'+tag('Từ '+(s.index+1)+' / '+s.cards.length)+(cfg.mode==='mix'?clock(s,!!s.answer):'')+'</div></div>'+
  '<div class="v33-build-clue"><span>NGHĨA TIẾNG VIỆT</span><strong>'+clean(word.vi)+'</strong></div>'+
