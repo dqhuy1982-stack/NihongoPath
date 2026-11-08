@@ -812,7 +812,7 @@ function summaryView(cfg,s){
   '<div class="v142-topline"><p class="v33-eyebrow">KẾT QUẢ · '+(isTest?'KIỂM TRA':'LUYỆN TẬP')+'</p>'+
   '<span class="v142-saved"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>Lượt '+attempt.totalAttempts+' đã lưu</span></div>'+
   '<div class="v142-hero"><div class="v142-heading">'+
-  '<span class="v142-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="12"/><path d="m10 16 4 4 8-9"/></svg></span>'+
+  '<span class="v142-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="12"/>'+(grade.tone==='retry'?'<path d="M22 11a8 8 0 1 0 1 9M22 6v5h-5"/>':'<path d="m10 16 4 4 8-9"/>')+'</svg></span>'+
   '<div class="v142-heading-copy"><h3>'+headline+'</h3><p class="v142-description">'+description+'</p></div></div>'+
   '<div class="v142-score-block"><div><div class="v142-score-line"><strong>'+correct+'</strong><span>/ '+total+'</span></div>'+
   '<div class="v142-score-caption">câu trả lời đúng</div></div>'+
