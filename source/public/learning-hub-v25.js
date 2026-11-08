@@ -246,6 +246,8 @@ function foundationModuleCatalogue(){
    const cards=foundationTopics(m,unit,data),unique=[...new Set(cards.map(x=>x.id))];
    const practiced=unique.filter(id=>progress[id]?.attempts>0).length;
    const script=m.script==='hira'?'hira':m.script==='kata'?'kata':'both';
+   // Lesson CTAs open the exact exercise, not the generic Training hub.
+   const lessonAction=mode=>'#'+engine.path(m.id,unit.id,mode,script);
    const record=engine.attemptStatus?.(m.id,unit.id,script)||{};
    const attempts=record.history||[];
    const totalAttempts=record.totalAttempts||attempts.length;
@@ -286,15 +288,15 @@ function foundationModuleCatalogue(){
      '</span></div><div class="v140-catalog-actions">'+
      (record.complete&&engine.nextLearningStep?.({id:m.id,group:unit.id,script,mod:m})?
        '<a class="v143-catalog-next" href="'+safe(engine.nextLearningStep({id:m.id,group:unit.id,script,mod:m}).href)+'">'+safe(engine.nextLearningStep({id:m.id,group:unit.id,script,mod:m}).label)+' <span aria-hidden="true">→</span></a>'+
-       '<a href="#learn/training/foundation/'+m.id+'/'+unit.id+'/'+script+'/quiz">Ôn lại ↻</a>':
+       '<a href="'+safe(lessonAction('quiz'))+'">Ôn lại ↻</a>':
        record.practicePassed&&!record.testPassed?
-       '<a class="v143-catalog-next" href="#learn/training/foundation/'+m.id+'/'+unit.id+'/'+script+'/mix">Kiểm tra để hoàn thành →</a>'+
-       '<a href="#learn/training/foundation/'+m.id+'/'+unit.id+'/'+script+'/quiz">Luyện lại ↻</a>':
+       '<a class="v143-catalog-next" href="'+safe(lessonAction('mix'))+'">Kiểm tra để hoàn thành →</a>'+
+       '<a href="'+safe(lessonAction('quiz'))+'">Luyện lại ↻</a>':
        record.testPassed&&!record.practicePassed?
-       '<a class="v143-catalog-next" href="#learn/training/foundation/'+m.id+'/'+unit.id+'/'+script+'/quiz">Luyện để hoàn thành →</a>'+
-       '<a href="#learn/training/foundation/'+m.id+'/'+unit.id+'/'+script+'/mix">Kiểm tra lại ↻</a>':
-       '<a href="#learn/training/foundation/'+m.id+'/'+unit.id+'/'+script+'/quiz">Luyện ngay ↗</a>'+
-       '<a href="#learn/training/foundation/'+m.id+'/'+unit.id+'/'+script+'/mix">Kiểm tra bài này ↗</a>')+'</div></div>'+
+       '<a class="v143-catalog-next" href="'+safe(lessonAction('quiz'))+'">Luyện để hoàn thành →</a>'+
+       '<a href="'+safe(lessonAction('mix'))+'">Kiểm tra lại ↻</a>':
+       '<a href="'+safe(lessonAction('quiz'))+'">Luyện ngay ↗</a>'+
+       '<a href="'+safe(lessonAction('mix'))+'">Kiểm tra bài này ↗</a>')+'</div></div>'+
     log+partDetails+'</article>';
   });
   const complete=lessons.filter(u=>engine.attemptStatus?.(m.id,u.id,m.script==='hira'?'hira':m.script==='kata'?'kata':'both')?.complete).length;
