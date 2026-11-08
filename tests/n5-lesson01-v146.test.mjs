@@ -103,7 +103,8 @@ test('All-correct check without playable Japanese audio cannot create false comp
  assert.equal(h.ui.status().checked,true);
  assert.equal(h.ui.status().check,false);
  assert.equal(h.ui.status().complete,false);
- assert.match(h.ui.page(),/phần nghe chưa được xác nhận/);
+ assert.match(h.ui.page(),/phần nghe chưa được xác nhận/i);
+ assert.match(h.ui.page(),/Chưa xác nhận phần nghe/);
 });
 test('Genuine playback-start events + successful practice and check complete lesson',()=>{
  const h=harness();
