@@ -173,6 +173,7 @@
 .n5l-finish-score span{font-size:18px;color:var(--n5l-muted)}
 .n5l-finish-score em{font-size:12px;font-style:normal;font-weight:770;margin-left:9px;border-radius:99px;padding:6px 12px}
 .n5l-finish-score em.is-pass{background:#e2f3e7;color:#28724b}
+.n5l-finish-score em.is-pending{background:#fff1d9;color:#98661e}
 .n5l-finish-score em.is-retry{background:#faeeee;color:#a34d58}
 .n5l-finish>p{font-size:11.5px;line-height:1.75;color:var(--n5l-muted);margin:15px 0}
 .n5l-type-results{display:flex;gap:9px 20px;flex-wrap:wrap;font-size:11px;padding:16px 0;border-top:1px solid var(--n5l-line);border-bottom:1px solid var(--n5l-line)}
