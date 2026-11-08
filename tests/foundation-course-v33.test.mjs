@@ -992,7 +992,8 @@ test('v1.22 learning navigation exposes exactly three destinations and keeps leg
  const hooks={},document={addEventListener:(name,fn)=>{hooks[name]=fn}};
  const script=load('learning-hub-v25.js').replace(/\}\)\(\);\s*$/,'window.__tabs=navigation;window.__legacy=learnPage;})();');
  const location={hash:'#learn/catalog'};
- runInNewContext(script,{window,document,location,P:()=>({id:'demo-a',goal:'Nền tảng'}),
+ runInNewContext(script,{window,document,location,route:()=>location.hash.replace(/^#/,''),
+  P:()=>({id:'demo-a',goal:'Nền tảng'}),
   render:()=>{},learnPage:()=>'',coursePage:()=>'',titleOf:()=>'',icon:()=>'',Locale:{t:x=>x}});
  const html=window.__tabs('catalog');
  assert.equal((html.match(/class="v25-tab /g)||[]).length,3);
