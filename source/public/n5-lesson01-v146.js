@@ -13,7 +13,8 @@ const typeNames={vocab:'Từ vựng',grammar:'Ngữ pháp',reading:'Đọc hiể
 let active='learn',chapter=LINKED.scenes.length?'scenes':'vocab',run=null,showTexts=new Set(),saveError='',alertText='';
 let sceneIndex=0,focusedGrammar='wa',focusedVocab=null;
 const sceneFeedback=new Map(),sceneDrafts=new Map(),sceneModels=new Set(),sceneTranslations=new Set();
-const substituteFeedback=new Map(),orderSteps=new Map(),sceneTutorOpen=new Set();
+const substituteFeedback=new Map(),orderSteps=new Map(),expandedPractices=new Set();
+let referenceExpanded=false;
 let activeCharacter=null,activeNote=null;
 const learnerId=()=>{try{return String(P()?.id||'guest').replace(/[^a-z0-9_-]/gi,'_')}catch{return'guest'}};
 const storageKey=()=> 'Horizon.N5.Lesson01.v1.'+learnerId();
@@ -119,7 +120,7 @@ function grammarPage(){
    '<span class="n5l-chevron" aria-hidden="true">⌄</span></summary>'+
    '<div class="n5l-grammar-body"><p>'+esc(g.explain)+'</p>'+
    '<div class="n5l-example"><small>CẤU TRÚC</small><strong lang="ja">'+esc(g.pattern)+'</strong>'+
-   '<small>VÍ DỤ</small><strong lang="ja">'+esc(g.example)+'</strong><span>'+esc(g.translation)+'</span></div>'+
+   '<small>VÍ DỤ</small><strong lang="ja">'+(WORLD?WORLD.annotate(g.example,activeNote):esc(g.example))+'</strong><span>'+esc(g.translation)+'</span></div>'+
    '<p class="n5l-caution"><strong>Lưu ý:</strong> '+esc(g.caution)+'</p></div></details>').join('')+
   '</div></section>';
 }
@@ -127,7 +128,8 @@ function readingPage(){
  return '<section class="n5l-content"><div class="n5l-section-header"><div><h2>Đọc hiểu · Ngày đầu ở lớp</h2>'+
   '<p>Đọc một lần để nắm ý chính, sau đó đọc lại tìm tên, quốc tịch và nghề nghiệp. Không cần dịch từng chữ.</p></div></div>'+
   '<article class="n5l-reading-card"><span class="n5l-reading-kicker">ORIGINAL READING · N5</span>'+
-  D.reading.paragraphs.map((p,i)=>'<p class="n5l-jp-paragraph" lang="ja">'+esc(p)+'</p>').join('')+
+  D.reading.paragraphs.map((p,i)=>'<p class="n5l-jp-paragraph" lang="ja">'+(WORLD?WORLD.annotate(p,activeNote):esc(p))+'</p>').join('')+
+  (activeNote&&WORLD?WORLD.noteCard(activeNote):'')+
   '<button type="button" class="n5l-small-action" data-n5l-reveal="reading" aria-expanded="'+(showTexts.has('reading')?'true':'false')+'">'+
   (showTexts.has('reading')?'Ẩn gợi ý tiếng Việt':'Xem gợi ý tiếng Việt')+' <span aria-hidden="true">⌄</span></button>'+
   (showTexts.has('reading')?'<p class="n5l-translation">'+esc(D.reading.gloss)+'</p>':'')+'</article>'+
@@ -191,7 +193,7 @@ function supplementalPractice(scene){
  const key=sceneKey(scene.id),sub=substituteFeedback.get(key),ordering=orderSteps.get(key)||{selection:[],wrong:false,done:false};
  const chosen=scene.replace;
  const order=[2,0,1];
- return '<details class="n5w-more-practice"><summary><span><strong>Luyện vận dụng thêm</strong>'+
+ return '<details class="n5w-more-practice" data-n5l-expanded="'+esc(scene.id)+'"'+(expandedPractices.has(sceneKey(scene.id))?' open':'')+'><summary><span><strong>Luyện vận dụng thêm</strong>'+
   '<small>Đổi từ trong câu · sắp xếp hội thoại · thử đổi vai</small></span><span aria-hidden="true">⌄</span></summary>'+
   '<div class="n5w-more-inner"><section class="n5w-mini-task"><span class="n5w-task-id">01 · THAY TỪ VÀO MẪU</span>'+
   '<h4>'+esc(chosen.prompt)+'</h4><p class="n5w-stem" lang="ja">'+esc(chosen.stem)+'</p>'+
@@ -307,7 +309,7 @@ function scenePage(){
   '</div></article></div></section>';
 }
 function learnPage(){
- const lookupOpen=chapter!=='scenes';
+ const lookupOpen=chapter!=='scenes'||referenceExpanded;
  return (chapter==='scenes'?scenePage():
   '<div class="n5c-return"><button type="button" data-n5l-section="scenes">← Trở lại tình huống</button><span>Tra cứu kiến thức liên quan</span></div>')+
   '<details class="n5c-reference"'+(lookupOpen?' open':'')+'>'+
@@ -553,6 +555,19 @@ document.addEventListener('click',event=>{
    if(run.index>=run.questions.length-1)finish();else{run.index++;alertText='';draw();}
   }return}
 });
+document.addEventListener('toggle',event=>{
+ if(!document.querySelector?.('.n5l-root'))return;
+ const element=event.target;
+ if(element?.matches?.('.n5w-more-practice')){
+  const key=sceneKey(element.dataset.n5lExpanded);
+  if(element.open)expandedPractices.add(key);else expandedPractices.delete(key);
+  return;
+ }
+ if(element?.matches?.('.n5c-reference')){
+  referenceExpanded=!!element.open;
+  if(element.open&&chapter==='scenes'){chapter='vocab';active='learn';draw();}
+ }
+},true);
 document.addEventListener('keydown',event=>{
  if(!activeCharacter||!document.querySelector?.('.n5w-profile'))return;
  if(event.key==='Escape'){
