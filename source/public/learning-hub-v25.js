@@ -76,7 +76,7 @@ function model(){
 function label(text,cl=''){return '<span class="v25-badge '+cl+'">'+text+'</span>'}
 function navigation(selected){
  return '<nav class="v25-tabs" aria-label="Điều hướng trong mục Học">'+[
- ['overview','Tổng quan học','home'],['catalog','Khóa học','book-open'],['modules','Module','layers'],['lessons','Bài học','play-circle'],['practice','Ôn thông minh','target']
+ ['overview','Tổng quan','home'],['catalog','Khóa học','book-open'],['practice','Ôn tập','target']
  ].map(([id,title,ic])=>href('learn/'+id,I(ic)+'<span>'+title+'</span>','v25-tab '+(id===selected?'active':'')+'' )).join('')+'</nav>';
 }
 function header(){
@@ -139,7 +139,7 @@ function hierarchy(m){
  const course=m.learner.goal==='N5'?'N5':'foundation';
  const subset=lessons.filter(a=>a.course===course);
  const modules=[...new Set(subset.map(a=>a.module))];
- const moduleLink=href('learn/modules','Xem các module '+I('arrow'),'v25-text-cta');
+ const moduleLink=href('course/foundation','Xem các chặng Nền tảng '+I('arrow'),'v25-text-cta');
  return '<section class="v25-panel v25-hierarchy">'+sectionHead('route','Lộ trình học theo cấp độ','learn/catalog','Xem lộ trình')+
  stages(m)+'<div class="v25-columns">'+
  '<div class="v25-column"><h3>'+I('book-open')+' Khóa học</h3>'+
@@ -176,7 +176,7 @@ function overview(){
 function tabTop(selected,m){
  return '<div class="v28-header-shell"><header class="v25-header"><div class="v25-hero-copy"><h1>Không gian học tập</h1><p>Khóa học, nội dung và hoạt động đều có vị trí rõ ràng.</p></div></header>'+
  navigation(selected)+'</div>'+
- '<nav class="v25-breadcrumb" aria-label="Vị trí học tập">'+href('learn','Học')+'<span aria-hidden="true">›</span><span aria-current="page">'+({catalog:'Khóa học',modules:'Module',lessons:'Bài học',practice:'Ôn thông minh'}[selected]||'Tổng quan')+'</span></nav>'+
+ '<nav class="v25-breadcrumb" aria-label="Vị trí học tập">'+href('learn','Học')+'<span aria-hidden="true">›</span><span aria-current="page">'+({catalog:'Khóa học',practice:'Ôn tập'}[selected]||'Tổng quan')+'</span></nav>'+
  (m.sample?'<div class="v25-fixture-notice">'+I('info')+' Kịch bản '+safe(m.learner.name)+' · Trạng thái mô phỏng, chưa ghi vào hồ sơ học thật.</div>':'');
 }
 function catalogueTab(m){
@@ -294,7 +294,7 @@ function modulesTab(m){
  const courseLessons=lessons.filter(a=>a.course==='N5');
  const n5Modules=[...new Set(courseLessons.map(a=>a.module))];
  return '<section class="v25-panel v121-modules-page">'+
-  sectionHead('layers','Module · Danh mục bài học','learn/catalog','Khóa học')+
+  sectionHead('layers','Nền tảng · Danh mục bài học','learn/catalog','Khóa học')+
   '<p class="v25-tab-intro">Mở một chặng, chọn nhóm bài và vào học trực tiếp. Không cần mở nhiều tầng menu.</p>'+
   foundationModuleCatalogue()+
   '<section class="v121-next-level"><div class="v32-group-heading"><h3>N5 · Bài học hiện có</h3>'+href('course/N5','Xem khóa N5 '+I('arrow'),'v25-text-cta')+'</div>'+
@@ -340,8 +340,10 @@ function practiceTab(m){
  '<span class="v25-module-symbol">'+I(ic)+'</span><span><small>'+(['LỊCH ÔN','PHÂN TÍCH LỖI','KANA','JLPT'][i])+'</small><strong>'+name+'</strong><em>'+description+'</em></span><span class="v25-module-go">'+I('arrow')+'</span>','v25-module-card')).join('')+'</div></section>';
 }
 function otherTab(tab){
- const m=model();const content=tab==='catalog'?catalogueTab(m):tab==='modules'?modulesTab(m):tab==='lessons'?lessonsTab(m):practiceTab(m);
- return '<div class="v25-wrap" data-learning-hub="v33">'+tabTop(tab,m)+content+
+ const m=model();const canonical=tab==='modules'?'catalog':tab==='lessons'?'catalog':tab;
+ const content=canonical==='catalog'?catalogueTab(m):canonical==='practice'?practiceTab(m):overview();
+
+ return '<div class="v25-wrap" data-learning-hub="v33">'+tabTop(canonical,m)+content+
  '<div class="v25-version">Tiến độ học · '+(m.sample?'Dữ liệu minh họa':'Tiến độ đã ghi nhận')+'</div></div>';
 }
 function detail(id){
@@ -364,6 +366,6 @@ const originalLearn=learnPage,originalCourse=coursePage,originalTitle=titleOf;
 learnPage=function(){const r=route();if((r==='learn/foundation'||r.startsWith('learn/foundation/'))&&window.NPFoundationCourse)return window.NPFoundationCourse.page(r);if(r==='learn'||r==='learn/overview')return overview();if(r.startsWith('learn/'))return otherTab(r.split('/')[1]);return originalLearn()};
 coursePage=function(id){if(id==='foundation'&&window.NPFoundationCourse)return window.NPFoundationCourse.page('course/foundation');return detail(id)};
 titleOf=function(r){return r==='learn'||r==='learn/overview'?'Không gian học tập':originalTitle(r)};
-window.NPHorizonV25={version:'v33',model,activities:()=>activities.map(a=>({...a})),shell:(selected='catalog')=>'<div class="v28-header-shell"><header class="v25-header"><div class="v25-hero-copy"><h1>Không gian học tập</h1><p>Học tiếng Nhật theo từng bước, dễ tìm bài và ôn lại.</p></div></header>'+navigation(selected)+'</div>'};
+window.NPHorizonV25={version:'v33',model,activities:()=>activities.map(a=>({...a})),foundationCatalogue:foundationModuleCatalogue,shell:(selected='catalog')=>'<div class="v28-header-shell"><header class="v25-header"><div class="v25-hero-copy"><h1>Không gian học tập</h1><p>Học tiếng Nhật theo từng bước, dễ tìm bài và ôn lại.</p></div></header>'+navigation(selected)+'</div>'};
 if(location.hash==='#learn'||location.hash==='#learn/overview'||location.hash.startsWith('#learn/foundation/')||location.hash==='#learn/foundation'||location.hash==='#course/foundation')queueMicrotask(()=>render(false));
 })();
