@@ -253,10 +253,13 @@ function foundationModuleCatalogue(){
     record.practiceDone?'practiced':record.testDone?'attempted':'new';
    const stateText=record.complete?'✓ Hoàn thành':record.testPassed?'✓ Kiểm tra đạt':
     record.practiceDone?'✓ Đã luyện':record.testDone?'◷ Cần kiểm tra lại':'Chưa bắt đầu';
+   const grade=record.testDone?engine.resultGrade?.(record.bestTest):null;
+   const gradeClass=grade?.tone||'neutral';
    const log=attempts.length?'<details class="v140-catalog-history"><summary>Lịch sử · '+attempts.length+' lượt <span aria-hidden="true">⌄</span></summary>'+
     '<div class="v140-catalog-history-rows">'+attempts.slice(-5).reverse().map((x,j)=>
      '<div><span>Lượt '+(totalAttempts-j)+' · '+(x.kind==='test'?'Kiểm tra':'Luyện')+'</span>'+
      '<strong>'+x.correct+'/'+x.total+' · '+x.percent+'%</strong>'+
+     (engine.resultGrade?'<span class="v141-history-grade is-'+engine.resultGrade(x.percent).tone+'">'+engine.resultGrade(x.percent).label+'</span>':'')+
      '<small>'+safe(new Date(x.completedAt).toLocaleDateString('vi-VN'))+'</small></div>').join('')+'</div></details>':'';
    const sample=cards[0]||{},parts=unit.groups.map(id=>m.groups.find(g=>g.id===id)).filter(Boolean);
    // Use one representative symbol for a lesson, not the first multi-kana sample word.
@@ -271,7 +274,8 @@ function foundationModuleCatalogue(){
     '<span class="v121-topic-glyph" lang="ja">'+safe(displayGlyph)+'</span>'+
     '<span class="v121-topic-copy"><strong>'+safe(unit.title)+'</strong><small>'+safe(unit.summary)+'</small></span>'+
     '<span class="v121-topic-progress">'+practiced+' / '+unique.length+' mẫu đã luyện</span>'+
-    '<span class="v140-topic-badge is-'+stage+'">'+stateText+'</span>'+
+    '<span class="v140-topic-badge is-'+stage+' is-grade-'+gradeClass+'"><span class="v141-status-emblem" aria-hidden="true">'+(grade?.icon||'○')+'</span><span class="v141-status-copy"><strong>'+stateText+'</strong>'+
+     (grade?'<b>'+grade.label+' · '+grade.score+'%</b>':'')+'</span></span>'+
     '<span class="v125-lesson-open">Mở bài <span aria-hidden="true">›</span></span></a>'+
     '<div class="v140-catalog-progress"><div class="v140-catalog-milestones">'+
      '<span class="'+(record.practiceDone?'is-done':'')+'">'+(record.practiceDone?'✓ ':'○ ')+'Luyện '+(record.practiceCount||0)+' lượt</span>'+
@@ -483,7 +487,8 @@ function trainingTab(m){
   const selected=allModes.find(x=>x[0]===s.mode)||(s.mode==='mix'?['mix','Kiểm tra tổng hợp','✓']:null);
   const status=window.NPFoundationCourse?.attemptStatus?.(s.mod.id,s.unit,s.script)||{};
    const startDone=status.practiceDone?'✓ Đã luyện · '+status.practiceCount+' lượt':'Chưa hoàn tất lượt luyện';
-   const examDone=status.testPassed?'✓ Kiểm tra đạt · '+status.bestTest+'%':status.testDone?'◷ Đã kiểm tra · cần luyện thêm':'Chưa kiểm tra';
+   const grade=status.testDone?window.NPFoundationCourse?.resultGrade?.(status.bestTest):null;
+   const examDone=status.testPassed?'✓ Kiểm tra đạt · '+status.bestTest+'%':status.testDone?'◷ Kiểm tra chưa đạt · '+status.bestTest+'%':'Chưa kiểm tra';
    const chosen=recent?.[0]||'quiz',heading=recent?'Luyện lại: '+recent[1]:'Luyện nhận diện chữ';
   const description=recent?'Dạng bài bạn đã luyện gần đây.':'Nhận diện Kana và chọn cách đọc; không cần thiết lập thêm.';
   body='<div class="v132-start"><div class="v132-start-copy"><span class="v131-entry-tag">'+(recent?'BÀI LUYỆN GẦN NHẤT':'BẮT ĐẦU NHANH')+'</span>'+
@@ -491,7 +496,8 @@ function trainingTab(m){
     '<div class="v140-training-status"><span class="'+(status.practiceDone?'is-done':'')+'">'+startDone+'</span></div></div>'+
    '<a class="v132-primary" href="'+fl(chosen)+'">Bắt đầu luyện <span aria-hidden="true">→</span></a></div>'+
    '<div class="v132-exam"><div><strong>Kiểm tra tổng hợp</strong><small>Câu hỏi trộn · xem điểm và thời gian</small>'+
-   '<div class="v140-training-status"><span class="'+(status.testPassed?'is-done':'')+'">'+examDone+'</span></div></div>'+
+   '<div class="v140-training-status"><span class="'+(status.testPassed?'is-done ':'')+(grade?'is-grade-'+grade.tone:'')+'">'+
+   (grade?'<span aria-hidden="true">'+grade.icon+' </span><strong>'+grade.label+'</strong> · ':'')+examDone+'</span></div></div>'+
    '<a href="'+fl('mix')+'">Làm bài kiểm tra <span aria-hidden="true">→</span></a></div>'+
    '<p class="v133-note">Chọn kỹ năng ở menu bên trái để mở bài luyện trực tiếp.</p>'+
    '<p class="v131-disclaimer">Kết quả được lưu riêng theo hồ sơ. Kiểm tra tổng hợp là bài luyện tập, không phải đề JLPT chính thức.</p>';
