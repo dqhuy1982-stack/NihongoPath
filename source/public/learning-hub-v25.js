@@ -245,6 +245,18 @@ function foundationModuleCatalogue(){
   const entries=lessons.map((unit,ordinal)=>{
    const cards=foundationTopics(m,unit,data),unique=[...new Set(cards.map(x=>x.id))];
    const practiced=unique.filter(id=>progress[id]?.attempts>0).length;
+   const script=m.script==='hira'?'hira':m.script==='kata'?'kata':'both';
+   const record=engine.attemptStatus?.(m.id,unit.id,script)||{};
+   const attempts=record.history||[];
+   const stage=record.complete?'complete':record.testPassed?'test-passed':
+    record.practiceDone?'practiced':record.testDone?'attempted':'new';
+   const stateText=record.complete?'✓ Hoàn thành':record.testPassed?'✓ Kiểm tra đạt':
+    record.practiceDone?'✓ Đã luyện':record.testDone?'◷ Cần kiểm tra lại':'Chưa bắt đầu';
+   const log=attempts.length?'<details class="v140-catalog-history"><summary>Lịch sử · '+attempts.length+' lượt <span aria-hidden="true">⌄</span></summary>'+
+    '<div class="v140-catalog-history-rows">'+attempts.slice(-5).reverse().map((x,j)=>
+     '<div><span>Lượt '+(attempts.length-j)+' · '+(x.kind==='test'?'Kiểm tra':'Luyện')+'</span>'+
+     '<strong>'+x.correct+'/'+x.total+' · '+x.percent+'%</strong>'+
+     '<small>'+safe(new Date(x.completedAt).toLocaleDateString('vi-VN'))+'</small></div>').join('')+'</div></details>':'';
    const sample=cards[0]||{},parts=unit.groups.map(id=>m.groups.find(g=>g.id===id)).filter(Boolean);
    // Use one representative symbol for a lesson, not the first multi-kana sample word.
    const glyphs={small:{pause:'っ',length:'ー',vowels:'ァ'},mixed:{mixed:'あ'}};
@@ -258,33 +270,43 @@ function foundationModuleCatalogue(){
     '<span class="v121-topic-glyph" lang="ja">'+safe(displayGlyph)+'</span>'+
     '<span class="v121-topic-copy"><strong>'+safe(unit.title)+'</strong><small>'+safe(unit.summary)+'</small></span>'+
     '<span class="v121-topic-progress">'+practiced+' / '+unique.length+' mẫu đã luyện</span>'+
-    '<span class="v125-lesson-open">Mở bài <span aria-hidden="true">›</span></span></a>'+partDetails+'</article>';
+    '<span class="v140-topic-badge is-'+stage+'">'+stateText+'</span>'+
+    '<span class="v125-lesson-open">Mở bài <span aria-hidden="true">›</span></span></a>'+
+    '<div class="v140-catalog-progress"><div class="v140-catalog-milestones">'+
+     '<span class="'+(record.practiceDone?'is-done':'')+'">'+(record.practiceDone?'✓ ':'○ ')+'Luyện '+(record.practiceCount||0)+' lượt</span>'+
+     '<span class="'+(record.testPassed?'is-done':record.testDone?'is-retry':'')+'">'+
+      (record.testPassed?'✓ Kiểm tra đạt':record.testDone?'◷ Kiểm tra '+record.testCount+' lượt':'○ Chưa kiểm tra')+
+     '</span></div><div class="v140-catalog-actions">'+
+     '<a href="#learn/training/foundation/'+m.id+'/'+unit.id+'/'+script+'/quiz">Luyện ngay <span aria-hidden="true">↗</span></a>'+
+     '<a href="#learn/training/foundation/'+m.id+'/'+unit.id+'/'+script+'/mix">Kiểm tra bài này <span aria-hidden="true">↗</span></a></div></div>'+
+    log+partDetails+'</article>';
   });
-  return {m,index,lessons,entries};
+  const complete=lessons.filter(u=>engine.attemptStatus?.(m.id,u.id,m.script==='hira'?'hira':m.script==='kata'?'kata':'both')?.complete).length;
+  return {m,index,lessons,entries,complete};
  });
  const total=records.reduce((sum,r)=>sum+r.lessons.length,0);
  const firstPending=modules.flatMap(m=>data.getLessonUnits(m.id).map(unit=>({m,unit,cards:foundationTopics(m,unit,data)})))
-   .find(({cards})=>cards.some(x=>!(progress[x.id]?.attempts>0)));
+   .find(({m,unit})=>!engine.attemptStatus?.(m.id,unit.id,m.script==='hira'?'hira':m.script==='kata'?'kata':'both')?.complete);
  const start=firstPending||{m:modules[0],unit:data.getLessonUnits(modules[0].id)[0]};
  const initialModule=start.m.id, nextPath=engine.path(start.m.id,start.unit.id,'learn');
  return '<section class="v121-foundation-catalog v125-catalog" aria-labelledby="v121-heading">'+
   '<div class="v121-catalog-heading v123-catalog-heading"><div><p class="v121-eyebrow">FOUNDATION · '+modules.length+' CHẶNG · '+total+' BÀI HỌC</p>'+
-  '<h3 id="v121-heading">Chọn bài để học</h3></div></div>'+
+  '<h3 id="v121-heading">Chọn bài để học</h3><p class="v140-course-total">'+records.reduce((n,r)=>n+r.complete,0)+' / '+total+' bài hoàn thành</p></div></div>'+
   '<div class="v121-toolbar"><label class="v121-search-label"><span class="v121-search-icon" aria-hidden="true">⌕</span>'+
   '<input type="search" data-v121-filter placeholder="Tìm chữ, âm hoặc bài học…" aria-label="Tìm bài học Nền tảng" autocomplete="off"></label>'+
   '<a class="v121-continue" href="#'+nextPath+'">Tiếp tục học →</a></div>'+
   '<p class="v121-search-status" data-v121-status role="status" aria-live="polite" hidden></p>'+
-  '<div class="v123-catalog-layout"><nav class="v123-chapter-tabs" aria-label="Chọn chặng Nền tảng">'+records.map(({m,index,lessons})=>
+  '<div class="v123-catalog-layout"><nav class="v123-chapter-tabs" aria-label="Chọn chặng Nền tảng">'+records.map(({m,index,lessons,complete})=>
    '<button type="button" class="v123-chapter-tab'+(m.id===initialModule?' is-active':'')+'" data-v123-select="'+safe(m.id)+'" aria-controls="v123-panel-'+safe(m.id)+'" aria-current="'+(m.id===initialModule?'true':'false')+'">'+
    '<span class="v123-chapter-number">'+String(index+1).padStart(2,'0')+'</span>'+
    '<span class="v123-chapter-label">'+safe(m.title.replace(/^\d+\s*[·.:-]\s*/,''))+'</span>'+
-   '<small>'+lessons.length+' bài</small></button>').join('')+'</nav>'+
+   '<small>'+(complete===lessons.length?'✓ Hoàn thành':complete+' / '+lessons.length+' hoàn thành')+'</small></button>').join('')+'</nav>'+
   '<div class="v123-topic-panes">'+records.map(({m,entries})=>
    '<section class="v123-topic-pane" id="v123-panel-'+safe(m.id)+'" data-v123-pane="'+safe(m.id)+'" '+(m.id===initialModule?'':'hidden')+'>'+
    '<div class="v123-pane-heading"><div><strong>'+safe(m.title.replace(/^\d+\s*[·.:-]\s*/,''))+'</strong><p>'+safe(m.subtitle)+'</p></div>'+
    '<a href="#'+engine.path(m.id,'all','learn')+'">Xem toàn chặng ↗</a></div>'+
    '<div class="v123-topic-list">'+entries.join('')+'</div></section>').join('')+'</div></div>'+
-  '<p class="v121-catalog-note">Mỗi bài gồm 1–4 hàng chữ liên quan, học theo từng hàng trong cùng một bài. “Đã luyện” không có nghĩa đã ghi nhớ thành thạo; tiến độ cũ theo từng chữ vẫn được giữ.</p>'+
+  '<p class="v121-catalog-note">Dấu ✓ hoàn thành khi đã làm ít nhất một lượt luyện và kiểm tra tổng hợp đạt từ 80%. Có thể làm lại nhiều lần; lịch sử được lưu theo hồ sơ. Đây là tiêu chí luyện tập của HORIZON, không phải chuẩn JLPT. Thống kê từng chữ vẫn được giữ riêng.</p>'+
   '</section>';
 }
 
