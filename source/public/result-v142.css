@@ -82,6 +82,17 @@
 }
 .v34-studying .v142-metrics span{display:inline-flex;gap:5px;align-items:baseline}
 .v34-studying .v142-metrics strong{font-weight:760;color:var(--v33-text,#33272e);font-variant-numeric:tabular-nums}
+.v34-studying .v142-inline-review{
+ display:inline-flex;align-items:center;gap:4px;
+ color:var(--v142-ink);border:0;background:transparent;
+ font:inherit;font-size:11px;font-weight:750;cursor:pointer;
+ padding:0 2px;min-height:25px;text-decoration:underline;
+ text-decoration-color:color-mix(in srgb,var(--v142-ink) 38%,transparent);
+ text-underline-offset:3px
+}
+.v34-studying .v142-inline-review:focus-visible{
+ outline:2px solid var(--v142-tone);outline-offset:3px
+}
 .v34-studying .v142-next{
  margin:26px 0 0;padding:20px 22px;
  border-radius:14px;background:color-mix(in srgb,var(--v33-soft,#f5e9eb) 27%,var(--v33-paper,#fffaf9));
