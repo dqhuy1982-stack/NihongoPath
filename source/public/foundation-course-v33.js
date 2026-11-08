@@ -831,7 +831,7 @@ function summaryView(cfg,s){
  const attempt=attemptStatus(cfg.id,cfg.group,cfg.script);
  const next=attempt.complete?nextLearningStep(cfg):nextPracticeScope(cfg);
  const nativeScript=cfg.mod.script==='hira'?'hira':cfg.mod.script==='kata'?'kata':cfg.script;
- const routeMode=mode=>'#learn/training/foundation/'+cfg.id+'/'+cfg.group+'/'+nativeScript+'/'+mode;
+ const routeMode=mode=>'#'+path(cfg.id,cfg.group,mode,nativeScript);
  const completionTitle=attempt.complete?
   (DATA.findLessonUnit(cfg.id,cfg.group)?'✓ Đã hoàn thành bài học':'✓ Đã hoàn thành phạm vi luyện'):
   attempt.practicePassed&&!attempt.testPassed?'✓ Luyện đạt · còn kiểm tra':
