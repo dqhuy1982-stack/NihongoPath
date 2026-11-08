@@ -155,12 +155,16 @@ function countControls(s){
 
 function recordRibbon(cfg){
  const v=attemptStatus(cfg.id,cfg.group,cfg.script);
- return '<div class="v140-record-ribbon" aria-label="Lượt luyện và kiểm tra đã hoàn thành">'+
-  '<span class="'+(v.practiceDone?'is-done':'')+'">'+(v.practiceDone?'✓':'○')+' Luyện ngay · '+v.practiceCount+' lượt</span>'+
-  '<span class="'+(v.testPassed?'is-done':'')+'">'+(v.testPassed?'✓':v.testDone?'◷':'○')+' Kiểm tra · '+v.testCount+' lượt</span>'+
-  (v.testDone?'<small>Điểm tốt nhất '+v.bestTest+'% · Mốc đạt '+PASS_PERCENT+'%</small>':'')+'</div>';
+ const title=v.complete?'✓ Đã hoàn thành bài học':v.practicePassed?'✓ Luyện đạt · còn kiểm tra':
+  v.practiceDone?'◷ Đã luyện · cần đạt '+PASS_PERCENT+'%':'○ Chưa luyện';
+ const test=v.testPassed?'✓ Kiểm tra đạt':v.testDone?'◷ Kiểm tra chưa đạt':'○ Chưa kiểm tra';
+ const next=v.complete?nextLearningStep(cfg):null;
+ return '<div class="v140-record-ribbon v143-record-ribbon '+(v.complete?'is-complete':'')+'" aria-label="Tiến độ bài học">'+
+  '<span class="'+(v.practicePassed?'is-done':'')+'">'+title+'</span>'+
+  '<span class="'+(v.testPassed?'is-done':'')+'">'+test+' · '+v.testCount+' lượt</span>'+
+  (v.testDone?'<small>Điểm kiểm tra tốt nhất '+v.bestTest+'% · Mốc đạt '+PASS_PERCENT+'%</small>':'')+
+  (next?'<a class="v143-next-step" href="'+clean(next.href)+'">'+clean(next.label)+' →</a>':'')+'</div>';
 }
-
 function priority(item){
  const stat=store().items[item.id];
  if(!stat)return 1;
@@ -780,6 +784,25 @@ function nextPracticeScope(cfg){
  if(!DATA.take(id,group,script).length&&id!=='small')return null;
  return {title,kind,mode,href:'#learn/training/foundation/'+id+'/'+group+'/'+script+'/'+mode};
 }
+/* Completion navigation is lesson-based; optional 'all' review is never
+   required between the last lesson of one module and the next module. */
+function nextLearningStep(cfg){
+ if(!cfg?.mod)return null;
+ const units=DATA.getLessonUnits(cfg.id),i=units.findIndex(u=>u.id===cfg.group);
+ if(i>=0&&i<units.length-1){
+  const unit=units[i+1];return {label:'Học bài tiếp theo',title:unit.title,href:'#'+path(cfg.id,unit.id,'learn',cfg.mod.script)};
+ }
+ const index=DATA.modules.findIndex(m=>m.id===cfg.id),next=DATA.modules[index+1];
+ if(next){
+  const unit=DATA.getLessonUnits(next.id)[0];
+  if(unit)return {label:'Sang chặng tiếp theo',title:next.title+' · '+unit.title,
+   href:'#'+path(next.id,unit.id,'learn',next.script)};
+ }
+ const totalComplete=DATA.modules.every(m=>DATA.getLessonUnits(m.id).every(unit=>
+  attemptStatus(m.id,unit.id,m.script).complete));
+ return totalComplete?{label:'Bắt đầu N5',title:'N5 · Khóa học tiếp theo',href:'#course/N5'}:
+  {label:'Xem lộ trình',title:'Tiếp tục hoàn thành các bài còn lại',href:'#course/foundation'};
+}
 function scopeAfterResult(cfg,correct,total,compact=false){
  if(!cfg?.mod)return '';
  const next=nextPracticeScope(cfg);
@@ -1335,5 +1358,5 @@ document.addEventListener('click',event=>{
  if(!document.querySelector('.v33-foundation'))return;
  event.preventDefault();perform(b);
 });
-window.NPFoundationCourse={version:'v39',page,embeddedPractice,store,stats:countStats,path,questionFor,choosePool,nextPracticeScope,attemptStatus,resultGrade,runHistory,countPrefs,session:()=>play};
+window.NPFoundationCourse={version:'v39',page,embeddedPractice,store,stats:countStats,path,questionFor,choosePool,nextPracticeScope,nextLearningStep,attemptStatus,resultGrade,runHistory,countPrefs,session:()=>play};
 })();
