@@ -1685,13 +1685,53 @@ test('v1.41 catalogue exposes separate learned/tested states and exact attempt h
  assert.match(html,/Lượt 3 · Kiểm tra/);
  assert.match(html,/13\/15 · 87%/);
  assert.match(html,/1 \/ 4 hoàn thành/);
- assert.match(html,/href="#learn\/training\/foundation\/hiragana\/unit-1\/hira\/quiz"/);
+ assert.match(html,/href="#learn\/foundation\/hiragana\/unit-1\/quiz\/hira"/);
  assert.match(html,/href="#learn\/foundation\/hiragana\/unit-2\/learn\/hira"/);
  const css=load('learning-hub-v30.css');
  assert.match(css,/v140-topic-badge/);
  assert.match(css,/v140-catalog-history/);
 });
 
+
+test('Catalog completion action opens exact Hàng S · T · N check, not general Training hub',()=>{
+ const h=harness(),window={NPFoundationCurriculum:h.data,NPFoundationCourse:h.ui};
+ const src=load('learning-hub-v25.js').replace(/\}\)\(\);\s*$/,'window.__lessonCatalogue=foundationModuleCatalogue;})();');
+ runInNewContext(src,{window,document:{addEventListener(){}},location:{hash:'#learn/modules'},
+  P:()=>({id:'demo-a',goal:'Nền tảng'}),render:()=>{},learnPage:()=>'',coursePage:()=>'',titleOf:()=>'',icon:()=>'',Locale:{t:x=>x}});
+ const db=h.ui.store();
+ db.attemptRuns=[{id:'p',moduleId:'hiragana',unitId:'unit-2',script:'hira',
+   kind:'practice',mode:'quiz',total:15,correct:15,percent:100,completedAt:'2026-11-08T10:00:00Z'}];
+ const catalogue=window.__lessonCatalogue();
+ const route=h.ui.path('hiragana','unit-2','mix','hira');
+ assert.equal(route,'learn/foundation/hiragana/unit-2/mix/hira');
+ assert.match(catalogue,/class="v143-catalog-next" href="#learn\/foundation\/hiragana\/unit-2\/mix\/hira">Kiểm tra để hoàn thành/);
+ assert.doesNotMatch(catalogue,/href="#learn\/training\/foundation\/hiragana\/unit-2\/hira\/mix">Kiểm tra để hoàn thành/);
+ h.location.hash='#'+route;
+ const screen=h.ui.page(route);
+ assert.match(screen,/ĐANG KIỂM TRA/);
+ assert.match(screen,/Bắt đầu kiểm tra/);
+ assert.doesNotMatch(screen,/KHÔNG GIAN LUYỆN TẬP/);
+ assert.equal(h.ui.session().kind,'mix');
+ const allowed=new Set(h.data.take('hiragana','unit-2','hira').map(x=>x.id));
+ assert.ok(h.ui.session().questions.every(q=>allowed.has(q.item.id)),
+  'Test question scope must be Hàng S · T · N');
+});
+
+test('Catalog check links preserve Hiragana, Katakana and combined scope',()=>{
+ const h=harness(),window={NPFoundationCurriculum:h.data,NPFoundationCourse:h.ui};
+ const src=load('learning-hub-v25.js').replace(/\}\)\(\);\s*$/,'window.__lessonCatalogue=foundationModuleCatalogue;})();');
+ runInNewContext(src,{window,document:{addEventListener(){}},location:{hash:'#learn/modules'},
+  P:()=>({id:'demo-a',goal:'Nền tảng'}),render:()=>{},learnPage:()=>'',coursePage:()=>'',titleOf:()=>'',icon:()=>'',Locale:{t:x=>x}});
+ const html=window.__lessonCatalogue();
+ for(const [id,unit,script] of [['hiragana','unit-2','hira'],['katakana','unit-1','kata'],['mixed','mixed','both']]){
+  const route=h.ui.path(id,unit,'mix',script);
+  assert.ok(html.includes('href="#'+route+'"'),route+' must be a direct test link');
+  h.location.hash='#'+route;
+  const page=h.ui.page(route);
+  assert.match(page,/ĐANG KIỂM TRA/,route);
+  assert.equal(h.ui.session().kind,'mix');
+ }
+});
 test('v1.41 result tiers keep positive, passing and retry states distinct and legible',()=>{
  const h=harness();
  assert.equal(h.ui.resultGrade(100).tone,'good');
