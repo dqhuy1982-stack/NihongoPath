@@ -1170,24 +1170,47 @@ document.addEventListener('drop',event=>{
  }
 });
 document.addEventListener('dragend',()=>{dragging=null});
+/* A changed preset synchronizes the session AND the displayed question total.
+   For "Tự chọn", reveal the input immediately, without a full-page rerender. */
+function applyQuestionCount(preset,value){
+ const n=Number(value);
+ if(!Number.isInteger(n)||n<1||n>MAX_QUESTIONS)return false;
+ if(play&&((play.answered||0)>0||(play.index||0)>0||(play.selected?.length||0)>0)){
+  if(typeof window?.confirm==='function'&&!window.confirm('Đổi số câu sẽ bắt đầu lượt luyện mới. Lượt đang làm dở chưa được lưu. Tiếp tục?'))return false;
+ }
+ setCountPrefs(preset,n);
+ play=null;removeFoundationOverlay();removeSummaryHost();removeFinishDock();
+ refresh();return true;
+}
 document.addEventListener('change',event=>{
  const picker=event.target.closest?.('[data-f140-count],[data-f140-custom]');
  if(picker&&document.querySelector?.('.v34-workspace-shell')){
-  const selected=picker.dataset.f140Count;
-  if(selected){
-   const previous=countPrefs();
-   setCountPrefs(selected,selected==='custom'?(previous.preset==='custom'?previous.value:25):Number(selected));
-  }else if(picker.dataset.f140Custom!==undefined){
-   const n=Number(picker.value);
-   if(!Number.isInteger(n)||n<1||n>MAX_QUESTIONS)return;
-   setCountPrefs('custom',n);
+  if(picker.dataset.f140Count!==undefined){
+   const selected=String(picker.value||picker.dataset.f140Count);
+   if(selected==='custom'){
+    const wrap=picker.closest?.('.v141-count-control')?.querySelector?.('.v141-custom-wrap');
+    if(wrap){
+     wrap.hidden=false;
+     const input=wrap.querySelector?.('[data-f140-custom]');
+     input?.focus?.({preventScroll:true});input?.select?.();
+    }
+    return;
+   }
+   if(['10','15','20'].includes(selected)){
+    if(!applyQuestionCount(selected,Number(selected)))picker.value=countPrefs().preset;
+   }
+   return;
   }
-  play=null;removeFoundationOverlay();removeSummaryHost();refresh();
-  return;
+  if(picker.dataset.f140Custom!==undefined){
+   if(!applyQuestionCount('custom',Number(picker.value)))picker.value=countPrefs().value;
+   return;
+  }
  }
- const node=event.target.closest?.('[data-f34]');if(!node||!document.querySelector('.v34-workspace-shell'))return;
+ const node=event.target.closest?.('[data-f34]');
+ if(!node||!document.querySelector('.v34-workspace-shell'))return;
  localSwitch(node.dataset.f34,node.value);
 });
+
 if(typeof window!=='undefined'&&window.addEventListener)window.addEventListener('hashchange',()=>{removeSummaryHost();removeFoundationOverlay();removeFinishDock();});
 document.addEventListener('keydown',event=>{
  const modal=document.querySelector?.('[data-v107-dialog]');
