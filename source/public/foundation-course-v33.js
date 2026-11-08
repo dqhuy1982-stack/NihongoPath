@@ -482,10 +482,10 @@ function navigationFor(cfg){
  '<span class="v114-progress">'+(lesson&&lessonOrdinal>=0?'Bài '+String(lessonOrdinal+1).padStart(2,'0')+'/'+String(DATA.getLessonUnits(cfg.id).length).padStart(2,'0')+' · '+clean(lesson.title):stats.reviewed+' / '+stats.total+' mẫu đã luyện')+'</span></div>'+
 
  '<div class="v34-stagebar v113-stagebar" role="navigation" aria-label="Chuyển hoạt động trong '+clean(m.title)+'">'+tabs+'</div>'+
- '<div class="v34-options v113-options">'+(m.script==='both'?'<label>Bảng chữ <select data-f34="script" aria-label="Chọn bảng chữ">'+[['both','Cả hai'],['hira','Hiragana'],['kata','Katakana']].map(([id,t])=>'<option value="'+id+'" '+(cfg.script===id?'selected':'')+'>'+t+'</option>').join('')+'</select></label>':'')+
- (cfg.id==='small'&&group==='learn'?'<label>Chủ đề <select data-f34="small" aria-label="Chọn chủ đề chữ nhỏ">'+[['all','Tất cả'],['pause','っ / ッ'],['length','Âm dài ー'],['vowels','Nguyên âm nhỏ']].map(([id,t])=>'<option value="'+id+'" '+(cfg.group===id?'selected':'')+'>'+t+'</option>').join('')+'</select></label>':'')+
- (toReview&&group!=='practice'?'<button type="button" data-f34="mode" data-value="review" class="v37-review-chip">↻ Sổ ôn · '+toReview+' mẫu</button>':'')+
- '<span class="v34-hint">'+(group==='learn'?'':group==='flash'?'Nhớ trước, lật sau.':group==='mix'?'Kiểm tra tổng hợp và xem kết quả từng câu.':'Chọn bài trong mục lục bên trái.')+'</span></div>';
+ (m.script==='both'||toReview?'<details class="v126-learning-options"><summary>Tuỳ chọn học <span aria-hidden="true">⌄</span></summary><div class="v126-option-set">'+
+  (m.script==='both'?'<label>Bảng chữ <select data-f34="script" aria-label="Chọn bảng chữ">'+[['both','Cả hai'],['hira','Hiragana'],['kata','Katakana']].map(([id,t])=>'<option value="'+id+'" '+(cfg.script===id?'selected':'')+'>'+t+'</option>').join('')+'</select></label>':'')+
+  (toReview?'<button type="button" data-f34="mode" data-value="review" class="v37-review-chip">↻ Ôn '+toReview+' mẫu cần nhớ</button>':'')+
+  '</div></details>':'');
 }
 function coachSeen(){try{return localStorage.getItem('Horizon.KanaTapGuide.v1.'+learnerId())==='yes'}catch{return false}}
 function dismissCoach(){try{localStorage.setItem('Horizon.KanaTapGuide.v1.'+learnerId(),'yes')}catch(e){}const tip=document.querySelector('.v35-kana-guide');if(tip?.remove)tip.remove();const first=document.querySelector('.v35-first-kana');if(first?.classList?.remove)first.classList.remove('v35-first-kana')}
