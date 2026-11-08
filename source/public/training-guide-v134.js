@@ -26,11 +26,56 @@ const inlineSteps=[
  {selector:'.v134-inline-clear',title:'04 · Quay về phần tổng quan',
   desc:'Khi muốn bắt đầu lại từ gợi ý hoặc kiểm tra tổng hợp, chọn Về trang luyện tập. Menu dạng bài luôn ở bên trái.'}
 ];
-let tour=null,timer=null;
+let tour=null,timer=null,clockTick=null;
+const STEP_MS=8000;
 const seenSession=new Set();
 function pref(){try{return localStorage.getItem(key())||'first'}catch(e){return 'seen'}}
 function save(repeat){try{localStorage.setItem(key(),repeat?'repeat':'seen')}catch(e){}}
-function clearTimer(){if(timer!==null){clearTimeout(timer);timer=null}}
+function clearTimer(){
+ if(timer!==null){clearTimeout(timer);timer=null}
+ if(clockTick!==null){clearInterval(clockTick);clockTick=null}
+}
+function updateCountdown(){
+ const t=tour;if(!t)return;
+ const seconds=Math.ceil(Math.max(0,t.remainingMs)/1000);
+ const indicator=t.host.querySelector('.v135-guide-timer');
+ indicator.textContent=String(seconds).padStart(2,'0');
+ indicator.setAttribute('aria-label',t.paused?'Đã tạm dừng':'Còn '+seconds+' giây');
+ const percent=Math.max(0,Math.min(100,t.remainingMs/STEP_MS*100)).toFixed(1);
+ const ring=t.host.querySelector('.v135-guide-clock');
+ ring.style.setProperty('--progress',percent+'%');
+ const track=t.host.querySelector('.v135-guide-progress span');
+ track.style.width=percent+'%';
+ const pause=t.host.querySelector('[data-v134-action="pause"]');
+ pause.textContent=t.paused?'▶ Tiếp tục':'Ⅱ Tạm dừng';
+ pause.setAttribute('aria-pressed',String(t.paused));
+ t.host.querySelector('.v135-guide-clock-label').textContent=t.paused?'Đã tạm dừng':'Tự chuyển bước sau';
+}
+function scheduleCountdown(){
+ clearTimer();
+ const t=tour;
+ if(!t||t.confirm||t.paused)return;
+ t.deadline=Date.now()+t.remainingMs;
+ updateCountdown();
+ clockTick=setInterval(()=>{
+  if(tour!==t||t.confirm||t.paused)return;
+  t.remainingMs=Math.max(0,t.deadline-Date.now());
+  updateCountdown();
+  if(t.remainingMs>0)return;
+  clearTimer();
+  // Briefly show 00, then move; avoids abrupt countdown reset.
+  timer=setTimeout(()=>{
+   timer=null;if(tour!==t||t.confirm||t.paused)return;
+   if(t.step>=t.steps.length-1){end();return}
+   t.step++;t.remainingMs=STEP_MS;layOut();
+  },260);
+ },100);
+}
+function pauseCountdown(){
+ if(!tour||tour.paused)return;
+ if(clockTick!==null)tour.remainingMs=Math.max(0,tour.deadline-Date.now());
+ clearTimer();tour.paused=true;updateCountdown();
+}
 function end(savePreference=true){
  clearTimer();
  if(!tour)return;
@@ -48,6 +93,7 @@ function updateControls(){
 }
 function layOut(){
  if(!tour)return;
+ if(clockTick!==null&&!tour.paused&&!tour.confirm)tour.remainingMs=Math.max(0,tour.deadline-Date.now());
  const steps=tour.steps,step=steps[tour.step],small=(window.innerWidth||1024)<=620;
  const target=document.querySelector(small&&step.mobile?step.mobile:step.selector);
  if(!target){end();return}
@@ -65,7 +111,8 @@ function layOut(){
  const width=Math.min(360,w-24);
  const left=Math.max(12,Math.min(w-width-12,rect.left));
  const below=rect.bottom+16;
- const top=below+225<h?below:Math.max(12,rect.top-238);
+ const height=Math.max(275,card.getBoundingClientRect().height||305);
+ const top=below+height+12<h?below:Math.max(12,Math.min(h-height-12,rect.top-height-16));
  card.style.width=width+'px';card.style.left=left+'px';card.style.top=top+'px';
  tour.host.querySelector('.v134-guide-title').textContent=step.title;
  tour.host.querySelector('.v134-guide-body').textContent=step.desc;
@@ -75,16 +122,17 @@ function layOut(){
  tour.host.querySelector('.v134-guide-card').hidden=!!tour.confirm;
  tour.host.querySelector('.v134-guide-confirm').hidden=!tour.confirm;
  for(const box of tour.host.querySelectorAll('[data-v134-repeat]'))box.checked=tour.repeat;
+ for(const [i,bar] of [...tour.host.querySelectorAll('.v135-guide-steps span')].entries()){
+  bar.classList.toggle('is-complete',i<=tour.step);
+ }
  clearTimer();
- if(!tour.confirm)timer=setTimeout(()=>{
-  if(!tour||tour.confirm)return;
-  if(tour.step<steps.length-1){tour.step++;layOut()}
-  else end();
- },7200);
+ if(!tour.confirm&&!tour.paused)scheduleCountdown();
+ else updateCountdown();
 }
 function confirmExit(){
  if(!tour)return;
- tour.confirm=true;layOut();
+ if(clockTick!==null&&!tour.paused)tour.remainingMs=Math.max(0,tour.deadline-Date.now());
+ tour.confirm=true;clearTimer();layOut();
  tour.host.querySelector('[data-v134-action="continue"]')?.focus?.({preventScroll:true});
 }
 function start(manual=false){
@@ -103,7 +151,14 @@ function start(manual=false){
   '<div class="v134-guide-cursor" aria-hidden="true"><svg width="28" height="32" viewBox="0 0 28 32">'+
   '<path d="M2 1l2 26 7-7 6 10 5-3-6-10 10-2z" stroke="#704858" stroke-width="2" fill="#fff" stroke-linejoin="round"/></svg></div>'+
   '<section class="v134-guide-card"><div class="v134-guide-eyebrow"><span>HƯỚNG DẪN LUYỆN TẬP</span>'+
-  '<span class="v134-guide-progress"></span></div><h3 class="v134-guide-title"></h3><p class="v134-guide-body"></p>'+
+  '<span class="v134-guide-progress"></span></div>'+
+   '<div class="v135-guide-steps" aria-hidden="true"><span></span><span></span><span></span><span></span></div>'+
+   '<div class="v135-guide-clock-row">'+
+   '<div class="v135-guide-clock" style="--progress:100%" role="timer" aria-live="off"><span><strong class="v135-guide-timer">08</strong><small>giây</small></span></div>'+
+   '<div class="v135-guide-clock-detail"><span class="v135-guide-clock-label">Tự chuyển bước sau</span>'+
+   '<div class="v135-guide-progress" aria-hidden="true"><span></span></div></div>'+
+   '<button type="button" class="v135-guide-pause" data-v134-action="pause" aria-pressed="false">Ⅱ Tạm dừng</button></div>'+
+   '<h3 class="v134-guide-title"></h3><p class="v134-guide-body"></p>'+
   '<label class="v134-guide-preference"><input type="checkbox" data-v134-repeat> Tự mở hướng dẫn lần sau</label>'+
   '<div class="v134-guide-buttons"><button type="button" data-v134-action="ask-exit">Thoát</button>'+
   '<button type="button" data-v134-action="prev">‹ Trước</button>'+
@@ -113,7 +168,7 @@ function start(manual=false){
   '<label class="v134-guide-preference"><input type="checkbox" data-v134-repeat> Tự mở hướng dẫn lần sau</label>'+
   '<div class="v134-guide-buttons"><button type="button" data-v134-action="exit">Thoát hướng dẫn</button>'+
   '<button type="button" class="v134-guide-next" data-v134-action="continue">Tiếp tục hướng dẫn</button></div></section>';
- tour={host,step:0,confirm:false,repeat:pref()==='repeat',
+ tour={host,step:0,remainingMs:STEP_MS,deadline:0,paused:false,confirm:false,repeat:pref()==='repeat',
   steps:document.querySelector('.v134-inline-training')?inlineSteps:steps};
  document.body.appendChild(host);
  host.addEventListener('change',event=>{
@@ -131,8 +186,13 @@ function start(manual=false){
    host.querySelector('[data-v134-action="next"]')?.focus?.({preventScroll:true});return}
   if(action==='exit'){end();return}
   if(tour.confirm)return;
-  if(action==='prev'){tour.step=Math.max(0,tour.step-1);layOut();return}
-  if(action==='next'){if(tour.step===steps.length-1)end();else{tour.step++;layOut()}}
+  if(action==='pause'){
+   if(tour.paused){tour.paused=false;layOut()}
+   else pauseCountdown();
+   return;
+  }
+  if(action==='prev'){tour.step=Math.max(0,tour.step-1);tour.remainingMs=STEP_MS;layOut();return}
+  if(action==='next'){if(tour.step===tour.steps.length-1)end();else{tour.step++;tour.remainingMs=STEP_MS;layOut()}}
  });
  layOut();
  host.querySelector('[data-v134-action="next"]')?.focus?.({preventScroll:true});
@@ -152,6 +212,9 @@ document.addEventListener('keydown',event=>{
  if(tour&&event.key==='Escape'){event.preventDefault();confirmExit()}
 },true);
 window.addEventListener('resize',()=>{if(tour)layOut()});
+document.addEventListener('visibilitychange',()=>{
+ if(tour&&document.hidden&&!tour.paused){pauseCountdown()}
+});
 window.addEventListener('hashchange',()=>{if(tour)end(false)});
 window.NPTrainingGuide={maybeStart,start,isActive:()=>!!tour};
 })();
