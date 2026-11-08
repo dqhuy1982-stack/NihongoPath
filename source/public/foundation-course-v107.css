@@ -1498,3 +1498,13 @@ body > .v120-preflight-host .v38-dialog-spec>div{
  .v34-studying .v140-count-picker label{font-size:10px}
  .v34-studying .v140-count-picker small{flex-basis:100%;max-width:none}
 }
+
+
+/* v1.40 · Recorded result metadata stays secondary to the actual score. */
+.v34-studying .v140-finish-meta{
+ display:inline-flex;align-items:center;flex-wrap:wrap;
+ gap:5px;font-size:11px;line-height:1.55;font-weight:700;
+ color:var(--v33-ink,#754b5c);margin:9px 0 11px;
+ padding:7px 10px;border:1px solid var(--v33-line,#e5d0d5);
+ border-radius:8px;background:color-mix(in srgb,var(--v33-soft,#f5e9eb) 37%,var(--v33-paper,#fffaf9))
+}
