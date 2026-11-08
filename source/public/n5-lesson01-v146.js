@@ -462,12 +462,44 @@ coursePage=function(id){
 document.addEventListener('click',event=>{
  if(!document.querySelector?.('.n5l-root'))return;
  const target=event.target;
+ const characterOpen=target.closest?.('[data-n5l-character]');
+ if(characterOpen){
+  event.preventDefault();const id=characterOpen.dataset.n5lCharacter;
+  if(WORLD?.character(id)){
+   activeCharacter=id;activeNote=null;draw();
+   if(typeof queueMicrotask==='function')queueMicrotask(()=>document.querySelector?.('.n5w-profile')?.focus?.());
+  }return;
+ }
+ const characterClose=target.closest?.('[data-n5l-close-character]');
+ if(characterClose||target.matches?.('[data-n5l-modal-backdrop]')){
+  event.preventDefault();const id=activeCharacter;activeCharacter=null;draw();
+  if(id&&typeof queueMicrotask==='function')queueMicrotask(()=>document.querySelector?.('[data-n5l-character="'+id+'"]')?.focus?.());
+  return;
+ }
+ const noteOpen=target.closest?.('[data-n5l-note]');
+ if(noteOpen){
+  event.preventDefault();const id=noteOpen.dataset.n5lNote;
+  if(WORLD?.note(id)){activeNote=activeNote===id?null:id;draw();}
+  return;
+ }
+ const noteClose=target.closest?.('[data-n5l-note-close]');
+ if(noteClose){event.preventDefault();activeNote=null;draw();return}
+ const substituteButton=target.closest?.('[data-n5l-sub-answer]');
+ if(substituteButton){event.preventDefault();substitution(substituteButton.dataset.n5lSubScene,
+  Number(substituteButton.dataset.n5lSubAnswer));return}
+ const substituteRetry=target.closest?.('[data-n5l-sub-retry]');
+ if(substituteRetry){event.preventDefault();substituteFeedback.delete(sceneKey(substituteRetry.dataset.n5lSubRetry));draw();return}
+ const orderingButton=target.closest?.('[data-n5l-order-answer]');
+ if(orderingButton){event.preventDefault();orderSentence(orderingButton.dataset.n5lOrderScene,
+  Number(orderingButton.dataset.n5lOrderAnswer));return}
+ const orderRetry=target.closest?.('[data-n5l-order-reset]');
+ if(orderRetry){event.preventDefault();orderSteps.delete(sceneKey(orderRetry.dataset.n5lOrderReset));draw();return}
  const sceneNav=target.closest?.('[data-n5l-scene],[data-n5l-scene-reference]');
  if(sceneNav){
   event.preventDefault();
   const id=sceneNav.dataset.n5lScene||sceneNav.dataset.n5lSceneReference;
   const index=LINKED.scenes.findIndex(x=>x.id===id);
-  if(index>=0){sceneIndex=index;chapter='scenes';active='learn';alertText='';draw();}
+  if(index>=0){sceneIndex=index;chapter='scenes';active='learn';activeNote=null;activeCharacter=null;alertText='';draw();}
   return;
  }
  const sceneChoice=target.closest?.('[data-n5l-scene-answer]');
@@ -501,10 +533,10 @@ document.addEventListener('click',event=>{
   return;
  }
  const panel=target.closest?.('[data-n5l-panel]');
- if(panel){event.preventDefault();active=panel.dataset.n5lPanel;alertText='';draw();return}
+ if(panel){event.preventDefault();active=panel.dataset.n5lPanel;activeCharacter=null;activeNote=null;alertText='';draw();return}
  const section=target.closest?.('[data-n5l-section]');
  if(section){
-  event.preventDefault();chapter=section.dataset.n5lSection;
+  event.preventDefault();activeNote=null;activeCharacter=null;chapter=section.dataset.n5lSection;
   if(sections.some(x=>x[0]===chapter))write(s=>{if(!s.viewed.includes(chapter))s.viewed.push(chapter)});
   draw();return;
  }
@@ -521,6 +553,21 @@ document.addEventListener('click',event=>{
    if(run.index>=run.questions.length-1)finish();else{run.index++;alertText='';draw();}
   }return}
 });
+document.addEventListener('keydown',event=>{
+ if(!activeCharacter||!document.querySelector?.('.n5w-profile'))return;
+ if(event.key==='Escape'){
+  event.preventDefault();const old=activeCharacter;activeCharacter=null;draw();
+  if(typeof queueMicrotask==='function')
+   queueMicrotask(()=>document.querySelector?.('[data-n5l-character="'+old+'"]')?.focus?.());
+ }else if(event.key==='Tab'){
+  const dialog=document.querySelector?.('.n5w-profile');
+  const focusables=Array.from(dialog?.querySelectorAll?.('button:not([disabled]),a[href]')||[]);
+  if(focusables.length<1)return;
+  const first=focusables[0],last=focusables[focusables.length-1];
+  if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}
+  else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}
+ }
+});
 document.addEventListener('input',event=>{
  if(!document.querySelector?.('.n5l-root'))return;
  const field=event.target?.closest?.('textarea[data-n5l-compose]');
@@ -533,11 +580,12 @@ if(decodeURIComponent(location.hash.replace(/^#\/?/,''))==='course/N5/lesson/01'
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});
  else if(typeof queueMicrotask==='function')queueMicrotask(refresh);
 }
-window.NPN5Lesson01=Object.freeze({version:'v147',page,status,read,
+window.NPN5Lesson01=Object.freeze({version:'v148',page,status,read,
  data:()=>D,route,select:section=>{if(sections.some(x=>x[0]===section)){active='learn';chapter=section;}},
  start:kind=>{if(['practice','check','review'].includes(kind))start(kind)},
  answer,finish,session:()=>run,audioSupported,
  scenes:()=>LINKED.scenes.map(x=>({id:x.id,title:x.title})),sceneCount,
  chooseSceneAnswer,openScene:id=>{const i=LINKED.scenes.findIndex(x=>x.id===id);if(i>=0){sceneIndex=i;chapter='scenes';active='learn';}},
- scenePage,progressTop});
+ scenePage,progressTop,recordMiniActivity,substitution,orderSentence,
+ world:()=>WORLD});
 })();
