@@ -361,10 +361,14 @@ test('Only formal mixed exam opens guidance and clock',()=>{
  assert.ok(s.startedAt>0);
  assert.match(h.ui.page(route),/data-f37-timer/);
 });
-test('Refresh of deep lesson route triggers learning-hub re-render after scripts initialize',()=>{
+test('v1.37 hard reload defers initial learning render until all scripts are installed',()=>{
  const hub=load('learning-hub-v25.js');
- assert.ok(hub.includes("location.hash.startsWith('#learn/foundation/')"));
- assert.ok(hub.includes("queueMicrotask(()=>render(false))"));
+ const legacy=load('learning-hub-v23.js');
+ assert.match(hub,/function refreshAfterLearningBootstrap\(/);
+ assert.match(hub,/document.addEventListener\('DOMContentLoaded',refreshAfterLearningBootstrap/);
+ assert.match(hub,/destination.startsWith\('learn\/'\)/);
+ assert.match(legacy,/if\(!window.NPHorizonV25\)render\(false\)/);
+ assert.doesNotMatch(legacy,/queueMicrotask\(function\(\)\{render\(false\)\}\)/);
  const code=load('foundation-course-v33.js');
  assert.ok(code.includes("history.replaceState(null,'','#'+next)"));
 });
@@ -373,7 +377,7 @@ test('Global UI footer shows unobtrusive v1.01 beside HORIZON tagline',()=>{
  const app=load('app.js'),hub=load('learning-hub-v25.js');
  assert.ok(app.includes('Học theo cách của bạn'));
  assert.ok(app.includes('horizon-brand-version'));
- assert.ok(app.includes('v1.36'));
+ assert.ok(app.includes('v1.37'));
  assert.ok(!app.includes('class="horizon-ui-version"'));
  assert.ok(load('index.html').includes('horizon-brand-version.css?v=106'));
  assert.ok(!hub.includes('HORIZON · Learning Hub v33 · Recorded progress'));
@@ -423,7 +427,7 @@ test('v1.01 offers three hints and records assisted correct answers for review',
 });
 test('v1.01 includes answer audio and precise connected-book CSS',()=>{
  const app=load('app.js'),html=load('index.html'),css=load('foundation-course-v101.css');
- assert.ok(app.includes('v1.36'));
+ assert.ok(app.includes('v1.37'));
  assert.ok(html.includes('foundation-course-v101.css?v=101'));
  assert.ok(html.includes('foundation-course-v102.css?v=102'));
  assert.ok(html.includes('foundation-course-v103.css?v=103'));
@@ -433,7 +437,7 @@ test('v1.01 includes answer audio and precise connected-book CSS',()=>{
  assert.ok(html.includes('foundation-curriculum-v33.js?v=124'));
  assert.ok(html.includes('foundation-course-v33.js?v=135'));
  assert.ok(html.includes('foundation-course-v107.css?v=131'));
- assert.ok(load('app.js').includes('v1.36</small>'));
+ assert.ok(load('app.js').includes('v1.37</small>'));
  assert.ok(css.includes('v101-match-grid'));
  assert.ok(css.includes('[data-connected="yes"]'));
 });
@@ -557,7 +561,7 @@ test('v1.05 auto answer audio can be turned off without disabling manual listeni
  h.click('feedback-audio');
  assert.ok(h.audioFiles.length>0,'manual answer playback is still available');
 });
-test('v1.36 central Practice replaces deeply nested exercise picker',()=>{
+test('v1.37 central Practice replaces deeply nested exercise picker',()=>{
  const h=harness(),base='learn/foundation/hiragana/unit-1';
  h.location.hash='#'+base+'/practice';
  const course=h.ui.page(base+'/practice');
@@ -699,8 +703,8 @@ test('The learning UI does not alter the existing lesson engine or global learne
  assert.ok(html.includes('foundation-course-v39.css?v=39'));
  assert.ok(html.includes('foundation-course-v40.css?v=100'));
  assert.ok(html.includes('foundation-course-v101.css?v=101'));
- assert.ok(html.includes('app.js?v=136'));
- assert.ok(html.includes('learning-hub-v25.js?v=136'));
+ assert.ok(html.includes('app.js?v=137'));
+ assert.ok(html.includes('learning-hub-v25.js?v=137'));
  assert.ok(html.includes('foundation-course-v33.js?v=135'));
  assert.ok(html.includes('foundation-course-v33.js?v=135'));
  assert.ok(load('foundation-course-v33.js').includes('data-f38="start"'));
@@ -1127,8 +1131,8 @@ test('v1.25 catalogue uses single stable Kana glyphs and legible primary button'
 });
 
 
-// v1.36: louder, peak-normalized feedback WAV; original audio behavior from v1.27. on a direct graded click, never Japanese reading.
-test('v1.36 correct/wrong have audible media feedback and independent manual pronunciation',()=>{
+// v1.37: louder, peak-normalized feedback WAV; original audio behavior from v1.27. on a direct graded click, never Japanese reading.
+test('v1.37 correct/wrong have audible media feedback and independent manual pronunciation',()=>{
  const h=harness(),route='learn/foundation/hiragana/a/quiz';
  h.setLegacyAudioPref(false); // v1.26 incorrectly read this old key.
  h.location.hash='#'+route;h.ui.page(route);h.start();
@@ -1151,7 +1155,7 @@ test('v1.36 correct/wrong have audible media feedback and independent manual pro
  h.click('feedback-audio');
  assert.equal(h.audioFiles.filter(x=>x.includes('kana-audio')).length,2);
 });
-test('v1.36 word-builder plays once on grading, not while selecting Kana',()=>{
+test('v1.37 word-builder plays once on grading, not while selecting Kana',()=>{
  const h=harness(),route='learn/foundation/small/pause/build';
  h.location.hash='#'+route;h.ui.page(route);h.start();
  const s=h.ui.session(),word=s.cards[0],glyphs=Array.from(word.glyph);
@@ -1164,7 +1168,7 @@ test('v1.36 word-builder plays once on grading, not while selecting Kana',()=>{
  assert.deepEqual(h.audioFiles,['assets/feedback/correct.wav?v=2']);
  assert.match(h.ui.page(route),/data-f33="feedback-audio"/);
 });
-test('v1.36 feedback assets are standard little-endian mono PCM WAV files',()=>{
+test('v1.37 feedback assets are standard little-endian mono PCM WAV files',()=>{
  for(const name of ['correct','incorrect']){
   const src=readFileSync(new URL('assets/feedback/'+name+'.wav',root));
   assert.equal(src.toString('ascii',0,4),'RIFF');
@@ -1184,7 +1188,7 @@ test('v1.36 feedback assets are standard little-endian mono PCM WAV files',()=>{
  }
 });
 
-test('v1.36 lesson action paths retain exact filtered scope without nested menus',()=>{
+test('v1.37 lesson action paths retain exact filtered scope without nested menus',()=>{
  const h=harness(),base='learn/foundation/hiragana/unit-1';
  h.location.hash='#'+base+'/practice';
  const page=h.ui.page(base+'/practice');
@@ -1197,7 +1201,7 @@ test('v1.36 lesson action paths retain exact filtered scope without nested menus
   assert.match(output,/href="#learn\/training\/foundation\/hiragana\/unit-1\/hira">‹ Dạng bài/);
  }
 });
-test('v1.36 global Practice filters Foundation chapters, units, script and N5 truthfully',()=>{
+test('v1.37 global Practice filters Foundation chapters, units, script and N5 truthfully',()=>{
  const h=harness(),window={NPFoundationCurriculum:h.data,NPFoundationCourse:h.ui};
  const hooks={},map=new Map(),localStorage={getItem:key=>map.get(key)||null,setItem:(key,val)=>map.set(key,val)};
  const location={hash:'#learn/training/foundation/hiragana/unit-1/hira'};
@@ -1239,7 +1243,7 @@ test('v1.36 global Practice filters Foundation chapters, units, script and N5 tr
  assert.equal(window.__training.route('lesson','n5-demonstratives',first),'learn/training/N5/n5-demonstratives');
 });
 
-test('v1.36 remembers compact filter expansion and last chosen skill by profile',()=>{
+test('v1.37 remembers compact filter expansion and last chosen skill by profile',()=>{
  const h=harness(),window={NPFoundationCurriculum:h.data,NPFoundationCourse:h.ui};
  const storage=new Map(),localStorage={getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)};
  const location={hash:'#learn/training/foundation/hiragana/unit-1/hira'},hooks={};let person='demo-a';
@@ -1264,7 +1268,7 @@ test('v1.36 remembers compact filter expansion and last chosen skill by profile'
  assert.match(html,/Luyện nhận diện chữ/);
 });
 
-test('v1.36 left exercise menu navigates directly and mobile chooser stays compact',()=>{
+test('v1.37 left exercise menu navigates directly and mobile chooser stays compact',()=>{
  const h=harness(),window={NPFoundationCurriculum:h.data,NPFoundationCourse:h.ui};
  const location={hash:'#learn/training/foundation/hiragana/unit-1/hira'};
  const script=load('learning-hub-v25.js').replace(/\}\)\(\);\s*$/,'window.__v133=trainingTab;})();');
@@ -1292,7 +1296,7 @@ test('v1.36 left exercise menu navigates directly and mobile chooser stays compa
  assert.match(css,/\.v133-side-menu\{display:none!important\}/);
 });
 
-test('v1.36 native Foundation practice renders and records answers inline',()=>{
+test('v1.37 native Foundation practice renders and records answers inline',()=>{
  const h=harness(),base='learn/training/foundation/hiragana/unit-1/hira';
  h.location.hash='#'+base+'/quiz';
  const markup=h.ui.embeddedPractice();
@@ -1310,7 +1314,7 @@ test('v1.36 native Foundation practice renders and records answers inline',()=>{
  h.location.hash='#'+base+'/mix';
  assert.match(h.ui.embeddedPractice(),/v134-inline-stage/);
 });
-test('v1.36 same-page route preserves sidebar and guided-tour controls',()=>{
+test('v1.37 same-page route preserves sidebar and guided-tour controls',()=>{
  const h=harness(),window={NPFoundationCurriculum:h.data,NPFoundationCourse:h.ui};
  h.location.hash='#learn/training/foundation/hiragana/unit-1/hira/quiz';
  const code=load('learning-hub-v25.js').replace(/\}\)\(\);\s*$/,'window.__inlineV134=trainingTab;})();');
@@ -1341,7 +1345,7 @@ test('v1.36 same-page route preserves sidebar and guided-tour controls',()=>{
  assert.match(guide,/v134-guide-cursor/);
 });
 
-test('v1.36 the scope form aligns its read-only Kana field with dropdown inputs',()=>{
+test('v1.37 the scope form aligns its read-only Kana field with dropdown inputs',()=>{
  const h=harness(),window={NPFoundationCurriculum:h.data,NPFoundationCourse:h.ui};
  const location={hash:'#learn/training/foundation/hiragana/unit-1/hira'};
  const src=load('learning-hub-v25.js').replace(/\}\)\(\);\s*$/,'window.__v135=trainingTab;})();');
@@ -1358,7 +1362,7 @@ test('v1.36 the scope form aligns its read-only Kana field with dropdown inputs'
  assert.match(css,/\.v132-scope \.v131-fixed>strong/);
  assert.match(css,/height:44px/);
 });
-test('v1.36 the interactive guide counts eight to zero and preserves remaining time when paused',()=>{
+test('v1.37 the interactive guide counts eight to zero and preserves remaining time when paused',()=>{
  const src=load('training-guide-v134.js'),css=load('learning-hub-v30.css');
  assert.match(src,/const STEP_MS=8000/);
  assert.match(src,/v135-guide-timer/);
@@ -1378,7 +1382,7 @@ test('v1.36 the interactive guide counts eight to zero and preserves remaining t
  assert.match(css,/v135-guide-pause/);
 });
 
-test('v1.36 completed training guide highlights only the scope selector and guide dialogs point at controls',()=>{
+test('v1.37 completed training guide highlights only the scope selector and guide dialogs point at controls',()=>{
  const source=load('training-guide-v134.js'),css=load('learning-hub-v30.css');
  assert.match(source,/if\(reason==='complete'\)spotlightScope\(\)/);
  assert.match(source,/end\('complete'\)/);
@@ -1393,7 +1397,7 @@ test('v1.36 completed training guide highlights only the scope selector and guid
  assert.match(css,/data-bubble-side="above"/);
  assert.match(css,/prefers-reduced-motion:reduce/);
 });
-test('v1.36 post-guide spotlight is triggered on completion but not on exit',()=>{
+test('v1.37 post-guide spotlight is triggered on completion but not on exit',()=>{
  const guide=load('training-guide-v134.js').replace(/\}\)\(\);\s*$/,
   'window.__tourUnit={end,spotlightScope,clearScopeHint,setTour:t=>tour=t};})();');
  const classes=()=>{const values=new Set();return {add:n=>values.add(n),remove:n=>values.delete(n),contains:n=>values.has(n)}};
@@ -1426,4 +1430,38 @@ test('v1.36 post-guide spotlight is triggered on completion but not on exit',()=
  api.clearScopeHint();
  assert.equal(root.classList.contains('v136-post-tour-active'),false);
  assert.ok(removed.includes('bubble'));
+});
+
+test('v1.37 cold reload restores Training instead of legacy learning interface',()=>{
+ const h=harness();
+ function reload(target){
+  const window={NPFoundationCurriculum:h.data,NPFoundationCourse:h.ui};
+  const listeners={},calls=[];
+  const document={readyState:'loading',addEventListener:(name,handler)=>{(listeners[name]??=[]).push(handler)}};
+  const location={hash:'#'+target};
+  const ctx={window,document,location,localStorage:{getItem:()=>null,setItem:()=>{}},
+   route:()=>location.hash.slice(1),P:()=>({id:'demo-a',goal:'Nền tảng',name:'Learner'}),
+   learnPage:()=>'<p>OLD LEARNING SCREEN</p>',coursePage:()=>'',titleOf:r=>r,
+   render:(scroll)=>calls.push({scroll,html:ctx.learnPage()}),
+   icon:()=>'',Locale:{t:x=>x}};
+  runInNewContext(load('learning-hub-v25.js'),ctx);
+  assert.equal(calls.length,0,'do not render before DOMContentLoaded');
+  assert.equal(listeners.DOMContentLoaded?.length,1,'register exactly one bootstrap');
+  listeners.DOMContentLoaded[0]();
+  assert.equal(calls.length,1,'rerender once after dependent scripts are ready');
+  assert.equal(calls[0].scroll,false,'preserve hash and scroll');
+  assert.doesNotMatch(calls[0].html,/OLD LEARNING SCREEN/);
+  assert.equal(location.hash,'#'+target,'refresh must not modify original hash');
+  return calls[0].html;
+ }
+ const overview=reload('learn/overview');
+ assert.match(overview,/v25-wrap/);
+ const training=reload('learn/training');
+ assert.match(training,/KHÔNG GIAN LUYỆN TẬP/);
+ assert.match(training,/v133-two-column/);
+ assert.match(training,/v133-side-menu/);
+ assert.doesNotMatch(training,/class="lh-tabs"/);
+ const deep=reload('learn/training/foundation/hiragana/unit-1/hira/quiz');
+ assert.match(deep,/v134-inline-training/);
+ assert.match(deep,/v34-workspace-shell/);
 });
