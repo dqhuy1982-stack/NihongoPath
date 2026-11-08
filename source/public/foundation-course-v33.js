@@ -20,7 +20,7 @@ function current(){
  const group=(inline?bits[4]:bits[3])||(mod?initialGroup(mod):'');
  const legacyMode=(inline?bits[6]:bits[4])||'learn';
  const mode=({game:'match','game-listen':'listen-match','game-build':'build'})[legacyMode]||legacyMode;
- const script=bits[5]||(mod?.script==='hira'?'hira':mod?.script==='kata'?'kata':'both');
+ const script=bits[5]||'both';
  return {id,mod,group:mod&&(group==='all'||mod.groups.some(x=>x.id===group)||!!DATA.findLessonUnit(id,group))?group:mod?initialGroup(mod):'',mode:modeNames[mode]?mode:'learn',script:['hira','kata','both'].includes(script)?script:'both'};
 }
 function learnerId(){try{return String(P()?.id||'guest').replace(/[^a-z0-9_-]/gi,'_')}catch{return 'guest'}}
