@@ -97,6 +97,21 @@ function attemptStatus(id,unit,script='both'){
   bestTest:tests.length?Math.max(...tests.map(x=>x.percent)):null,
   lastPractice:practice.at(-1)||null,lastTest:tests.at(-1)||null,history:entries.slice(-30)};
 }
+/* v1.41 · Semantic scores are per attempt, never permanent mastery.
+   >=90: Tốt, 80–89: Đạt, <80: Chưa đạt. These are HORIZON ratings. */
+function resultGrade(percent){
+ const score=Math.max(0,Math.min(100,Math.round(Number(percent)||0)));
+ return score>=90?{tone:'good',label:'Tốt',icon:'✦',score}:
+  score>=80?{tone:'pass',label:'Đạt',icon:'✓',score}:
+  {tone:'retry',label:'Chưa đạt',icon:'↻',score};
+}
+function gradeBadge(percent,context='test'){
+ const g=resultGrade(percent),label=g.tone==='retry'&&context==='practice'?'Cần ôn thêm':g.label;
+ return '<span class="v141-grade-badge is-'+g.tone+'" role="status" aria-label="'+label+' · '+g.score+' phần trăm">'+
+ '<span class="v141-grade-icon" aria-hidden="true">'+g.icon+'</span><strong>'+label+
+ '</strong><span class="v141-grade-score">'+g.score+'%</span></span>';
+}
+
 function saveAttempt(cfg,s){
  if(s.attemptRecorded||!s.finished)return;
  const total=s.questions?.length||s.cards?.length||0;if(!total)return;
@@ -769,7 +784,9 @@ function scopeAfterResult(cfg,correct,total,compact=false){
 function summaryView(cfg,s){
  const total=s.questions?.length||0;
  const avg=s.roundMs?.length?timeLabel(s.roundMs.reduce((a,b)=>a+b,0)/s.roundMs.length):'—';
- return '<section class="v33-pane v33-summary"><p class="v33-eyebrow">KẾT QUẢ LƯỢT LUYỆN</p><h3>Hoàn thành bài kiểm tra</h3><div class="v33-summary-score">'+s.correct+' <span>/ '+total+' câu đúng</span></div>'+
+ return '<section class="v33-pane v33-summary v141-graded-summary"><p class="v33-eyebrow">KẾT QUẢ LƯỢT LUYỆN</p><h3>'+(cfg.mode==='mix'?'Hoàn thành bài kiểm tra':'Hoàn thành lượt luyện')+'</h3><div class="v33-summary-score">'+s.correct+' <span>/ '+total+' câu đúng</span></div>'+
+ '<div class="v141-grade-row">'+gradeBadge(total?s.correct/total*100:0,cfg.mode==='mix'?'test':'practice')+
+ '<small>Đánh giá lượt vừa làm · không phải chứng nhận ghi nhớ lâu dài</small></div>'+
  (cfg.mode==='mix'?'<div class="v37-summary-stats"><span>Đúng chậm: <strong>'+s.slow+'</strong></span><span>Sai: <strong>'+s.errors+'</strong></span><span>TB phản hồi: <strong>'+avg+'</strong></span></div>':'')+
  '<p class="v140-finish-meta">'+(cfg.mode==='mix'?(total&&s.correct/total>=.8?'✓ Kiểm tra đạt':'◷ Cần kiểm tra lại'):'✓ Đã hoàn tất lượt luyện')+
  ' · Lượt '+attemptStatus(cfg.id,cfg.group,cfg.script).totalAttempts+' đã lưu · '+(total?Math.round(s.correct/total*100):0)+'%'+
@@ -781,7 +798,7 @@ function summaryView(cfg,s){
 
 function buildView(cfg,s){
  if(!s.cards.length)return noData('Chưa đủ từ ngữ cảnh để ghép chữ.');
- if(s.finished||s.index>=s.cards.length)return '<section class="v33-pane v33-summary"><p class="v33-eyebrow">XẾP CHỮ · TỔNG KẾT</p><h3>Đã hoàn thành lượt ghép chữ</h3><div class="v33-summary-score">'+s.correct+' <span>/ '+s.cards.length+' từ đúng</span></div><p>Luyện lại những từ sai sau khi xem mặt chữ và cách đọc.</p><div class="v33-pane-actions"><button data-f33="restart" class="v33-primary">Ghép lại từ đầu</button></div><p class="v140-finish-meta">✓ Đã lưu lượt ghép thứ '+attemptStatus(cfg.id,cfg.group,cfg.script).totalAttempts+'</p>'+scopeAfterResult(cfg,s.correct,s.cards.length)+'</section>';
+ if(s.finished||s.index>=s.cards.length)return '<section class="v33-pane v33-summary"><p class="v33-eyebrow">XẾP CHỮ · TỔNG KẾT</p><h3>Đã hoàn thành lượt ghép chữ</h3><div class="v33-summary-score">'+s.correct+' <span>/ '+s.cards.length+' từ đúng</span></div><p>Luyện lại những từ sai sau khi xem mặt chữ và cách đọc.</p><div class="v33-pane-actions"><button data-f33="restart" class="v33-primary">Ghép lại từ đầu</button></div><div class="v141-grade-row">'+gradeBadge(s.cards.length?s.correct/s.cards.length*100:0,'practice')+'</div><p class="v140-finish-meta">✓ Đã lưu lượt ghép thứ '+attemptStatus(cfg.id,cfg.group,cfg.script).totalAttempts+'</p>'+scopeAfterResult(cfg,s.correct,s.cards.length)+'</section>';
  const word=s.cards[s.index],selected=s.selected.map(i=>s.tileOrder[i].glyph).join('');
  return '<section class="v33-pane"><div class="v33-pane-head"><div><p class="v33-eyebrow">GHÉP CHỮ THÀNH TỪ</p><h3>Xếp Kana theo đúng thứ tự</h3><p>Nhìn nghĩa tiếng Việt, chạm các mảnh chữ để ghép thành từ Nhật. Không cần kéo thả.</p></div><div class="v37-head-meta">'+countControls(s)+tag('Từ '+(s.index+1)+' / '+s.cards.length)+(cfg.mode==='mix'?clock(s,!!s.answer):'')+'</div></div>'+
  '<div class="v33-build-clue"><span>NGHĨA TIẾNG VIỆT</span><strong>'+clean(word.vi)+'</strong></div>'+
@@ -1268,5 +1285,5 @@ document.addEventListener('click',event=>{
  if(!document.querySelector('.v33-foundation'))return;
  event.preventDefault();perform(b);
 });
-window.NPFoundationCourse={version:'v39',page,embeddedPractice,store,stats:countStats,path,questionFor,choosePool,nextPracticeScope,attemptStatus,runHistory,countPrefs,session:()=>play};
+window.NPFoundationCourse={version:'v39',page,embeddedPractice,store,stats:countStats,path,questionFor,choosePool,nextPracticeScope,attemptStatus,resultGrade,runHistory,countPrefs,session:()=>play};
 })();
