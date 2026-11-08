@@ -270,6 +270,7 @@ function foundationModuleCatalogue(){
  const firstPending=modules.flatMap(m=>m.groups.map(g=>({m,g,cards:foundationTopics(m,g,data)})))
    .find(({cards})=>cards.some(card=>!(progress[card.id]?.attempts>0)));
  const nextPath=firstPending?engine.path(firstPending.m.id,firstPending.g.id,'learn'):engine.path(modules[0].id,modules[0].groups[0].id,'learn');
+ const initialModule=firstPending?.m.id||modules[0].id;
  return '<section class="v121-foundation-catalog" aria-labelledby="v121-heading">'+
   '<div class="v121-catalog-heading v123-catalog-heading"><div><p class="v121-eyebrow">FOUNDATION · '+modules.length+' CHẶNG · '+allCount+' NHÓM BÀI</p>'+
   '<h3 id="v121-heading">Chọn bài để học</h3></div></div>'+
@@ -278,12 +279,12 @@ function foundationModuleCatalogue(){
   '<a class="v121-continue" href="#'+nextPath+'">Tiếp tục học →</a></div>'+
   '<p class="v121-search-status" data-v121-status role="status" aria-live="polite" hidden></p>'+
   '<div class="v123-catalog-layout"><nav class="v123-chapter-tabs" aria-label="Chọn chặng Nền tảng">'+records.map(({m,index,groups})=>
-    '<button type="button" class="v123-chapter-tab'+(index===0?' is-active':'')+'" data-v123-select="'+safe(m.id)+'" aria-controls="v123-panel-'+safe(m.id)+'" aria-current="'+(index===0?'true':'false')+'">'+
+    '<button type="button" class="v123-chapter-tab'+(m.id===initialModule?' is-active':'')+'" data-v123-select="'+safe(m.id)+'" aria-controls="v123-panel-'+safe(m.id)+'" aria-current="'+(m.id===initialModule?'true':'false')+'">'+
     '<span class="v123-chapter-number">'+String(index+1).padStart(2,'0')+'</span>'+
     '<span class="v123-chapter-label">'+safe(m.title.replace(/^\d+\s*[·.:-]\s*/,''))+'</span>'+
     '<small>'+groups.length+' bài</small></button>').join('')+'</nav>'+
    '<div class="v123-topic-panes">'+records.map(({m,index,groups})=>
-    '<section class="v123-topic-pane" id="v123-panel-'+safe(m.id)+'" data-v123-pane="'+safe(m.id)+'" '+(index===0?'':'hidden')+'>'+
+    '<section class="v123-topic-pane" id="v123-panel-'+safe(m.id)+'" data-v123-pane="'+safe(m.id)+'" '+(m.id===initialModule?'':'hidden')+'>'+
     '<div class="v123-pane-heading"><div><strong>'+safe(m.title.replace(/^\d+\s*[·.:-]\s*/,''))+'</strong><p>'+safe(m.subtitle)+'</p></div>'+
     '<a href="#'+engine.path(m.id,'all','learn')+'">Học cả chặng ↗</a></div>'+
     '<div class="v123-topic-list">'+groups.join('')+'</div></section>').join('')+'</div></div>'+
