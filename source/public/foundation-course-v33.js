@@ -855,7 +855,7 @@ function modulePage(cfg){
 }
 function embeddedPractice(){
  const cfg=current();
- if(!cfg.mod||!PRACTICE_MODES.some(([mode])=>mode===cfg.mode))return '';
+ if(!cfg.mod||!([...PRACTICE_MODES.map(([mode])=>mode),'flash','mix'].includes(cfg.mode)))return '';
  rememberPracticeMode(cfg.mode);
  scheduleFoundationOverlay();scheduleMatchLines();scheduleFinishDock();scheduleSummaryHost();tickClock();
  return '<div class="v34-workspace-shell">'+workspace(cfg,true)+'</div>';
