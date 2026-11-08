@@ -1386,3 +1386,63 @@ body > .v120-preflight-host .v38-dialog-spec>div{
 @media(prefers-reduced-motion:reduce){
  .v34-studying .v138-session-symbol,.v34-studying .v138-session-dot{animation:none!important}
 }
+
+
+/* v1.39 · Next scope is a quiet continuation below the saved result.
+   One recommended action plus a secondary custom-scope option; no new menu. */
+.v34-studying .v139-result-next{
+ display:flex;align-items:center;justify-content:space-between;
+ gap:clamp(13px,2vw,22px);flex-wrap:wrap;
+ margin:22px 0 0;padding:17px clamp(15px,2vw,22px);
+ border:1px solid var(--v33-line,#e5d0d5);border-radius:15px;
+ background:linear-gradient(125deg,
+   color-mix(in srgb,var(--v33-soft,#f5e9eb) 47%,var(--v33-paper,#fffaf9)),
+   var(--v33-paper,#fffaf9) 82%);
+}
+.v34-studying .v139-next-copy{display:flex;flex-direction:column;gap:6px;min-width:0;flex:1 1 215px}
+.v34-studying .v139-next-eyebrow{
+ font-size:9px;letter-spacing:.105em;font-weight:810;color:var(--v33-ink,#754b5c)
+}
+.v34-studying .v139-next-copy>strong{
+ font-size:clamp(13px,1.4vw,16px);line-height:1.45;font-weight:780;
+ color:var(--v33-ink,#754b5c)
+}
+.v34-studying .v139-next-copy>p{
+ font-size:11px;line-height:1.6;margin:0;color:var(--v112-muted,#72656a);max-width:560px
+}
+.v34-studying .v139-next-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;justify-content:flex-end}
+.v34-studying .v139-next-link{
+ display:inline-flex;align-items:center;justify-content:center;gap:8px;
+ border-radius:9px;background:var(--v33-ink,#754b5c);
+ border:1px solid var(--v33-ink,#754b5c);color:var(--v33-paper,#fffaf9)!important;
+ text-decoration:none!important;font-size:11px;font-weight:750;
+ min-height:38px;padding:9px 12px;white-space:nowrap
+}
+.v34-studying .v139-custom-scope{
+ appearance:none;display:inline-flex;align-items:center;justify-content:center;
+ gap:6px;min-height:38px;padding:9px 8px;border:0;border-radius:9px;
+ background:transparent!important;color:var(--v33-ink,#754b5c)!important;
+ font:inherit;font-size:11px;font-weight:735;white-space:nowrap;cursor:pointer
+}
+.v34-studying .v139-next-link:hover{filter:brightness(1.12)}
+.v34-studying .v139-custom-scope:hover{text-decoration:underline;text-underline-offset:3px}
+.v34-studying .v139-next-link:focus-visible,.v34-studying .v139-custom-scope:focus-visible{
+ outline:2px solid var(--v33-ink,#754b5c);outline-offset:3px
+}
+/* Matching summary is already a detailed dialog. Keep its next step compact. */
+.v34-studying .v139-result-next.is-compact{
+ margin:14px 0 0;padding:12px 13px;border-radius:12px;
+ gap:10px
+}
+.v34-studying .v139-result-next.is-compact .v139-next-copy>strong{font-size:13px}
+.v34-studying .v139-result-next.is-compact .v139-next-copy>p{font-size:10px}
+.v34-studying .v139-result-next.is-compact .v139-next-actions{justify-content:flex-start}
+@media(max-width:740px){
+ .v34-studying .v139-result-next{padding:15px 13px;gap:13px}
+ .v34-studying .v139-next-actions{justify-content:flex-start}
+}
+@media(max-width:480px){
+ .v34-studying .v139-result-next{margin-top:17px}
+ .v34-studying .v139-next-actions{width:100%;display:grid;grid-template-columns:1fr}
+ .v34-studying .v139-next-link,.v34-studying .v139-custom-scope{width:100%;min-height:42px}
+}
