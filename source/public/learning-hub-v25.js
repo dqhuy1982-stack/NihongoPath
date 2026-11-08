@@ -236,61 +236,55 @@ function foundationTopics(module,group,data){
 }
 function foundationModuleCatalogue(){
  const data=window.NPFoundationCurriculum,engine=window.NPFoundationCourse;
- if(!data?.modules?.length||!engine?.path){
-  return '<section class="v25-panel"><h3>Nền tảng</h3><p>Chưa tải được mục lục. Vui lòng mở lại khóa Nền tảng.</p>'+href('course/foundation','Xem khóa Nền tảng','v25-text-cta')+'</section>';
+ if(!data?.modules?.length||!data.getLessonUnits||!engine?.path){
+  return '<section class="v25-panel"><h3>Nền tảng</h3><p>Chưa tải được lộ trình. Vui lòng mở lại khóa Nền tảng.</p>'+href('course/foundation','Xem khóa Nền tảng','v25-text-cta')+'</section>';
  }
- const progress=engine.store?.()?.items||{};
- const modules=data.modules;
+ const progress=engine.store?.()?.items||{},modules=data.modules;
  const records=modules.map((m,index)=>{
-  const groups=m.groups.map((g,ordinal)=>{
-   const cards=foundationTopics(m,g,data);
-   const unique=[...new Set(cards.map(x=>x.id))];
+  const lessons=data.getLessonUnits(m.id);
+  const entries=lessons.map((unit,ordinal)=>{
+   const cards=foundationTopics(m,unit,data),unique=[...new Set(cards.map(x=>x.id))];
    const practiced=unique.filter(id=>progress[id]?.attempts>0).length;
-   const sample=cards[0]||{};
-   const route=engine.path(m.id,g.id,'learn');
-   const title=g.title;
-   const search=[m.title,m.subtitle,title,g.id,foundationTopicTips[g.id]||'',...cards.map(x=>x.glyph+' '+x.read)].join(' ');
-   const legacy=m.id==='hiragana'&&foundationLegacyLessons[g.id]?
-    '<a class="v121-lesson-guide" href="#lesson/'+foundationLegacyLessons[g.id]+'">Bài hướng dẫn chi tiết</a>':'';
-   return '<article class="v121-topic" data-v121-topic data-v121-search="'+safe(search.toLocaleLowerCase('vi'))+'">'+
-     '<a class="v121-topic-main" href="#'+route+'" aria-label="Học '+safe(title)+'">'+
-      '<span class="v121-topic-number">'+String(ordinal+1).padStart(2,'0')+'</span>'+
-      '<span class="v121-topic-glyph" lang="ja">'+safe(sample.glyph||'あ')+'</span>'+
-      '<span class="v121-topic-copy"><strong>'+safe(title)+'</strong><small>'+safe(foundationTopicTips[g.id]||m.subtitle)+'</small></span>'+
-      '<span class="v121-topic-progress">'+practiced+' / '+unique.length+' mẫu đã luyện</span>'+
-      '<span class="v121-topic-chevron" aria-hidden="true">›</span></a>'+
-      '<div class="v121-topic-actions">'+legacy+
-      '<a href="#'+engine.path(m.id,g.id,'quiz')+'">Luyện nhận diện</a>'+
-      '<a href="#'+engine.path(m.id,g.id,'flash')+'">Flashcard</a>'+
-      '<a href="#'+engine.path(m.id,g.id,'mix')+'">Kiểm tra</a></div></article>';
+   const sample=cards[0]||{},parts=unit.groups.map(id=>m.groups.find(g=>g.id===id)).filter(Boolean);
+   const search=[m.title,m.subtitle,unit.title,unit.summary,...parts.map(g=>g.title+' '+g.id),...cards.map(x=>x.glyph+' '+x.read)].join(' ').toLocaleLowerCase('vi');
+   const partDetails=parts.length>1?'<details class="v125-lesson-parts"><summary>Luyện riêng từng hàng <span aria-hidden="true">⌄</span></summary>'+
+     '<div class="v125-parts-list">'+parts.map(g=>'<a href="#'+engine.path(m.id,g.id,'learn')+'">'+safe(g.title)+' <span aria-hidden="true">↗</span></a>').join('')+'</div></details>':'';
+   return '<article class="v121-topic v125-lesson" data-v121-topic data-v121-search="'+safe(search)+'">'+
+    '<a class="v121-topic-main" href="#'+engine.path(m.id,unit.id,'learn')+'" aria-label="Học '+safe(unit.title)+'">'+
+    '<span class="v121-topic-number">'+String(ordinal+1).padStart(2,'0')+'</span>'+
+    '<span class="v121-topic-glyph" lang="ja">'+safe(sample.glyph||'あ')+'</span>'+
+    '<span class="v121-topic-copy"><strong>'+safe(unit.title)+'</strong><small>'+safe(unit.summary)+'</small></span>'+
+    '<span class="v121-topic-progress">'+practiced+' / '+unique.length+' mẫu đã luyện</span>'+
+    '<span class="v125-lesson-open">Mở bài <span aria-hidden="true">›</span></span></a>'+partDetails+'</article>';
   });
-  return {m,index,groups,all:groups.length};
+  return {m,index,lessons,entries};
  });
- const allCount=records.reduce((n,r)=>n+r.all,0);
- const firstPending=modules.flatMap(m=>m.groups.map(g=>({m,g,cards:foundationTopics(m,g,data)})))
-   .find(({cards})=>cards.some(card=>!(progress[card.id]?.attempts>0)));
- const nextPath=firstPending?engine.path(firstPending.m.id,firstPending.g.id,'learn'):engine.path(modules[0].id,modules[0].groups[0].id,'learn');
- const initialModule=firstPending?.m.id||modules[0].id;
- return '<section class="v121-foundation-catalog" aria-labelledby="v121-heading">'+
-  '<div class="v121-catalog-heading v123-catalog-heading"><div><p class="v121-eyebrow">FOUNDATION · '+modules.length+' CHẶNG · '+allCount+' NHÓM BÀI</p>'+
+ const total=records.reduce((sum,r)=>sum+r.lessons.length,0);
+ const firstPending=modules.flatMap(m=>data.getLessonUnits(m.id).map(unit=>({m,unit,cards:foundationTopics(m,unit,data)})))
+   .find(({cards})=>cards.some(x=>!(progress[x.id]?.attempts>0)));
+ const start=firstPending||{m:modules[0],unit:data.getLessonUnits(modules[0].id)[0]};
+ const initialModule=start.m.id, nextPath=engine.path(start.m.id,start.unit.id,'learn');
+ return '<section class="v121-foundation-catalog v125-catalog" aria-labelledby="v121-heading">'+
+  '<div class="v121-catalog-heading v123-catalog-heading"><div><p class="v121-eyebrow">FOUNDATION · '+modules.length+' CHẶNG · '+total+' BÀI HỌC</p>'+
   '<h3 id="v121-heading">Chọn bài để học</h3></div></div>'+
   '<div class="v121-toolbar"><label class="v121-search-label"><span class="v121-search-icon" aria-hidden="true">⌕</span>'+
-  '<input type="search" data-v121-filter placeholder="Tìm Kana, Romaji hoặc tên bài…" aria-label="Tìm bài học Nền tảng" autocomplete="off"></label>'+
+  '<input type="search" data-v121-filter placeholder="Tìm chữ, âm hoặc bài học…" aria-label="Tìm bài học Nền tảng" autocomplete="off"></label>'+
   '<a class="v121-continue" href="#'+nextPath+'">Tiếp tục học →</a></div>'+
   '<p class="v121-search-status" data-v121-status role="status" aria-live="polite" hidden></p>'+
-  '<div class="v123-catalog-layout"><nav class="v123-chapter-tabs" aria-label="Chọn chặng Nền tảng">'+records.map(({m,index,groups})=>
-    '<button type="button" class="v123-chapter-tab'+(m.id===initialModule?' is-active':'')+'" data-v123-select="'+safe(m.id)+'" aria-controls="v123-panel-'+safe(m.id)+'" aria-current="'+(m.id===initialModule?'true':'false')+'">'+
-    '<span class="v123-chapter-number">'+String(index+1).padStart(2,'0')+'</span>'+
-    '<span class="v123-chapter-label">'+safe(m.title.replace(/^\d+\s*[·.:-]\s*/,''))+'</span>'+
-    '<small>'+groups.length+' bài</small></button>').join('')+'</nav>'+
-   '<div class="v123-topic-panes">'+records.map(({m,index,groups})=>
-    '<section class="v123-topic-pane" id="v123-panel-'+safe(m.id)+'" data-v123-pane="'+safe(m.id)+'" '+(m.id===initialModule?'':'hidden')+'>'+
-    '<div class="v123-pane-heading"><div><strong>'+safe(m.title.replace(/^\d+\s*[·.:-]\s*/,''))+'</strong><p>'+safe(m.subtitle)+'</p></div>'+
-    '<a href="#'+engine.path(m.id,'all','learn')+'">Học cả chặng ↗</a></div>'+
-    '<div class="v123-topic-list">'+groups.join('')+'</div></section>').join('')+'</div></div>'+
-  '<p class="v121-catalog-note">Tiến độ “đã luyện” chỉ tính mẫu có câu trả lời đã ghi nhận trong hồ sơ hiện tại; không đồng nghĩa đã nhớ lâu. Bài kiểm tra tổng hợp dùng cùng nguồn dữ liệu, không phải chứng chỉ JLPT.</p>'+
+  '<div class="v123-catalog-layout"><nav class="v123-chapter-tabs" aria-label="Chọn chặng Nền tảng">'+records.map(({m,index,lessons})=>
+   '<button type="button" class="v123-chapter-tab'+(m.id===initialModule?' is-active':'')+'" data-v123-select="'+safe(m.id)+'" aria-controls="v123-panel-'+safe(m.id)+'" aria-current="'+(m.id===initialModule?'true':'false')+'">'+
+   '<span class="v123-chapter-number">'+String(index+1).padStart(2,'0')+'</span>'+
+   '<span class="v123-chapter-label">'+safe(m.title.replace(/^\d+\s*[·.:-]\s*/,''))+'</span>'+
+   '<small>'+lessons.length+' bài</small></button>').join('')+'</nav>'+
+  '<div class="v123-topic-panes">'+records.map(({m,entries})=>
+   '<section class="v123-topic-pane" id="v123-panel-'+safe(m.id)+'" data-v123-pane="'+safe(m.id)+'" '+(m.id===initialModule?'':'hidden')+'>'+
+   '<div class="v123-pane-heading"><div><strong>'+safe(m.title.replace(/^\d+\s*[·.:-]\s*/,''))+'</strong><p>'+safe(m.subtitle)+'</p></div>'+
+   '<a href="#'+engine.path(m.id,'all','learn')+'">Xem toàn chặng ↗</a></div>'+
+   '<div class="v123-topic-list">'+entries.join('')+'</div></section>').join('')+'</div></div>'+
+  '<p class="v121-catalog-note">Mỗi bài gồm 1–4 hàng chữ liên quan, học theo từng hàng trong cùng một bài. “Đã luyện” không có nghĩa đã ghi nhớ thành thạo; tiến độ cũ theo từng chữ vẫn được giữ.</p>'+
   '</section>';
 }
+
 function modulesTab(m){
  const courseLessons=lessons.filter(a=>a.course==='N5');
  const n5Modules=[...new Set(courseLessons.map(a=>a.module))];
