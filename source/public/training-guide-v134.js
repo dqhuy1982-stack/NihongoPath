@@ -191,8 +191,8 @@ function start(manual=false){
    else pauseCountdown();
    return;
   }
-  if(action==='prev'){tour.step=Math.max(0,tour.step-1);tour.remainingMs=STEP_MS;layOut();return}
-  if(action==='next'){if(tour.step===tour.steps.length-1)end();else{tour.step++;tour.remainingMs=STEP_MS;layOut()}}
+  if(action==='prev'){clearTimer();tour.step=Math.max(0,tour.step-1);tour.remainingMs=STEP_MS;layOut();return}
+  if(action==='next'){if(tour.step===tour.steps.length-1)end();else{clearTimer();tour.step++;tour.remainingMs=STEP_MS;layOut()}}
  });
  layOut();
  host.querySelector('[data-v134-action="next"]')?.focus?.({preventScroll:true});
