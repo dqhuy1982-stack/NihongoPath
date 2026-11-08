@@ -781,19 +781,55 @@ function scopeAfterResult(cfg,correct,total,compact=false){
   '</div></section>';
 }
 
+/* v1.42 · One clear score, one next step, quieter secondary actions.
+   Historical attempts and completion thresholds remain unchanged. */
 function summaryView(cfg,s){
  const total=s.questions?.length||0;
+ const correct=Math.max(0,Math.min(total,Number(s.correct)||0));
+ const percent=total?Math.round(correct/total*100):0;
+ const grade=resultGrade(percent);
+ const isTest=cfg.mode==='mix',passed=percent>=PASS_PERCENT,hasWrong=correct<total;
+ const next=nextPracticeScope(cfg),attempt=attemptStatus(cfg.id,cfg.group,cfg.script);
  const avg=s.roundMs?.length?timeLabel(s.roundMs.reduce((a,b)=>a+b,0)/s.roundMs.length):'—';
- return '<section class="v33-pane v33-summary v141-graded-summary"><p class="v33-eyebrow">KẾT QUẢ LƯỢT LUYỆN</p><h3>'+(cfg.mode==='mix'?'Hoàn thành bài kiểm tra':'Hoàn thành lượt luyện')+'</h3><div class="v33-summary-score">'+s.correct+' <span>/ '+total+' câu đúng</span></div>'+
- '<div class="v141-grade-row">'+gradeBadge(total?s.correct/total*100:0,cfg.mode==='mix'?'test':'practice')+
- '<small>Đánh giá lượt vừa làm · không phải chứng nhận ghi nhớ lâu dài</small></div>'+
- (cfg.mode==='mix'?'<div class="v37-summary-stats"><span>Đúng chậm: <strong>'+s.slow+'</strong></span><span>Sai: <strong>'+s.errors+'</strong></span><span>TB phản hồi: <strong>'+avg+'</strong></span></div>':'')+
- '<p class="v140-finish-meta">'+(cfg.mode==='mix'?(total&&s.correct/total>=.8?'✓ Kiểm tra đạt':'◷ Cần kiểm tra lại'):'✓ Đã hoàn tất lượt luyện')+
- ' · Lượt '+attemptStatus(cfg.id,cfg.group,cfg.script).totalAttempts+' đã lưu · '+(total?Math.round(s.correct/total*100):0)+'%'+
- (cfg.mode==='mix'?' · Mốc đạt HORIZON: 80%':'')+'</p>'+
- '<p>'+(cfg.mode==='mix'?'Chữ đúng chậm và chữ sai được đề xuất ôn. Ngưỡng phản xạ mang tính thử nghiệm.':'Luyện tập không tính thời gian; các chữ sai được đưa vào Sổ ôn.')+'</p>'+
- '<div class="v33-pane-actions"><button data-f33="restart" class="v33-primary">Luyện lại ngẫu nhiên</button><button data-f34="mode" data-value="review" class="v33-secondary">Ôn chữ cần luyện</button></div>'+
- scopeAfterResult(cfg,s.correct,total)+'</section>';
+ const headline=isTest?'Đã hoàn thành bài kiểm tra':grade.tone==='good'?'Lượt luyện rất tốt!':'Lượt luyện hoàn tất';
+ const description=correct===total?
+  'Bạn trả lời đúng tất cả '+total+' câu. Hãy ôn lại sau để ghi nhớ tốt hơn.':
+  grade.tone==='retry'?'Bạn đúng '+correct+'/'+total+' câu. Nên ôn lại chữ sai trước khi tăng độ khó.':
+  'Bạn đúng '+correct+'/'+total+' câu. Các chữ cần luyện thêm đã được ghi nhận.';
+ const scopeName=next?.title||'Chọn một phạm vi luyện mới';
+ const mainAction=grade.tone==='retry'&&hasWrong?
+  '<button type="button" data-f34="mode" data-value="review" class="v142-primary">Ôn chữ cần luyện <span aria-hidden="true">→</span></button>':
+  next?'<a class="v142-primary" href="'+clean(next.href)+'">'+(next.kind==='expanded'?'Mở rộng phạm vi':'Luyện nội dung tiếp')+' <span aria-hidden="true">→</span></a>':
+  '<button type="button" data-f33="restart" class="v142-primary">Luyện lượt mới <span aria-hidden="true">↻</span></button>';
+ const secondaryAction=next||grade.tone==='retry'&&hasWrong?
+  '<button type="button" data-f33="restart" class="v142-secondary">Luyện lại</button>':'';
+ const wrongNote=hasWrong&&grade.tone!=='retry'?
+  '<button type="button" class="v142-inline-review" data-f34="mode" data-value="review">Ôn chữ sai ↗</button>':'';
+ const status=isTest?
+  (passed?'Đã đạt mốc kiểm tra '+PASS_PERCENT+'%':'Chưa đạt mốc kiểm tra '+PASS_PERCENT+'%'):
+  'Đã hoàn thành lượt luyện';
+ return '<section class="v33-pane v33-summary v141-graded-summary v142-result is-'+grade.tone+'" aria-label="Kết quả '+(isTest?'kiểm tra':'luyện tập')+'">'+
+  '<div class="v142-topline"><p class="v33-eyebrow">KẾT QUẢ · '+(isTest?'KIỂM TRA':'LUYỆN TẬP')+'</p>'+
+  '<span class="v142-saved"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>Lượt '+attempt.totalAttempts+' đã lưu</span></div>'+
+  '<div class="v142-hero"><div class="v142-heading">'+
+  '<span class="v142-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="12"/><path d="m10 16 4 4 8-9"/></svg></span>'+
+  '<div class="v142-heading-copy"><h3>'+headline+'</h3><p class="v142-description">'+description+'</p></div></div>'+
+  '<div class="v142-score-block"><div><div class="v142-score-line"><strong>'+correct+'</strong><span>/ '+total+'</span></div>'+
+  '<div class="v142-score-caption">câu trả lời đúng</div></div>'+
+  '<div class="v141-grade-row">'+gradeBadge(percent,isTest?'test':'practice')+'</div></div></div>'+
+  '<div class="v142-metrics"><span><strong>'+status+'</strong></span>'+
+  (isTest?'<span>Đúng chậm <strong>'+s.slow+'</strong></span><span>Sai <strong>'+s.errors+'</strong></span><span>TB phản hồi <strong>'+avg+'</strong></span>':'')+
+  wrongNote+'</div>'+
+  '<div class="v142-next"><div class="v142-next-copy"><span class="v142-next-caption">'+
+  (grade.tone==='retry'?'GỢI Ý ÔN TẬP':'GỢI Ý LUYỆN TIẾP')+'</span>'+
+  '<strong class="v142-next-title">'+(grade.tone==='retry'?'Củng cố phần vừa học':clean(scopeName))+'</strong>'+
+  '<p class="v142-next-note">'+(grade.tone==='retry'?
+   (next?'Sau khi ôn, có thể tiếp tục: '+clean(scopeName):'Luyện lại với câu hỏi mới để củng cố.'):
+   (next?'Tiếp tục khi bạn sẵn sàng.':'Bạn có thể chọn nội dung khác để luyện.'))+'</p></div>'+
+  '<div class="v142-actions">'+mainAction+secondaryAction+
+  '<button type="button" data-f33="expand-scope" class="v139-custom-scope v141-scope-invite v142-tertiary" title="Chọn bài học, cấp độ hoặc nội dung mới">Đổi phạm vi <span aria-hidden="true">↗</span></button>'+
+  '</div></div>'+
+  '<p class="v142-disclaimer">Kết quả phản ánh lượt vừa làm, chưa phải đánh giá khả năng ghi nhớ lâu dài.</p></section>';
 }
 
 function buildView(cfg,s){
