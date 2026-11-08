@@ -125,8 +125,8 @@ jobs:
                 }
                 console.log('LIVE_LESSON_ROUTES_VERIFIED',JSON.stringify({version:'v1.45',
                   scripts:liveAssets.map(([file])=>file),commit:process.env.SOURCE_COMMIT}));
-                assert.match(html,/n5-path-v145\\.css\\?v=145/,'Published HTML has no N5 design stylesheet');
-                assert.match(html,/src="n5-path-v145\\.js\\?v=145"/,'Published HTML lacks N5 route adapter');
+                assert.match(html,/n5-path-v145\.css\?v=145/,'Published HTML has no N5 design stylesheet');
+                assert.match(html,/src="n5-path-v145\.js\?v=145"/,'Published HTML lacks N5 route adapter');
                 const n5Response=await fetch(base+'n5-path-v145.js?v=145',{headers:{'Cache-Control':'no-cache'}});
                 if(!n5Response.ok)throw Error('Published N5 router HTTP '+n5Response.status);
                 const n5Js=await n5Response.text();
