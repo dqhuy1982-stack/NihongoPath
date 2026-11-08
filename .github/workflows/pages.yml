@@ -47,6 +47,26 @@ jobs:
           test -f dist/site/lesson-mockup.css
           test -f dist/site/assets/lesson-sakura-branch.svg
           test -f dist/site/assets/lesson-enso-sakura.svg
+      - name: Verify HORIZON v1.43 artifact and stamp release
+        env:
+          SOURCE_COMMIT: ${{ github.sha }}
+        run: |
+          node --input-type=module <<'NODE'
+          import {readFileSync,writeFileSync,existsSync} from 'node:fs';
+          import assert from 'node:assert/strict';
+          const html=readFileSync('dist/site/index.html','utf8');
+          const js=readFileSync('dist/site/app.js','utf8');
+          assert.match(js,/>v1\.43<\/small>/,'UI logo version must be v1.43');
+          for(const name of ['result-v142.css','progress-v143.css','foundation-course-v33.js','learning-hub-v25.js']){
+            assert.ok(existsSync('dist/site/'+name),'Missing asset: '+name);
+            assert.ok(html.includes(name+'?v='),'Unversioned asset in published HTML: '+name);
+          }
+          assert.ok(!html.includes('window.NP_FAMILY_SYNC=true;'),'GitHub Pages must stay static demo');
+          const manifest={version:'v1.43',commit:process.env.SOURCE_COMMIT,branch:'develop',
+            platform:'github-pages',site:'NihongoPath'};
+          writeFileSync('dist/site/release.json',JSON.stringify(manifest,null,2)+'\n');
+          console.log('PAGES_RELEASE',JSON.stringify(manifest));
+          NODE
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
       - name: Upload validated site
@@ -67,3 +87,27 @@ jobs:
       - name: Publish GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Verify published Pages release is current
+        env:
+          SOURCE_COMMIT: ${{ github.sha }}
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          const url='https://dqhuy1982-stack.github.io/NihongoPath/release.json?sha='+process.env.SOURCE_COMMIT;
+          let last='';
+          for(let i=0;i<12;i++){
+            try{
+              const response=await fetch(url,{headers:{'Cache-Control':'no-cache'}});
+              if(!response.ok)throw Error('HTTP '+response.status);
+              const release=await response.json();
+              if(release.commit===process.env.SOURCE_COMMIT&&release.version==='v1.43'){
+                console.log('PUBLISHED_AND_VERIFIED',JSON.stringify(release));
+                process.exit(0);
+              }
+              last='Expected '+process.env.SOURCE_COMMIT+' v1.43, got '+JSON.stringify(release);
+            }catch(error){last=String(error)}
+            await new Promise(r=>setTimeout(r,5000));
+          }
+          throw Error('GitHub Pages served stale or missing release: '+last+
+            '. Check Settings > Pages > Source = GitHub Actions, and successful deploy job.');
+          NODE
