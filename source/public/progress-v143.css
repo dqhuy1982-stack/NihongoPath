@@ -1,0 +1,50 @@
+/* HORIZON v1.43 — course completion & contextual next step.
+   Do not rely on color alone; every milestone has a textual status. */
+.v34-studying .v143-record-ribbon.is-complete>span:first-child{
+ color:#236847;background:#e9f5ec;
+ border-color:#b9dfc5;font-weight:800
+}
+.v34-studying .v143-record-ribbon .v143-next-step{
+ display:inline-flex;align-items:center;justify-content:center;
+ min-height:32px;padding:6px 11px;border-radius:8px;
+ background:var(--v33-ink,#754b5c);color:#fff!important;
+ font-size:11px;font-weight:760;text-decoration:none
+}
+.v34-studying .v143-record-ribbon .v143-next-step:hover{filter:brightness(1.1)}
+.v34-studying .v142-metrics .v143-completion-status{
+ font-weight:750;color:#286d4d
+}
+.v34-studying .v142-result.is-retry .v143-completion-status{
+ color:var(--v142-muted,#766d71)
+}
+.v25-wrap .v121-topic-main .v140-topic-badge.is-complete{
+ border-color:#bddfca;background:#e8f5ed;color:#256e4c
+}
+.v25-wrap .v121-topic-main .v140-topic-badge.is-complete .v141-status-copy strong{
+ color:#256e4c;font-weight:830
+}
+.v25-wrap .v121-topic-main .v140-topic-badge.is-practice-passed{
+ border-color:#e8d1a9;background:#fff5e5;color:#8a5d14
+}
+.v25-wrap .v121-topic-main .v140-topic-badge.is-practice-passed .v141-status-copy strong{
+ color:#8a5d14
+}
+.v25-wrap .v140-catalog-actions>a.v143-catalog-next{
+ color:#fff!important;background:var(--v25-ink,#754b5c);
+ padding:8px 12px;border-radius:9px;min-height:34px;
+ text-decoration:none!important;font-size:11px
+}
+.v25-wrap .v140-catalog-actions>a.v143-catalog-next:hover{filter:brightness(1.12)}
+.v25-wrap .v140-catalog-actions>a:focus-visible,
+.v34-studying .v143-record-ribbon a:focus-visible{
+ outline:2px solid #286d4d;outline-offset:3px
+}
+@media(max-width:650px){
+ .v25-wrap .v140-catalog-actions{width:100%;gap:8px}
+ .v25-wrap .v140-catalog-actions>a.v143-catalog-next{flex:1 1 140px}
+ .v25-wrap .v121-topic-main .v140-topic-badge.is-complete{
+  display:inline-flex!important
+ }
+ .v34-studying .v142-result .v142-metrics{gap:8px 12px}
+ .v34-studying .v143-record-ribbon .v143-next-step{width:100%}
+}
