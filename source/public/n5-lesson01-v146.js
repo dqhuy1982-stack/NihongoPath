@@ -216,10 +216,11 @@ function finish(){
 }
 function finalPage(){
  const result=run.report,p=status(),eligible=result.percent>=threshold;
- const passed=eligible&&(result.kind!=='check'||result.listeningVerified);
+ const missingAudio=result.kind==='check'&&!result.listeningVerified;
+ const passed=eligible&&!missingAudio;
  return '<section class="n5l-finish"><div class="n5l-finish-label">KẾT QUẢ · '+(result.kind==='check'?'KIỂM TRA':result.kind==='review'?'ÔN LẠI':'LUYỆN TẬP')+'</div>'+
-  '<h2>'+(passed?'Đã đạt yêu cầu':'Cần củng cố thêm')+'</h2>'+
-  '<div class="n5l-finish-score"><strong>'+result.correct+'</strong><span>/ '+result.total+' câu đúng</span><em class="'+(passed?'is-pass':'is-retry')+'">'+result.percent+'%</em></div>'+
+  '<h2>'+(missingAudio?'Chưa xác nhận phần nghe':passed?'Đã đạt yêu cầu':'Cần củng cố thêm')+'</h2>'+ 
+  '<div class="n5l-finish-score"><strong>'+result.correct+'</strong><span>/ '+result.total+' câu đúng</span><em class="'+(missingAudio?'is-pending':passed?'is-pass':'is-retry')+'">'+result.percent+'%</em></div>'+
   '<p>'+(result.kind==='check'&&!result.listeningVerified?
    'Phần nghe chưa được xác nhận trên thiết bị. Kết quả câu trả lời vẫn lưu, nhưng bài kiểm tra chưa được tính đạt toàn bộ.':
    passed?'Kết quả lượt này đạt mốc '+threshold+'%. Ôn lại sau để củng cố khả năng nhớ lâu.':
