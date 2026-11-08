@@ -1,6 +1,6 @@
-/* HORIZON N5 L01 v1.47 — Original linked learning situations. No copied dialogue or publisher audio. */
+/* HORIZON N5 L01 v1.48 · Original six-situation curriculum; existing IDs and progress retained. */
 window.NPN5Lesson01Scenes=Object.freeze({
-  "version": 1,
+  "version": 2,
   "scenes": [
     {
       "id": "meeting",
@@ -56,6 +56,28 @@ window.NPN5Lesson01Scenes=Object.freeze({
         "prompt": "Hãy viết 1–2 câu giới thiệu tên và quốc tịch của chính bạn.",
         "hint": "Gợi ý: はじめまして / わたしは / ～じんです",
         "sample": "はじめまして。わたしは リンです。ベトナムじんです。どうぞ よろしくおねがいします。"
+      },
+      "place": "Trung tâm tiếng Nhật Haruka",
+      "time": "Buổi sáng · ngày đầu nhập học",
+      "relationship": "Aoi là nhân viên tiếp đón; Linh là học viên mới.",
+      "purpose": "Chào hỏi và nói tên, quốc tịch.",
+      "hint": "Quan sát tư thế cúi chào. Ai mở lời trước?",
+      "location": "school",
+      "replace": {
+        "prompt": "Điền đúng quốc tịch cho Linh",
+        "stem": "リンさんは（　）です。",
+        "options": [
+          "ベトナムじん",
+          "にほんじん",
+          "いしゃ"
+        ],
+        "answer": 0,
+        "why": "Linh đến từ Việt Nam nên là ベトナムじん."
+      },
+      "variation": {
+        "label": "Thử đổi ngữ cảnh",
+        "prompt": "Nếu bạn ở trung tâm tiếng nhật haruka, hãy tự nói câu tương tự nhưng đổi tên hoặc nghề nghiệp bằng dữ kiện của bạn.",
+        "tip": "Thử thay thông tin theo đúng mẫu; không cần thuộc nguyên câu mẫu."
       }
     },
     {
@@ -113,6 +135,28 @@ window.NPN5Lesson01Scenes=Object.freeze({
         "prompt": "Hãy giới thiệu một người bạn hoặc đồng nghiệp, có thể dùng tên giả.",
         "hint": "こちらは ～さんです。～の ～です。",
         "sample": "こちらは アンさんです。さくらホテルの かいしゃいんです。"
+      },
+      "place": "Văn phòng khách sạn Sakura",
+      "time": "Buổi sáng · buổi giới thiệu nhân viên",
+      "relationship": "Mai đưa Hoa gặp Yuki, đồng nghiệp cùng công ty.",
+      "purpose": "Giới thiệu người khác, nói nghề và nơi làm việc.",
+      "hint": "Ai là người đang giới thiệu? Ai là người mới?",
+      "location": "office",
+      "replace": {
+        "prompt": "Chọn mẫu nói về người thuộc nơi làm việc",
+        "stem": "ホアさんは さくらホテル（　）エンジニアです。",
+        "options": [
+          "も",
+          "の",
+          "ですか"
+        ],
+        "answer": 1,
+        "why": "の nối tên công ty với nghề nghiệp."
+      },
+      "variation": {
+        "label": "Thử đổi ngữ cảnh",
+        "prompt": "Nếu bạn ở văn phòng khách sạn sakura, hãy tự nói câu tương tự nhưng đổi tên hoặc nghề nghiệp bằng dữ kiện của bạn.",
+        "tip": "Thử thay thông tin theo đúng mẫu; không cần thuộc nguyên câu mẫu."
       }
     },
     {
@@ -170,6 +214,28 @@ window.NPN5Lesson01Scenes=Object.freeze({
         "prompt": "Hãy viết một câu phủ định nghề nghiệp, rồi bổ sung nghề đúng.",
         "hint": "いいえ、～じゃありません。～です。",
         "sample": "いいえ、せんせいじゃありません。エンジニアです。"
+      },
+      "place": "Khu vực sinh hoạt chung tại trường",
+      "time": "Giờ nghỉ giữa lớp",
+      "relationship": "Ken và Hana cùng học tiếng Nhật, đang nói về Tanaka.",
+      "purpose": "Hỏi và chỉnh thông tin sai về nghề nghiệp.",
+      "hint": "Khi trả lời không, bạn cần nói nghề đúng.",
+      "location": "class",
+      "replace": {
+        "prompt": "Điền phần phủ định lịch sự",
+        "stem": "いしゃ（　）。",
+        "options": [
+          "じゃありません",
+          "です",
+          "も"
+        ],
+        "answer": 0,
+        "why": "じゃありません phủ định danh từ trong câu lịch sự."
+      },
+      "variation": {
+        "label": "Thử đổi ngữ cảnh",
+        "prompt": "Nếu bạn ở khu vực sinh hoạt chung tại trường, hãy tự nói câu tương tự nhưng đổi tên hoặc nghề nghiệp bằng dữ kiện của bạn.",
+        "tip": "Thử thay thông tin theo đúng mẫu; không cần thuộc nguyên câu mẫu."
       }
     },
     {
@@ -227,13 +293,191 @@ window.NPN5Lesson01Scenes=Object.freeze({
         "prompt": "Viết hai câu về hai người có cùng nghề nghiệp hoặc cùng trường.",
         "hint": "Aさんは ～です。Bさんも ～です。",
         "sample": "リンさんは がくせいです。ミナさんも がくせいです。"
+      },
+      "place": "Hành lang Đại học Minato",
+      "time": "Sau giờ học",
+      "relationship": "Aoi hỏi Linh về bạn cùng lớp Mina.",
+      "purpose": "Nói về hai người có cùng đặc điểm.",
+      "hint": "Cả hai đều là sinh viên, nhưng có chắc cùng trường?",
+      "location": "campus",
+      "replace": {
+        "prompt": "Mina cũng là sinh viên",
+        "stem": "ミナさん（　）がくせいです。",
+        "options": [
+          "は",
+          "も",
+          "の"
+        ],
+        "answer": 1,
+        "why": "も dùng để diễn đạt ý 'cũng'."
+      },
+      "variation": {
+        "label": "Thử đổi ngữ cảnh",
+        "prompt": "Nếu bạn ở hành lang đại học minato, hãy tự nói câu tương tự nhưng đổi tên hoặc nghề nghiệp bằng dữ kiện của bạn.",
+        "tip": "Thử thay thông tin theo đúng mẫu; không cần thuộc nguyên câu mẫu."
+      }
+    },
+    {
+      "id": "namecheck",
+      "title": "Hỏi và xác nhận tên",
+      "jpTitle": "おなまえは？",
+      "situation": "Aoi đón thêm học viên mới là Mina và hỏi tên để xác nhận danh sách đăng ký.",
+      "goal": "Hỏi tên lịch sự và xác nhận đúng người.",
+      "place": "Quầy tiếp đón Haruka",
+      "time": "Buổi sáng · trước giờ học",
+      "relationship": "Aoi là nhân viên tiếp đón; Mina là học viên.",
+      "purpose": "Hỏi tên mà không tạo cảm giác bất lịch sự.",
+      "hint": "Lắng nghe câu おなまえは và cách gọi tên kèm さん.",
+      "location": "reception",
+      "grammar": [
+        "san",
+        "question"
+      ],
+      "vocab": [
+        "shitsurei",
+        "onamae",
+        "san",
+        "hai"
+      ],
+      "dialogue": [
+        {
+          "who": "Aoi",
+          "jp": "しつれいですが、おなまえは？",
+          "vi": "Xin phép hỏi, tên bạn là gì?"
+        },
+        {
+          "who": "Mina",
+          "jp": "ミナです。",
+          "vi": "Tôi tên là Mina."
+        },
+        {
+          "who": "Aoi",
+          "jp": "ミナさんですね。",
+          "vi": "Vậy là chị Mina phải không ạ?"
+        },
+        {
+          "who": "Mina",
+          "jp": "はい、そうです。よろしくおねがいします。",
+          "vi": "Vâng, đúng rồi. Rất mong được giúp đỡ."
+        }
+      ],
+      "tip": "Hỏi tên bằng おなまえは？ lịch sự hơn dùng あなたは だれですか. Gọi Mina là ミナさん, không dùng さん khi tự nói tên.",
+      "challenge": {
+        "title": "Bạn chưa biết tên người mới. Nên hỏi thế nào?",
+        "options": [
+          "あなたは だれですか。",
+          "しつれいですが、おなまえは？",
+          "ミナさんも がくせいです。"
+        ],
+        "correct": 1,
+        "why": "しつれいですが、おなまえは？ là lời mở đầu nhẹ nhàng và lịch sự."
+      },
+      "compose": {
+        "prompt": "Viết câu hỏi tên người mới và một câu xác nhận khi đã nghe tên.",
+        "hint": "しつれいですが / おなまえは？ / ～さんですね。",
+        "sample": "しつれいですが、おなまえは？　ミナさんですね。"
+      },
+      "replace": {
+        "prompt": "Gọi tên Mina một cách lịch sự",
+        "stem": "（　）、よろしくおねがいします。",
+        "options": [
+          "ミナさん",
+          "ミナじん",
+          "わたしさん"
+        ],
+        "answer": 0,
+        "why": "Thêm さん sau tên người khác."
+      },
+      "variation": {
+        "label": "Đổi vai đón tiếp",
+        "prompt": "Bạn đóng vai người tiếp đón, hỏi tên và gọi lại tên người mới.",
+        "tip": "Nói chậm, dùng ～さん và chờ người kia xác nhận."
+      }
+    },
+    {
+      "id": "identity",
+      "title": "Hỏi quốc tịch và nghề nghiệp",
+      "jpTitle": "ベトナムじんですか",
+      "situation": "Trong ngày giới thiệu học viên, Yuki muốn tìm hiểu Linh đến từ đâu và đang làm gì.",
+      "goal": "Hỏi, trả lời về quốc tịch và vai trò.",
+      "place": "Phòng sinh hoạt của trung tâm",
+      "time": "Buổi chiều · sau buổi chào mừng",
+      "relationship": "Yuki là khách mời hỗ trợ; Linh là học viên mới.",
+      "purpose": "Trao đổi quốc tịch và vai trò một cách lịch sự.",
+      "hint": "Chú ý câu hỏi có か và câu trả lời bắt đầu bằng はい.",
+      "location": "lounge",
+      "grammar": [
+        "wa",
+        "question",
+        "no"
+      ],
+      "vocab": [
+        "jin",
+        "gakusei",
+        "kaishain",
+        "hai",
+        "iie"
+      ],
+      "dialogue": [
+        {
+          "who": "Yuki",
+          "jp": "リンさんは ベトナムじんですか。",
+          "vi": "Chị Linh là người Việt Nam phải không?"
+        },
+        {
+          "who": "Linh",
+          "jp": "はい、ベトナムじんです。",
+          "vi": "Vâng, tôi là người Việt Nam."
+        },
+        {
+          "who": "Yuki",
+          "jp": "みなとだいがくの がくせいですか。",
+          "vi": "Chị là sinh viên Đại học Minato phải không?"
+        },
+        {
+          "who": "Linh",
+          "jp": "はい、そうです。",
+          "vi": "Vâng, đúng vậy."
+        }
+      ],
+      "tip": "Thêm か để biến câu trần thuật thành câu hỏi lịch sự. Khi biết người đang được hỏi, có thể bỏ chủ đề thay vì nhắc ～さん liên tục.",
+      "challenge": {
+        "title": "Yuki muốn hỏi Linh có phải là sinh viên không. Câu nào đúng?",
+        "options": [
+          "リンさんは がくせいですか。",
+          "リンさんの がくせいです。",
+          "リンさんも ですか がくせい。"
+        ],
+        "correct": 0,
+        "why": "Câu hỏi danh từ dùng N1 は N2 ですか."
+      },
+      "compose": {
+        "prompt": "Hỏi một người về quốc tịch và nghề nghiệp; tự viết câu trả lời.",
+        "hint": "～じんですか。/ はい、そうです。/ いいえ、～じゃありません。",
+        "sample": "リンさんは ベトナムじんですか。はい、そうです。"
+      },
+      "replace": {
+        "prompt": "Điền cấu trúc hỏi",
+        "stem": "リンさんは がくせいです（　）。",
+        "options": [
+          "の",
+          "か",
+          "も"
+        ],
+        "answer": 1,
+        "why": "Thêm か để đặt câu hỏi."
+      },
+      "variation": {
+        "label": "Đổi thông tin",
+        "prompt": "Thay Việt Nam bằng Nhật Bản và học sinh bằng nhân viên công ty; trả lời sao cho nhất quán.",
+        "tip": "Chỉ thay thông tin, giữ trật tự mẫu câu."
       }
     }
   ],
   "practiceSceneById": {
     "p01": "classmates",
     "p02": "colleague",
-    "p03": "correcting",
+    "p03": "identity",
     "p04": "meeting",
     "p05": "meeting",
     "p06": "correcting",
@@ -246,6 +490,7 @@ window.NPN5Lesson01Scenes=Object.freeze({
     "p13": "meeting",
     "p14": "correcting",
     "p15": "classmates",
-    "p16": "meeting"
-  }
+    "p16": "namecheck"
+  },
+  "editionNote": "Bộ nội dung HORIZON tự biên soạn theo mục tiêu Bài 01; không dùng lời thoại hay audio từ giáo trình."
 });
