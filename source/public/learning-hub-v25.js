@@ -572,5 +572,15 @@ learnPage=function(){const r=route();if((r==='learn/foundation'||r.startsWith('l
 coursePage=function(id){if(id==='foundation'&&window.NPFoundationCourse)return window.NPFoundationCourse.page('course/foundation');return detail(id)};
 titleOf=function(r){return r==='learn'||r==='learn/overview'?'Không gian học tập':originalTitle(r)};
 window.NPHorizonV25={version:'v33',model,activities:()=>activities.map(a=>({...a})),foundationCatalogue:foundationModuleCatalogue,shell:(selected='catalog')=>'<div class="v28-header-shell"><header class="v25-header"><div class="v25-hero-copy"><h1>Không gian học tập</h1><p>Học tiếng Nhật theo từng bước, dễ tìm bài và ôn lại.</p></div></header>'+navigation(selected)+'</div>'};
-if(location.hash==='#learn'||location.hash==='#learn/overview'||location.hash.startsWith('#learn/foundation/')||location.hash==='#learn/foundation'||location.hash==='#course/foundation')queueMicrotask(()=>render(false));
+// v1.37: On a hard refresh app.js initially renders its legacy learning view,
+  // before this extension and Foundation scripts exist. Refresh *all* learning
+  // routes once the document is parsed and the full hub is installed.
+  // In particular #learn/training must never stay on v23's fallback UI.
+  function refreshAfterLearningBootstrap(){
+    const destination=route();
+    if(destination==='learn'||destination.startsWith('learn/')||destination.startsWith('course/'))render(false);
+  }
+  if(document.readyState==='loading'||!document.readyState)
+    document.addEventListener('DOMContentLoaded',refreshAfterLearningBootstrap,{once:true});
+  else queueMicrotask(refreshAfterLearningBootstrap);
 })();

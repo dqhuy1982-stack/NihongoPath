@@ -150,6 +150,14 @@
  coursePage=coursePageV23;
  const previousTitle=titleOf;
  titleOf=function(r){if(r==='learn'||r.startsWith('learn/'))return 'Không gian học tập';if(r.startsWith('course/'))return 'Khóa học · '+(levels.find(x=>x.id===r.split('/')[1])?.name||'');return previousTitle(r)};
- if(!location.hash||location.hash==='#learn'||location.hash.startsWith('#learn/')||location.hash.startsWith('#course/'))queueMicrotask(function(){render(false)});
+ // v1.37: Defer the initial learning refresh until all scripts are loaded.
+  // If the newer hub registers, it owns the refresh; this fallback only
+  // applies when v23 is loaded standalone.
+  if(!location.hash||location.hash==='#learn'||location.hash.startsWith('#learn/')||location.hash.startsWith('#course/')){
+    const refreshLegacy=()=>{if(!window.NPHorizonV25)render(false)};
+    if(document.readyState==='loading'||!document.readyState)
+      document.addEventListener('DOMContentLoaded',refreshLegacy,{once:true});
+    else queueMicrotask(refreshLegacy);
+  }
  window.NPLearningHub=Object.freeze({version:mark,read:state});
 })();
