@@ -71,7 +71,7 @@ test('N5 hard reload refreshes the new route once after scripts bootstrap',()=>{
 });
 test('Assets load after learning hub and respect responsive/mobile accessibility',()=>{
  const hub=html.indexOf('src="learning-hub-v25.js?v=145"');
- const path=html.indexOf('src="n5-path-v145.js?v=145"');
+ const path=html.indexOf('src="n5-path-v145.js?v=146"');
  assert.ok(hub>=0&&path>hub,'N5 wrapper must load after existing course routing');
  assert.ok(html.includes('n5-path-v145.css?v=145'));
  assert.match(css,/@media\(max-width:560px\)/);
