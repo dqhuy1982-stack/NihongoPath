@@ -449,9 +449,7 @@ function indexPage(){
   const stats=moduleStats(m);
   return '<a href="#'+path(m.id)+'" class="v33-level-card"><div class="v33-level-top"><span class="v33-index">'+String(i+1).padStart(2,'0')+'</span>'+tag(stats.reviewed+' / '+stats.total+' mẫu đã luyện')+'</div><h3>'+clean(m.title)+'</h3><p>'+clean(m.subtitle)+'</p><span class="v33-track"><span style="width:'+(stats.total?Math.round(stats.reviewed/stats.total*100):0)+'%"></span></span><div class="v33-level-bottom"><span>'+(stats.due?'Đến hạn ôn: '+stats.due+' mẫu':'Học theo thứ tự gợi ý')+'</span><strong>Mở chặng →</strong></div></a>';
  }).join('')+'</div>';
- return wrap('<div class="v33-intro"><div><p class="v33-eyebrow">NỀN TẢNG · LỘ TRÌNH HỌC</p><h2>Nhận mặt chữ, nhớ âm, rồi dùng được.</h2><p>Chọn chặng và nhóm bài. Học, Flashcard, Luyện tập và Kiểm tra nằm ngay trong từng nhóm.</p></div><a href="#'+path(first.id)+'" class="v33-primary">Tiếp tục học →</a></div>'+
- '<div id="foundation-topics">'+(catalogue||fallback)+'</div>'+
- '<div class="v33-notice"><strong>Về tiến độ:</strong> Đã luyện không có nghĩa đã nhớ lâu; các kết quả được ghi nhận theo từng hồ sơ và không thay thế chứng nhận JLPT.</div>');
+ return wrap('<div id="foundation-topics" class="v123-foundation-index">'+(catalogue||fallback)+'</div>');
 }
 
 function navigationFor(cfg){
