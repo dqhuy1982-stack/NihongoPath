@@ -155,7 +155,7 @@ function countControls(s){
 
 function recordRibbon(cfg){
  const v=attemptStatus(cfg.id,cfg.group,cfg.script);
- const title=v.complete?'✓ Đã hoàn thành bài học':v.practicePassed?'✓ Luyện đạt · còn kiểm tra':
+ const title=v.complete?(DATA.findLessonUnit(cfg.id,cfg.group)?'✓ Đã hoàn thành bài học':'✓ Hoàn thành phạm vi tổng hợp'):v.practicePassed?'✓ Luyện đạt · còn kiểm tra':
   v.practiceDone?'◷ Đã luyện · cần đạt '+PASS_PERCENT+'%':'○ Chưa luyện';
  const test=v.testPassed?'✓ Kiểm tra đạt':v.testDone?'◷ Kiểm tra chưa đạt':'○ Chưa kiểm tra';
  const next=v.complete?nextLearningStep(cfg):null;
