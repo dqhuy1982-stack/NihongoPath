@@ -273,8 +273,8 @@ function page(){
   header()+progressTop()+nav()+
   (alertText?'<p class="n5l-notice" role="status">'+esc(alertText)+'</p>':'')+
   (saveError?'<p class="n5l-save-error" role="alert">'+esc(saveError)+'</p>':'')+
-  '<main class="n5l-body" id="n5l-body">'+(active==='learn'?learnPage():
-   active==='review'&&(!run||run.kind!=='review'||run.learner!==learnerId())?reviewPage():practicePage(active))+'</main>'+
+  '<div class="n5l-body" id="n5l-body">'+(active==='learn'?learnPage():
+   active==='review'&&(!run||run.kind!=='review'||run.learner!==learnerId())?reviewPage():practicePage(active))+'</div>'+
   '<p class="n5l-footnote">Nội dung được HORIZON biên soạn theo mục tiêu ngữ pháp Bài 01; không sao chép nguyên văn sách hoặc audio Minna no Nihongo. Từ vựng có thể khác giữa phiên bản giáo trình.</p></div>';
 }
 function draw(){if(document.querySelector?.('.n5l-root')&&typeof render==='function')render(false)}
