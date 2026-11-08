@@ -213,7 +213,7 @@ function scenePage(){
    (feedback?' disabled':'')+' class="'+(feedback?.choice===i?'is-chosen ':'')+
    (feedback&&i===scene.challenge.correct?'is-right':'')+'">'+
    '<span>'+String.fromCharCode(65+i)+'</span><span lang="ja">'+esc(answer)+'</span></button>').join('')+'</div>'+
-  (feedback?'<div class="n5c-feedback"><strong>'+(feedback.correct?'✓ Đúng ngữ cảnh':'Chưa phù hợp với tình huống')+'</strong>'+
+  (feedback?'<div class="n5c-feedback" role="status"><strong>'+(feedback.correct?'✓ Đúng ngữ cảnh':'Chưa phù hợp với tình huống')+'</strong>'+
    '<p>'+esc(scene.challenge.why)+'</p>'+
    '<button type="button" data-n5l-scene-retry="'+esc(scene.id)+'">Thử trả lời lại ↻</button></div>':'')+
   '</div>'+
@@ -232,7 +232,8 @@ function scenePage(){
 }
 function learnPage(){
  const lookupOpen=chapter!=='scenes';
- return (chapter==='scenes'?scenePage():'')+
+ return (chapter==='scenes'?scenePage():
+  '<div class="n5c-return"><button type="button" data-n5l-section="scenes">← Trở lại tình huống</button><span>Tra cứu kiến thức liên quan</span></div>')+
   '<details class="n5c-reference"'+(lookupOpen?' open':'')+'>'+
   '<summary><span><strong>Kiến thức & tra cứu Bài 01</strong><small>30 từ · 6 mẫu câu · bài đọc · 3 bài nghe</small></span><span aria-hidden="true">⌄</span></summary>'+
   '<div class="n5c-reference-inner"><div class="n5l-section-tabs" role="navigation" aria-label="Tra cứu Bài 01">'+
@@ -367,7 +368,7 @@ function reviewPage(){
 }
 function page(){
  if(!D)return '<section class="v25-wrap"><p>Chưa tải được nội dung Bài 01.</p><a href="#course/N5">Trở lại khóa N5</a></section>';
- return '<div class="v25-wrap n5l-root" data-n5-lesson="01" data-n5-version="146">'+
+ return '<div class="v25-wrap n5l-root" data-n5-lesson="01" data-n5-version="147">'+
   header()+progressTop()+nav()+
   (alertText?'<p class="n5l-notice" role="status">'+esc(alertText)+'</p>':'')+
   (saveError?'<p class="n5l-save-error" role="alert">'+esc(saveError)+'</p>':'')+
