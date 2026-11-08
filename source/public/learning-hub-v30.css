@@ -395,3 +395,101 @@ body[data-season="winter"] .v25-wrap{
  .v25-wrap .v134-inline-training .v33-pane{padding:7px!important}
  .v25-wrap .v133-side-menu{display:none!important}
 }
+
+
+/* HORIZON v1.34 · Restrained help controls and illustrated guided spotlight. */
+.v25-wrap .v134-heading{
+ display:flex;align-items:flex-start;justify-content:space-between;gap:12px
+}
+.v25-wrap .v134-heading>div{min-width:0}
+.v25-wrap .v134-guide-tools{display:inline-flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.v25-wrap .v134-guide-tools button{
+ appearance:none;border:1px solid var(--v25-line);border-radius:8px;
+ padding:7px 10px;background:var(--v25-bg);font:inherit;
+ color:var(--v25-ink);font-size:10px;font-weight:730;
+ white-space:nowrap;cursor:pointer;min-height:31px
+}
+.v25-wrap .v134-guide-tools button:hover{
+ background:var(--v25-rose);border-color:var(--v25-ink)
+}
+.v25-wrap .v134-guide-tools button[aria-pressed="true"]{
+ background:color-mix(in srgb,var(--v25-rose) 58%,var(--v25-bg))
+}
+.v25-wrap .v134-guide-tools button:focus-visible{
+ outline:2px solid var(--v25-ink);outline-offset:3px
+}
+.v134-guide-layer{
+ position:fixed;inset:0;z-index:2147483300;
+ background:transparent;isolation:isolate;pointer-events:auto
+}
+.v134-guide-spot{
+ position:fixed;z-index:1;pointer-events:none;border-radius:11px;
+ box-shadow:0 0 0 220vmax rgba(26,17,24,.64),0 0 0 2px rgba(255,253,252,.95);
+ background:rgba(255,255,255,.07);
+ transition:left .65s cubic-bezier(.2,.7,.2,1),top .65s cubic-bezier(.2,.7,.2,1),
+ width .45s,height .45s
+}
+.v134-guide-cursor{
+ position:fixed;top:0;left:0;z-index:3;pointer-events:none;
+ filter:drop-shadow(0 2px 3px rgba(21,12,18,.38));
+ transition:transform .9s cubic-bezier(.18,.7,.16,1)
+}
+.v134-guide-card,.v134-guide-confirm{
+ position:fixed;z-index:4;box-sizing:border-box;
+ border:1px solid rgba(174,129,145,.43);border-radius:14px;
+ background:var(--v25-bg,#fffbfa);color:var(--text,#34272e);
+ padding:20px 21px;box-shadow:0 14px 46px rgba(24,14,21,.29);
+ font-family:inherit
+}
+.v134-guide-card[hidden],.v134-guide-confirm[hidden]{display:none!important}
+.v134-guide-eyebrow{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.v134-guide-eyebrow>span{
+ font-size:9px;letter-spacing:.1em;font-weight:790;color:var(--v25-ink,#754b5c)
+}
+.v134-guide-title,.v134-guide-confirm h3{
+ margin:13px 0 8px;font-size:18px;font-weight:760;line-height:1.35;
+ color:var(--v25-ink,#754b5c)
+}
+.v134-guide-body,.v134-guide-confirm p{
+ font-size:12px;line-height:1.7;color:var(--muted,#72656a);margin:0
+}
+.v134-guide-preference{
+ display:flex;align-items:center;gap:8px;margin-top:15px;
+ font-size:11px;font-weight:620;color:var(--text,#34272e);cursor:pointer
+}
+.v134-guide-preference input{
+ width:16px;height:16px;accent-color:var(--v25-ink,#754b5c)
+}
+.v134-guide-buttons{
+ display:flex;align-items:center;justify-content:flex-end;
+ gap:7px;flex-wrap:wrap;margin-top:18px
+}
+.v134-guide-buttons button{
+ appearance:none;background:transparent;color:var(--v25-ink,#754b5c);
+ padding:10px 12px;min-height:38px;border:1px solid var(--v25-line,#e5d0d5);
+ border-radius:9px;font:inherit;font-size:11px;font-weight:740;
+ cursor:pointer
+}
+.v134-guide-buttons button:disabled{opacity:.34;cursor:default}
+.v134-guide-buttons button.v134-guide-next{
+ background:var(--v25-ink,#754b5c);color:var(--v25-bg,#fffbfa);border-color:var(--v25-ink,#754b5c)
+}
+.v134-guide-buttons button:focus-visible{
+ outline:2px solid var(--v25-ink,#754b5c);outline-offset:3px
+}
+.v134-guide-confirm{
+ left:50%;top:50%;transform:translate(-50%,-50%);
+ width:min(400px,calc(100vw - 28px))
+}
+@media(max-width:620px){
+ .v25-wrap .v134-heading{flex-direction:column;gap:9px}
+ .v25-wrap .v134-guide-tools{justify-content:flex-start}
+ .v25-wrap .v134-guide-tools button{min-height:34px}
+ .v134-guide-card{padding:15px 16px}
+ .v134-guide-title{font-size:16px}
+ .v134-guide-buttons{gap:5px}
+ .v134-guide-buttons button{padding:8px 9px}
+}
+@media(prefers-reduced-motion:reduce){
+ .v134-guide-spot,.v134-guide-cursor{transition:none!important}
+}
