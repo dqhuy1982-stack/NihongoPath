@@ -294,7 +294,7 @@ const notes=[
   }
 ];
 const byId=Object.fromEntries(cast.map(c=>[c.id,c]));
-const escapeHtml=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[ch]));
+const escapeHtml=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 /* SVG art intentionally authored as native shapes: works offline, no third-party image license. */
 function svgHead(c,x,y,scale=1){
  const face=c.face||'#f1c9af',hair=c.hair||'#392f31',accent=c.accent||'#677c9c';
