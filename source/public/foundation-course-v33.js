@@ -789,12 +789,14 @@ function nextPracticeScope(cfg){
 function nextLearningStep(cfg){
  if(!cfg?.mod)return null;
  const units=DATA.getLessonUnits(cfg.id),i=units.findIndex(u=>u.id===cfg.group);
- if(i>=0&&i<units.length-1){
-  const unit=units[i+1];return {label:'Học bài tiếp theo',title:unit.title,href:'#'+path(cfg.id,unit.id,'learn',cfg.mod.script)};
- }
+ const link=(mod,unit,label)=>({label,title:unit.title,
+  href:'#'+path(mod.id,unit.id,'learn',mod.script)});
+ if(i>=0&&i<units.length-1)return link(cfg.mod,units[i+1],'Học bài tiếp theo');
+ const missed=units.find(unit=>!attemptStatus(cfg.id,unit.id,cfg.mod.script).complete);
+ if(missed)return link(cfg.mod,missed,'Hoàn thành bài còn lại');
  const index=DATA.modules.findIndex(m=>m.id===cfg.id),next=DATA.modules[index+1];
  if(next){
-  const unit=DATA.getLessonUnits(next.id)[0];
+  const unit=DATA.getLessonUnits(next.id).find(u=>!attemptStatus(next.id,u.id,next.script).complete)||DATA.getLessonUnits(next.id)[0];
   if(unit)return {label:'Sang chặng tiếp theo',title:next.title+' · '+unit.title,
    href:'#'+path(next.id,unit.id,'learn',next.script)};
  }
@@ -826,7 +828,15 @@ function summaryView(cfg,s){
  const percent=total?Math.round(correct/total*100):0;
  const grade=resultGrade(percent);
  const isTest=cfg.mode==='mix',passed=percent>=PASS_PERCENT,hasWrong=correct<total;
- const next=nextPracticeScope(cfg),attempt=attemptStatus(cfg.id,cfg.group,cfg.script);
+ const attempt=attemptStatus(cfg.id,cfg.group,cfg.script);
+ const next=attempt.complete?nextLearningStep(cfg):nextPracticeScope(cfg);
+ const nativeScript=cfg.mod.script==='hira'?'hira':cfg.mod.script==='kata'?'kata':cfg.script;
+ const routeMode=mode=>'#learn/training/foundation/'+cfg.id+'/'+cfg.group+'/'+nativeScript+'/'+mode;
+ const completionTitle=attempt.complete?
+  (DATA.findLessonUnit(cfg.id,cfg.group)?'✓ Đã hoàn thành bài học':'✓ Đã hoàn thành phạm vi luyện'):
+  attempt.practicePassed&&!attempt.testPassed?'✓ Luyện đạt · còn kiểm tra':
+  attempt.testPassed&&!attempt.practicePassed?'✓ Kiểm tra đạt · còn luyện':
+  'Đã lưu kết quả lượt này';
  const avg=s.roundMs?.length?timeLabel(s.roundMs.reduce((a,b)=>a+b,0)/s.roundMs.length):'—';
  const headline=isTest?'Đã hoàn thành bài kiểm tra':grade.tone==='good'?'Lượt luyện rất tốt!':'Lượt luyện hoàn tất';
  const description=correct===total?
@@ -836,9 +846,11 @@ function summaryView(cfg,s){
  const scopeName=next?.title||'Chọn một phạm vi luyện mới';
  const mainAction=grade.tone==='retry'&&hasWrong?
   '<button type="button" data-f34="mode" data-value="review" class="v142-primary">Ôn chữ cần luyện <span aria-hidden="true">→</span></button>':
-  next?'<a class="v142-primary" href="'+clean(next.href)+'">'+(next.kind==='expanded'?'Mở rộng phạm vi':'Luyện nội dung tiếp')+' <span aria-hidden="true">→</span></a>':
-  '<button type="button" data-f33="restart" class="v142-primary">Luyện lượt mới <span aria-hidden="true">↻</span></button>';
- const secondaryAction=next||grade.tone==='retry'&&hasWrong?
+  attempt.complete&&next?'<a class="v142-primary" href="'+clean(next.href)+'">'+clean(next.label)+' <span aria-hidden="true">→</span></a>':
+  attempt.practicePassed&&!attempt.testPassed?'<a class="v142-primary" href="'+routeMode('mix')+'">Kiểm tra để hoàn thành <span aria-hidden="true">→</span></a>':
+  attempt.testPassed&&!attempt.practicePassed?'<a class="v142-primary" href="'+routeMode('quiz')+'">Luyện để hoàn thành <span aria-hidden="true">→</span></a>':
+  '<button type="button" data-f33="restart" class="v142-primary">Luyện lại <span aria-hidden="true">↻</span></button>';
+ const secondaryAction=attempt.complete||attempt.practicePassed||attempt.testPassed||grade.tone==='retry'&&hasWrong?
   '<button type="button" data-f33="restart" class="v142-secondary">Luyện lại</button>':'';
  const wrongNote=hasWrong&&grade.tone!=='retry'?
   '<button type="button" class="v142-inline-review" data-f34="mode" data-value="review">Ôn chữ sai ↗</button>':'';
@@ -854,15 +866,21 @@ function summaryView(cfg,s){
   '<div class="v142-score-block"><div><div class="v142-score-line"><strong>'+correct+'</strong><span>/ '+total+'</span></div>'+
   '<div class="v142-score-caption">câu trả lời đúng</div></div>'+
   '<div class="v141-grade-row">'+gradeBadge(percent,isTest?'test':'practice')+'</div></div></div>'+
-  '<div class="v142-metrics"><span><strong>'+status+'</strong></span>'+
+  '<div class="v142-metrics"><span><strong>'+status+'</strong></span><span class="v143-completion-status">'+completionTitle+'</span>'+
   (isTest?'<span>Đúng chậm <strong>'+s.slow+'</strong></span><span>Sai <strong>'+s.errors+'</strong></span><span>TB phản hồi <strong>'+avg+'</strong></span>':'')+
   wrongNote+'</div>'+
   '<div class="v142-next"><div class="v142-next-copy"><span class="v142-next-caption">'+
-  (grade.tone==='retry'?'GỢI Ý ÔN TẬP':'GỢI Ý LUYỆN TIẾP')+'</span>'+
-  '<strong class="v142-next-title">'+(grade.tone==='retry'?'Củng cố phần vừa học':clean(scopeName))+'</strong>'+
+  (grade.tone==='retry'?'GỢI Ý ÔN TẬP':attempt.complete?'BƯỚC TIẾP THEO':'CẦN LÀM TIẾP')+'</span>'+
+  '<strong class="v142-next-title">'+(grade.tone==='retry'?'Củng cố phần vừa học':attempt.complete?clean(scopeName):
+  attempt.practicePassed&&!attempt.testPassed?'Kiểm tra tổng hợp để hoàn thành bài':
+  attempt.testPassed&&!attempt.practicePassed?'Luyện nhận diện để hoàn thành bài':
+  'Tiếp tục luyện tập')+'</strong>'+
   '<p class="v142-next-note">'+(grade.tone==='retry'?
    (next?'Sau khi ôn, có thể tiếp tục: '+clean(scopeName):'Luyện lại với câu hỏi mới để củng cố.'):
-   (next?'Tiếp tục khi bạn sẵn sàng.':'Bạn có thể chọn nội dung khác để luyện.'))+'</p></div>'+
+   (attempt.complete?'Bài này đã đạt yêu cầu; bạn vẫn có thể làm lại để ôn.':
+    attempt.practicePassed&&!attempt.testPassed?'Lượt luyện đã đạt. Cần thêm một bài kiểm tra từ '+PASS_PERCENT+'%.':
+    attempt.testPassed&&!attempt.practicePassed?'Bạn đã kiểm tra đạt. Hoàn thành thêm lượt luyện từ '+PASS_PERCENT+'%.':
+    'Luyện và kiểm tra đạt từ '+PASS_PERCENT+'% để có dấu ✓ hoàn thành.'))+'</p></div>'+
   '<div class="v142-actions">'+mainAction+secondaryAction+
   '<button type="button" data-f33="expand-scope" class="v139-custom-scope v141-scope-invite v142-tertiary" title="Chọn bài học, cấp độ hoặc nội dung mới">Đổi phạm vi <span aria-hidden="true">↗</span></button>'+
   '</div></div>'+
