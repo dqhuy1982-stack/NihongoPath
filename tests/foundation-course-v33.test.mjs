@@ -22,7 +22,14 @@ function harness(options={}){
    hooks.click({target:{closest:selector},preventDefault(){}});
  };
  const start=()=>click('start');
- return {data:window.NPFoundationCurriculum,ui:window.NPFoundationCourse,window,location,click,start,audioFiles,setAudioPref:on=>map.set('horizon.foundation.feedbackSounds.v1',on?'on':'off'),setLegacyAudioPref:on=>map.set('horizon.foundation.autoAnswerAudio',on?'on':'off'),setProfile:v=>profile=v,getRenders:()=>renders};
+  const changeCount=(preset,value)=>{
+    const eventFor=(data)=>hooks.change({target:{closest:selector=>selector.includes('[data-f140-count]')?{dataset:data}:null}});
+    eventFor({f140Count:preset});
+    if(preset==='custom'&&value!==undefined){
+      hooks.change({target:{closest:selector=>selector.includes('[data-f140-count]')?{dataset:{f140Custom:''},value:String(value)}:null}});
+    }
+  };
+ return {data:window.NPFoundationCurriculum,ui:window.NPFoundationCourse,window,location,click,start,changeCount,audioFiles,setAudioPref:on=>map.set('horizon.foundation.feedbackSounds.v1',on?'on':'off'),setLegacyAudioPref:on=>map.set('horizon.foundation.autoAnswerAudio',on?'on':'off'),setProfile:v=>profile=v,getRenders:()=>renders};
 }
 test('Foundational syllabus has complete canonical counts and meaningful distinct modules',()=>{
  const {data}=harness();
@@ -1579,4 +1586,106 @@ test('v1.39 next-scope links leave matching results without keeping old popup',(
  assert.match(html,/data-f33="expand-scope"/);
  assert.match(html,/class="v139-result-next is-compact"/);
  assert.match(html,/href="#learn\/training\/foundation\/hiragana\/unit-2\/hira\/match"/);
+});
+
+test('v1.40 question counts support 10, 15, 20 and a custom length without losing Kana coverage',()=>{
+ const h=harness(),route='learn/training/foundation/hiragana/unit-1/hira/quiz';
+ h.location.hash='#'+route;
+ let html=h.ui.embeddedPractice();
+ assert.match(html,/data-f140-count/);
+ assert.match(html,/10 câu/);
+ assert.equal(h.ui.session().questions.length,10);
+ const ids=()=>h.ui.session().questions.map(q=>q.item.id);
+ h.changeCount('15');
+ assert.equal(h.ui.session().questions.length,15);
+ assert.equal(new Set(ids()).size,10,'repeated cycle covers all ten available Kana');
+ for(let i=1;i<ids().length;i++)assert.notEqual(ids()[i],ids()[i-1],'avoid identical adjacent prompts');
+ h.changeCount('20');
+ assert.equal(h.ui.session().questions.length,20);
+ h.changeCount('custom',37);
+ assert.equal(h.ui.session().questions.length,37);
+ assert.equal(h.ui.countPrefs().value,37);
+ assert.equal(h.ui.countPrefs().preset,'custom');
+ html=h.ui.embeddedPractice();
+ assert.match(html,/data-f140-custom/);
+ assert.match(html,/value="37"/);
+ assert.match(html,/Lặp chữ nếu cần/);
+ h.setProfile('demo-b');
+ assert.equal(h.ui.countPrefs().value,10,'preferences separated by learner profile');
+ h.setProfile('demo-a');
+ assert.equal(h.ui.countPrefs().value,37);
+});
+test('v1.40 fully completed runs record each attempt; course tick requires practice and an >=80% exam',()=>{
+ const h=harness(),base='learn/training/foundation/hiragana/unit-1/hira';
+ function finish(mode,size,incorrect=0){
+   h.location.hash='#'+base+'/'+mode;
+   h.ui.embeddedPractice();
+   h.changeCount(String(size));
+   if(mode==='mix')h.start();
+   const session=h.ui.session();
+   assert.equal(session.questions.length,size);
+   for(let i=0;i<size;i++){
+     const q=session.questions[i];
+     const answer=i<incorrect?q.choices.find(x=>x.id!==q.correct).id:q.correct;
+     h.click('answer',answer);h.click('next');
+   }
+   assert.equal(session.finished,true);
+   return session;
+ }
+ const unit=()=>h.ui.attemptStatus('hiragana','unit-1','hira');
+ assert.equal(unit().complete,false);
+ const one=finish('quiz',10);
+ assert.equal(one.correct,10);
+ assert.equal(unit().practiceCount,1);
+ assert.equal(unit().testDone,false);
+ assert.equal(unit().complete,false);
+ finish('mix',10,3);
+ assert.equal(unit().testCount,1);
+ assert.equal(unit().testPassed,false,'seven of ten is not a passing HORIZON practice check');
+ assert.equal(unit().complete,false);
+ finish('mix',15,3);
+ assert.equal(unit().testCount,2);
+ assert.equal(unit().testPassed,true,'twelve of fifteen meets the declared 80% criterion');
+ assert.equal(unit().complete,true);
+ assert.equal(unit().bestTest,80);
+ assert.equal(unit().history.length,3);
+ assert.ok(unit().history.every(a=>a.completedAt&&a.total&&a.moduleId==='hiragana'&&a.unitId==='unit-1'));
+ const statusBefore=h.ui.store().items;
+ h.setProfile('demo-b');
+ assert.equal(h.ui.attemptStatus('hiragana','unit-1','hira').practiceCount,0);
+ assert.equal(h.ui.attemptStatus('hiragana','unit-1','hira').complete,false);
+ h.setProfile('demo-a');
+ assert.equal(h.ui.attemptStatus('hiragana','unit-1','hira').testCount,2);
+ assert.equal(h.ui.store().items,statusBefore,'attempt tracking leaves original per-character stats intact');
+});
+test('v1.40 catalogue exposes separate learned/tested states and exact attempt history',()=>{
+ const h=harness(),window={NPFoundationCurriculum:h.data,NPFoundationCourse:h.ui};
+ const src=load('learning-hub-v25.js').replace(/\}\)\(\);\s*$/,'window.__v140=foundationModuleCatalogue;})();');
+ runInNewContext(src,{window,document:{addEventListener(){}},location:{hash:'#learn/modules'},
+  P:()=>({id:'demo-a',goal:'Nền tảng'}),render:()=>{},learnPage:()=>'',coursePage:()=>'',titleOf:()=>'',icon:()=>'',Locale:{t:x=>x}});
+ let html=window.__v140();
+ assert.match(html,/0 \/ 17 bài hoàn thành/);
+ assert.match(html,/Chưa bắt đầu/);
+ assert.match(html,/Luyện ngay/);
+ assert.match(html,/Kiểm tra bài này/);
+ const item=h.ui.store();
+ item.attemptRuns=[
+  {id:'one',moduleId:'hiragana',unitId:'unit-1',script:'hira',kind:'practice',mode:'quiz',total:10,correct:8,percent:80,completedAt:'2026-11-01T00:00:00.000Z'},
+  {id:'two',moduleId:'hiragana',unitId:'unit-1',script:'hira',kind:'test',mode:'mix',total:10,correct:7,percent:70,completedAt:'2026-11-02T00:00:00.000Z'},
+  {id:'three',moduleId:'hiragana',unitId:'unit-1',script:'hira',kind:'test',mode:'mix',total:15,correct:13,percent:87,completedAt:'2026-11-03T00:00:00.000Z'}
+ ];
+ html=window.__v140();
+ assert.match(html,/1 \/ 17 bài hoàn thành/);
+ assert.match(html,/✓ Hoàn thành/);
+ assert.match(html,/Lịch sử · 3 lượt/);
+ assert.match(html,/Lượt 1 · Luyện/);
+ assert.match(html,/Lượt 2 · Kiểm tra/);
+ assert.match(html,/Lượt 3 · Kiểm tra/);
+ assert.match(html,/13\/15 · 87%/);
+ assert.match(html,/1 \/ 4 hoàn thành/);
+ assert.match(html,/href="#learn\/training\/foundation\/hiragana\/unit-1\/hira\/quiz"/);
+ assert.match(html,/href="#learn\/training\/foundation\/hiragana\/unit-1\/hira\/mix"/);
+ const css=load('learning-hub-v30.css');
+ assert.match(css,/v140-topic-badge/);
+ assert.match(css,/v140-catalog-history/);
 });
