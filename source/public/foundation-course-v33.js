@@ -1110,6 +1110,19 @@ document.addEventListener('keydown',event=>{
  event.preventDefault();localSwitch('tab','learn');
 });
 document.addEventListener('click',event=>{
+ const nextScope=event.target.closest?.('.v139-next-link');
+ if(nextScope&&document.querySelector?.('.v33-foundation')){
+  event.preventDefault();
+  const destination=nextScope.getAttribute?.('href')||'';
+  if(!destination.startsWith('#learn/training/foundation/'))return;
+  removeSummaryHost();removeFoundationOverlay();removeFinishDock();
+  play=null; // a new scope must start with a new exercise, not the old score
+  if(typeof history!=='undefined'&&history.replaceState)
+   history.replaceState(null,'',destination);
+  else location.hash=destination;
+  render(false);
+  return;
+ }
  const entry=event.target.closest?.('[data-f130="tab"]');
  if(entry&&document.querySelector('.v34-workspace-shell')){
   const selected=entry.dataset.value;
@@ -1136,5 +1149,5 @@ document.addEventListener('click',event=>{
  if(!document.querySelector('.v33-foundation'))return;
  event.preventDefault();perform(b);
 });
-window.NPFoundationCourse={version:'v39',page,embeddedPractice,store,stats:countStats,path,questionFor,choosePool,session:()=>play};
+window.NPFoundationCourse={version:'v39',page,embeddedPractice,store,stats:countStats,path,questionFor,choosePool,nextPracticeScope,session:()=>play};
 })();
