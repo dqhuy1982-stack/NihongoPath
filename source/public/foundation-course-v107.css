@@ -997,3 +997,180 @@ body > .v120-preflight-host .v38-dialog-spec>div{
  .v33-foundation .v121-foundation-entry-actions{justify-content:flex-start;width:100%}
  .v33-foundation .v121-foundation-entry-actions a{flex:1 1 auto;white-space:normal}
 }
+
+/* HORIZON v1.25 · Guided lesson / quiet practice workspace
+   Two contextual destinations only; exercises are requested, not advertised
+   as a permanent multilevel menu.  Existing exercise modes remain routable. */
+.v34-studying .v34-stagebar.v113-stagebar,
+.v112-foundation.v34-studying .v34-stagebar{
+ grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ width:min(380px,100%)!important;
+ margin-left:auto!important;margin-right:auto!important;
+}
+.v34-studying .v34-stagebar .v34-stage-tab{min-width:0!important}
+.v34-studying .v126-task-area{min-width:0;width:100%}
+.v34-studying .v126-focused-work{
+ display:block!important;grid-template-columns:none!important;
+ width:100%!important;min-width:0!important;
+}
+.v34-studying .v126-focused-work>.v33-pane{
+ width:100%!important;min-width:0!important;max-width:none!important;
+}
+.v34-studying .v126-practice-hub{
+ width:100%;max-width:850px;margin:0 auto;padding:clamp(12px,2.6vw,28px) 0;
+}
+.v34-studying .v126-practice-intro{margin:0 0 18px;padding:0 3px}
+.v34-studying .v126-practice-intro p{
+ font-size:10px;letter-spacing:.15em;font-weight:760;
+ color:var(--v33-ink,#754b5c);margin:0 0 8px;
+}
+.v34-studying .v126-practice-intro h2{
+ font-size:clamp(22px,2.3vw,30px);font-weight:700;line-height:1.3;
+ color:var(--v33-ink,#754b5c);margin:0 0 8px;
+}
+.v34-studying .v126-practice-intro>span{
+ display:block;font-size:12px;line-height:1.7;color:var(--v112-muted,#72656a);
+}
+.v34-studying .v126-practice-choices{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;
+}
+.v34-studying .v126-practice-choice{
+ display:flex;flex-direction:column;gap:12px;min-width:0;min-height:155px;
+ padding:19px 16px;border:1px solid var(--v33-line,#e5d0d5);
+ border-radius:15px;background:var(--v33-paper,#fffaf9);
+ text-decoration:none!important;color:var(--v33-ink,#754b5c)!important;
+ transition:border-color .18s,box-shadow .18s,transform .18s;
+}
+.v34-studying .v126-practice-choice:hover{
+ border-color:var(--v33-ink,#754b5c);
+ box-shadow:0 9px 28px rgba(67,39,51,.07);transform:translateY(-2px);
+}
+.v34-studying .v126-choice-number{font:500 20px/1.1 Georgia,serif;opacity:.7}
+.v34-studying .v126-choice-copy{display:flex;flex-direction:column;gap:7px;flex:1}
+.v34-studying .v126-choice-copy strong{font-size:15px;font-weight:750}
+.v34-studying .v126-choice-copy small{
+ font-size:11px;line-height:1.6;color:var(--v112-muted,#72656a);
+}
+.v34-studying .v126-choice-arrow{font-size:17px;align-self:flex-end;line-height:1}
+.v34-studying .v126-hub-footnote{
+ margin:17px 4px 0;font-size:10.5px;line-height:1.65;
+ color:var(--v112-muted,#72656a);
+}
+.v34-studying .v126-workbook.v39-book-layout{
+ display:flex!important;flex-direction:column!important;
+ grid-template-columns:none!important;gap:12px!important;
+ min-width:0!important;max-width:100%!important;
+}
+.v34-studying .v126-workbook>.v39-book-nav.v126-book-nav{
+ display:block!important;position:static!important;inset:auto!important;
+ width:100%!important;min-width:0!important;max-width:none!important;
+ height:auto!important;min-height:0!important;max-height:none!important;
+ overflow:visible!important;margin:0!important;padding:10px 14px!important;
+ background:var(--v33-paper,#fffaf9);border:1px solid var(--v33-line,#e5d0d5);
+ border-radius:13px;box-shadow:none!important;
+}
+.v34-studying .v126-workbook>.v33-pane{
+ width:100%!important;max-width:none!important;min-width:0!important;
+}
+.v34-studying .v126-book-top{
+ display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+}
+.v34-studying .v126-back,.v34-studying .v126-context button{
+ padding:7px 0;border:0;background:transparent;color:var(--v33-ink,#754b5c);
+ font:inherit;font-size:12px;font-weight:700;cursor:pointer;
+}
+.v34-studying .v126-back:hover,.v34-studying .v126-context button:hover{
+ text-decoration:underline;text-underline-offset:3px;
+}
+.v34-studying .v126-active-type{
+ display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap;
+}
+.v34-studying .v126-active-type small{
+ font-size:9px;letter-spacing:.1em;color:var(--v112-muted,#72656a);
+}
+.v34-studying .v126-active-type strong{
+ font-size:12px;color:var(--v33-ink,#754b5c);
+}
+.v34-studying .v126-exercise-picker{margin-top:8px}
+.v34-studying .v126-exercise-picker>summary{
+ cursor:pointer;display:inline-flex;align-items:center;gap:6px;
+ color:var(--v33-ink,#754b5c);font-size:11px;font-weight:710;
+ padding:5px 0;list-style:none;
+}
+.v34-studying .v126-exercise-picker>summary::-webkit-details-marker{display:none}
+.v34-studying .v126-exercise-picker>summary span{transition:transform .16s}
+.v34-studying .v126-exercise-picker[open]>summary span{transform:rotate(180deg)}
+.v34-studying .v126-exercise-menu{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:12px;padding-top:12px;
+ border-top:1px solid var(--v33-line,#e5d0d5);margin-top:7px;
+}
+.v34-studying .v126-exercise-menu .v106-menu-group{
+ margin:0!important;padding:0!important;min-width:0!important;
+}
+.v34-studying .v126-exercise-menu .v105-menu-entries{
+ display:flex!important;flex-wrap:wrap!important;gap:6px!important;
+}
+.v34-studying .v126-exercise-menu .v39-book-tab{
+ flex:0 1 auto!important;width:auto!important;min-height:34px!important;
+ padding:6px 9px!important;border:1px solid var(--v33-line,#e5d0d5);
+ border-radius:9px;font-size:11px!important;gap:6px!important;
+}
+.v34-studying .v126-exercise-menu .v39-book-symbol{
+ font-size:14px!important;flex:none!important;max-width:19px!important;
+}
+.v34-studying .v126-exercise-menu .v39-book-chevron{display:none!important}
+.v34-studying .v126-exercise-menu .v105-audio-toggle{
+ grid-column:1/-1;width:max-content!important;margin:0!important;
+}
+.v34-studying .v126-context{padding:4px 12px 2px}
+.v34-studying .v126-learning-options{
+ width:max-content;max-width:100%;margin:7px 0 10px;
+ font-size:11px;color:var(--v112-muted,#72656a);
+}
+.v34-studying .v126-learning-options>summary{
+ display:inline-flex;align-items:center;gap:5px;list-style:none;
+ cursor:pointer;font-size:11px;color:var(--v112-muted,#72656a);
+}
+.v34-studying .v126-learning-options>summary::-webkit-details-marker{display:none}
+.v34-studying .v126-option-set{
+ display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+ margin-top:9px;padding:12px;
+ border:1px solid var(--v33-line,#e5d0d5);border-radius:10px;
+ background:var(--v33-paper,#fffaf9);
+}
+.v34-studying .v126-learn-next{
+ display:flex;align-items:center;justify-content:flex-end;gap:16px;flex-wrap:wrap;
+}
+.v34-studying .v126-writing-link{
+ font-size:11px;font-weight:660;color:var(--v33-ink,#754b5c);
+ text-decoration:none;border-bottom:1px solid transparent;
+}
+.v34-studying .v126-writing-link:hover{border-bottom-color:currentColor}
+.v34-studying .v126-practice-choice:focus-visible,
+.v34-studying .v126-exercise-picker>summary:focus-visible,
+.v34-studying .v126-learning-options>summary:focus-visible,
+.v34-studying .v126-back:focus-visible{
+ outline:2px solid var(--v33-ink,#754b5c);outline-offset:3px;
+}
+@media(max-width:720px){
+ .v34-studying .v126-practice-choices{grid-template-columns:1fr;gap:9px}
+ .v34-studying .v126-practice-choice{
+  min-height:0;padding:13px 14px;display:grid;
+  grid-template-columns:28px minmax(0,1fr) 20px;
+  align-items:center;gap:12px;
+ }
+ .v34-studying .v126-choice-number{font-size:19px}
+ .v34-studying .v126-choice-copy strong{font-size:13px}
+ .v34-studying .v126-choice-copy small{font-size:10px}
+ .v34-studying .v126-choice-arrow{align-self:center}
+ .v34-studying .v126-exercise-menu{grid-template-columns:1fr;gap:13px}
+ .v34-studying .v126-book-top{align-items:flex-start}
+ .v34-studying .v126-learn-next{align-items:stretch;justify-content:center}
+ .v34-studying .v126-learn-next>.v33-primary{flex:1 1 100%}
+}
+@media(prefers-reduced-motion:reduce){
+ .v34-studying .v126-practice-choice,
+ .v34-studying .v126-exercise-picker>summary span{transition:none!important}
+ .v34-studying .v126-practice-choice:hover{transform:none!important}
+}
