@@ -848,3 +848,23 @@ body[data-season="winter"] .v25-wrap{
  background:color-mix(in srgb,var(--v25-rose) 46%,var(--v25-bg))
 }
 .v25-wrap .v140-next-course:hover{border-color:var(--v25-ink)}
+
+
+/* v1.41 · When requested from a result, show the matching scope filter once. */
+.v25-wrap .v132-scope-change.v141-scope-spotlight{
+ position:relative;isolation:isolate;
+ animation:v141-scope-filter-hint 1.8s ease-in-out 3;
+ background:color-mix(in srgb,var(--v25-rose) 68%,var(--v25-bg));
+ border-color:color-mix(in srgb,var(--v25-ink) 36%,var(--v25-line))
+}
+@keyframes v141-scope-filter-hint{
+ 0%,100%{box-shadow:0 0 0 0 rgba(122,78,97,0);transform:translateY(0)}
+ 40%{box-shadow:0 0 0 6px rgba(122,78,97,.10);transform:translateY(-1px)}
+ 68%{box-shadow:0 0 0 11px rgba(122,78,97,.025);transform:translateY(0)}
+}
+@media(prefers-reduced-motion:reduce){
+ .v25-wrap .v132-scope-change.v141-scope-spotlight{
+  animation:none!important;outline:2px solid var(--v25-ink);
+  outline-offset:2px
+ }
+}

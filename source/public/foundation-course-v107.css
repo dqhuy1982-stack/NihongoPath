@@ -1508,3 +1508,63 @@ body > .v120-preflight-host .v38-dialog-spec>div{
  padding:7px 10px;border:1px solid var(--v33-line,#e5d0d5);
  border-radius:8px;background:color-mix(in srgb,var(--v33-soft,#f5e9eb) 37%,var(--v33-paper,#fffaf9))
 }
+
+
+/* v1.41 · Keep question length in the existing question heading, next to
+   Câu 1/20. The page never gains a separate question-count row. */
+.v34-studying .v33-pane-head .v37-head-meta{
+ display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap;
+ min-width:0;
+}
+.v34-studying .v141-count-control{
+ display:inline-flex;align-items:center;gap:6px;flex-wrap:nowrap;
+ margin:0;padding:0;border:0;max-width:100%;min-width:0;
+ font-size:10px;line-height:1.35;color:var(--v33-ink,#754b5c)
+}
+.v34-studying .v141-count-control label{
+ display:inline-flex;align-items:center;gap:5px;min-width:0;
+ font-size:10px;font-weight:730;white-space:nowrap;
+}
+.v34-studying .v141-count-control select,
+.v34-studying .v141-count-control input{
+ width:auto;min-width:0;box-sizing:border-box;height:33px;
+ padding:5px 23px 5px 9px;border-radius:9px;
+ border:1px solid var(--v33-line,#e5d0d5);
+ background:var(--v33-paper,#fffaf9);color:var(--text,#33272e);
+ font:inherit;font-size:11px;cursor:pointer
+}
+.v34-studying .v141-count-control select{min-width:100px}
+.v34-studying .v141-count-control input{
+ width:65px;padding:5px 6px;cursor:text;text-align:center;
+ font-variant-numeric:tabular-nums
+}
+.v34-studying .v141-count-control .v141-custom-wrap[hidden]{
+ display:none!important
+}
+.v34-studying .v141-count-control select:focus-visible,
+.v34-studying .v141-count-control input:focus-visible{
+ outline:2px solid var(--v33-ink,#754b5c);outline-offset:2px
+}
+@media(max-width:680px){
+ .v34-studying .v33-pane-head .v37-head-meta{gap:6px;justify-content:flex-start}
+ .v34-studying .v141-count-control label{gap:4px}
+ .v34-studying .v141-count-control select{min-width:87px}
+ .v34-studying .v141-count-control input{width:58px}
+}
+/* A single quiet invitation after results, not an endless flashing CTA. */
+.v34-studying .v139-custom-scope.v141-scope-invite{
+ position:relative;isolation:isolate;
+ animation:v141-custom-scope-hint 1.85s ease-in-out 3;
+ border-radius:9px
+}
+@keyframes v141-custom-scope-hint{
+ 0%,100%{box-shadow:0 0 0 0 rgba(122,78,97,0);transform:translateY(0)}
+ 42%{box-shadow:0 0 0 6px rgba(122,78,97,.10);transform:translateY(-1px)}
+ 72%{box-shadow:0 0 0 10px rgba(122,78,97,.025);transform:translateY(0)}
+}
+@media(prefers-reduced-motion:reduce){
+ .v34-studying .v139-custom-scope.v141-scope-invite{
+  animation:none!important;outline:1px solid var(--v33-ink,#754b5c);
+  outline-offset:2px
+ }
+}
