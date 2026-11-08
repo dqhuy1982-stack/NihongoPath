@@ -651,6 +651,45 @@ function quizView(cfg,s){
  (s.choice?'<div class="v33-feedback '+(s.choice===q.correct?'positive':'negative')+'" role="status"><strong>'+(s.choice===q.correct?(s.grade?.slow?'Đúng nhưng cần luyện phản xạ.':'Chính xác.'):'Chưa đúng. Đáp án: '+clean(q.choices.find(x=>x.id===q.correct)?.label))+'</strong>'+(cfg.mode==='mix'?'<small class="v37-answer-speed">'+timeLabel(s.lastMs)+' · '+(s.grade?.outcome==='incorrect'?'Đã lưu câu sai vào sổ ôn':s.grade?.slow?'Đã lưu vào sổ ôn vì chậm':'Đúng trong ngưỡng luyện')+'</small>':'<small class="v39-casual-feedback">'+(s.choice===q.correct?'Đã ghi nhận câu đúng':'Đã thêm chữ cần ôn')+' · Không tính thời gian</small>')+'<p>'+clean(q.note)+'</p>'+(s.hintsUsed?'<small class="v101-assisted">Có dùng '+s.hintsUsed+' gợi ý — cần ôn lại không trợ giúp.</small>':'')+'<button class="v36-feedback-audio" data-f33="feedback-audio" type="button">▶ Nghe đáp án</button></div>'+insightPanel(q.item,cfg)+'<div class="v33-pane-actions v104-sticky-next" role="navigation" aria-label="Điều hướng câu luyện"><span class="v104-next-caption">'+(s.index+1)+' / '+s.questions.length+' câu · Có thể đọc thêm hoặc tiếp tục</span><button class="v33-primary" data-f33="next">'+(s.index+1===s.questions.length?'Xem kết quả':'Câu tiếp theo')+' →</button></div>':'<p class="v33-subline">Chọn một đáp án. Kết quả và giải thích hiện ngay, không cần bấm “Kiểm tra” thêm lần nữa.</p>')+
  '</section>';
 }
+/* v1.39: Next scope suggestions follow released curriculum, not a mastery badge. */
+function nextPracticeScope(cfg){
+ if(!cfg?.mod)return null;
+ const units=DATA.getLessonUnits(cfg.id),index=units.findIndex(x=>x.id===cfg.group);
+ let id=cfg.id,group='all',script=cfg.script,kind='expanded',title='';
+ if(index>=0&&index<units.length-1){
+  group=units[index+1].id;title='Bài tiếp theo · '+units[index+1].title;kind='next';
+ }else if(cfg.group!=='all'){
+  title='Toàn bộ '+cfg.mod.title.replace(/^\d+\s*[·.:-]\s*/,'');
+ }else{
+  const i=DATA.modules.findIndex(x=>x.id===cfg.id),next=DATA.modules[i+1];
+  if(!next)return null;
+  id=next.id;group=DATA.getLessonUnits(id)[0]?.id||'all';
+  script=next.script==='hira'?'hira':next.script==='kata'?'kata':'both';
+  title=next.title.replace(/^\d+\s*[·.:-]\s*/,'')+' · '+(DATA.findLessonUnit(id,group)?.title||'Bài đầu tiên');
+  kind='next-module';
+ }
+ const target={id,mod:DATA.byId[id],group,script,mode:cfg.mode};
+ let mode=cfg.mode;
+ if(['build','game-build','missing','vocab-ja-vi','vocab-vi-ja'].includes(mode)&&contextual(target).length<2)
+  mode='quiz';
+ if(!DATA.take(id,group,script).length&&id!=='small')return null;
+ return {title,kind,mode,href:'#learn/training/foundation/'+id+'/'+group+'/'+script+'/'+mode};
+}
+function scopeAfterResult(cfg,correct,total,compact=false){
+ if(!cfg?.mod)return '';
+ const next=nextPracticeScope(cfg);
+ const advice=total&&correct/total<.7?
+  'Bạn có thể luyện lại phần này trước khi thử nội dung mới.':
+  'Bạn có thể mở rộng nội dung. Một lượt làm tốt chưa đồng nghĩa đã nhớ lâu.';
+ return '<section class="v139-result-next'+(compact?' is-compact':'')+'" aria-label="Gợi ý phạm vi luyện tiếp">'+
+  '<div class="v139-next-copy"><span class="v139-next-eyebrow">✦ GỢI Ý LUYỆN TIẾP</span>'+
+  '<strong>'+clean(next?.title||'Khám phá phạm vi luyện khác')+'</strong><p>'+advice+'</p></div>'+
+  '<div class="v139-next-actions">'+
+  (next?'<a class="v139-next-link" href="'+clean(next.href)+'">'+(next.kind==='expanded'?'Mở rộng phạm vi':'Luyện nội dung tiếp')+' <span aria-hidden="true">→</span></a>':'')+
+  '<button type="button" data-f33="expand-scope" class="v139-custom-scope">Tự đổi phạm vi <span aria-hidden="true">↗</span></button>'+
+  '</div></section>';
+}
+
 function summaryView(cfg,s){
  const total=s.questions?.length||0;
  const avg=s.roundMs?.length?timeLabel(s.roundMs.reduce((a,b)=>a+b,0)/s.roundMs.length):'—';
