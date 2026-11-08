@@ -363,3 +363,72 @@
 @media(prefers-reduced-motion:reduce){
  .v33-foundation .v123-chapter-tab{transition:none}
 }
+
+/* HORIZON v1.24 · 17 meaningful lessons instead of 40 micro-lesson buttons.
+   Keep the existing ivory/plum visual language, with one clear action per lesson. */
+.v33-foundation .v125-catalog .v123-topic-panes{
+ max-height:none!important;overflow-y:visible!important;overscroll-behavior:auto!important;
+}
+.v33-foundation .v125-catalog .v123-catalog-heading{margin-bottom:12px!important}
+.v33-foundation .v125-catalog .v125-lesson{
+ border:1px solid transparent;border-radius:12px;
+ margin:4px 0 7px;overflow:hidden;
+ background:var(--v25-bg,#fffaf9);
+}
+.v33-foundation .v125-catalog .v125-lesson:hover,
+.v33-foundation .v125-catalog .v125-lesson:focus-within{
+ border-color:var(--v25-line,#e5d0d5);
+ background:color-mix(in srgb,var(--v25-rose,#f4e7eb) 26%,var(--v25-bg,#fffaf9));
+}
+.v33-foundation .v125-catalog .v125-lesson .v121-topic-main{
+ min-height:67px!important;gap:11px!important;padding:11px 12px 8px!important;
+}
+.v33-foundation .v125-catalog .v125-lesson .v121-topic-copy strong{font-size:13px!important;line-height:1.4}
+.v33-foundation .v125-catalog .v125-lesson .v121-topic-copy small{font-size:11px!important;line-height:1.5}
+.v33-foundation .v125-catalog .v125-lesson-open{
+ flex:none;white-space:nowrap;font-size:11px;font-weight:720;
+ color:var(--v25-ink,#754b5c);display:inline-flex;align-items:center;gap:5px;
+}
+.v33-foundation .v125-catalog .v125-lesson-open span{font-size:18px;font-weight:400}
+.v33-foundation .v125-lesson-parts{
+ margin:0 12px 10px 73px;padding:0;
+ color:var(--muted,#71686e);
+}
+.v33-foundation .v125-lesson-parts>summary{
+ list-style:none;display:inline-flex;align-items:center;gap:5px;
+ font-size:10.5px;cursor:pointer;padding:5px 0;
+ font-weight:600;color:var(--muted,#71686e);
+}
+.v33-foundation .v125-lesson-parts>summary::-webkit-details-marker{display:none}
+.v33-foundation .v125-lesson-parts>summary:hover{color:var(--v25-ink,#754b5c)}
+.v33-foundation .v125-lesson-parts>summary span{transition:transform .16s ease}
+.v33-foundation .v125-lesson-parts[open]>summary span{transform:rotate(180deg)}
+.v33-foundation .v125-parts-list{
+ display:flex;flex-wrap:wrap;gap:6px;margin:5px 0 1px;
+}
+.v33-foundation .v125-parts-list a{
+ display:inline-flex;align-items:center;gap:6px;min-height:31px;
+ text-decoration:none;color:var(--v25-ink,#754b5c);font-size:10.5px;
+ border:1px solid var(--v25-line,#e5d0d5);
+ border-radius:8px;padding:6px 9px;background:var(--v25-bg,#fffaf9);
+}
+.v33-foundation .v125-parts-list a:hover{
+ background:var(--v25-rose,#f4e7eb);
+}
+.v33-foundation .v125-lesson-parts summary:focus-visible,
+.v33-foundation .v125-parts-list a:focus-visible{
+ outline:2px solid var(--v25-ink,#754b5c);outline-offset:2px;
+}
+@media(max-width:760px){
+ .v33-foundation .v125-catalog .v123-topic-panes{max-height:none!important}
+ .v33-foundation .v125-catalog .v125-lesson .v121-topic-main{
+  min-height:64px!important;padding:10px 8px 8px!important;gap:8px!important;
+ }
+ .v33-foundation .v125-catalog .v125-lesson-open{font-size:0;gap:0}
+ .v33-foundation .v125-catalog .v125-lesson-open span{font-size:20px}
+ .v33-foundation .v125-lesson-parts{margin-left:57px;margin-right:8px}
+ .v33-foundation .v125-lesson-parts>summary{font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){
+ .v33-foundation .v125-lesson-parts>summary span{transition:none}
+}
