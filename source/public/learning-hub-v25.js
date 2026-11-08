@@ -280,11 +280,11 @@ function foundationModuleCatalogue(){
   '<div class="v123-catalog-layout"><nav class="v123-chapter-tabs" aria-label="Chọn chặng Nền tảng">'+records.map(({m,index,groups})=>
     '<button type="button" class="v123-chapter-tab'+(index===0?' is-active':'')+'" data-v123-select="'+safe(m.id)+'" aria-controls="v123-panel-'+safe(m.id)+'" aria-current="'+(index===0?'true':'false')+'">'+
     '<span class="v123-chapter-number">'+String(index+1).padStart(2,'0')+'</span>'+
-    '<span class="v123-chapter-label">'+safe(m.title.replace(/^\\d+\\s*[·.:-]\\s*/,''))+'</span>'+
+    '<span class="v123-chapter-label">'+safe(m.title.replace(/^\d+\s*[·.:-]\s*/,''))+'</span>'+
     '<small>'+groups.length+' bài</small></button>').join('')+'</nav>'+
    '<div class="v123-topic-panes">'+records.map(({m,index,groups})=>
     '<section class="v123-topic-pane" id="v123-panel-'+safe(m.id)+'" data-v123-pane="'+safe(m.id)+'" '+(index===0?'':'hidden')+'>'+
-    '<div class="v123-pane-heading"><div><strong>'+safe(m.title.replace(/^\\d+\\s*[·.:-]\\s*/,''))+'</strong><p>'+safe(m.subtitle)+'</p></div>'+
+    '<div class="v123-pane-heading"><div><strong>'+safe(m.title.replace(/^\d+\s*[·.:-]\s*/,''))+'</strong><p>'+safe(m.subtitle)+'</p></div>'+
     '<a href="#'+engine.path(m.id,'all','learn')+'">Học cả chặng ↗</a></div>'+
     '<div class="v123-topic-list">'+groups.join('')+'</div></section>').join('')+'</div></div>'+
   '<p class="v121-catalog-note">Tiến độ “đã luyện” chỉ tính mẫu có câu trả lời đã ghi nhận trong hồ sơ hiện tại; không đồng nghĩa đã nhớ lâu. Bài kiểm tra tổng hợp dùng cùng nguồn dữ liệu, không phải chứng chỉ JLPT.</p>'+
