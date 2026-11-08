@@ -1281,7 +1281,8 @@ test('v1.33 left exercise menu navigates directly and mobile chooser stays compa
  for(const mode of ['quiz','reverse','truefalse','listen','listen-match','match']){
   assert.ok(html.includes('href="#learn/foundation/hiragana/unit-1/'+mode+'/hira"'),mode+' points to existing exercise');
  }
- assert.doesNotMatch(html,/href="#learn\/foundation\/hiragana\/unit-1\/vocab-ja-vi/);
+ // This unit already includes valid short Kana words; keep matching word modes available.
+ assert.ok(html.includes('href="#learn/foundation/hiragana/unit-1/vocab-ja-vi/hira"'));
  location.hash='#learn/training/N5/all';html=window.__v133(null);
  assert.match(html,/BÀI LUYỆN N5/);
  assert.match(html,/href="#quiz\/n5-greetings"/);
