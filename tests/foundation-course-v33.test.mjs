@@ -373,7 +373,7 @@ test('Global UI footer shows unobtrusive v1.01 beside HORIZON tagline',()=>{
  const app=load('app.js'),hub=load('learning-hub-v25.js');
  assert.ok(app.includes('Học theo cách của bạn'));
  assert.ok(app.includes('horizon-brand-version'));
- assert.ok(app.includes('v1.35'));
+ assert.ok(app.includes('v1.36'));
  assert.ok(!app.includes('class="horizon-ui-version"'));
  assert.ok(load('index.html').includes('horizon-brand-version.css?v=106'));
  assert.ok(!hub.includes('HORIZON · Learning Hub v33 · Recorded progress'));
@@ -423,7 +423,7 @@ test('v1.01 offers three hints and records assisted correct answers for review',
 });
 test('v1.01 includes answer audio and precise connected-book CSS',()=>{
  const app=load('app.js'),html=load('index.html'),css=load('foundation-course-v101.css');
- assert.ok(app.includes('v1.35'));
+ assert.ok(app.includes('v1.36'));
  assert.ok(html.includes('foundation-course-v101.css?v=101'));
  assert.ok(html.includes('foundation-course-v102.css?v=102'));
  assert.ok(html.includes('foundation-course-v103.css?v=103'));
@@ -433,7 +433,7 @@ test('v1.01 includes answer audio and precise connected-book CSS',()=>{
  assert.ok(html.includes('foundation-curriculum-v33.js?v=124'));
  assert.ok(html.includes('foundation-course-v33.js?v=135'));
  assert.ok(html.includes('foundation-course-v107.css?v=131'));
- assert.ok(load('app.js').includes('v1.35</small>'));
+ assert.ok(load('app.js').includes('v1.36</small>'));
  assert.ok(css.includes('v101-match-grid'));
  assert.ok(css.includes('[data-connected="yes"]'));
 });
@@ -557,7 +557,7 @@ test('v1.05 auto answer audio can be turned off without disabling manual listeni
  h.click('feedback-audio');
  assert.ok(h.audioFiles.length>0,'manual answer playback is still available');
 });
-test('v1.35 central Practice replaces deeply nested exercise picker',()=>{
+test('v1.36 central Practice replaces deeply nested exercise picker',()=>{
  const h=harness(),base='learn/foundation/hiragana/unit-1';
  h.location.hash='#'+base+'/practice';
  const course=h.ui.page(base+'/practice');
@@ -699,8 +699,8 @@ test('The learning UI does not alter the existing lesson engine or global learne
  assert.ok(html.includes('foundation-course-v39.css?v=39'));
  assert.ok(html.includes('foundation-course-v40.css?v=100'));
  assert.ok(html.includes('foundation-course-v101.css?v=101'));
- assert.ok(html.includes('app.js?v=135'));
- assert.ok(html.includes('learning-hub-v25.js?v=135'));
+ assert.ok(html.includes('app.js?v=136'));
+ assert.ok(html.includes('learning-hub-v25.js?v=136'));
  assert.ok(html.includes('foundation-course-v33.js?v=135'));
  assert.ok(html.includes('foundation-course-v33.js?v=135'));
  assert.ok(load('foundation-course-v33.js').includes('data-f38="start"'));
@@ -1127,8 +1127,8 @@ test('v1.25 catalogue uses single stable Kana glyphs and legible primary button'
 });
 
 
-// v1.35: louder, peak-normalized feedback WAV; original audio behavior from v1.27. on a direct graded click, never Japanese reading.
-test('v1.35 correct/wrong have audible media feedback and independent manual pronunciation',()=>{
+// v1.36: louder, peak-normalized feedback WAV; original audio behavior from v1.27. on a direct graded click, never Japanese reading.
+test('v1.36 correct/wrong have audible media feedback and independent manual pronunciation',()=>{
  const h=harness(),route='learn/foundation/hiragana/a/quiz';
  h.setLegacyAudioPref(false); // v1.26 incorrectly read this old key.
  h.location.hash='#'+route;h.ui.page(route);h.start();
@@ -1151,7 +1151,7 @@ test('v1.35 correct/wrong have audible media feedback and independent manual pro
  h.click('feedback-audio');
  assert.equal(h.audioFiles.filter(x=>x.includes('kana-audio')).length,2);
 });
-test('v1.35 word-builder plays once on grading, not while selecting Kana',()=>{
+test('v1.36 word-builder plays once on grading, not while selecting Kana',()=>{
  const h=harness(),route='learn/foundation/small/pause/build';
  h.location.hash='#'+route;h.ui.page(route);h.start();
  const s=h.ui.session(),word=s.cards[0],glyphs=Array.from(word.glyph);
@@ -1164,7 +1164,7 @@ test('v1.35 word-builder plays once on grading, not while selecting Kana',()=>{
  assert.deepEqual(h.audioFiles,['assets/feedback/correct.wav?v=2']);
  assert.match(h.ui.page(route),/data-f33="feedback-audio"/);
 });
-test('v1.35 feedback assets are standard little-endian mono PCM WAV files',()=>{
+test('v1.36 feedback assets are standard little-endian mono PCM WAV files',()=>{
  for(const name of ['correct','incorrect']){
   const src=readFileSync(new URL('assets/feedback/'+name+'.wav',root));
   assert.equal(src.toString('ascii',0,4),'RIFF');
@@ -1184,7 +1184,7 @@ test('v1.35 feedback assets are standard little-endian mono PCM WAV files',()=>{
  }
 });
 
-test('v1.35 lesson action paths retain exact filtered scope without nested menus',()=>{
+test('v1.36 lesson action paths retain exact filtered scope without nested menus',()=>{
  const h=harness(),base='learn/foundation/hiragana/unit-1';
  h.location.hash='#'+base+'/practice';
  const page=h.ui.page(base+'/practice');
@@ -1197,7 +1197,7 @@ test('v1.35 lesson action paths retain exact filtered scope without nested menus
   assert.match(output,/href="#learn\/training\/foundation\/hiragana\/unit-1\/hira">‹ Dạng bài/);
  }
 });
-test('v1.35 global Practice filters Foundation chapters, units, script and N5 truthfully',()=>{
+test('v1.36 global Practice filters Foundation chapters, units, script and N5 truthfully',()=>{
  const h=harness(),window={NPFoundationCurriculum:h.data,NPFoundationCourse:h.ui};
  const hooks={},map=new Map(),localStorage={getItem:key=>map.get(key)||null,setItem:(key,val)=>map.set(key,val)};
  const location={hash:'#learn/training/foundation/hiragana/unit-1/hira'};
@@ -1239,7 +1239,7 @@ test('v1.35 global Practice filters Foundation chapters, units, script and N5 tr
  assert.equal(window.__training.route('lesson','n5-demonstratives',first),'learn/training/N5/n5-demonstratives');
 });
 
-test('v1.35 remembers compact filter expansion and last chosen skill by profile',()=>{
+test('v1.36 remembers compact filter expansion and last chosen skill by profile',()=>{
  const h=harness(),window={NPFoundationCurriculum:h.data,NPFoundationCourse:h.ui};
  const storage=new Map(),localStorage={getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v)};
  const location={hash:'#learn/training/foundation/hiragana/unit-1/hira'},hooks={};let person='demo-a';
@@ -1264,7 +1264,7 @@ test('v1.35 remembers compact filter expansion and last chosen skill by profile'
  assert.match(html,/Luyện nhận diện chữ/);
 });
 
-test('v1.35 left exercise menu navigates directly and mobile chooser stays compact',()=>{
+test('v1.36 left exercise menu navigates directly and mobile chooser stays compact',()=>{
  const h=harness(),window={NPFoundationCurriculum:h.data,NPFoundationCourse:h.ui};
  const location={hash:'#learn/training/foundation/hiragana/unit-1/hira'};
  const script=load('learning-hub-v25.js').replace(/\}\)\(\);\s*$/,'window.__v133=trainingTab;})();');
@@ -1292,7 +1292,7 @@ test('v1.35 left exercise menu navigates directly and mobile chooser stays compa
  assert.match(css,/\.v133-side-menu\{display:none!important\}/);
 });
 
-test('v1.35 native Foundation practice renders and records answers inline',()=>{
+test('v1.36 native Foundation practice renders and records answers inline',()=>{
  const h=harness(),base='learn/training/foundation/hiragana/unit-1/hira';
  h.location.hash='#'+base+'/quiz';
  const markup=h.ui.embeddedPractice();
@@ -1310,7 +1310,7 @@ test('v1.35 native Foundation practice renders and records answers inline',()=>{
  h.location.hash='#'+base+'/mix';
  assert.match(h.ui.embeddedPractice(),/v134-inline-stage/);
 });
-test('v1.35 same-page route preserves sidebar and guided-tour controls',()=>{
+test('v1.36 same-page route preserves sidebar and guided-tour controls',()=>{
  const h=harness(),window={NPFoundationCurriculum:h.data,NPFoundationCourse:h.ui};
  h.location.hash='#learn/training/foundation/hiragana/unit-1/hira/quiz';
  const code=load('learning-hub-v25.js').replace(/\}\)\(\);\s*$/,'window.__inlineV134=trainingTab;})();');
@@ -1341,7 +1341,7 @@ test('v1.35 same-page route preserves sidebar and guided-tour controls',()=>{
  assert.match(guide,/v134-guide-cursor/);
 });
 
-test('v1.35 the scope form aligns its read-only Kana field with dropdown inputs',()=>{
+test('v1.36 the scope form aligns its read-only Kana field with dropdown inputs',()=>{
  const h=harness(),window={NPFoundationCurriculum:h.data,NPFoundationCourse:h.ui};
  const location={hash:'#learn/training/foundation/hiragana/unit-1/hira'};
  const src=load('learning-hub-v25.js').replace(/\}\)\(\);\s*$/,'window.__v135=trainingTab;})();');
@@ -1358,7 +1358,7 @@ test('v1.35 the scope form aligns its read-only Kana field with dropdown inputs'
  assert.match(css,/\.v132-scope \.v131-fixed>strong/);
  assert.match(css,/height:44px/);
 });
-test('v1.35 the interactive guide counts eight to zero and preserves remaining time when paused',()=>{
+test('v1.36 the interactive guide counts eight to zero and preserves remaining time when paused',()=>{
  const src=load('training-guide-v134.js'),css=load('learning-hub-v30.css');
  assert.match(src,/const STEP_MS=8000/);
  assert.match(src,/v135-guide-timer/);
@@ -1376,4 +1376,54 @@ test('v1.35 the interactive guide counts eight to zero and preserves remaining t
  assert.match(css,/v135-guide-clock/);
  assert.match(css,/conic-gradient/);
  assert.match(css,/v135-guide-pause/);
+});
+
+test('v1.36 completed training guide highlights only the scope selector and guide dialogs point at controls',()=>{
+ const source=load('training-guide-v134.js'),css=load('learning-hub-v30.css');
+ assert.match(source,/if\(reason==='complete'\)spotlightScope\(\)/);
+ assert.match(source,/end\('complete'\)/);
+ assert.match(source,/end\('exit'\)/);
+ assert.match(source,/end\('navigation',false\)/);
+ assert.match(source,/tour\.host\.dataset\.bubbleSide=side/);
+ assert.match(source,/--v136-arrow-x/);
+ assert.match(source,/v136-guide-ready/);
+ assert.match(css,/v136-post-tour-bubble/);
+ assert.match(css,/v136-scope-nudge/);
+ assert.match(css,/data-bubble-side="below"/);
+ assert.match(css,/data-bubble-side="above"/);
+ assert.match(css,/prefers-reduced-motion:reduce/);
+});
+test('v1.36 post-guide spotlight is triggered on completion but not on exit',()=>{
+ const guide=load('training-guide-v134.js').replace(/\}\)\(\);\s*$/,
+  'window.__tourUnit={end,spotlightScope,clearScopeHint,setTour:t=>tour=t};})();');
+ const classes=()=>{const values=new Set();return {add:n=>values.add(n),remove:n=>values.delete(n),contains:n=>values.has(n)}};
+ const root={classList:classes(),querySelector:n=>n==='.v132-scope-change'?chip:n==='summary'?summary:null};
+ const chip={classList:classes(),appendChild:n=>{chip.child=n}};
+ const summary={getBoundingClientRect:()=>({top:120,bottom:180})};
+ const events={},removed=[];
+ const document={querySelector:n=>n==='.v132-scope'?root:null,
+  querySelectorAll:()=>[],createElement:()=>({className:'',setAttribute(){},remove(){removed.push('bubble')}}),
+  addEventListener:(name,fn)=>{events[name]=fn},removeEventListener:()=>{}};
+ const clock=[],storage={};
+ const window={innerHeight:768,addEventListener:()=>{},removeEventListener:()=>{}};
+ runInNewContext(guide,{window,document,location:{hash:'#learn/training'},
+  P:()=>({id:'demo-a'}),localStorage:{getItem:()=>null,setItem:(k,v)=>{storage[k]=v}},
+  setTimeout:(fn,ms)=>{clock.push({fn,ms});return clock.length},clearTimeout:()=>{},
+  setInterval:()=>1,clearInterval:()=>{}});
+ const api=window.__tourUnit;
+ let removedHost=0;
+ api.setTour({repeat:false,host:{remove(){removedHost++}}});
+ api.end('exit');
+ assert.equal(removedHost,1);
+ assert.equal(root.classList.contains('v136-post-tour-active'),false);
+ api.setTour({repeat:false,host:{remove(){removedHost++}}});
+ api.end('complete');
+ assert.equal(removedHost,2);
+ assert.equal(root.classList.contains('v136-post-tour-active'),true);
+ assert.equal(chip.classList.contains('v136-scope-attention'),true);
+ assert.equal(chip.child.textContent,'Chọn phạm vi bạn muốn luyện hoặc kiểm tra tại đây');
+ assert.equal(clock.at(-1).ms,7600);
+ api.clearScopeHint();
+ assert.equal(root.classList.contains('v136-post-tour-active'),false);
+ assert.ok(removed.includes('bubble'));
 });
