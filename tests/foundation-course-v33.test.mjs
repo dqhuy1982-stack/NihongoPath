@@ -1845,7 +1845,7 @@ test('v1.43 static entry includes updated design and avoids old cached scripts',
  const html=load('index.html'),brand=load('app.js');
  assert.match(html,/result-v142\.css\?v=142/);
  assert.match(html,/progress-v143\.css\?v=143/);
- assert.match(html,/foundation-course-v33\.js\?v=143/);
- assert.match(html,/learning-hub-v25\.js\?v=143/);
+ assert.match(html,/foundation-course-v33\.js\?v=144/);
+ assert.match(html,/learning-hub-v25\.js\?v=144/);
  assert.match(brand,/v1\.44/);
 });
