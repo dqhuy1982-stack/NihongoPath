@@ -818,7 +818,11 @@ function rememberPracticeMode(id){
 function activityBook(cfg){
  return '<nav class="v39-book-nav v126-book-nav v129-task-header" aria-label="Bài đang luyện">'+
  '<div class="v126-context"><a class="v126-back v133-return-menu" href="#learn/training/foundation/'+cfg.id+'/'+cfg.group+'/'+(cfg.mod.script==='hira'?'hira':cfg.mod.script==='kata'?'kata':cfg.script)+'">‹ Dạng bài</a></div>'+
- '<div class="v126-active-type"><small>ĐANG LUYỆN</small><strong>'+clean(modeNames[cfg.mode]||'Luyện tập')+'</strong></div>'+
+ '<div class="v126-active-type v138-session-state'+(cfg.mode==='mix'?' is-exam':'')+'">'+
+ '<span class="v138-session-symbol" aria-hidden="true">'+(cfg.mode==='mix'?'◇':'✦')+'</span>'+
+ '<span class="v138-session-copy"><small>'+(cfg.mode==='mix'?'ĐANG KIỂM TRA':'ĐANG LUYỆN')+'</small>'+
+ '<strong>'+clean(modeNames[cfg.mode]||'Luyện tập')+'</strong></span>'+
+ '<span class="v138-session-dot" aria-hidden="true"></span></div>'+
  '<button type="button" class="v129-audio" data-f33="toggle-audio" aria-pressed="'+audioPref()+'" aria-label="Âm báo đúng sai: '+(audioPref()?'Bật':'Tắt')+'" title="Chỉ điều chỉnh âm báo đúng/sai. Nút nghe tiếng Nhật hoạt động riêng."><span aria-hidden="true">♫</span> Âm báo <strong>'+(audioPref()?'Bật':'Tắt')+'</strong></button></nav>';
 }
 /* v1.31: Per-lesson Practice is contextual; all optional modes live in main Practice. */
@@ -840,11 +844,14 @@ function workspace(cfg,embedded=false){
  const isLesson=cfg.mode==='learn';
  const s=isHub||isLesson?null:ensurePlay(cfg);
  const intro=cfg.mode==='mix'&&s&&!s.ready&&!s.finished?introPopup(cfg,s):'';
+ // If the portal disappears, keep a visible way to start the timed exam.
+ const quickStart=intro?'<div class="v138-start-strip" role="note"><span><strong>Kiểm tra tổng hợp</strong><small>Nhấn bắt đầu để tính giờ. Nếu hộp hướng dẫn không hiện, chọn đáp án cũng bắt đầu bài.</small></span>'+
+  '<button type="button" class="v138-start-action" data-f38="start">Bắt đầu kiểm tra <span aria-hidden="true">→</span></button></div>':'';
  const body=isHub?practiceLanding(cfg):isLesson?learnView(cfg):cfg.mode==='flash'?flashView(cfg,s):['match','listen-match','game','game-listen'].includes(cfg.mode)?matchingView(cfg,s):['build','game-build'].includes(cfg.mode)?buildView(cfg,s):quizView(cfg,s);
  const task=!isHub&&!isLesson;
  const exercise=task&&cfg.mode!=='flash'&&cfg.mode!=='mix';
- return (embedded?'':navigationFor(cfg))+'<div class="v38-task-area v126-task-area'+(embedded?' v134-inline-stage':'')+'"><div class="'+(exercise?'v39-book-layout v126-workbook':'v33-workspace v126-focused-work')+'"'+(intro?' inert':'')+'>'+
-  (task&&!embedded?activityBook(cfg):'')+body+'</div>'+intro+
+ return (embedded?'':navigationFor(cfg))+'<div class="v38-task-area v126-task-area'+(embedded?' v134-inline-stage':'')+'"><div class="'+(exercise?'v39-book-layout v126-workbook':'v33-workspace v126-focused-work')+'"'+''+'>'+
+  (task&&!embedded?activityBook(cfg):'')+quickStart+body+'</div>'+intro+
   (s&&MATCH_KINDS.includes(s.kind)?roundSummaryView(s,cfg):'')+'</div>';
 }
 
@@ -883,7 +890,15 @@ function perform(el){
  if(op==='flash-audio'&&cfg.mode==='flash'){const state=ensurePlay(cfg);if(state.flipped)pronounce(state.cards[state.index]?.glyph,state.cards[state.index]?.read,true);return;}
  if(cfg.mode==='learn')return;
  const s=ensurePlay(cfg);
- if(!s.ready&&s.kind!=='flash')return;
+ if(!s.ready&&s.kind!=='flash'){
+  // A preflight portal may be missing or outside the screen after a refresh.
+  // The first answer then safely starts the timer instead of silently failing.
+  const dialog=document.querySelector?.('body > .v120-preflight-host .v38-dialog, .v34-workspace-shell .v38-dialog');
+  const bounds=dialog?.getBoundingClientRect?.();
+  const visible=!!dialog&&(!bounds||bounds.width>0&&bounds.height>0&&bounds.bottom>10&&bounds.top<(window.innerHeight||9999)-10);
+  if(s.kind!=='mix'||op!=='answer'||visible)return;
+  s.ready=true;resetClock(s);
+ }
  if(op==='hint'&&s.questions&&!s.choice&&!s.finished){s.hintsUsed=Math.min(3,(s.hintsUsed||0)+1);refresh();return;}
  if(op==='tile'&&['build','game-build'].includes(s.kind)&&!s.answer){
   const i=Number(value);if(!Number.isInteger(i)||i<0||i>=s.tileOrder.length||s.selected.includes(i))return;
