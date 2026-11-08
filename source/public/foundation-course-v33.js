@@ -443,13 +443,17 @@ function moduleStats(module){
 function indexPage(){
  const modules=DATA.modules;
  const first=modules.find(m=>{const s=moduleStats(m);return s.reviewed<s.total})||modules[0];
- return wrap('<div class="v33-intro"><div><p class="v33-eyebrow">NỀN TẢNG · LEARNING PATH</p><h2>Nhận mặt chữ, nhớ âm, rồi dùng được.</h2><p>Mỗi chặng có học hướng dẫn, flashcard, bài ghép cặp, kiểm tra hai chiều và từ ngữ cảnh. Bạn không cần hoàn tất mọi bài một lần.</p></div><div class="v121-foundation-entry-actions"><a href="#'+path(first.id)+'" class="v33-primary">Tiếp tục lộ trình →</a><a href="#learn/modules" class="v33-secondary">Tra cứu 40 nhóm bài</a></div></div>'+
- '<div class="v33-level-grid">'+modules.map((m,i)=>{
- const s=moduleStats(m),num=m.id==='hiragana'?46:m.id==='katakana'?46:m.id==='dakuten'?50:m.id==='yoon'?66:m.id==='small'?DATA.counts.small:DATA.deck.length;
- return '<a href="#'+path(m.id)+'" class="v33-level-card"><div class="v33-level-top"><span class="v33-index">'+String(i+1).padStart(2,'0')+'</span>'+tag(s.reviewed+' / '+s.total+' mẫu đã luyện')+'</div><h3>'+clean(m.title)+'</h3><p>'+clean(m.subtitle)+'</p><span class="v33-track"><span style="width:'+(s.total?Math.round(s.reviewed/s.total*100):0)+'%"></span></span><div class="v33-level-bottom"><span>'+(s.due?'Đến hạn ôn: '+s.due+' mẫu':'Học theo thứ tự gợi ý')+'</span><strong>Mở chặng →</strong></div></a>';
- }).join('')+'</div>'+
- '<div class="v33-notice"><strong>Phân biệt ba trạng thái:</strong> Đã xem flashcard ≠ đã trả lời đúng ≠ ghi nhớ lâu dài. Tiến độ ở đây là số mẫu đã luyện trên thiết bị; không thay thế kết quả bài học chính thức hay chứng nhận trình độ.</div>');
+ // All 40 topic groups live inside the chosen course, not a separate top-level menu.
+ const catalogue=window.NPHorizonV25?.foundationCatalogue?.()||'';
+ const fallback='<div class="v33-level-grid">'+modules.map((m,i)=>{
+  const stats=moduleStats(m);
+  return '<a href="#'+path(m.id)+'" class="v33-level-card"><div class="v33-level-top"><span class="v33-index">'+String(i+1).padStart(2,'0')+'</span>'+tag(stats.reviewed+' / '+stats.total+' mẫu đã luyện')+'</div><h3>'+clean(m.title)+'</h3><p>'+clean(m.subtitle)+'</p><span class="v33-track"><span style="width:'+(stats.total?Math.round(stats.reviewed/stats.total*100):0)+'%"></span></span><div class="v33-level-bottom"><span>'+(stats.due?'Đến hạn ôn: '+stats.due+' mẫu':'Học theo thứ tự gợi ý')+'</span><strong>Mở chặng →</strong></div></a>';
+ }).join('')+'</div>';
+ return wrap('<div class="v33-intro"><div><p class="v33-eyebrow">NỀN TẢNG · LỘ TRÌNH HỌC</p><h2>Nhận mặt chữ, nhớ âm, rồi dùng được.</h2><p>Chọn chặng và nhóm bài. Học, Flashcard, Luyện tập và Kiểm tra nằm ngay trong từng nhóm.</p></div><a href="#'+path(first.id)+'" class="v33-primary">Tiếp tục học →</a></div>'+
+ '<div id="foundation-topics">'+(catalogue||fallback)+'</div>'+
+ '<div class="v33-notice"><strong>Về tiến độ:</strong> Đã luyện không có nghĩa đã nhớ lâu; các kết quả được ghi nhận theo từng hồ sơ và không thay thế chứng nhận JLPT.</div>');
 }
+
 function navigationFor(cfg){
  const m=cfg.mod,s=moduleStats(m);
 
