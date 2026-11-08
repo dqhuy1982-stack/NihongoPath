@@ -307,6 +307,12 @@ document.addEventListener('click',event=>{
    if(run.index>=run.questions.length-1)finish();else{run.index++;alertText='';draw();}
   }return}
 });
+/* Full-page route should work on a refreshed deep link, not only client navigation. */
+if(decodeURIComponent(location.hash.replace(/^#\/?/,''))==='course/N5/lesson/01'){
+ const refresh=()=>render(false);
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});
+ else if(typeof queueMicrotask==='function')queueMicrotask(refresh);
+}
 window.NPN5Lesson01=Object.freeze({version:'v146',page,status,read,
  data:()=>D,route,select:section=>{if(sections.some(x=>x[0]===section)){active='learn';chapter=section;}},
  start:kind=>{if(['practice','check','review'].includes(kind))start(kind)},
