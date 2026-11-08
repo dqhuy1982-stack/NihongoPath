@@ -240,6 +240,8 @@ function start(manual=false){
   if(action==='next'){if(tour.step===tour.steps.length-1)end('complete');else{clearTimer();tour.step++;tour.remainingMs=STEP_MS;layOut()}}
  });
  layOut();
+ // Enable bubble motion only after its initial position is established.
+ host.classList.add('v136-guide-ready');
  host.querySelector('[data-v134-action="next"]')?.focus?.({preventScroll:true});
 }
 function maybeStart(){
