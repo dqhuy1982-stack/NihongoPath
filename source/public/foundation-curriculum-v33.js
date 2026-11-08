@@ -133,6 +133,42 @@ const modules=[
  {id:'small',title:'05 · Chữ nhỏ & âm dài',subtitle:'っ/ッ · ゃゅょ/ャュョ · ー · ァ…',script:'words',stage:'small',groups:[{id:'pause',title:'っ / ッ'},{id:'length',title:'Âm dài ー'},{id:'vowels',title:'Nguyên âm nhỏ'}],note:'Chữ nhỏ và dấu kéo dài không có cách đọc độc lập như Kana thường. Học qua từ và ví dụ đối chiếu.'},
  {id:'mixed',title:'06 · Tổng ôn Kana',subtitle:'Hiragana + Katakana + âm đặc biệt',script:'both',stage:'mixed',groups:[{id:'mixed',title:'Tổng hợp'}],note:'Trộn chữ và dạng bài sau khi đã luyện riêng; kết quả bài kiểm tra chỉ phản ánh đúng lượt làm.'}
 ];
+/* Learner-facing lessons are intentionally broader than raw Kana rows.
+   Underlying 40 row/topic IDs and card IDs remain unchanged for bookmarks,
+   scoring, audio and historic learning progress. */
+const lessonUnits=Object.freeze({
+ hiragana:[
+  {id:'unit-1',title:'Nguyên âm & hàng K',groups:['a','k'],summary:'あ–お · か–こ'},
+  {id:'unit-2',title:'Hàng S · T · N',groups:['s','t','n'],summary:'さ–そ · た–と · な–の'},
+  {id:'unit-3',title:'Hàng H · M · Y',groups:['h','m','y'],summary:'は–ほ · ま–も · や・ゆ・よ'},
+  {id:'unit-4',title:'Hàng R · W · ん',groups:['r','w'],summary:'ら–ろ · わ・を・ん'}
+ ],
+ katakana:[
+  {id:'unit-1',title:'Nguyên âm & hàng K',groups:['a','k'],summary:'ア–オ · カ–コ'},
+  {id:'unit-2',title:'Hàng S · T · N',groups:['s','t','n'],summary:'サ–ソ · タ–ト · ナ–ノ'},
+  {id:'unit-3',title:'Hàng H · M · Y',groups:['h','m','y'],summary:'ハ–ホ · マ–モ · ヤ・ユ・ヨ'},
+  {id:'unit-4',title:'Hàng R · W · ン',groups:['r','w'],summary:'ラ–ロ · ワ・ヲ・ン'}
+ ],
+ dakuten:[
+  {id:'unit-1',title:'Dấu đục · G & Z',groups:['g','z'],summary:'が / ガ · ざ / ザ'},
+  {id:'unit-2',title:'Dấu đục & bán đục · D, B, P',groups:['d','b','p'],summary:'だ / ダ · ば / バ · ぱ / パ'}
+ ],
+ yoon:[
+  {id:'unit-1',title:'Ghép âm cơ bản · KY, SH, CH, NY',groups:['ky','sh','ch','ny'],summary:'きゃ · しゃ · ちゃ · にゃ'},
+  {id:'unit-2',title:'Ghép âm · HY, MY, RY',groups:['hy','my','ry'],summary:'ひゃ · みゃ · りゃ'},
+  {id:'unit-3',title:'Ghép âm đục · GY, J, BY, PY',groups:['gy','j','by','py'],summary:'ぎゃ · じゃ · びゃ · ぴゃ'}
+ ],
+ small:[
+  {id:'pause',title:'Âm ngắt っ / ッ',groups:['pause'],summary:'Âm ngắt trong từ'},
+  {id:'length',title:'Âm dài ー',groups:['length'],summary:'Kéo dài âm trong Katakana'},
+  {id:'vowels',title:'Nguyên âm nhỏ',groups:['vowels'],summary:'ァィゥェォ trong từ mượn'}
+ ],
+ mixed:[
+  {id:'mixed',title:'Tổng ôn Kana',groups:['mixed'],summary:'Hiragana · Katakana · âm đặc biệt'}
+ ]
+});
+const getLessonUnits=id=>lessonUnits[id]||[];
+const findLessonUnit=(id,group)=>getLessonUnits(id).find(u=>u.id===group)||null;
 const smallSamples=[
  {id:'pause',marks:'っ · ッ',title:'っ / ッ — ngắt âm',examples:[['きて','kite','Hãy đến'],['きって','kitte','Tem thư'],['ベッド','beddo','Giường']]},
  {id:'length',marks:'ー',title:'ー — kéo dài nguyên âm',examples:[['コヒ','kohi','Không phải cách viết chuẩn của コーヒー'],['コーヒー','kōhī','Cà phê'],['ケーキ','kēki','Bánh kem']]},
@@ -143,10 +179,11 @@ const take=(id,group='all',script='both')=>{
  const m=byId[id];if(!m)return [];
  if(id==='small')return words.filter(w=>w.stage==='small');
  if(id==='mixed')return deck.filter(x=>script==='both'||x.script===script).concat(words.filter(w=>script==='both'||w.script===script));
- return deck.filter(x=>x.stage===m.stage&&(m.script==='both'||x.script===m.script)&&(group==='all'||x.group===group)&&(script==='both'||x.script===script));
+ const unit=findLessonUnit(id,group);
+ return deck.filter(x=>x.stage===m.stage&&(m.script==='both'||x.script===m.script)&&(group==='all'||(unit?unit.groups.includes(x.group):x.group===group))&&(script==='both'||x.script===script));
 };
 const contextual=(id,script='both')=>words.filter(w=>(script==='both'||w.script===script)&&(id==='mixed'?true:id==='small'?w.stage==='small':id==='hiragana'?w.script==='hira':id==='katakana'?w.script==='kata':w.stage===byId[id]?.stage));
 const counts={hiragana:deck.filter(x=>x.stage==='basic'&&x.script==='hira').length,katakana:deck.filter(x=>x.stage==='basic'&&x.script==='kata').length,dakuten:deck.filter(x=>x.stage==='voiced').length,yoon:deck.filter(x=>x.stage==='yoon').length,small:words.filter(x=>x.stage==='small').length};
 if(counts.hiragana!==46||counts.katakana!==46||counts.dakuten!==50||counts.yoon!==66)throw Error('Foundation curriculum counts are inconsistent');
-window.NPFoundationCurriculum=Object.freeze({version:'v33',modules,rows,deck,words,smallSamples,counts,byId,take,contextual});
+window.NPFoundationCurriculum=Object.freeze({version:'v33',modules,rows,deck,words,smallSamples,counts,byId,take,contextual,lessonUnits,getLessonUnits,findLessonUnit});
 })();
