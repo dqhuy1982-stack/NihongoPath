@@ -22,6 +22,7 @@ function harness({hasAudio=true,hash='#course/N5/lesson/01'}={}){
  const context={window,location,document,localStorage,P:()=>({id:current}),render:v=>renders.push(v),
   queueMicrotask:fn=>fn()};
  runInNewContext(load('n5-lesson01-data-v146.js'),context);
+ runInNewContext(load('world-data.js')+'\n'+load('n5-character-world-v148.js'),context);
  runInNewContext(load('n5-lesson01-context-v147.js'),context);
  const firstCourse=id=>'ORIGINAL COURSE '+id;
  context.coursePage=firstCourse;
@@ -139,8 +140,8 @@ test('Lesson 01 actual assets and entry script load in correct order',()=>{
  const html=load('index.html');
  const p1=html.indexOf('src="n5-path-v145.js?v=146"');
  const p2=html.indexOf('src="n5-lesson01-data-v146.js?v=146"');
- const p3=html.indexOf('src="n5-lesson01-context-v147.js?v=147"');
- const p4=html.indexOf('src="n5-lesson01-v146.js?v=147"');
+ const p3=html.indexOf('src="n5-lesson01-context-v147.js?v=148"');
+ const p4=html.indexOf('src="n5-lesson01-v146.js?v=148"');
  assert.ok(p1>0&&p2>p1&&p3>p2&&p4>p3,'Course route, content, scenarios then lesson controller');
  assert.ok(html.includes('n5-lesson01-v146.css?v=146'));
  assert.ok(html.includes('n5-lesson01-context-v147.css?v=147'));
@@ -151,7 +152,7 @@ test('Lesson 01 actual assets and entry script load in correct order',()=>{
 
 test('v1.47 situation-first learning includes four original dialogues with linked micro tasks',()=>{
  const h=harness(),path=h.ui.page(),scenes=h.ui.scenes();
- assert.equal(h.ui.version,'v147');
+ assert.equal(h.ui.version,'v148');
  assert.equal(scenes.length,4);
  assert.equal(new Set(scenes.map(x=>x.id)).size,4);
  assert.match(path,/Gặp nhau lần đầu/);
