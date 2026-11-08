@@ -280,7 +280,8 @@ function questionView(){
   (checked?'<div class="n5l-question-feedback">'+(run.kind==='check'?
     '<strong>Đã ghi câu trả lời.</strong><p>Đáp án và giải thích sẽ hiển thị sau khi nộp bài kiểm tra.</p>':
     '<strong>'+(answer.correct?'✓ Chính xác':'Chưa đúng')+'</strong><p>'+esc(q.why)+'</p>')+
-    '<button type="button" class="n5l-primary" data-n5l-next="1">'+(run.index===total-1?'Xem kết quả':'Câu tiếp theo →')+'</button></div>':'')+
+    '<button type="button" class="n5l-primary" data-n5l-next="1">'+(run.index===total-1?'Xem kết quả':'Câu tiếp theo →')+'</button>'+
+    (run.kind!=='check'&&LINKED.practiceSceneById[q.id]?'<button type="button" class="n5c-review-link" data-n5l-scene-reference="'+esc(LINKED.practiceSceneById[q.id])+'">Xem tình huống liên quan ↗</button>':'')+'</div>':'')+
   '</section>';
 }
 function answer(index){
@@ -383,6 +384,44 @@ coursePage=function(id){
 document.addEventListener('click',event=>{
  if(!document.querySelector?.('.n5l-root'))return;
  const target=event.target;
+ const sceneNav=target.closest?.('[data-n5l-scene],[data-n5l-scene-reference]');
+ if(sceneNav){
+  event.preventDefault();
+  const id=sceneNav.dataset.n5lScene||sceneNav.dataset.n5lSceneReference;
+  const index=LINKED.scenes.findIndex(x=>x.id===id);
+  if(index>=0){sceneIndex=index;chapter='scenes';active='learn';alertText='';draw();}
+  return;
+ }
+ const sceneChoice=target.closest?.('[data-n5l-scene-answer]');
+ if(sceneChoice){event.preventDefault();chooseSceneAnswer(sceneChoice.dataset.n5lSceneId,Number(sceneChoice.dataset.n5lSceneAnswer));return;}
+ const sceneRetry=target.closest?.('[data-n5l-scene-retry]');
+ if(sceneRetry){event.preventDefault();sceneFeedback.delete(sceneKey(sceneRetry.dataset.n5lSceneRetry));draw();return;}
+ const sceneModel=target.closest?.('[data-n5l-scene-model]');
+ if(sceneModel){
+  event.preventDefault();
+  const key=sceneKey(sceneModel.dataset.n5lSceneModel);
+  if(sceneModels.has(key))sceneModels.delete(key);else sceneModels.add(key);
+  draw();return;
+ }
+ const sceneTranslation=target.closest?.('[data-n5l-scene-translation]');
+ if(sceneTranslation){
+  event.preventDefault();
+  const key=sceneKey(sceneTranslation.dataset.n5lSceneTranslation);
+  if(sceneTranslations.has(key))sceneTranslations.delete(key);else sceneTranslations.add(key);
+  draw();return;
+ }
+ const grammarLink=target.closest?.('[data-n5l-grammar]');
+ if(grammarLink){
+  event.preventDefault();focusedGrammar=grammarLink.dataset.n5lGrammar;
+  if(D.grammar.some(x=>x.id===focusedGrammar)){chapter='grammar';active='learn';draw();}
+  return;
+ }
+ const wordLink=target.closest?.('[data-n5l-vocabulary]');
+ if(wordLink){
+  event.preventDefault();focusedVocab=wordLink.dataset.n5lVocabulary;
+  if(D.vocab.some(x=>x.id===focusedVocab)){chapter='vocab';active='learn';draw();}
+  return;
+ }
  const panel=target.closest?.('[data-n5l-panel]');
  if(panel){event.preventDefault();active=panel.dataset.n5lPanel;alertText='';draw();return}
  const section=target.closest?.('[data-n5l-section]');
@@ -404,14 +443,23 @@ document.addEventListener('click',event=>{
    if(run.index>=run.questions.length-1)finish();else{run.index++;alertText='';draw();}
   }return}
 });
+document.addEventListener('input',event=>{
+ if(!document.querySelector?.('.n5l-root'))return;
+ const field=event.target?.closest?.('textarea[data-n5l-compose]');
+ if(field&&LINKED.scenes.some(x=>x.id===field.dataset.n5lCompose))
+  sceneDrafts.set(sceneKey(field.dataset.n5lCompose),String(field.value||'').slice(0,1200));
+});
 /* Full-page route should work on a refreshed deep link, not only client navigation. */
 if(decodeURIComponent(location.hash.replace(/^#\/?/,''))==='course/N5/lesson/01'){
  const refresh=()=>render(false);
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});
  else if(typeof queueMicrotask==='function')queueMicrotask(refresh);
 }
-window.NPN5Lesson01=Object.freeze({version:'v146',page,status,read,
+window.NPN5Lesson01=Object.freeze({version:'v147',page,status,read,
  data:()=>D,route,select:section=>{if(sections.some(x=>x[0]===section)){active='learn';chapter=section;}},
  start:kind=>{if(['practice','check','review'].includes(kind))start(kind)},
- answer,finish,session:()=>run,audioSupported});
+ answer,finish,session:()=>run,audioSupported,
+ scenes:()=>LINKED.scenes.map(x=>({id:x.id,title:x.title})),sceneCount,
+ chooseSceneAnswer,openScene:id=>{const i=LINKED.scenes.findIndex(x=>x.id===id);if(i>=0){sceneIndex=i;chapter='scenes';active='learn';}},
+ scenePage,progressTop});
 })();
