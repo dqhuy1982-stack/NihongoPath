@@ -1446,3 +1446,55 @@ body > .v120-preflight-host .v38-dialog-spec>div{
  .v34-studying .v139-next-actions{width:100%;display:grid;grid-template-columns:1fr}
  .v34-studying .v139-next-link,.v34-studying .v139-custom-scope{width:100%;min-height:42px}
 }
+
+
+/* v1.40 · Question count is one quiet control, not another navigation level.
+   Applies to quizzes and word-building; pair matching keeps its own format. */
+.v34-studying .v140-count-picker{
+ display:flex;align-items:flex-end;justify-content:flex-end;gap:10px;flex-wrap:wrap;
+ padding:7px 1px 11px;margin-bottom:8px;
+ border-bottom:1px solid color-mix(in srgb,var(--v33-line,#e5d0d5) 65%,transparent)
+}
+.v34-studying .v140-count-picker label{
+ display:flex;align-items:center;gap:7px;
+ font-size:10px;color:var(--v33-ink,#754b5c);font-weight:745
+}
+.v34-studying .v140-count-picker select,
+.v34-studying .v140-count-picker input{
+ min-width:90px;max-width:130px;box-sizing:border-box;
+ min-height:34px;border-radius:9px;border:1px solid var(--v33-line,#e5d0d5);
+ background:var(--v33-paper,#fffaf9);color:var(--text,#33272e);
+ padding:6px 10px;font:inherit;font-size:11px;cursor:pointer
+}
+.v34-studying .v140-count-picker input{
+ max-width:78px;min-width:62px;cursor:text;font-variant-numeric:tabular-nums
+}
+.v34-studying .v140-count-picker small{
+ font-size:10px;color:var(--v112-muted,#72656a);font-weight:550;
+ line-height:1.5;max-width:190px
+}
+.v34-studying .v140-count-picker select:focus-visible,
+.v34-studying .v140-count-picker input:focus-visible{
+ outline:2px solid var(--v33-ink,#754b5c);outline-offset:2px
+}
+.v34-studying .v140-record-ribbon{
+ display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+ margin:12px 0 13px;
+}
+.v34-studying .v140-record-ribbon>span{
+ border:1px solid var(--v33-line,#e5d0d5);border-radius:8px;
+ padding:6px 9px;font-size:10px;color:var(--v112-muted,#72656a);
+ font-weight:670;line-height:1.4
+}
+.v34-studying .v140-record-ribbon>span.is-done{
+ background:color-mix(in srgb,var(--v33-soft,#f5e9eb) 58%,var(--v33-paper,#fffaf9));
+ color:var(--v33-ink,#754b5c)
+}
+.v34-studying .v140-record-ribbon>small{
+ font-size:10px;color:var(--v112-muted,#72656a)
+}
+@media(max-width:720px){
+ .v34-studying .v140-count-picker{justify-content:flex-start;gap:8px}
+ .v34-studying .v140-count-picker label{font-size:10px}
+ .v34-studying .v140-count-picker small{flex-basis:100%;max-width:none}
+}
