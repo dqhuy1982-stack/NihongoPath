@@ -950,7 +950,7 @@ test('v1.24 Foundation uses 17 learner-facing lessons without losing 40 original
  assert.equal(data.modules.length,6);
  const lessons=data.modules.flatMap(m=>data.getLessonUnits(m.id));
  assert.equal(lessons.length,17);
- assert.deepEqual(Array.from(lessons.map(x=>x.groups.length).sort((a,b)=>a-b)),[1,1,1,1,1,2,2,2,2,2,2,3,3,3,3,4,4].sort((a,b)=>a-b));
+ assert.deepEqual(Array.from(lessons.map(x=>x.groups.length).sort((a,b)=>a-b)),[1,1,1,1,2,2,2,2,2,3,3,3,3,3,3,4,4]);
  for(const m of data.modules){
   const units=data.getLessonUnits(m.id);
   const groups=units.flatMap(x=>x.groups);
