@@ -37,7 +37,7 @@ function status(){
  const top=kind=>runs.filter(x=>x.kind===kind);
  const best=kind=>Math.max(0,...top(kind).map(x=>Number(x.percent)||0));
  const practice=top('practice').some(x=>x.percent>=threshold);
- const check=top('check').some(x=>x.percent>=threshold&&x.listeningVerified===true);
+ const check=top('check').some(x=>x.percent>=threshold&&x.listeningVerified===true&&x.byType?.listening?.correct>=2);
  const checked=top('check').some(x=>x.percent>=threshold);
  const latestCheck=top('check').at(-1)||null;
  return {practice,check,checked,complete:practice&&check,
@@ -76,7 +76,7 @@ function speak(id){
 function progressTop(){
  const p=status(),viewed=read().viewed.length;
  const state=p.complete?'<span class="n5l-achieved">✓ Đã hoàn thành Bài 01</span>':
-  p.practice&&p.checked&&!p.check?'<span>Kiểm tra đủ điểm nhưng chưa xác nhận phần nghe</span>':
+  p.practice&&p.checked&&!p.check?'<span>Đủ tổng điểm · cần xác nhận hoặc luyện thêm phần nghe</span>':
   p.practice?'<span>✓ Luyện đạt · còn kiểm tra</span>':
   p.check?'<span>✓ Kiểm tra đạt · còn luyện</span>':'<span>Đang học · chưa hoàn thành</span>';
  return '<div class="n5l-progress"><div>'+state+
@@ -393,12 +393,14 @@ function finish(){
 function finalPage(){
  const result=run.report,p=status(),eligible=result.percent>=threshold;
  const missingAudio=result.kind==='check'&&!result.listeningVerified;
- const passed=eligible&&!missingAudio;
+ const weakListening=result.kind==='check'&&(result.byType?.listening?.correct||0)<2;
+ const passed=eligible&&!missingAudio&&!weakListening;
  return '<section class="n5l-finish"><div class="n5l-finish-label">KẾT QUẢ · '+(result.kind==='check'?'KIỂM TRA':result.kind==='review'?'ÔN LẠI':'LUYỆN TẬP')+'</div>'+
-  '<h2>'+(missingAudio?'Chưa xác nhận phần nghe':passed?'Đã đạt yêu cầu':'Cần củng cố thêm')+'</h2>'+ 
-  '<div class="n5l-finish-score"><strong>'+result.correct+'</strong><span>/ '+result.total+' câu đúng</span><em class="'+(missingAudio?'is-pending':passed?'is-pass':'is-retry')+'">'+result.percent+'%</em></div>'+
+  '<h2>'+(missingAudio?'Chưa xác nhận phần nghe':weakListening?'Cần luyện nghe thêm':passed?'Đã đạt yêu cầu':'Cần củng cố thêm')+'</h2>'+ 
+  '<div class="n5l-finish-score"><strong>'+result.correct+'</strong><span>/ '+result.total+' câu đúng</span><em class="'+(missingAudio||weakListening?'is-pending':passed?'is-pass':'is-retry')+'">'+result.percent+'%</em></div>'+
   '<p>'+(result.kind==='check'&&!result.listeningVerified?
-   'Phần nghe chưa được xác nhận trên thiết bị. Kết quả câu trả lời vẫn lưu, nhưng bài kiểm tra chưa được tính đạt toàn bộ.':
+   'Phần nghe chưa được xác nhận trên thiết bị. Kết quả vẫn lưu, nhưng chưa đủ điều kiện hoàn thành bài.':
+   weakListening?'Tổng điểm đã lưu. Phần nghe mới đúng '+(result.byType?.listening?.correct||0)+'/3; cần tối thiểu 2/3 câu nghe đúng để xác nhận bài.':
    passed?'Kết quả lượt này đạt mốc '+threshold+'%. Ôn lại sau để củng cố khả năng nhớ lâu.':
    'Ôn phần sai rồi làm lại khi sẵn sàng.')+'</p>'+
   '<div class="n5l-type-results">'+Object.entries(result.byType).map(([id,s])=>
@@ -406,7 +408,7 @@ function finalPage(){
   '<p class="n5l-saved">'+(run.saved?'✓ Lượt làm đã lưu riêng cho hồ sơ này':'Lượt làm chưa lưu: '+esc(saveError))+'</p>'+
   '<div class="n5l-finish-next">'+(p.complete?'<strong>✓ Bài 01 đã hoàn thành</strong>':'<strong>'+(p.practice&&!p.check?'Luyện đạt · cần kiểm tra':p.check&&!p.practice?'Kiểm tra đạt · cần luyện':'Học tiếp để hoàn thành Bài 01')+'</strong>')+
   (p.complete?'<p>Bạn có thể ôn lại Bài 01. Bài 02 hiện vẫn đang biên soạn.</p>':
-  '<p>Hoàn thành khi luyện đạt ≥'+threshold+'% và kiểm tra đạt ≥'+threshold+'% có nghe hợp lệ.</p>')+'</div>'+
+  '<p>Hoàn thành khi luyện đạt ≥'+threshold+'%, kiểm tra đạt ≥'+threshold+'%, phát được phần nghe và trả lời đúng ít nhất 2/3 câu nghe.</p>')+'</div>'+
   '<div class="n5l-finish-buttons"><button type="button" class="n5l-primary" data-n5l-panel="'+
    (p.practice&&!p.check?'check':p.check&&!p.practice?'practice':'review')+'">'+
    (p.practice&&!p.check?'Đi tới kiểm tra':p.check&&!p.practice?'Đi tới luyện tập':'Ôn chữ sai / thử lại')+' →</button>'+
@@ -427,7 +429,7 @@ function practicePage(kind){
    '20 câu mới, gồm từ vựng, ngữ pháp, đọc và nghe hiểu. Đáp án hiển thị cuối bài, không tính thời gian bắt buộc.':
    kind==='review'?'Ôn lại theo bộ câu thực hành; xem lại các lỗi đã mắc và làm lượt mới.':'16 câu theo bốn kỹ năng, xem giải thích ngay sau mỗi câu. Có thể luyện lại nhiều lần.')+'</p>'+
   '<div class="n5l-start-meta"><span>'+count+' câu</span><span>4 kỹ năng</span><span>Mốc đạt '+threshold+'%</span>'+
-  (kind==='check'?'<span>Phần nghe dùng giọng tổng hợp của thiết bị</span>':'')+'</div>'+
+  (kind==='check'?'<span>Nghe ≥2/3 câu đúng · giọng tổng hợp</span>':'')+'</div>'+
   (kind==='check'&&!audioSupported()?'<p class="n5l-audio-warning">Thiết bị hiện không hỗ trợ phát âm tiếng Nhật. Bạn vẫn có thể làm và lưu điểm, nhưng chưa thể xác nhận đã đạt kỹ năng nghe.</p>':'')+
   '<button type="button" class="n5l-primary" data-n5l-start="'+kind+'">Bắt đầu '+(kind==='check'?'kiểm tra':kind==='review'?'ôn lại':'luyện tập')+' →</button>'+
   (p.complete?'<p class="n5l-start-foot">✓ Bài đã hoàn thành; lượt mới không xóa kết quả cũ.</p>':'')+
