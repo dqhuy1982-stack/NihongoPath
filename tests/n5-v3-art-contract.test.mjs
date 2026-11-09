@@ -15,7 +15,7 @@ const canonical=worldContext.resultWorld.characters;
 test('art manifest covers 30 canonical identities with unique stable IDs',()=>{
  assert.equal(manifest.characters.length,30);
  assertUniqueIds(manifest.characters,'character');
- assert.deepEqual(manifest.characters.map(x=>x.id).sort(),canonical.map(x=>x.id).sort());
+ assert.deepEqual(manifest.characters.map(x=>x.id).sort(),Array.from(canonical,x=>x.id).sort());
  for(const p of manifest.characters){
   assert.ok(p.jp && p.display && p.nationality && p.role && p.organization, 'Missing canonical metadata for '+p.id);
   assert.ok(safeAssetPath(p.sources.portrait));
