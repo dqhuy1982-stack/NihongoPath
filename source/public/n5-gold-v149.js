@@ -140,7 +140,7 @@ function lessonOverview(){
  '<h2>Làm quen và giới thiệu bản thân</h2><p>Đi qua các tình huống giao tiếp thường gặp để nói được những câu giới thiệu đơn giản, tự nhiên.</p>'+
  '<a class="n5g-primary" href="'+routeLesson+'" data-n5g-scene="'+esc(next.id)+'">'+
  (c.completed?'Tiếp tục tình huống '+String(SCENES.indexOf(next)+1).padStart(2,'0'):'Bắt đầu tình huống 01')+' →</a>'+
- '</header><div class="n5g-overview-head"><section class="n5g-side-card"><h3>Mục tiêu bài học</h3><ul class="n5g-checklist">'+
+ '<a class="n5g-overview-library" href="#course/N5/characters">Khám phá Thư viện nhân vật →</a></header><div class="n5g-overview-head"><section class="n5g-side-card"><h3>Mục tiêu bài học</h3><ul class="n5g-checklist">'+
  objectiveList().map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></section>'+
  '<section class="n5g-side-card"><h3>Lộ trình một bài</h3><div class="n5g-four-steps">'+
  [['Học','Hội thoại & kiến thức'],['Luyện','Thử tình huống'],['Kiểm tra','Đánh giá riêng'],['Ôn','Xem lỗi và làm lại']].map((x,i)=>
