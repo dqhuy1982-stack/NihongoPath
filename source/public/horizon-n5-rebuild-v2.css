@@ -160,7 +160,7 @@ body:has(.n5r-shell) #app{width:100%;max-width:none}
 .n5r-face-m{width:90px;height:96px;border-radius:12px;font-size:23px}
 .n5r-face-l{width:120px;height:126px;border-radius:15px;font-size:28px}
 .n5r-face-art{background-image:url('assets/n5-v2/portrait-atlas.webp');
- background-size:400% 300%;font-size:0}
+ background-size:400% 100%;font-size:0}
 .n5r-face-art[data-face="0"]{background-position:0% 0%}
 .n5r-face-art[data-face="1"]{background-position:33.333% 0%}
 .n5r-face-art[data-face="2"]{background-position:66.666% 0%}
