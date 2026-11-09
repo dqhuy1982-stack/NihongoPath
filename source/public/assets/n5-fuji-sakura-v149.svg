@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="380" viewBox="0 0 1440 380" role="img" aria-label="Minh họa hoa anh đào, núi Phú Sĩ và ngôi chùa">
+<defs>
+<linearGradient id="s" x2="0" y2="1"><stop stop-color="#f6e8e3"/><stop offset=".65" stop-color="#fff9f5"/><stop offset="1" stop-color="#e6f0e9"/></linearGradient>
+<linearGradient id="m" x2="0" y2="1"><stop stop-color="#6f90a4"/><stop offset="1" stop-color="#a5b7b8"/></linearGradient>
+<linearGradient id="p" x2="0" y2="1"><stop stop-color="#e2aeb4"/><stop offset="1" stop-color="#d78594"/></linearGradient>
+<g id="flower"><circle r="7.3" cx="0" cy="-6" fill="#e6aeb9"/><circle r="7.3" cx="5.7" cy="-2" fill="#ecc4ca"/><circle r="7.3" cx="4" cy="5" fill="#f1c6c9"/><circle r="7.3" cx="-4" cy="5" fill="#f2d5d1"/><circle r="7.3" cx="-5.7" cy="-2" fill="#e6aebb"/><circle r="2.7" fill="#fff0bf"/></g>
+</defs>
+<rect width="1440" height="380" fill="url(#s)"/>
+<g opacity=".5" fill="#fff"><ellipse cx="225" cy="118" rx="125" ry="29"/><ellipse cx="330" cy="102" rx="107" ry="25"/><ellipse cx="1020" cy="91" rx="135" ry="23"/><ellipse cx="1130" cy="118" rx="90" ry="21"/></g>
+<path d="M270 326 Q385 272 501 292 Q636 310 766 273 Q875 250 992 301 Q1110 281 1250 307 L1440 331 V380 H0 V341Z" fill="#ccdfd4" opacity=".55"/>
+<path d="M495 315 L773 70 L1056 315 Z" fill="url(#m)" opacity=".86"/>
+<path d="M661 168 L773 70 L893 169 846 158 816 179 790 153 763 179 733 155 708 182Z" fill="#fcf7ee"/>
+<path d="M715 206 L749 179 L772 204 L801 174 L831 212" fill="none" stroke="#f3f5ef" stroke-width="9" opacity=".85"/>
+<g transform="translate(1115 133)" opacity=".87"><path d="M16 160V22H125v138" fill="#a74f56"/><path d="M4 47h133M14 87h112M2 128h136" stroke="#fff6f0" stroke-width="8"/><path d="M-21 24 69-4l95 28-17 14H-2Z" fill="#7a5568"/><path d="M-12 73 69 49l84 24-16 13H-1Z" fill="#795263"/><path d="M-21 119 69 92l95 27-18 12H-3Z" fill="#7c5364"/><path d="M54 22v138M82 23v137" stroke="#f4d8c9" stroke-width="5"/></g>
+<path d="M0 21Q180 13 235 74Q284 112 347 120M0 74Q150 63 215 136" fill="none" stroke="#654b55" stroke-width="9" stroke-linecap="round" opacity=".65"/>
+<g opacity=".85"><use href="#flower" transform="translate(64 23) scale(1.7)"/><use href="#flower" transform="translate(108 38) scale(1.25)"/><use href="#flower" transform="translate(159 62) scale(1.5)"/><use href="#flower" transform="translate(201 82) scale(1.2)"/><use href="#flower" transform="translate(240 118) scale(1.3)"/><use href="#flower" transform="translate(62 76) scale(1.1)"/><use href="#flower" transform="translate(198 124) scale(1.5)"/></g>
+<path d="M1440 4Q1302 27 1220 61M1440 61q-110 4-188 80" fill="none" stroke="#755260" stroke-width="9" stroke-linecap="round" opacity=".62"/>
+<g opacity=".83"><use href="#flower" transform="translate(1405 22) scale(1.8)"/><use href="#flower" transform="translate(1342 34) scale(1.3)"/><use href="#flower" transform="translate(1282 52) scale(1.45)"/><use href="#flower" transform="translate(1250 91) scale(1.1)"/><use href="#flower" transform="translate(1371 82) scale(1.5)"/><use href="#flower" transform="translate(1440 120) scale(1.65)"/></g>
+<path d="M0 354q156-42 326-14 186-43 350 6 154-36 318-10 253-31 446-2v46H0Z" fill="#9bb9a8" opacity=".65"/>
+<path d="M0 372q190-29 400-3 201-36 442-2 212-20 598 0" stroke="#e7c6c9" stroke-width="12" fill="none" opacity=".7"/>
+</svg>
