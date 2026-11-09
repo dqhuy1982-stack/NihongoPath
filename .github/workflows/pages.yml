@@ -59,6 +59,7 @@ jobs:
           test -f dist/site/n5-gold-v149.css
           test -f dist/site/horizon-n5-rebuild-v2.js
           test -f dist/site/horizon-n5-rebuild-v2.css
+          test -f dist/site/assets/n5-v2/portrait-atlas.webp
           test -f dist/site/assets/n5-fuji-sakura-v149.svg
           test -f dist/site/assets/lesson-sakura-branch.svg
           test -f dist/site/assets/lesson-enso-sakura.svg
@@ -219,6 +220,11 @@ jobs:
                 }
                 assert.ok(v2css.includes('.n5r-shell'),'New independent N5 shell style missing');
                 assert.ok(v2js.includes('shell=function(html)'),'New N5 navigation shell is not activated');
+                const atlasResponse=await fetch(base+'assets/n5-v2/portrait-atlas.webp',{headers:{'Cache-Control':'no-cache'}});
+                if(!atlasResponse.ok)throw Error('V2 approved raster portrait atlas HTTP '+atlasResponse.status);
+                const atlasBytes=await atlasResponse.arrayBuffer();
+                assert.ok(atlasBytes.byteLength>2000,'V2 raster portrait atlas unexpectedly empty');
+                console.log('LIVE_N5_RASTER_VERIFIED',JSON.stringify({version:'v2.00',bytes:atlasBytes.byteLength}));
                 console.log('LIVE_N5_REBUILD_V2_VERIFIED',JSON.stringify({version:'v2.00',
                   templates:10,branch:'develop',commit:process.env.SOURCE_COMMIT}));
                 console.log('PUBLISHED_AND_VERIFIED',JSON.stringify(release));
