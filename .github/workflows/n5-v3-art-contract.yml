@@ -1,0 +1,35 @@
+name: HORIZON N5 v3 — isolated rebuild validation
+
+on:
+  push:
+    branches:
+      - feat/n5-visual-rebuild
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  art-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Validate new art layer syntax
+        run: node --check source/public/n5-v3/art-contract.mjs
+      - name: Art identity and story-data regression
+        run: node --test tests/n5-v3-art-contract.test.mjs
+      - name: Report hard-gate status — do not deploy placeholders
+        run: |
+          node --input-type=module - <<'NODE'
+          import { readFileSync } from 'node:fs';
+          import { artGate } from './source/public/n5-v3/art-contract.mjs';
+          const m=JSON.parse(readFileSync('source/public/n5-v3/art-manifest.json'));
+          const gate=artGate(m);
+          console.log(gate.ready ? 'ART_GATE_READY' : 'ART_GATE_PENDING');
+          console.log(JSON.stringify(gate.summary));
+          if(gate.ready) console.log('Proceed to UI visual and learner acceptance separately.');
+          else console.log('Visual art pending. Existing develop site will remain unchanged.');
+          NODE
