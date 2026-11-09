@@ -20,7 +20,7 @@ jobs:
       - name: Validate new art layer syntax
         run: |
           node --check source/public/n5-v3/art-contract.mjs
-          node --check source/public/n5-v3/art-review.js
+          node --input-type=module --check < source/public/n5-v3/art-review.js
           node --check scripts/n5-v3-validate-assets.mjs
       - name: Validate approved raster assets and report current gaps
         run: node scripts/n5-v3-validate-assets.mjs
