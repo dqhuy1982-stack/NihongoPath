@@ -79,7 +79,7 @@ test('notes highlight a limited number of phrases and provide context, not only 
 });
 test('integrated lesson renders six context cards, character entrypoints, note entrypoints, extended tasks',()=>{
  const h=harness(),ui=h.window.NPN5Lesson01;
- assert.equal(ui.version,'v148');
+ assert.equal(ui.version,'v149');
  assert.equal(ui.scenes().length,6);
  const page=ui.page();
  assert.match(page,/n5w-hero/);
@@ -113,7 +113,7 @@ test('mini-drills stay separate from formal completion and isolate learners',()=
 test('v1.48 entry orders fictional world, context, character engine and lesson controller',()=>{
  const html=load('index.html');
  const ordered=['world-data.js','n5-lesson01-context-v147.js?v=148',
-  'n5-character-world-v148.js?v=148','n5-lesson01-v146.js?v=148'];
+  'n5-character-world-v148.js?v=149','n5-lesson01-v146.js?v=149'];
  const positions=ordered.map(x=>html.indexOf(x));
  assert.ok(positions.every(x=>x>=0));
  assert.ok(positions.every((x,i)=>i===0||x>positions[i-1]));
