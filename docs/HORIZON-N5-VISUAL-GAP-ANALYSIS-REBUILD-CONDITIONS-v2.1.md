@@ -1,6 +1,6 @@
 # HORIZON N5 — VISUAL GAP ANALYSIS & REBUILD CONDITIONS
 
-**Version:** 2.1 · **Date:** 2026-11-09 · **Source branch audited:** \`develop\`  
+**Version:** 2.1 · **Date:** 2026-11-09 · **Source branch audited:** `develop`  
 **Purpose:** approve an implementation-ready visual rebuild contract **before** replacing the current HORIZON N5 interface.  
 **References:** approved richly illustrated HORIZON N5 mockups (course overview, Lesson 01 overview, situation, content, practice, results, character library), and the user's current-v2 screenshot in the design conversation.  
 **Related baseline:** [HORIZON N5 Master Implementation Spec v2.0](HORIZON-N5-UI-REBUILD-MASTER-IMPLEMENTATION-SPEC-v2.0.md).
@@ -11,13 +11,13 @@
 
 This is a qualitative, file-verified gap audit, **not** a measured visual-regression test. The two screenshots provided by the user are different native resolutions (approved mockup: **1672 × 941**, current site screenshot: **2048 × 1224**), so pixel-difference percentages or claims of a measured "visual match" would be misleading. Repeat a controlled screenshot comparison at identical viewport and browser/font conditions during acceptance.
 
-Source inspection on \`develop\` confirms:
+Source inspection on `develop` confirms:
 
-- \`source/public/horizon-n5-rebuild-v2.js\` and \`.css\` implement a distinct N5 UI controller and responsive shell; it is a valid technical foundation to retain as reference, **not** a visual design to patch.
-- \`source/public/world-data.js\` + \`n5-cast-extension-v149.js\` provide 30 fictional character records. They are character **metadata**, not 30 approved portraits.
-- The \`portrait(id)\` implementation in \`horizon-n5-rebuild-v2.js\` maps raster art only to IDs **keiko, yamada, mike**. For the other 27 identities it displays letter initials. The source list even contains an empty third slot; do not infer a valid fourth identity from the atlas.
-- \`source/public/assets/n5-v2/\` currently includes only \`portrait-atlas.webp\` (3,876 bytes in the repo listing). The entire proposed 30-person illustration system is **not present**.
-- The current hero CSS uses \`assets/horizon-v9-fuji-desktop.svg\`, a restrained mountain graphic rather than the approved Sakura/Fuji/pagoda/character composition.
+- `source/public/horizon-n5-rebuild-v2.js` and `.css` implement a distinct N5 UI controller and responsive shell; it is a valid technical foundation to retain as reference, **not** a visual design to patch.
+- `source/public/world-data.js` + `n5-cast-extension-v149.js` provide 30 fictional character records. They are character **metadata**, not 30 approved portraits.
+- The `portrait(id)` implementation in `horizon-n5-rebuild-v2.js` maps raster art only to IDs **keiko, yamada, mike**. For the other 27 identities it displays letter initials. The source list even contains an empty third slot; do not infer a valid fourth identity from the atlas.
+- `source/public/assets/n5-v2/` currently includes only `portrait-atlas.webp` (3,876 bytes in the repo listing). The entire proposed 30-person illustration system is **not present**.
+- The current hero CSS uses `assets/horizon-v9-fuji-desktop.svg`, a restrained mountain graphic rather than the approved Sakura/Fuji/pagoda/character composition.
 - The N5 content model already includes **six situations, 30 selected vocabulary items, six grammar points, one reading with three paragraphs, three TTS listening dialogues, 16 practice questions and 20 check questions**. These must be preserved and improved without confusing "present in data" with "complete according to textbook".
 - N5 has routes for course, Lesson 01 overview/story/content/practice/check/result/review, character library and context library. Bài 02–25 are not authored full lessons and must not appear as published.
 - Existing CI and successful GitHub Pages deployment prove build, route/assets and code checks; they **do not** prove pixel/illustration fidelity, correct character portrait mapping or usability on real iPhones.
@@ -52,14 +52,14 @@ The baseline **passes architectural existence, fails visual acceptance**. No cla
 
 | Token | Intended value | Rule |
 |---|---|---|
-| Background | warm off-white \`#FAF8F5\` | never decorative behind dense Japanese text |
-| Card | near-white \`#FFFDFC\` | subtle low-contrast border |
-| Main text | deep navy \`#223448\` | WCAG contrast ≥4.5:1 for standard text |
-| Primary CTA | muted cherry rose \`#BD4B64\` | reserve for next action; not every button |
-| Positive/progress | subdued sage \`#4B8767\` | progress only when backed by actual records |
-| Caution | muted amber \`#AA7132\` | missing review/listening evidence |
-| Borders | warm gray \`#E6E0DC\` | 1px |
-| Reading text | Japanese glyphs ≥17px in learning passages | coherent \`ja-JP\` font; generous line-height |
+| Background | warm off-white `#FAF8F5` | never decorative behind dense Japanese text |
+| Card | near-white `#FFFDFC` | subtle low-contrast border |
+| Main text | deep navy `#223448` | WCAG contrast ≥4.5:1 for standard text |
+| Primary CTA | muted cherry rose `#BD4B64` | reserve for next action; not every button |
+| Positive/progress | subdued sage `#4B8767` | progress only when backed by actual records |
+| Caution | muted amber `#AA7132` | missing review/listening evidence |
+| Borders | warm gray `#E6E0DC` | 1px |
+| Reading text | Japanese glyphs ≥17px in learning passages | coherent `ja-JP` font; generous line-height |
 | Tap targets | ≥44 × 44 CSS px | especially speaker play, glossary, next and dialog close |
 
 Use local licensed fonts with Japanese coverage, consistent 4/8px spacing rhythm, 12–18px radii, subtle shadows, low-repetition background ornaments. Avoid artificial “glassy” effects that lower contrast.
@@ -69,16 +69,16 @@ Use local licensed fonts with Japanese coverage, consistent 4/8px spacing rhythm
 ### 4.1 People / character universe
 **30 canonical IDs.** For every person, require:
 
-- \`portrait\` front/three-quarter, 1:1 or 4:5 source, designed at ≥768px on the short side.
-- \`bust\` half-body suitable for dialogue/hero, transparent or cleanly masked.
-- \`expressions\` minimum neutral, friendly, question/surprise for the six recurring Lesson 01 leads; optional for lower-priority cast until the library is completed.
+- `portrait` front/three-quarter, 1:1 or 4:5 source, designed at ≥768px on the short side.
+- `bust` half-body suitable for dialogue/hero, transparent or cleanly masked.
+- `expressions` minimum neutral, friendly, question/surprise for the six recurring Lesson 01 leads; optional for lower-priority cast until the library is completed.
 - Identity-lock attributes: facial proportions, hair, attire, role, approximate age, nationality as **metadata** (do not encode nationality through stereotypes).
-- Official \`characterId\` mapping, caption, alt text, license/provenance, contentVersion and review status.
+- Official `characterId` mapping, caption, alt text, license/provenance, contentVersion and review status.
 
 **Release gate: 30/30 approved portrait files, zero initials and zero geometric-face fallbacks in visible N5 pages.** At least six leading characters need approved bust/scene poses before Lesson 01 visual sign-off.
 
 ### 4.2 Situations & settings
-- **6/6 original Lesson 01 story illustrations**, each mapping \`sceneId → settingId → castIds → poseIds\`; do not reuse unrelated people in a scene.
+- **6/6 original Lesson 01 story illustrations**, each mapping `sceneId → settingId → castIds → poseIds`; do not reuse unrelated people in a scene.
 - **8 reusable environment backgrounds**: office, Japanese classroom, hotel lobby, café, railway station, shop, street, home/community space.
 - **1 approved N5 lesson hero composition** and separate desktop/mobile crops; Sakura/Fuji/pagoda decorative layers adapted for contrast.
 - **3–5 low-distraction decorative elements**, SVG only for scalable silhouettes, icons, blossoms, dividers and ornaments—not for imitating richly painted portraits.
@@ -88,9 +88,9 @@ Use local licensed fonts with Japanese coverage, consistent 4/8px spacing rhythm
 1. Lock character/story identities and a visual style guide from the approved mockups.
 2. Create **original high-resolution raster illustration assets** (WebP/AVIF with source PNG; transparent busts where practical). Reference photos can guide pose and physical environments when rights permit.
 3. Reuse the *same* reference identity and approved art for portraits, busts, expressions and scene thumbnails; review consistency before export.
-4. Optimize and provide \`srcset\` for PC/iPhone, lazy-load below-fold imagery, preload only essential hero assets.
+4. Optimize and provide `srcset` for PC/iPhone, lazy-load below-fold imagery, preload only essential hero assets.
 5. Use SVG for iconography, scenic ornaments and simple line illustration only. **Automatic photo/vector tracing cannot be expected to reproduce the painterly human art in the mockups.** Professional vector illustration is a separate deliverable if editable SVG people are explicitly required.
-6. Deliver an asset manifest (\`id\`, dimensions, version, hash, \`license\`, \`approvedBy\`, \`usage\`, \`alt\`), and a missing-asset report in CI.
+6. Deliver an asset manifest (`id`, dimensions, version, hash, `license`, `approvedBy`, `usage`, `alt`), and a missing-asset report in CI.
 
 **Do not** ship screenshots as UI components, cut copyrighted publisher illustrations or UI text out of mockup screenshots, import watermarked imagery or imply stock photographs depict the fictional character identities.
 
@@ -99,8 +99,8 @@ Use local licensed fonts with Japanese coverage, consistent 4/8px spacing rhythm
 A character profile must match **all** of its appearances in the course. This needs explicit editorial reconciliation:
 
 - The approved mockup depicts **Sato Keiko at IMC (Osaka)** with Yamada and Mike in a workplace introduction.
-- The current \`n5-cast-extension-v149.js\` sets **Keiko at Nagi Riverside Hotel** and **Mike at Kaze Systems**.
-- \`world-data.js\` defines the fictional setting **Minato-no-Machi**, not IMC Osaka.
+- The current `n5-cast-extension-v149.js` sets **Keiko at Nagi Riverside Hotel** and **Mike at Kaze Systems**.
+- `world-data.js` defines the fictional setting **Minato-no-Machi**, not IMC Osaka.
 
 These are not visual-only discrepancies. They alter dialogue context, workplaces, character relationships and quiz content. **Do not silently change historical character IDs or rewrite user-completed attempts to make the UI resemble a mockup.**
 
@@ -149,8 +149,8 @@ Mobile: one main reading column, collapsible course menu, contextual drawer/bott
 
 ## 8. Engineering constraints / separation of responsibility
 
-- **Current UI source:** freeze v2.00 as rollback/benchmark. Do not layer more overrides onto \`horizon-n5-rebuild-v2.css\`.
-- **New implementation:** feature branch (\`feat/n5-visual-rebuild\`) with clean componentized styles and data adapters. Merge to \`develop\` only after screenshot and interaction sign-off.
+- **Current UI source:** freeze v2.00 as rollback/benchmark. Do not layer more overrides onto `horizon-n5-rebuild-v2.css`.
+- **New implementation:** feature branch (`feat/n5-visual-rebuild`) with clean componentized styles and data adapters. Merge to `develop` only after screenshot and interaction sign-off.
 - **Keep:** existing canonical IDs, original Lesson 01 content and assessment records, current family profiles and Foundation/Kana behavior.
 - **Introduce:** stable asset manifest, story bible, reusable card/scene/dialogue/profile/step/progress UI components, UI-state adapter and dedicated visual QA.
 - **Prevent:** data resets, route breaks, hidden legacy CSS collisions, hardcoded completion data, unlicensed textbook art/audio or conflating static site demo with an authenticated backend.
