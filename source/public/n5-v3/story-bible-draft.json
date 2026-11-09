@@ -1,0 +1,283 @@
+{
+  "version": "imc-osaka-draft-1",
+  "status": "editorial-review-required",
+  "setting": {
+    "id": "imc-osaka",
+    "name": "IMC (Osaka) — fictional learning setting",
+    "location": "Osaka, Japan",
+    "type": "professional office",
+    "note": "Illustrative fictional workplace. Avoid implying a real organization or its employees."
+  },
+  "compatibility": {
+    "legacySceneIds": [
+      "meeting",
+      "colleague",
+      "correcting",
+      "classmates",
+      "namecheck",
+      "identity"
+    ],
+    "existingLegacyStorage": "DO NOT MIGRATE OR DELETE",
+    "rule": "New v3 scenario IDs and contentVersion should be differentiated in result history. Never relabel previous attempts."
+  },
+  "leads": [
+    {
+      "id": "keiko",
+      "jp": "佐藤 けい子",
+      "reading": "さとう けいこ",
+      "display": "Sato Keiko",
+      "nationality": "Nhật Bản",
+      "occupation": "Nhân viên văn phòng",
+      "workplace": "IMC (Osaka)",
+      "visual": "Brown hair in low bun, plum blazer and document folder, kind confident smile",
+      "relation": "Colleague who welcomes Mike",
+      "mockupSource": "Approved Lesson 01 mockup"
+    },
+    {
+      "id": "yamada",
+      "jp": "山田 隆",
+      "reading": "やまだ たかし",
+      "display": "Yamada Takashi",
+      "nationality": "Nhật Bản",
+      "occupation": "Nhân viên điều phối",
+      "workplace": "IMC (Osaka)",
+      "visual": "Black short hair, rectangular glasses, navy suit, blue tie",
+      "relation": "Colleague introducing newcomer Mike"
+    },
+    {
+      "id": "mike",
+      "jp": "マイク・ミラー",
+      "reading": "マイク・ミラー",
+      "display": "Mike Miller",
+      "nationality": "Hoa Kỳ",
+      "occupation": "Kỹ sư",
+      "workplace": "IMC (Osaka)",
+      "visual": "Short sandy hair, blue shirt and relaxed professional attire",
+      "relation": "New team member learning Japanese greetings"
+    }
+  ],
+  "sceneOutline": [
+    {
+      "legacyId": "meeting",
+      "newId": "imc-l01-01",
+      "title": "Làm quen và chào hỏi",
+      "location": "IMC Osaka office",
+      "time": "Buổi sáng",
+      "cast": [
+        "keiko",
+        "yamada",
+        "mike"
+      ],
+      "goal": "Dùng はじめまして và よろしくおねがいします khi gặp đồng nghiệp lần đầu",
+      "grammar": [
+        "わたしは～です",
+        "さん"
+      ],
+      "assetId": "meeting",
+      "editorialState": "draft",
+      "lines": [
+        [
+          "yamada",
+          "こちらは マイク・ミラーさんです。"
+        ],
+        [
+          "mike",
+          "はじめまして。マイク・ミラーです。"
+        ],
+        [
+          "keiko",
+          "はじめまして。さとう けいこです。どうぞ よろしくおねがいします。"
+        ],
+        [
+          "mike",
+          "こちらこそ、よろしくおねがいします。"
+        ]
+      ]
+    },
+    {
+      "legacyId": "colleague",
+      "newId": "imc-l01-02",
+      "title": "Giới thiệu tên",
+      "location": "IMC Osaka reception",
+      "time": "Buổi sáng",
+      "cast": [
+        "keiko",
+        "yamada",
+        "mike"
+      ],
+      "goal": "Giới thiệu bản thân và người khác bằng mẫu câu danh từ",
+      "grammar": [
+        "N1 は N2 です",
+        "さん"
+      ],
+      "assetId": "colleague",
+      "editorialState": "draft",
+      "lines": [
+        [
+          "yamada",
+          "こちらは マイクさんです。"
+        ],
+        [
+          "keiko",
+          "さとう けいこです。"
+        ],
+        [
+          "mike",
+          "マイク・ミラーです。"
+        ],
+        [
+          "yamada",
+          "どうぞ よろしくおねがいします。"
+        ]
+      ]
+    },
+    {
+      "legacyId": "correcting",
+      "newId": "imc-l01-03",
+      "title": "Quốc tịch và xuất xứ",
+      "location": "IMC Osaka meeting space",
+      "time": "Buổi sáng",
+      "cast": [
+        "keiko",
+        "yamada",
+        "mike"
+      ],
+      "goal": "Hỏi, trả lời quốc tịch và dùng か trong câu hỏi",
+      "grammar": [
+        "N1 は N2 ですか",
+        "はい / いいえ"
+      ],
+      "assetId": "correcting",
+      "editorialState": "draft",
+      "lines": [
+        [
+          "keiko",
+          "マイクさんは アメリカじんですか。"
+        ],
+        [
+          "mike",
+          "はい、アメリカじんです。"
+        ],
+        [
+          "yamada",
+          "わたしは にほんじんです。"
+        ],
+        [
+          "keiko",
+          "わたしも にほんじんです。"
+        ]
+      ]
+    },
+    {
+      "legacyId": "classmates",
+      "newId": "imc-l01-04",
+      "title": "Nghề nghiệp",
+      "location": "IMC Osaka project room",
+      "time": "Buổi trưa",
+      "cast": [
+        "keiko",
+        "yamada",
+        "mike"
+      ],
+      "goal": "Nói nghề nghiệp và dùng の trong mối quan hệ tổ chức",
+      "grammar": [
+        "N1 は N2 です",
+        "N1 の N2"
+      ],
+      "assetId": "classmates",
+      "editorialState": "draft",
+      "lines": [
+        [
+          "yamada",
+          "わたしは IMCの かいしゃいんです。"
+        ],
+        [
+          "mike",
+          "わたしは エンジニアです。"
+        ],
+        [
+          "keiko",
+          "やまださんは かいしゃいんです。"
+        ],
+        [
+          "mike",
+          "わたしも IMCの かいしゃいんです。"
+        ]
+      ]
+    },
+    {
+      "legacyId": "namecheck",
+      "newId": "imc-l01-05",
+      "title": "Hỏi và trả lời thông tin",
+      "location": "IMC Osaka conference room",
+      "time": "Buổi chiều",
+      "cast": [
+        "keiko",
+        "yamada",
+        "mike"
+      ],
+      "goal": "Xác nhận và sửa thông tin về nghề nghiệp",
+      "grammar": [
+        "N1 は N2 ですか",
+        "N1 は N2 じゃありません"
+      ],
+      "assetId": "namecheck",
+      "editorialState": "draft",
+      "lines": [
+        [
+          "keiko",
+          "マイクさんは せんせいですか。"
+        ],
+        [
+          "yamada",
+          "いいえ、せんせいじゃありません。"
+        ],
+        [
+          "mike",
+          "エンジニアです。"
+        ],
+        [
+          "keiko",
+          "そうですか。"
+        ]
+      ]
+    },
+    {
+      "legacyId": "identity",
+      "newId": "imc-l01-06",
+      "title": "Kết thúc và lời chào",
+      "location": "IMC Osaka office entrance",
+      "time": "Cuối ngày đầu tiên",
+      "cast": [
+        "keiko",
+        "yamada",
+        "mike"
+      ],
+      "goal": "Luyện lại lời chào trong giao tiếp công sở",
+      "grammar": [
+        "はじめまして",
+        "どうぞ よろしくおねがいします"
+      ],
+      "assetId": "identity",
+      "editorialState": "draft",
+      "lines": [
+        [
+          "keiko",
+          "マイクさん、どうぞ よろしくおねがいします。"
+        ],
+        [
+          "mike",
+          "こちらこそ、よろしくおねがいします。"
+        ],
+        [
+          "yamada",
+          "よろしくおねがいします。"
+        ],
+        [
+          "keiko",
+          "ありがとうございます。"
+        ]
+      ]
+    }
+  ]
+}
