@@ -4,6 +4,12 @@
 const canonical=(typeof NP_WORLD!=='undefined'?NP_WORLD:null);
 const orgById=Object.fromEntries((canonical?.organizations||[]).map(o=>[o.id,o]));
 const styleById={
+ keiko:['#efc5ae','#423038','#b6a3bd','#76566e','f','bob'],
+ yamada:['#ebc4a9','#342d31','#809bba','#405770','m','short'],
+ mike:['#f0caab','#956448','#aabdd3','#617891','m','short'],
+ nakamura:['#f1c2ae','#3a2f35','#d6bbc5','#8e6776','f','long'],
+ laila:['#d3a17f','#2f303a','#aabfbd','#5d8c80','f','long'],
+ omar:['#bb866a','#262a31','#b3ac9c','#56616b','m','short'],
  aoi:['#f1c7ac','#3b3035','#dec4a5','#936d66','f','bob'],
  mai:['#efc3a6','#43323c','#c1acc4','#8a637c','f','long'],
  misaki:['#f4cead','#3e3038','#aabbd4','#597a9a','f','bob'],
