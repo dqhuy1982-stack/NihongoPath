@@ -1,0 +1,900 @@
+{
+  "schemaVersion": 3,
+  "status": "ART REVIEW PENDING — NOT FOR LIVE SITE",
+  "reference": "HORIZON N5 approved UI mockups, 2026-11-09",
+  "approach": "original painterly raster; SVG only for icons and small decoration",
+  "publisherRights": "no textbook assets, no copied mockup screenshot fragments",
+  "storyCanonDecision": "mockup IMC Osaka is proposed; must reconcile existing source scenarios without changing saved attempts",
+  "required": {
+    "portrait": 30,
+    "bustLeads": 6,
+    "scenesLesson01": 6,
+    "environments": 8,
+    "heroesResponsive": 2
+  },
+  "hero": {
+    "desktop": {
+      "asset": "assets/n5-v3/heroes/lesson01-desktop.webp",
+      "status": "pending",
+      "alt": "Minna no Nihongo Lesson 01 introduction in Osaka, Fuji and Sakura decorative composition"
+    },
+    "mobile": {
+      "asset": "assets/n5-v3/heroes/lesson01-mobile.webp",
+      "status": "pending",
+      "alt": "Warm Japanese learning illustration with Sato Keiko"
+    }
+  },
+  "characters": [
+    {
+      "id": "aoi",
+      "order": 1,
+      "jp": "佐藤 葵",
+      "reading": "さとう あおい",
+      "display": "Aoi",
+      "nationality": "Nhật Bản",
+      "role": "Giáo viên tiếng Nhật",
+      "organization": "Ichibu Language Studio",
+      "group": "school",
+      "assetVersion": "v3.0",
+      "artIdentity": {
+        "hair": "dark brown hair in a low tie",
+        "outfit": "cream blouse with subdued berry blazer",
+        "expression": "patient teacher's smile"
+      },
+      "sources": {
+        "portrait": "assets/n5-v3/characters/aoi/portrait.webp",
+        "bust": "assets/n5-v3/characters/aoi/bust.webp"
+      },
+      "review": {
+        "status": "pending",
+        "copyright": "original-commissioned",
+        "identityApproved": false,
+        "artApproved": false
+      }
+    },
+    {
+      "id": "ren",
+      "order": 2,
+      "jp": "田中 蓮",
+      "reading": "たなか れん",
+      "display": "Ren",
+      "nationality": "Nhật Bản",
+      "role": "Học sinh · thành viên câu lạc bộ bóng rổ",
+      "organization": "Aoba Community School",
+      "group": "school",
+      "assetVersion": "v3.0",
+      "artIdentity": null,
+      "sources": {
+        "portrait": "assets/n5-v3/characters/ren/portrait.webp",
+        "bust": "assets/n5-v3/characters/ren/bust.webp"
+      },
+      "review": {
+        "status": "pending",
+        "copyright": "original-commissioned",
+        "identityApproved": false,
+        "artApproved": false
+      }
+    },
+    {
+      "id": "misaki",
+      "order": 3,
+      "jp": "鈴木 美咲",
+      "reading": "すずき みさき",
+      "display": "Misaki",
+      "nationality": "Nhật Bản",
+      "role": "Nhân viên lễ tân",
+      "organization": "Nagi Riverside Hotel",
+      "group": "work",
+      "assetVersion": "v3.0",
+      "artIdentity": null,
+      "sources": {
+        "portrait": "assets/n5-v3/characters/misaki/portrait.webp",
+        "bust": "assets/n5-v3/characters/misaki/bust.webp"
+      },
+      "review": {
+        "status": "pending",
+        "copyright": "original-commissioned",
+        "identityApproved": false,
+        "artApproved": false
+      }
+    },
+    {
+      "id": "kenta",
+      "order": 4,
+      "jp": "山本 健太",
+      "reading": "やまもと けんた",
+      "display": "Kenta",
+      "nationality": "Nhật Bản",
+      "role": "IT Service Lead",
+      "organization": "Kaze Systems",
+      "group": "work",
+      "assetVersion": "v3.0",
+      "artIdentity": null,
+      "sources": {
+        "portrait": "assets/n5-v3/characters/kenta/portrait.webp",
+        "bust": "assets/n5-v3/characters/kenta/bust.webp"
+      },
+      "review": {
+        "status": "pending",
+        "copyright": "original-commissioned",
+        "identityApproved": false,
+        "artApproved": false
+      }
+    },
+    {
+      "id": "mai",
+      "order": 5,
+      "jp": "Nguyễn Mai",
+      "reading": "グエン・マイ",
+      "display": "Mai",
+      "nationality": "Việt Nam",
+      "role": "Du học sinh · nhân viên bán thời gian tại Kissa Komorebi",
+      "organization": "Ichibu Language Studio",
+      "group": "school",
+      "assetVersion": "v3.0",
+      "artIdentity": {
+        "hair": "long dark hair tied back",
+        "outfit": "neat light blue school cardigan and pleated navy skirt",
+        "expression": "friendly curious gaze"
+      },
+      "sources": {
+        "portrait": "assets/n5-v3/characters/mai/portrait.webp",
+        "bust": "assets/n5-v3/characters/mai/bust.webp"
+      },
+      "review": {
+        "status": "pending",
+        "copyright": "original-commissioned",
+        "identityApproved": false,
+        "artApproved": false
+      }
+    },
+    {
+      "id": "yuki",
+      "order": 6,
+      "jp": "中村 優希",
+      "reading": "なかむら ゆうき",
+      "display": "Yuki",
+      "nationality": "Nhật Bản",
+      "role": "Quản lý quán cà phê",
+      "organization": "Kissa Komorebi",
+      "group": "work",
+      "assetVersion": "v3.0",
+      "artIdentity": null,
+      "sources": {
+        "portrait": "assets/n5-v3/characters/yuki/portrait.webp",
+        "bust": "assets/n5-v3/characters/yuki/bust.webp"
+      },
+      "review": {
+        "status": "pending",
+        "copyright": "original-commissioned",
+        "identityApproved": false,
+        "artApproved": false
+      }
+    },
+    {
+      "id": "sora",
+      "order": 7,
+      "jp": "伊藤 空",
+      "reading": "いとう そら",
+      "display": "Sora",
+      "nationality": "Nhật Bản",
+      "role": "Học sinh",
+      "organization": "Aoba Community School",
+      "group": "school",
+      "assetVersion": "v3.0",
+      "artIdentity": null,
+      "sources": {
+        "portrait": "assets/n5-v3/characters/sora/portrait.webp",
+        "bust": "assets/n5-v3/characters/sora/bust.webp"
+      },
+      "review": {
+        "status": "pending",
+        "copyright": "original-commissioned",
+        "identityApproved": false,
+        "artApproved": false
+      }
+    },
+    {
+      "id": "hana",
+      "order": 8,
+      "jp": "小林 花",
+      "reading": "こばやし はな",
+      "display": "Hana",
+      "nationality": "Nhật Bản",
+      "role": "Học sinh",
+      "organization": "Aoba Community School",
+      "group": "school",
+      "assetVersion": "v3.0",
+      "artIdentity": null,
+      "sources": {
+        "portrait": "assets/n5-v3/characters/hana/portrait.webp",
+        "bust": "assets/n5-v3/characters/hana/bust.webp"
+      },
+      "review": {
+        "status": "pending",
+        "copyright": "original-commissioned",
+        "identityApproved": false,
+        "artApproved": false
+      }
+    },
+    {
+      "id": "daichi",
+      "order": 9,
+      "jp": "小林 大地",
+      "reading": "こばやし だいち",
+      "display": "Daichi",
+      "nationality": "Nhật Bản",
+      "role": "Người làm vườn · tình nguyện viên",
+      "organization": "Minato Community Services",
+      "group": "life",
+      "assetVersion": "v3.0",
+      "artIdentity": null,
+      "sources": {
+        "portrait": "assets/n5-v3/characters/daichi/portrait.webp",
+        "bust": "assets/n5-v3/characters/daichi/bust.webp"
+      },
+      "review": {
+        "status": "pending",
+        "copyright": "original-commissioned",
+        "identityApproved": false,
+        "artApproved": false
+      }
+    },
+    {
+      "id": "emiko",
+      "order": 10,
+      "jp": "渡辺 恵美子",
+      "reading": "わたなべ えみこ",
+      "display": "Emiko",
+      "nationality": "Nhật Bản",
+      "role": "Thủ thư",
+      "organization": "Minato Community Services",
+      "group": "life",
+      "assetVersion": "v3.0",
+      "artIdentity": null,
+      "sources": {
+        "portrait": "assets/n5-v3/characters/emiko/portrait.webp",
+        "bust": "assets/n5-v3/characters/emiko/bust.webp"
+      },
+      "review": {
+        "status": "pending",
+        "copyright": "original-commissioned",
+        "identityApproved": false,
+        "artApproved": false
+      }
+    },
+    {
+      "id": "akira",
+      "order": 11,
+      "jp": "森 明",
+      "reading": "もり あきら",
+      "display": "Akira",
+      "nationality": "Nhật Bản",
+      "role": "Nhân viên cửa hàng",
+      "organization": "Mori Daily Store",
+      "group": "work",
+      "assetVersion": "v3.0",
+      "artIdentity": null,
+      "sources": {
+        "portrait": "assets/n5-v3/characters/akira/portrait.webp",
+        "bust": "assets/n5-v3/characters/akira/bust.webp"
+      },
+      "review": {
+        "status": "pending",
+        "copyright": "original-commissioned",
+        "identityApproved": false,
+        "artApproved": false
+      }
+    },
+    {
+      "id": "nao",
+      "order": 12,
+      "jp": "高橋 奈緒",
+      "reading": "たかはし なお",
+      "display": "Nao",
+      "nationality": "Nhật Bản",
+      "role": "Nhân viên nhà ga",
+      "organization": "Minato Local Rail",
+      "group": "work",
+      "assetVersion": "v3.0",
+      "artIdentity": null,
+      "sources": {
+        "portrait": "assets/n5-v3/characters/nao/portrait.webp",
+        "bust": "assets/n5-v3/characters/nao/bust.webp"
+      },
+      "review": {
+        "status": "pending",
+        "copyright": "original-commissioned",
+        "identityApproved": false,
+        "artApproved": false
+      }
+    },
+    {
+      "id": "haruto",
+      "order": 13,
+      "jp": "井上 陽斗",
+      "reading": "いのうえ はると",
+      "display": "Haruto",
+      "nationality": "Nhật Bản",
+      "role": "Đầu bếp phụ trách ca",
+      "organization": "Nagi Riverside Hotel",
+      "group": "work",
+      "assetVersion": "v3.0",
+      "artIdentity": null,
+      "sources": {
+        "portrait": "assets/n5-v3/characters/haruto/portrait.webp",
+        "bust": "assets/n5-v3/characters/haruto/bust.webp"
+      },
+      "review": {
+        "status": "pending",
+        "copyright": "original-commissioned",
+        "identityApproved": false,
+        "artApproved": false
+      }
+    },
+    {
+      "id": "mei",
+      "order": 14,
+      "jp": "加藤 芽衣",
+      "reading": "かとう めい",
+      "display": "Mei",
+      "nationality": "Nhật Bản",
+      "role": "Project Coordinator",
+      "organization": "Kaze Systems",
+      "group": "work",
+      "assetVersion": "v3.0",
+      "artIdentity": null,
+      "sources": {
+        "portrait": "assets/n5-v3/characters/mei/portrait.webp",
+        "bust": "assets/n5-v3/characters/mei/bust.webp"
+      },
+      "review": {
+        "status": "pending",
+        "copyright": "original-commissioned",
+        "identityApproved": false,
+        "artApproved": false
+      }
+    },
+    {
+      "id": "takumi",
+      "order": 15,
+      "jp": "清水 匠",
+      "reading": "しみず たくみ",
+      "display": "Takumi",
+      "nationality": "Nhật Bản",
+      "role": "Kỹ thuật viên bảo trì",
+      "organization": "Nagi Riverside Hotel",
+      "group": "work",
+      "assetVersion": "v3.0",
+      "artIdentity": null,
+      "sources": {
+        "portrait": "assets/n5-v3/characters/takumi/portrait.webp",
+        "bust": "assets/n5-v3/characters/takumi/bust.webp"
+      },
+      "review": {
+        "status": "pending",
+        "copyright": "original-commissioned",
+        "identityApproved": false,
+        "artApproved": false
+      }
+    },
+    {
+      "id": "riko",
+      "order": 16,
+      "jp": "吉田 莉子",
+      "reading": "よしだ りこ",
+      "display": "Riko",
+      "nationality": "Nhật Bản",
+      "role": "Sinh viên · điều phối nhóm đọc",
+      "organization": "Mizuki University",
+      "group": "school",
+      "assetVersion": "v3.0",
+      "artIdentity": null,
+      "sources": {
+        "portrait": "assets/n5-v3/characters/riko/portrait.webp",
+        "bust": "assets/n5-v3/characters/riko/bust.webp"
+      },
+      "review": {
+        "status": "pending",
+        "copyright": "original-commissioned",
+        "identityApproved": false,
+        "artApproved": false
+      }
+    },
+    {
+      "id": "linh",
+      "order": 17,
+      "jp": "Trần Linh",
+      "reading": "チャン・リン",
+      "display": "Linh",
+      "nationality": "Việt Nam",
+      "role": "Nhân viên hỗ trợ khách",
+      "organization": "Nagi Riverside Hotel",
+      "group": "life",
+      "assetVersion": "v3.0",
+      "artIdentity": null,
+      "sources": {
+        "portrait": "assets/n5-v3/characters/linh/portrait.webp",
+        "bust": "assets/n5-v3/characters/linh/bust.webp"
+      },
+      "review": {
+        "status": "pending",
+        "copyright": "original-commissioned",
+        "identityApproved": false,
+        "artApproved": false
+      }
+    },
+    {
+      "id": "minh",
+      "order": 18,
+      "jp": "Lê Minh",
+      "reading": "レ・ミン",
+      "display": "Minh",
+      "nationality": "Việt Nam",
+      "role": "Sinh viên",
+      "organization": "Mizuki University",
+      "group": "school",
+      "assetVersion": "v3.0",
+      "artIdentity": null,
+      "sources": {
+        "portrait": "assets/n5-v3/characters/minh/portrait.webp",
+        "bust": "assets/n5-v3/characters/minh/bust.webp"
+      },
+      "review": {
+        "status": "pending",
+        "copyright": "original-commissioned",
+        "identityApproved": false,
+        "artApproved": false
+      }
+    },
+    {
+      "id": "alex",
+      "order": 19,
+      "jp": "Alex Morgan",
+      "reading": "アレックス・モーガン",
+      "display": "Alex",
+      "nationality": "Anh",
+      "role": "Nhiếp ảnh gia tự do · khách lưu trú",
+      "organization": "Bridge Atelier",
+      "group": "life",
+      "assetVersion": "v3.0",
+      "artIdentity": null,
+      "sources": {
+        "portrait": "assets/n5-v3/characters/alex/portrait.webp",
+        "bust": "assets/n5-v3/characters/alex/bust.webp"
+      },
+      "review": {
+        "status": "pending",
+        "copyright": "original-commissioned",
+        "identityApproved": false,
+        "artApproved": false
+      }
+    },
+    {
+      "id": "emma",
+      "order": 20,
+      "jp": "Emma Laurent",
+      "reading": "エマ・ローラン",
+      "display": "Emma",
+      "nationality": "Pháp",
+      "role": "Product Designer",
+      "organization": "Bridge Atelier",
+      "group": "work",
+      "assetVersion": "v3.0",
+      "artIdentity": null,
+      "sources": {
+        "portrait": "assets/n5-v3/characters/emma/portrait.webp",
+        "bust": "assets/n5-v3/characters/emma/bust.webp"
+      },
+      "review": {
+        "status": "pending",
+        "copyright": "original-commissioned",
+        "identityApproved": false,
+        "artApproved": false
+      }
+    },
+    {
+      "id": "jiwoo",
+      "order": 21,
+      "jp": "Kim Jiwoo",
+      "reading": "キム・ジウ",
+      "display": "Jiwoo",
+      "nationality": "Hàn Quốc",
+      "role": "Sinh viên trao đổi",
+      "organization": "Mizuki University",
+      "group": "school",
+      "assetVersion": "v3.0",
+      "artIdentity": null,
+      "sources": {
+        "portrait": "assets/n5-v3/characters/jiwoo/portrait.webp",
+        "bust": "assets/n5-v3/characters/jiwoo/bust.webp"
+      },
+      "review": {
+        "status": "pending",
+        "copyright": "original-commissioned",
+        "identityApproved": false,
+        "artApproved": false
+      }
+    },
+    {
+      "id": "arun",
+      "order": 22,
+      "jp": "Arun Sharma",
+      "reading": "アルン・シャルマ",
+      "display": "Arun",
+      "nationality": "Ấn Độ",
+      "role": "Systems Engineer",
+      "organization": "Kaze Systems",
+      "group": "work",
+      "assetVersion": "v3.0",
+      "artIdentity": null,
+      "sources": {
+        "portrait": "assets/n5-v3/characters/arun/portrait.webp",
+        "bust": "assets/n5-v3/characters/arun/bust.webp"
+      },
+      "review": {
+        "status": "pending",
+        "copyright": "original-commissioned",
+        "identityApproved": false,
+        "artApproved": false
+      }
+    },
+    {
+      "id": "lucas",
+      "order": 23,
+      "jp": "Lucas Silva",
+      "reading": "ルーカス・シルバ",
+      "display": "Lucas",
+      "nationality": "Brazil",
+      "role": "Điều phối viên hoạt động",
+      "organization": "Minato Community Services",
+      "group": "life",
+      "assetVersion": "v3.0",
+      "artIdentity": null,
+      "sources": {
+        "portrait": "assets/n5-v3/characters/lucas/portrait.webp",
+        "bust": "assets/n5-v3/characters/lucas/bust.webp"
+      },
+      "review": {
+        "status": "pending",
+        "copyright": "original-commissioned",
+        "identityApproved": false,
+        "artApproved": false
+      }
+    },
+    {
+      "id": "sophie",
+      "order": 24,
+      "jp": "Sophie Weber",
+      "reading": "ソフィー・ヴェーバー",
+      "display": "Sophie",
+      "nationality": "Đức",
+      "role": "Biên tập viên nội dung · học viên tiếng Nhật",
+      "organization": "Bridge Atelier",
+      "group": "life",
+      "assetVersion": "v3.0",
+      "artIdentity": null,
+      "sources": {
+        "portrait": "assets/n5-v3/characters/sophie/portrait.webp",
+        "bust": "assets/n5-v3/characters/sophie/bust.webp"
+      },
+      "review": {
+        "status": "pending",
+        "copyright": "original-commissioned",
+        "identityApproved": false,
+        "artApproved": false
+      }
+    },
+    {
+      "id": "keiko",
+      "order": 25,
+      "jp": "佐藤 けい子",
+      "reading": "さとう けいこ",
+      "display": "Keiko",
+      "nationality": "Nhật Bản",
+      "role": "Nhân viên nhân sự",
+      "organization": "Nagi Riverside Hotel",
+      "group": "work",
+      "assetVersion": "v3.0",
+      "artIdentity": {
+        "hair": "deep chestnut hair in a low side bun, natural front fringe",
+        "outfit": "muted plum blazer, cream shirt, slim tan document folder",
+        "expression": "warm confident open smile",
+        "face": "large expressive brown eyes, softly rounded facial structure"
+      },
+      "sources": {
+        "portrait": "assets/n5-v3/characters/keiko/portrait.webp",
+        "bust": "assets/n5-v3/characters/keiko/bust.webp"
+      },
+      "review": {
+        "status": "pending",
+        "copyright": "original-commissioned",
+        "identityApproved": false,
+        "artApproved": false
+      }
+    },
+    {
+      "id": "yamada",
+      "order": 26,
+      "jp": "山田 隆",
+      "reading": "やまだ たかし",
+      "display": "Takashi",
+      "nationality": "Nhật Bản",
+      "role": "Giám sát vận hành",
+      "organization": "Nagi Riverside Hotel",
+      "group": "work",
+      "assetVersion": "v3.0",
+      "artIdentity": {
+        "hair": "tidy short black hair",
+        "outfit": "navy corporate suit, blue-striped tie, rectangular glasses",
+        "expression": "friendly measured professional smile",
+        "face": "mature rectangular features"
+      },
+      "sources": {
+        "portrait": "assets/n5-v3/characters/yamada/portrait.webp",
+        "bust": "assets/n5-v3/characters/yamada/bust.webp"
+      },
+      "review": {
+        "status": "pending",
+        "copyright": "original-commissioned",
+        "identityApproved": false,
+        "artApproved": false
+      }
+    },
+    {
+      "id": "mike",
+      "order": 27,
+      "jp": "マイク・ミラー",
+      "reading": "マイク・ミラー",
+      "display": "Mike",
+      "nationality": "Hoa Kỳ",
+      "role": "Kỹ sư phần mềm",
+      "organization": "Kaze Systems",
+      "group": "work",
+      "assetVersion": "v3.0",
+      "artIdentity": {
+        "hair": "short sandy-brown hair, gently textured",
+        "outfit": "light blue business shirt, optional navy blazer",
+        "expression": "approachable curious smile",
+        "face": "youthful oval face and defined eyebrows"
+      },
+      "sources": {
+        "portrait": "assets/n5-v3/characters/mike/portrait.webp",
+        "bust": "assets/n5-v3/characters/mike/bust.webp"
+      },
+      "review": {
+        "status": "pending",
+        "copyright": "original-commissioned",
+        "identityApproved": false,
+        "artApproved": false
+      }
+    },
+    {
+      "id": "nakamura",
+      "order": 28,
+      "jp": "中村 由美",
+      "reading": "なかむら ゆみ",
+      "display": "Yumi",
+      "nationality": "Nhật Bản",
+      "role": "Nhân viên thư viện",
+      "organization": "Minato Community Services",
+      "group": "life",
+      "assetVersion": "v3.0",
+      "artIdentity": {
+        "hair": "soft shoulder-length dark-brown bob",
+        "outfit": "light blue cardigan over cream blouse",
+        "expression": "polite attentive smile"
+      },
+      "sources": {
+        "portrait": "assets/n5-v3/characters/nakamura/portrait.webp",
+        "bust": "assets/n5-v3/characters/nakamura/bust.webp"
+      },
+      "review": {
+        "status": "pending",
+        "copyright": "original-commissioned",
+        "identityApproved": false,
+        "artApproved": false
+      }
+    },
+    {
+      "id": "laila",
+      "order": 29,
+      "jp": "ライラ・ハミド",
+      "reading": "ライラ・ハミド",
+      "display": "Laila",
+      "nationality": "Malaysia",
+      "role": "Quản lý trải nghiệm khách",
+      "organization": "Nagi Riverside Hotel",
+      "group": "work",
+      "assetVersion": "v3.0",
+      "artIdentity": null,
+      "sources": {
+        "portrait": "assets/n5-v3/characters/laila/portrait.webp",
+        "bust": "assets/n5-v3/characters/laila/bust.webp"
+      },
+      "review": {
+        "status": "pending",
+        "copyright": "original-commissioned",
+        "identityApproved": false,
+        "artApproved": false
+      }
+    },
+    {
+      "id": "omar",
+      "order": 30,
+      "jp": "オマル・ハッサン",
+      "reading": "オマル・ハッサン",
+      "display": "Omar",
+      "nationality": "Ai Cập",
+      "role": "Kiến trúc sư",
+      "organization": "Bridge Atelier",
+      "group": "life",
+      "assetVersion": "v3.0",
+      "artIdentity": null,
+      "sources": {
+        "portrait": "assets/n5-v3/characters/omar/portrait.webp",
+        "bust": "assets/n5-v3/characters/omar/bust.webp"
+      },
+      "review": {
+        "status": "pending",
+        "copyright": "original-commissioned",
+        "identityApproved": false,
+        "artApproved": false
+      }
+    }
+  ],
+  "environments": [
+    {
+      "id": "office",
+      "name": "IMC office · Osaka",
+      "brief": "reception & first-day workplace, airy Japanese open-plan office",
+      "asset": "assets/n5-v3/environments/office.webp",
+      "review": "pending"
+    },
+    {
+      "id": "classroom",
+      "name": "Japanese classroom",
+      "brief": "friendly language class with writing board and desks",
+      "asset": "assets/n5-v3/environments/classroom.webp",
+      "review": "pending"
+    },
+    {
+      "id": "hotel",
+      "name": "Hotel lobby",
+      "brief": "warm hospitality reception and guest service area",
+      "asset": "assets/n5-v3/environments/hotel.webp",
+      "review": "pending"
+    },
+    {
+      "id": "cafe",
+      "name": "Café",
+      "brief": "sunlit neighborhood café with natural wood",
+      "asset": "assets/n5-v3/environments/cafe.webp",
+      "review": "pending"
+    },
+    {
+      "id": "station",
+      "name": "Railway station",
+      "brief": "modern safe Japanese public railway concourse",
+      "asset": "assets/n5-v3/environments/station.webp",
+      "review": "pending"
+    },
+    {
+      "id": "market",
+      "name": "Convenience store / supermarket",
+      "brief": "bright shop aisles with everyday products",
+      "asset": "assets/n5-v3/environments/market.webp",
+      "review": "pending"
+    },
+    {
+      "id": "street",
+      "name": "Japanese neighborhood",
+      "brief": "walkable street with seasonal landscaping",
+      "asset": "assets/n5-v3/environments/street.webp",
+      "review": "pending"
+    },
+    {
+      "id": "home",
+      "name": "Home / community space",
+      "brief": "calm domestic or community room",
+      "asset": "assets/n5-v3/environments/home.webp",
+      "review": "pending"
+    }
+  ],
+  "scenes": [
+    {
+      "id": "meeting",
+      "number": 1,
+      "currentTitle": "Gặp nhau lần đầu",
+      "castIds": [
+        "aoi",
+        "mai"
+      ],
+      "currentSetting": "Ichibu Language Studio",
+      "approvedStoryMapping": false,
+      "asset": "assets/n5-v3/scenes/meeting.webp",
+      "thumbnail": "assets/n5-v3/scenes/meeting-thumb.webp",
+      "review": "pending"
+    },
+    {
+      "id": "colleague",
+      "number": 2,
+      "currentTitle": "Giới thiệu đồng nghiệp",
+      "castIds": [
+        "misaki",
+        "kenta",
+        "linh"
+      ],
+      "currentSetting": "Nagi Riverside Hotel · ホテル凪",
+      "approvedStoryMapping": false,
+      "asset": "assets/n5-v3/scenes/colleague.webp",
+      "thumbnail": "assets/n5-v3/scenes/colleague-thumb.webp",
+      "review": "pending"
+    },
+    {
+      "id": "correcting",
+      "number": 3,
+      "currentTitle": "Sửa thông tin bị nhầm",
+      "castIds": [
+        "mai",
+        "yuki"
+      ],
+      "currentSetting": "Kissa Komorebi · 喫茶こもれび",
+      "approvedStoryMapping": false,
+      "asset": "assets/n5-v3/scenes/correcting.webp",
+      "thumbnail": "assets/n5-v3/scenes/correcting-thumb.webp",
+      "review": "pending"
+    },
+    {
+      "id": "classmates",
+      "number": 4,
+      "currentTitle": "Có chung đặc điểm",
+      "castIds": [
+        "minh",
+        "riko"
+      ],
+      "currentSetting": "Mizuki University · みずき大学",
+      "approvedStoryMapping": false,
+      "asset": "assets/n5-v3/scenes/classmates.webp",
+      "thumbnail": "assets/n5-v3/scenes/classmates-thumb.webp",
+      "review": "pending"
+    },
+    {
+      "id": "namecheck",
+      "number": 5,
+      "currentTitle": "Hỏi và xác nhận tên",
+      "castIds": [
+        "aoi",
+        "sophie"
+      ],
+      "currentSetting": "Ichibu Language Studio · いちぶ日本語教室",
+      "approvedStoryMapping": false,
+      "asset": "assets/n5-v3/scenes/namecheck.webp",
+      "thumbnail": "assets/n5-v3/scenes/namecheck-thumb.webp",
+      "review": "pending"
+    },
+    {
+      "id": "identity",
+      "number": 6,
+      "currentTitle": "Hỏi quốc tịch và nghề nghiệp",
+      "castIds": [
+        "yuki",
+        "linh"
+      ],
+      "currentSetting": "Kissa Komorebi · 喫茶こもれび",
+      "approvedStoryMapping": false,
+      "asset": "assets/n5-v3/scenes/identity.webp",
+      "thumbnail": "assets/n5-v3/scenes/identity-thumb.webp",
+      "review": "pending"
+    }
+  ],
+  "visualTokenDraft": {
+    "background": "#FAF8F5",
+    "surface": "#FFFDFC",
+    "text": "#223448",
+    "primary": "#BD4B64",
+    "positive": "#4B8767",
+    "pending": "#AA7132",
+    "border": "#E6E0DC"
+  }
+}
