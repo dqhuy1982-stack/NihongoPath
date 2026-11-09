@@ -446,7 +446,7 @@ function reviewPage(){
 }
 function page(){
  if(!D)return '<section class="v25-wrap"><p>Chưa tải được nội dung Bài 01.</p><a href="#course/N5">Trở lại khóa N5</a></section>';
- return '<div class="v25-wrap n5l-root" data-n5-lesson="01" data-n5-version="148">'+
+ return '<div class="v25-wrap n5l-root" data-n5-lesson="01" data-n5-version="149">'+
   header()+progressTop()+nav()+
   (alertText?'<p class="n5l-notice" role="status">'+esc(alertText)+'</p>':'')+
   (saveError?'<p class="n5l-save-error" role="alert">'+esc(saveError)+'</p>':'')+
@@ -595,12 +595,12 @@ if(decodeURIComponent(location.hash.replace(/^#\/?/,''))==='course/N5/lesson/01'
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});
  else if(typeof queueMicrotask==='function')queueMicrotask(refresh);
 }
-window.NPN5Lesson01=Object.freeze({version:'v148',page,status,read,
+window.NPN5Lesson01=Object.freeze({version:'v149',page,status,read,
  data:()=>D,route,select:section=>{if(sections.some(x=>x[0]===section)){active='learn';chapter=section;}},
  start:kind=>{if(['practice','check','review'].includes(kind))start(kind)},
  answer,finish,session:()=>run,audioSupported,
  scenes:()=>LINKED.scenes.map(x=>({id:x.id,title:x.title})),sceneCount,
  chooseSceneAnswer,openScene:id=>{const i=LINKED.scenes.findIndex(x=>x.id===id);if(i>=0){sceneIndex=i;chapter='scenes';active='learn';}},
- scenePage,progressTop,recordMiniActivity,substitution,orderSentence,
+ scenePage,progressTop,currentScene:()=>LINKED.scenes[sceneIndex]||null,currentStep:()=>active,recordMiniActivity,substitution,orderSentence,
  world:()=>WORLD});
 })();
