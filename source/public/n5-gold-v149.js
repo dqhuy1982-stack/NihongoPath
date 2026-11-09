@@ -197,14 +197,18 @@ function lessonShell(content){
  '<a href="#course/N5/characters">Thư viện nhân vật ↗</a></div>'+
  '<div class="n5g-grid"><div class="n5g-main">'+content+'</div>'+rightPanel(scene,true)+'</div></div>';
 }
+function withPopup(markup){
+ if(!modalPerson||!W?.profile||markup.includes('n5w-overlay'))return markup;
+ return markup.replace(/<\/div>\s*$/,W.profile(modalPerson)+'</div>');
+}
 const parent=coursePage;
 coursePage=function(id){
  if(id!=='N5')return parent(id);
  const hash=url();
- if(hash==='course/N5')return coursePageV149();
- if(hash==='course/N5/lesson/01/overview')return lessonOverview();
+ if(hash==='course/N5')return withPopup(coursePageV149());
+ if(hash==='course/N5/lesson/01/overview')return withPopup(lessonOverview());
  if(hash==='course/N5/characters')return storyLibrary();
- if(hash==='course/N5/lesson/01')return lessonShell(parent(id));
+ if(hash==='course/N5/lesson/01')return withPopup(lessonShell(parent(id)));
  return parent(id);
 };
 function redraw(){if(typeof render==='function')render(false)}
@@ -226,6 +230,10 @@ document.addEventListener('click',event=>{
  const target=event.target;
  const scene=target.closest?.('[data-n5g-scene]');
  if(scene){event.preventDefault();goScene(scene.dataset.n5gScene);return}
+ const sceneFromProfile=target.closest?.('[data-n5l-scene]');
+ if(sceneFromProfile&&area.dataset.n5Gold==='characters'){
+  event.preventDefault();modalPerson=null;goScene(sceneFromProfile.dataset.n5lScene);return;
+ }
  const chapter=target.closest?.('[data-n5g-chapter]');
  if(chapter){event.preventDefault();goChapter(chapter.dataset.n5gChapter);return}
  const profile=target.closest?.('[data-n5g-profile]');
