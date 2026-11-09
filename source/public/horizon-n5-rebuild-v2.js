@@ -67,7 +67,7 @@ function portrait(id,size='m'){
  const p=person(id);let label=p?.vi||p?.short||p?.jp||id;
  // Only raster image assets are accepted for the new visual system.
  // Explicit fallback avoids displaying rejected geometric portraits.
- const known=[]; /* raster atlas remains gated until it has been uploaded and visually verified */
+ const known=['keiko','yamada','', 'mike']; /* only identity-matched approved raster portraits */
  const ix=known.indexOf(id);
  if(ix>=0)return '<span class="n5r-face n5r-face-'+size+' n5r-face-art" data-face="'+ix+'" role="img" aria-label="Minh họa '+esc(label)+'"></span>';
  const initial=String(label).trim().split(/\s+/).map(x=>x.slice(0,1)).slice(0,2).join('').toUpperCase();
