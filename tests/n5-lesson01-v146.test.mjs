@@ -141,7 +141,7 @@ test('Lesson 01 actual assets and entry script load in correct order',()=>{
  const p1=html.indexOf('src="n5-path-v145.js?v=146"');
  const p2=html.indexOf('src="n5-lesson01-data-v146.js?v=146"');
  const p3=html.indexOf('src="n5-lesson01-context-v147.js?v=148"');
- const p4=html.indexOf('src="n5-lesson01-v146.js?v=148"');
+ const p4=html.indexOf('src="n5-lesson01-v146.js?v=149"');
  assert.ok(p1>0&&p2>p1&&p3>p2&&p4>p3,'Course route, content, scenarios then lesson controller');
  assert.ok(html.includes('n5-lesson01-v146.css?v=146'));
  assert.ok(html.includes('n5-lesson01-context-v147.css?v=147'));
@@ -152,7 +152,7 @@ test('Lesson 01 actual assets and entry script load in correct order',()=>{
 
 test('v1.47 situation-first learning includes six original dialogues with linked micro tasks',()=>{
  const h=harness(),path=h.ui.page(),scenes=h.ui.scenes();
- assert.equal(h.ui.version,'v148');
+ assert.equal(h.ui.version,'v149');
  assert.equal(scenes.length,6);
  assert.equal(new Set(scenes.map(x=>x.id)).size,6);
  assert.match(path,/Gặp nhau lần đầu/);
