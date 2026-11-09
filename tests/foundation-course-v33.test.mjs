@@ -384,7 +384,7 @@ test('Global UI footer shows unobtrusive v1.01 beside HORIZON tagline',()=>{
  const app=load('app.js'),hub=load('learning-hub-v25.js');
  assert.ok(app.includes('Học theo cách của bạn'));
  assert.ok(app.includes('horizon-brand-version'));
- assert.ok(app.includes('v1.49'));
+ assert.ok(app.includes('v2.00'));
  assert.ok(!app.includes('class="horizon-ui-version"'));
  assert.ok(load('index.html').includes('horizon-brand-version.css?v=106'));
  assert.ok(!hub.includes('HORIZON · Learning Hub v33 · Recorded progress'));
@@ -434,7 +434,7 @@ test('v1.01 offers three hints and records assisted correct answers for review',
 });
 test('v1.01 includes answer audio and precise connected-book CSS',()=>{
  const app=load('app.js'),html=load('index.html'),css=load('foundation-course-v101.css');
- assert.ok(app.includes('v1.49'));
+ assert.ok(app.includes('v2.00'));
  assert.ok(html.includes('foundation-course-v101.css?v=101'));
  assert.ok(html.includes('foundation-course-v102.css?v=102'));
  assert.ok(html.includes('foundation-course-v103.css?v=103'));
@@ -444,7 +444,7 @@ test('v1.01 includes answer audio and precise connected-book CSS',()=>{
  assert.ok(html.includes('foundation-curriculum-v33.js?v=124'));
  assert.ok(html.includes('foundation-course-v33.js?v=146'));
  assert.ok(html.includes('foundation-course-v107.css?v=141'));
- assert.ok(load('app.js').includes('v1.49</small>'));
+ assert.ok(load('app.js').includes('v2.00</small>'));
  assert.ok(css.includes('v101-match-grid'));
  assert.ok(css.includes('[data-connected="yes"]'));
 });
@@ -710,7 +710,7 @@ test('The learning UI does not alter the existing lesson engine or global learne
  assert.ok(html.includes('foundation-course-v39.css?v=39'));
  assert.ok(html.includes('foundation-course-v40.css?v=100'));
  assert.ok(html.includes('foundation-course-v101.css?v=101'));
- assert.ok(html.includes('app.js?v=149'));
+ assert.ok(html.includes('app.js?v=200'));
  assert.ok(html.includes('learning-hub-v25.js?v=146'));
  assert.ok(html.includes('foundation-course-v33.js?v=146'));
  assert.ok(html.includes('foundation-course-v33.js?v=146'));
@@ -1847,5 +1847,5 @@ test('v1.43 static entry includes updated design and avoids old cached scripts',
  assert.match(html,/progress-v143\.css\?v=143/);
  assert.match(html,/foundation-course-v33\.js\?v=146/);
  assert.match(html,/learning-hub-v25\.js\?v=146/);
- assert.match(brand,/v1\.49/);
+ assert.match(brand,/v2\.00/);
 });
