@@ -16,7 +16,7 @@ const currentRoute=()=>decodeURIComponent(location.hash.replace(/^#\/?/,''));
 const user=()=>{try{return String(P()?.id||'guest').replace(/[^a-z0-9_-]/gi,'_')}catch{return'guest'}};
 const prefsKey=()=> 'Horizon.N5.v2.View.'+user();
 const defaults=()=>({scene:'meeting',tab:'vocab',practiceMode:'guided',search:'',filter:'all',showTranslation:false,selected:null,quizHad:false});
-let prefsOwner='',prefs=defaults(),noteOpen=null,modalChar=null,flashIndex=0,flipped=false,
+let prefsOwner='',prefs=defaults(),noteOpen=null,modalChar=null,flashIndex=0,flipped=false,composeDrafts=new Map(),
  activeGuidedChoice={},audioState='',voiceSpeed=.86,practiceAnswerSaved=false;
 function sync(){
  const id=user();if(prefsOwner===id)return;
@@ -67,7 +67,7 @@ function portrait(id,size='m'){
  const p=person(id);let label=p?.vi||p?.short||p?.jp||id;
  // Only raster image assets are accepted for the new visual system.
  // Explicit fallback avoids displaying rejected geometric portraits.
- const known=['keiko','yamada','mike','nakamura','linh','kenta','mai','suriya','arvin','pierre','ani','carlos'];
+ const known=[]; /* raster atlas remains gated until it has been uploaded and visually verified */
  const ix=known.indexOf(id);
  if(ix>=0)return '<span class="n5r-face n5r-face-'+size+' n5r-face-art" data-face="'+ix+'" role="img" aria-label="Minh họa '+esc(label)+'"></span>';
  const initial=String(label).trim().split(/\s+/).map(x=>x.slice(0,1)).slice(0,2).join('').toUpperCase();
@@ -282,10 +282,10 @@ function storyPage(){
  '<details class="n5r-variation"><summary>Thực hành thêm · Thay thế mẫu câu & tự viết</summary>'+
  '<div><p>'+esc(sc.replace.prompt)+' · '+jp(sc.replace.stem)+'</p>'+
  sc.replace.options.map((o,i)=>'<button type="button" data-sub="'+i+'">'+jp(o)+'</button>').join('')+
- '<p>'+esc(sc.compose.prompt)+'</p><textarea data-compose="'+esc(sc.id)+'" rows="2" placeholder="Tự viết câu tiếng Nhật..."></textarea>'+
+ '<p>'+esc(sc.compose.prompt)+'</p><textarea data-compose="'+esc(sc.id)+'" rows="2" placeholder="Tự viết câu tiếng Nhật...">'+esc(composeDrafts.get(user()+':'+sc.id)||'')+'</textarea>'+
  '<button type="button" data-model="1">Đối chiếu câu gợi ý</button>'+
  (noteOpen==='model'?'<p lang="ja">'+esc(sc.compose.sample)+'</p>':'')+'</div></details>'+
- '</section><div class="n5r-page-actions">'+(prev?button('← Tình huống trước',ROUTES.story+'?scene='+prev.id,'outline'):
+ '</section><div class="n5r-page-actions">'+(prev?'<button type="button" class="n5r-button n5r-button-outline" data-scene="'+esc(prev.id)+'">← Tình huống trước</button>':
  button('← Tổng quan',ROUTES.overview,'outline'))+
  (next?'<button type="button" class="n5r-button n5r-button-primary" data-next-scene="'+esc(next.id)+'">Tình huống tiếp theo →</button>':
  button('Chuyển sang luyện tập →',ROUTES.practice))+'</div></div>'+
@@ -576,6 +576,7 @@ document.addEventListener('click',e=>{
 document.addEventListener('input',e=>{
  if(!document.querySelector?.('.n5r-shell'))return;
  const x=e.target;
+ if(x.matches?.('[data-compose]')){composeDrafts.set(user()+':'+x.dataset.compose,String(x.value||'').slice(0,1200));return}
  if(x.matches?.('[data-search]')){prefs.search=x.value;save();
  document.querySelectorAll?.('.n5r-library-person').forEach(n=>{
  const id=n.dataset.person;const p=person(id);const ok=(prefs.filter==='all'||p?.group===prefs.filter)&&
