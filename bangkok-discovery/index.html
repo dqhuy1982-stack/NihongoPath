@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#102b43"><meta name="apple-mobile-web-app-capable" content="yes"><link rel="apple-touch-icon" href="icon-192.png"><title>Bangkok Discovery 2026 – Bilingual Illustrated Guide</title>
+  <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#102b43"><meta name="apple-mobile-web-app-capable" content="yes"><link rel="apple-touch-icon" href="icon.svg"><title>Bangkok Discovery 2026 – Bilingual Illustrated Guide</title>
   <style>
     :root {
       --bg:#0b1220; --bg2:#111b2f; --card:#ffffff; --soft:#f3f7fc; --ink:#162033; --muted:#5e6b82;
@@ -108,7 +108,8 @@
       .hero h1 { font-size:34px; }
       .timeline-item { grid-template-columns:64px 1fr; }
     }
-  </style>
+  .yen-ref{color:#64748b;font-size:.9em;font-weight:500;white-space:normal}.fx-reference{font-size:14px;color:#35517b;background:#fff;border:1px solid var(--line);padding:12px 16px;border-radius:14px;margin:22px 0}.fx-reference a{color:#087f79;text-decoration:underline}
+</style>
 </head>
 <body>
   <div class="topbar">
@@ -171,6 +172,7 @@
       <div class="grid2" id="itineraryGrid"></div>
     </section>
 
+    <div class="fx-reference" role="note"><span data-vi="Giá Yên trong ngoặc là tham khảo, làm tròn đến ¥10. Tỷ giá quy đổi có thể điều chỉnh tại mục Đổi tiền:" data-en="JPY amounts in parentheses are estimates, rounded to ¥10. Adjust the reference rate in Exchange:"></span> <strong>1 JPY = <span id="referenceRateValue">0.2125</span> THB</strong> · <a href="#exchange" data-vi="Đổi tỷ giá" data-en="Adjust rate"></a></div>
     <section class="section" id="places">
       <div class="section-head">
         <div>
@@ -351,6 +353,25 @@ async function resolveWikiImage(title, fallback='Bangkok') {
   return null;
 }
 
+function yenEquivalent(price, rate) {
+  const match = String(price).match(/฿\s*([\d,]+(?:\.\d+)?)(?:\s*[–-]\s*([\d,]+(?:\.\d+)?))?(\+)?/);
+  if (!match || !Number.isFinite(rate) || rate <= 0) return '';
+  const format = n => '¥' + (Math.round(Number(n.replace(/,/g,'')) / rate / 10) * 10).toLocaleString('en-US');
+  return ' (≈ ' + format(match[1]) + (match[2] ? '–' + format(match[2]) : '') + (match[3] || '') + ')';
+}
+function referenceRate() {
+  const rate = Number(document.getElementById('rateInput').value);
+  return Number.isFinite(rate) && rate > 0 ? rate : 0.2125;
+}
+function priceWithYen(price) {
+  return String(price).replace(/฿\s*[\d,]+(?:\.\d+)?(?:\s*[–-]\s*[\d,]+(?:\.\d+)?)?\+?/, amount => amount + '<span class="yen-ref" data-thb-price="' + amount + '">' + yenEquivalent(amount, referenceRate()) + '</span>');
+}
+function refreshYenReferences() {
+  const rate = referenceRate();
+  document.querySelectorAll('[data-thb-price]').forEach(el => { el.textContent = yenEquivalent(el.dataset.thbPrice, rate); });
+  document.getElementById('referenceRateValue').textContent = rate.toFixed(4);
+}
+
 function cardTemplate(item, type='poi') {
   const name = currentLang==='vi' ? item.name_vi : item.name_en;
   const desc = currentLang==='vi' ? item.desc_vi : item.desc_en;
@@ -374,7 +395,7 @@ function cardTemplate(item, type='poi') {
       ${repNote}
       <p>${desc}</p>
       <div class="meta">
-        <div><strong>${budgetText}:</strong> ${budgetLabel}</div>
+        <div><strong>${budgetText}:</strong> ${priceWithYen(budgetLabel)}</div>
         ${type==='food' ? `<div><strong>${currentLang==='vi' ? 'Nên gọi' : 'Try'}:</strong> ${mustText}</div>` : `<div><strong>${currentLang==='vi' ? 'Địa chỉ' : 'Address'}:</strong> ${item.address}</div>`}
       </div>
       <div class="actions">
@@ -397,7 +418,7 @@ function dishTemplate(item) {
   <article class="card poi-card">
     <div class="media"><img data-wiki="${item.wiki}" data-fallback="Thai_cuisine" alt="${currentLang==='vi'?item.name_vi:item.name_en}" /></div>
     <div class="content">
-      <div class="subline"><span class="chip">${item.thai}</span><span class="chip">${item.price}</span></div>
+      <div class="subline"><span class="chip">${item.thai}</span><span class="chip">${priceWithYen(item.price)}</span></div>
       <h3>${currentLang==='vi'?item.name_vi:item.name_en}</h3>
       <p>${currentLang==='vi'?item.desc_vi:item.desc_en}</p>
     </div>
@@ -469,13 +490,14 @@ function renderAll() {
   renderTips();
   hydrateImages();
   calcTHB();
+  refreshYenReferences();
 }
 
 document.querySelectorAll('.langbtn').forEach(btn => btn.addEventListener('click', () => {
   currentLang = btn.dataset.langBtn; try { localStorage.setItem(LANG_KEY, currentLang); } catch(e) {} renderAll();
 }));
 document.getElementById('yenInput').addEventListener('input', calcTHB);
-document.getElementById('rateInput').addEventListener('input', calcTHB);
+document.getElementById('rateInput').addEventListener('input', () => {calcTHB();refreshYenReferences();});
 renderAll();
 if ('serviceWorker' in navigator && location.protocol==='https:') navigator.serviceWorker.register('./sw.js').then(()=>navigator.serviceWorker.ready).then(()=>{document.getElementById('offlineStatus').textContent='Offline shell cached / Nội dung đã lưu offline. Photos: online first / Ảnh: cần tải trước.'}).catch(()=>{});
 </script>
