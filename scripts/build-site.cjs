@@ -82,6 +82,18 @@ fs.writeFileSync(path.join(dest,'SITE_STATUS.txt'),[
  ''
 ].join('\n'),'utf8');
 
+// Bangkok Discovery export: only explicitly approved static files, never the backend.
+if(!familySync){
+ const travelSource=path.join(root,'bangkok-discovery');
+ const travelTarget=path.join(dest,'bangkok-discovery');
+ fs.mkdirSync(travelTarget,{recursive:true});
+ for(const name of ['index.html','manifest.webmanifest','sw.js','icon.svg']){
+  const input=path.join(travelSource,name);
+  if(!fs.statSync(input,{throwIfNoEntry:false})?.isFile())throw Error('Missing Bangkok Discovery asset: '+name);
+  fs.copyFileSync(input,path.join(travelTarget,name));
+ }
+}
+
 const clips=fs.readdirSync(path.join(dest,'assets','kana-audio')).filter(x=>x.endsWith('.mp3'));
 if(clips.length!==46||!fs.existsSync(path.join(dest,'kana-recall.js'))||
  !fs.existsSync(path.join(dest,'kana-stroke-view.js'))||
